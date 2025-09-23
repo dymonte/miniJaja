@@ -29,11 +29,25 @@ instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp #Assignment
         | ident1 '(' listexp ')'
         | 'return' exp #Return
         | 'write' '(' (ident1 | STRING? ) ')'
+        | 'writeln' '(' (ident1 | STRING? ) ')'
+        | 'if' '('exp')''{'instrs'}'('else''{'instrs'}')
+        | 'while' '('exp')''{'instrs'}'
         |;
+exp:      '!'exp1
+        | exp op=('&&'|'||')exp1
+        | exp1;
 
+typemeth: 'void'
+        | type;
+type:     'int' | 'boolean';
+exp1:    exp1 op=('=='|'!='|'<'|'>'|'<='|'>=') exp2
+        | exp2;
+exp2:    exp2 op=('+'|'-') term
+        | term;
+term:    term op=('*'|'/'|'%') fact
+        | fact;
 
-
-
+// ident1:  IDENT ('[' exp ']')* ; // to handle array access in
 
 // Declaration of identifiers and types
 DIGIT:    [0-9];
