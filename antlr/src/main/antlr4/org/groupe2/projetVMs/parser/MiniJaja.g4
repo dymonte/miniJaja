@@ -8,11 +8,13 @@ grammar MiniJaja;
 class:    'class' ident '{' decls methmain '}';
 ident:    IDENT;
 decls:    (decl ';')*;
-decl:     var | method;
+decl:     var    #VarDecl
+        | method #MethodDecl
+        ;
 vars:     (var ';')*;
-var:      typemeth ident vexp 
-        | typemeth ident '[' exp ']'
-        | 'final' type ident vexp
+var:      typemeth ident vexp        #VarDeclSimple 
+        | typemeth ident '[' exp ']' #VarDeclArray
+        | 'final' type ident vexp    #VarDeclFinal
         ;
 vexp:     ('=' exp)? ;
 method:   typemeth ident '(' params ')' '{' vars instrs '}';
@@ -20,46 +22,46 @@ methmain: 'main' '{' vars instrs '}';
 params:   (param (',' param)*)? ;
 param:    type ident;
 instrs:   (instr ';')* ;
-instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp #Assignment
-        | ident1 op=('++'|'--') #Increment
-        | ident1 '(' listexp ')' #CallI
-        | 'return' exp #Return
-        | 'write' '(' (ident1 | STRING? ) ')' #Write
-        | 'writeln' '(' (ident1 | STRING? ) ')' #Writeln
+instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp              #Assignment
+        | ident1 op=('++'|'--')                                #Increment
+        | ident1 '(' listexp ')'                               #CallI
+        | 'return' exp                                         #Return
+        | 'write' '(' (ident1 | '"'STRING?'"' ) ')'                  #Write
+        | 'writeln' '(' (ident1 | '"'STRING?'"' ) ')'                #Writeln
         | 'if' '('exp')' '{'instrs'}' ('else' '{' instrs '}')? #If
-        | 'while' '('exp')''{'instrs'}' #While
-        |	#Void
+        | 'while' '('exp')''{'instrs'}'                        #While
         ;
-listexp : exp ',' listexp
-        | exp
-        |
+listexp : (exp (',' exp)*)?;
+exp:      '!'exp1                 #NotExp
+        | exp op=('&&'|'||') exp1 #LogicExp
+        | exp1                    #SingleExp1
         ;
-exp:      '!'exp1
-        | exp op=('&&'|'||')exp1
-        | exp1
+exp1:     exp1 op=('=='|'!='|'<'|'>'|'<='|'>=') exp2 #CompExp
+        | exp2                                       #Exp2Only
         ;
-exp1:    exp1 op=('=='|'!='|'<'|'>'|'<='|'>=') exp2
-        | exp2
+exp2:     exp2 op=('+'|'-') term #AddSubExp
+        | '-' term               #NegExp
+        | term                   #TermOnly
         ;
-exp2:    exp2 op=('+'|'-') term
-        | term
+term:     term op=('*'|'/'|'%') fact #MulDivExp
+        | fact                       #FactOnly
         ;
-term:    term op=('*'|'/'|'%') fact
-        | fact
+fact:		  ident1                 #VarRef
+        | ident '(' listexp ')'  #MethodCall
+        | 'length' '(' ident ')' #Length
+        | BOOLEAN                #Bool
+        | NUMBER                 #Int
+        | '(' exp ')'            #ParenExp
         ;
-fact:		 ident1
-        | ident '(' listexp ')'
-        | 'length' '(' ident ')'
-        | BOOLEAN
-        | NUMBER
+ident1:   ident             #Identificator
+        | ident '[' exp ']' #ArrayAccess
         ;
-ident1:   ident
-        | ident '[' exp ']'
+typemeth: 'void' #VoidType
+        | type   #TypeMeth
         ;
-typemeth: 'void'
-        | type
+type:     'int'      #IntType
+        | 'boolean' #BoolType
         ;
-type:     'int' | 'boolean';
 
 // ident1:  IDENT ('[' exp ']')* ; // to handle array access in
 
