@@ -7,45 +7,59 @@ grammar MiniJaja;
 // Declaration of grammar rules
 class:    'class' ident '{' decls methmain '}';
 ident:    IDENT;
-decls:    decl ';' decls
-        | ;//(decl ';')*;
+decls:    (decl ';')*;
 decl:     var | method;
-vars:     var ';' vars
-        | ;//(var ';')*;
+vars:     (var ';')*;
 var:      typemeth ident vexp 
         | typemeth ident '[' exp ']'
-        | 'final' type ident vexp;
+        | 'final' type ident vexp
+        ;
 vexp:     ('=' exp)? ;
 method:   typemeth ident '(' params ')' '{' vars instrs '}';
 methmain: 'main' '{' vars instrs '}';
-params:   param ',' params
-        | param
-        | ;//(param (',' param)*)? ;
+params:   (param (',' param)*)? ;
 param:    type ident;
-instrs:   instr ';' instrs
-        | ;//(instr ';')* ;
+instrs:   (instr ';')* ;
 instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp #Assignment
         | ident1 op=('++'|'--') #Increment
-        | ident1 '(' listexp ')'
+        | ident1 '(' listexp ')' #CallI
         | 'return' exp #Return
-        | 'write' '(' (ident1 | STRING? ) ')'
-        | 'writeln' '(' (ident1 | STRING? ) ')'
-        | 'if' '('exp')''{'instrs'}'('else''{'instrs'}')
-        | 'while' '('exp')''{'instrs'}'
-        |;
+        | 'write' '(' (ident1 | STRING? ) ')' #Write
+        | 'writeln' '(' (ident1 | STRING? ) ')' #Writeln
+        | 'if' '('exp')' '{'instrs'}' ('else' '{' instrs '}')? #If
+        | 'while' '('exp')''{'instrs'}' #While
+        |	#Void
+        ;
+listexp : exp ',' listexp
+        | exp
+        |
+        ;
 exp:      '!'exp1
         | exp op=('&&'|'||')exp1
-        | exp1;
-
-typemeth: 'void'
-        | type;
-type:     'int' | 'boolean';
+        | exp1
+        ;
 exp1:    exp1 op=('=='|'!='|'<'|'>'|'<='|'>=') exp2
-        | exp2;
+        | exp2
+        ;
 exp2:    exp2 op=('+'|'-') term
-        | term;
+        | term
+        ;
 term:    term op=('*'|'/'|'%') fact
-        | fact;
+        | fact
+        ;
+fact:		 ident1
+        | ident '(' listexp ')'
+        | 'length' '(' ident ')'
+        | BOOLEAN
+        | NUMBER
+        ;
+ident1:   ident
+        | ident '[' exp ']'
+        ;
+typemeth: 'void'
+        | type
+        ;
+type:     'int' | 'boolean';
 
 // ident1:  IDENT ('[' exp ']')* ; // to handle array access in
 
