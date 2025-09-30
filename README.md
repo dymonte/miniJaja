@@ -94,7 +94,7 @@ Avant d’exécuter le projet, assurez-vous d’avoir installé :
 
 ## Rapport
 
-Le rapport du projet est réalisé en Latex.
+Le rapport du projet est réalisé en **Latex**.
 
 Pour le compiler :
 
@@ -102,3 +102,7 @@ Pour le compiler :
 cd report
 pdflatex -output-directory=build report.tex
 ```
+
+Le PDF se trouvera ensuite dans le dossier `/build`.
+
+Avant de faire un commit, vérifier que tous les **fichiers générés** ne sont pas dedans, dans le cas contraire, les rajouter dans le `.gitignore`.
