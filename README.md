@@ -10,7 +10,10 @@
     - [Architecture du projet](#architecture-du-projet)
     - [Prérequis](#prérequis)
     - [Installation](#installation)
+    - [Git](#git)
   - [Rapport](#rapport)
+    - [Compilation du PDF](#compilation-du-pdf)
+    - [Suppression des fichiers générés](#suppression-des-fichiers-générés)
 
 ---
 
@@ -92,17 +95,49 @@ Avant d’exécuter le projet, assurez-vous d’avoir installé :
     mvn clean javafx:run
     ```
 
+### Git
+
+Afin de réaliser un travail **propre**, voici quelque remarque sur le fonctionnement du dépot git :
+
+- Le dépôt est coupé en branches, avec une branche par partie à développer. Il est important de vérifier d'être sur la bonne branche avant de coder :
+  
+  ```bash
+  git branch -a
+  git checkout <my_branch>
+  ```
+
+- On créer des commits **clair et précis** en suivant les Conventions Git (feature, refactor...), voir [conventional commit specification](https://www.conventionalcommits.org/) :
+
+  ```bash
+  git status
+  git add <mon_fichier>
+  git commit -m "feat(my_branch): add information on my commit"
+  git push
+  ```
+
+- Pour éviter de commiter les fichiers temporaires (.aux, .log, etc),on fait un `$ git status` et on jette un œil au `.gitignore`.
+
 ## Rapport
 
 Le rapport du projet est réalisé en **Latex**.
+
+### Compilation du PDF
 
 Pour le compiler :
 
 ```bash
 cd report
-pdflatex -output-directory=build report.tex
+make
 ```
 
-Le PDF se trouvera ensuite dans le dossier `/build`.
+Le PDF se trouvera ensuite dans le dossier `/build` qui aura été créer.
 
-Avant de faire un commit, vérifier que tous les **fichiers générés** ne sont pas dedans, dans le cas contraire, les rajouter dans le `.gitignore`.
+⚠️ **Avant** de faire un commit, vérifier que tous les **fichiers générés sont bien ignorés**, dans le cas contraire, c'est surement que vous avez compiler via une extension VsCode ou via la commande `pdflatex`. ⚠️
+
+### Suppression des fichiers générés
+
+Pour supprimer localement les fichiers générés :
+
+```bash
+make clean
+```
