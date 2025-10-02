@@ -24,4 +24,26 @@
     <module>ast</module>
     <module>gui</module>
   </modules>
+  <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.5.0</version>
+            <configuration>
+                <doctitle>Projet AVM groupe2 API docs</doctitle>
+                <windowtitle>Projet AVM groupe2 API docs</windowtitle>
+                <useStandardDocletOptions>true</useStandardDocletOptions>
+                <source>17</source>
+                <encoding>UTF-8</encoding>
+                <failOnError>false</failOnError>
+                <quiet>true</quiet>
+                <show>protected</show>
+                <additionalJOptions>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                </additionalJOptions>
+            </configuration>
+        </plugin>
+    </plugins>
+  </build>
 </project>
