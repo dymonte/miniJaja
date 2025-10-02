@@ -1,7 +1,8 @@
 package org.groupe2.projetVMs;
 
+import org.groupe2.projetVMs.controller.AppController;
+
 import javafx.application.Application;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
@@ -12,10 +13,19 @@ import javafx.fxml.FXMLLoader;
  */
 public class App extends Application {
 
+    public static int DEFAULT_SCREEN_WIDTH = 900;
+    public static int DEFAULT_SCREEN_HEIGHT = 600;
+
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("App.fxml"));
-        Scene scene = new Scene(root);
+        AppState state = new AppState();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("App.fxml"));
+        Scene scene = new Scene(loader.load(), DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
+
+        AppController controller = loader.getController();
+        controller.bindState(state);
+
         stage.setScene(scene);
         stage.show();
     }
