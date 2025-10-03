@@ -11,7 +11,6 @@ variables:
   RUNNER: "avm_groupe2"
   SONAR_PROJECT_KEY: "AVM-GROUPE-2-2025"
   SONAR_PROJECT_NAME: "AVM-Groupe-2"
-  SONAR_PROJECT_URL: "https://disc.univ-fcomte.fr/cr700-sonarqube/dashboard?id=AVM-GROUPE-2-2025"
 
 cache:
   paths:
@@ -86,7 +85,7 @@ verify:
     - mvn jacoco:prepare-agent verify jacoco:report sonar:sonar
       -Dsonar.projectKey=$SONAR_PROJECT_KEY
       -Dsonar.projectName=$SONAR_PROJECT_NAME
-      -Dsonar.host.url=$SONAR_PROJECT_URL
+      -Dsonar.host.url=$SONAR_HOST_URL
       -Dsonar.token=$SONAR_TOKEN
   artifacts:
     paths:
