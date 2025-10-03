@@ -2,6 +2,7 @@ package org.groupe2.projetVMs.miniJaja.decl;
 
 import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 import org.groupe2.projetVMs.miniJaja.ast.expr.ASTIdent;
+import org.groupe2.projetVMs.miniJaja.type.ASTTypeMeth;
 
 /**
  * ASTMethod
@@ -46,6 +47,6 @@ public class ASTMethod extends ASTNode {
 	 */
 	@Override
 	public String toString() {
-		return "" + typeMeth + ident + "(" + params + ") {\n" + vars + instrs + "}";
+		return "" + typeMeth + " " + ident + "(" + params + ") {\n" + vars + instrs + "}";
 	}
 }
