@@ -1,11 +1,11 @@
-package org.groupe2.projetVMs.miniJaja.type;
+package org.groupe2.projetVMs.miniJaja.ast.type;
 
 import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 
 /**
  * ASTIntType
  */
-public class ASTIntType extends ASTNode implements ASTType {
+public final class ASTIntType extends ASTNode implements ASTType, ASTTypeMeth {
 
 	public ASTIntType(int line, int column) {
 		super(line, column);

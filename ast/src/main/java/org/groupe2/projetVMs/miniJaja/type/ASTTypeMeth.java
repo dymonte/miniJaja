@@ -1,10 +1,8 @@
-package org.groupe2.projetVMs.miniJaja.type;
-
-import org.groupe2.projetVMs.miniJaja.decl.ASTType;
+package org.groupe2.projetVMs.miniJaja.ast.type;
 
 /**
  * ASTTypeMeth
  */
-sealed interface ASTTypeMeth permits ASTType, ASTVoidType {
+public sealed interface ASTTypeMeth permits ASTVoidType, ASTIntType, ASTBoolType {
 
 }

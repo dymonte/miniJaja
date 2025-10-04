@@ -1,7 +1,7 @@
-package org.groupe2.projetVMs.miniJaja.type;
+package org.groupe2.projetVMs.miniJaja.ast.type;
 
 /**
  * ASTType
  */
-sealed interface ASTType permits ASTIntType, ASTBoolType {
+public sealed interface ASTType permits ASTIntType, ASTBoolType {
 }

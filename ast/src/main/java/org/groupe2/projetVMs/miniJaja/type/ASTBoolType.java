@@ -1,11 +1,11 @@
-package org.groupe2.projetVMs.miniJaja.type;
+package org.groupe2.projetVMs.miniJaja.ast.type;
 
 import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 
 /**
  * ASTBoolType
  */
-public class ASTBoolType extends ASTNode implements ASTType {
+public final class ASTBoolType extends ASTNode implements ASTType, ASTTypeMeth {
 
 	public ASTBoolType(int line, int column) {
 		super(line, column);
