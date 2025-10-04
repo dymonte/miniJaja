@@ -2,6 +2,7 @@ package org.groupe2.projetVMs.miniJaja.ast.decl;
 
 import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 import org.groupe2.projetVMs.miniJaja.ast.instr.ASTInstrs;
+import org.groupe2.projetVMs.miniJaja.ast.vars.ASTVars;
 
 /**
  * Represents a the main method node in the Abstract Syntax Tree (AST)

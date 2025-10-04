@@ -1,25 +1,23 @@
-package org.groupe2.projetVMs.miniJaja.ast.decl;
+package org.groupe2.projetVMs.miniJaja.ast.vars;
 
-import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
+import org.groupe2.projetVMs.miniJaja.ast.var.ASTVar;
 
 /**
- * Represents a sequence of variable declarations in MiniJaja
- *
- * This class is recursive
+ * Represents a chain of variable declarations in MiniJaja
  */
-public class ASTVars extends ASTNode {
+public class ASTVarsChain extends ASTVars {
 	private ASTVar var;
 	private ASTVars vars;
 
 	/**
-	 * Constructs a new ASTVars node
+	 * Constructs a new ASTVarsChain node
 	 *
 	 * @param var the first variable declaration
 	 * @param vars the rest of the variable declarations
 	 * @param line the source code line of this node
 	 * @param column the source code column of this node
 	 */
-	public ASTVars(ASTVar var, ASTVars vars, int line, int column) {
+	public ASTVarsChain(ASTVar var, ASTVars vars, int line, int column) {
 		super(line, column);
 		this.var = var;
 		this.vars = vars;
