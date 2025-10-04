@@ -5,9 +5,9 @@ package org.groupe2.projetVMs.miniJaja.ast;
  *
  * Each ASTNode stores its position in the source code using a line and column number. This information is useful for semantic analysis, error reporting, and debugging
  */
-public class ASTNode {
-	private final int line;
-	private final int column;
+public abstract class ASTNode {
+	protected final int line;
+	protected final int column;
 
 	/**
 	 * Constructs a new AST node with the given source position
@@ -43,7 +43,5 @@ public class ASTNode {
 	 *
 	 * @return an empty string by default
 	 */
-	public String toString() {
-		return "";
-	}
+	public abstract String toString();
 }
