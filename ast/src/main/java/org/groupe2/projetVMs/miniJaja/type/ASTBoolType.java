@@ -13,6 +13,6 @@ public final class ASTBoolType extends ASTNode implements ASTType, ASTTypeMeth {
 
 	@Override
 	public String toString() {
-		return "bool";
+		return "boolean";
 	}
 }
