@@ -1,7 +1,7 @@
 package org.groupe2.projetVMs.miniJaja.ast.decl;
 
 import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
-import org.groupe2.projetVMs.miniJaja.ast.instr.ASTInstrs;
+import org.groupe2.projetVMs.miniJaja.ast.instrs.ASTInstrs;
 import org.groupe2.projetVMs.miniJaja.ast.vars.ASTVars;
 
 /**
