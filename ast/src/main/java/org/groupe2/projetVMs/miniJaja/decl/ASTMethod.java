@@ -4,6 +4,7 @@ import org.groupe2.projetVMs.miniJaja.ast.expr.ASTIdent;
 import org.groupe2.projetVMs.miniJaja.ast.type.ASTTypeMeth;
 import org.groupe2.projetVMs.miniJaja.ast.instrs.ASTInstrs;
 import org.groupe2.projetVMs.miniJaja.ast.vars.ASTVars;
+import org.groupe2.projetVMs.miniJaja.ast.params.ASTParams;
 
 /**
  * ASTMethod
