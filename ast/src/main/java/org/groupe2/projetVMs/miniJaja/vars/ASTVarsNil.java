@@ -1,9 +1,10 @@
 package org.groupe2.projetVMs.miniJaja.ast.vars;
 
+import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 /**
  * Represents an empty sequence of variable declarations in MiniJaja
  */
-public class ASTVarsNil extends ASTVars {
+public class ASTVarsNil extends ASTNode implements ASTVars {
 	/**
 	 * Constructs an empty variable declaration sequence
 	 *

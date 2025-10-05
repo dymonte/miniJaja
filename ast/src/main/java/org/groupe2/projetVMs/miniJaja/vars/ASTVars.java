@@ -1,19 +1,7 @@
 package org.groupe2.projetVMs.miniJaja.ast.vars;
 
-import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
-
 /**
- * Abstract base class for variable declaration sequences in MiniJaja
+ * Represents a sequence of variable declarations or an empty declaration
  */
-public abstract class ASTVars extends ASTNode {
-	
-	/**
-	 * Constructs a new ASTVars node
-	 *
-	 * @param line the line number of the vars declaration
-	 * @param column the column number of the vars declaration
-	 */
-	public ASTVars(int line, int column) {
-		super(line, column);
-	}
+public interface ASTVars {
 }

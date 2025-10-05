@@ -1,14 +1,12 @@
 package org.groupe2.projetVMs.miniJaja.ast.vars;
 
+import org.groupe2.projetVMs.miniJaja.ast.ASTChain;
 import org.groupe2.projetVMs.miniJaja.ast.var.ASTVar;
 
 /**
  * Represents a chain of variable declarations in MiniJaja
  */
-public class ASTVarsChain extends ASTVars {
-	private ASTVar var;
-	private ASTVars vars;
-
+public class ASTVarsChain extends ASTChain<ASTVar, ASTVars> implements ASTVars {
 	/**
 	 * Constructs a new ASTVarsChain node
 	 *
@@ -18,10 +16,8 @@ public class ASTVarsChain extends ASTVars {
 	 * @param column the source code column of this node
 	 */
 	public ASTVarsChain(ASTVar var, ASTVars vars, int line, int column) {
-		super(line, column);
-		this.var = var;
-		this.vars = vars;
-	}	
+		super(var, vars, line, column);
+	}
 
 	/**
 	 * Returns a string representation of the variable declarations in MiniJaja syntax
@@ -30,8 +26,6 @@ public class ASTVarsChain extends ASTVars {
 	 */
 	@Override
 	public String toString() {
-		return (var != null ? var : "") 
-				+ ";\n" 
-				+ (vars != null ? vars : "");
+		return toString(";");
 	}
 }
