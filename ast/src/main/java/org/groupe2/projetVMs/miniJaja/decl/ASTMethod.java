@@ -1,6 +1,5 @@
 package org.groupe2.projetVMs.miniJaja.ast.decl;
 
-import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 import org.groupe2.projetVMs.miniJaja.ast.expr.ASTIdent;
 import org.groupe2.projetVMs.miniJaja.ast.type.ASTTypeMeth;
 import org.groupe2.projetVMs.miniJaja.ast.instr.ASTInstrs;
@@ -9,7 +8,7 @@ import org.groupe2.projetVMs.miniJaja.ast.vars.ASTVars;
 /**
  * ASTMethod
  */
-public class ASTMethod extends ASTNode {
+public class ASTMethod extends ASTDecl {
 	private ASTTypeMeth typeMeth;
 	private ASTIdent ident;
 	private ASTParams params;

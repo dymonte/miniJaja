@@ -1,6 +1,6 @@
 package org.groupe2.projetVMs.miniJaja.ast.var;
 
-import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
+import org.groupe2.projetVMs.miniJaja.ast.decl.ASTDecl;
 import org.groupe2.projetVMs.miniJaja.ast.expr.ASTIdent;
 import org.groupe2.projetVMs.miniJaja.ast.expr.ASTExpr;
 import org.groupe2.projetVMs.miniJaja.ast.type.ASTTypeMeth;
@@ -8,7 +8,7 @@ import org.groupe2.projetVMs.miniJaja.ast.type.ASTTypeMeth;
 /**
  * Abstract base class for variable declarations in MiniJaja
  */
-public abstract class ASTVar extends ASTNode {
+public abstract class ASTVar extends ASTDecl {
 	protected ASTIdent ident;
 	protected ASTExpr expr;
 

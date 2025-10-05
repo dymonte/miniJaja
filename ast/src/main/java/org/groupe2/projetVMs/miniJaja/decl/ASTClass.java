@@ -2,6 +2,7 @@ package org.groupe2.projetVMs.miniJaja.ast.decl;
 
 import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 import org.groupe2.projetVMs.miniJaja.ast.expr.ASTIdent;
+import org.groupe2.projetVMs.miniJaja.ast.decls.ASTDecls;
 
 /**
  * Represents a class declaration node in the Abstract Syntax Tree (AST)
