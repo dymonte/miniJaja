@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>projet-VMs</artifactId>
-    <groupId>org.groupe2.projetVMs</groupId>
+    <groupId>fr.umlp.m1info.projectVMs.group2</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.groupe2.projetVMs</groupId>
+  <groupId>fr.umlp.m1info.projectVMs.group2</groupId>
   <artifactId>memory</artifactId>
   <version>1.0-SNAPSHOT</version>
 
@@ -42,6 +42,11 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
