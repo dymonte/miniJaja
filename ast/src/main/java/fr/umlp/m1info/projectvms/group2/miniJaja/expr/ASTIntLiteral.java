@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.expr;
 
 public class ASTIntLiteral extends ASTLiteral {
 	private final int value;

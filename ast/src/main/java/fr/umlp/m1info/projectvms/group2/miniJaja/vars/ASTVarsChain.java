@@ -1,7 +1,7 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.vars;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.vars;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTChain;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.var.ASTVar;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 
 /**
  * Represents a chain of variable declarations in MiniJaja

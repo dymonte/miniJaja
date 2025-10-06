@@ -1,11 +1,11 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr.*;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.instr.*;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.type.*;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.var.*;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.vars.*;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 
 import org.junit.Test;
 import org.junit.Assert;

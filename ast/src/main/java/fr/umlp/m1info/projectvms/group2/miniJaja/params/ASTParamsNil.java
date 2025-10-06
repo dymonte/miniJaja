@@ -1,6 +1,6 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.params;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.params;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 /**
  * Represents an empty sequence of parameter declarations in MiniJaja
  */

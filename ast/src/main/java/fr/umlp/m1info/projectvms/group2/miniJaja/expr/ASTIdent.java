@@ -1,6 +1,6 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.expr;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
 /**
  * Represents an identifier node in the Abstract Syntax Tree (AST)

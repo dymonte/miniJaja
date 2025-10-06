@@ -1,8 +1,8 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.decl;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decls.ASTDecls;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDecls;
 
 /**
  * Represents a class declaration node in the Abstract Syntax Tree (AST)

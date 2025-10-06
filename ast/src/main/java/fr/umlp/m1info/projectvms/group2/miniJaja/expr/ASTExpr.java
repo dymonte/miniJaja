@@ -1,7 +1,7 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.expr;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.exprs.ASTExprs;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprs;
 
 public abstract class ASTExpr extends ASTNode implements ASTExprs {
 	public ASTExpr(int line, int column) {

@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja;
 
 /**
  * Abstract base class representing a recursive chain in the AST (Abstract

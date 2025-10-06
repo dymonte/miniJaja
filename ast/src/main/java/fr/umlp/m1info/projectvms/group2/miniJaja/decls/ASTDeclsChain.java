@@ -1,7 +1,7 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.decls;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.decls;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTChain;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl.ASTDecl;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTDecl;
 
 /**
  * Represents a chain of declarations in MiniJaja

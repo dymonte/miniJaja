@@ -1,6 +1,6 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.type;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.type;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
 /**
  * ASTIntType

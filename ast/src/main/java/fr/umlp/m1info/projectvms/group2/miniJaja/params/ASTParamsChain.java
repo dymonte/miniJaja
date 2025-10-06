@@ -1,7 +1,7 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.params;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.params;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTChain;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl.ASTParam;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 
 /**
  * Represents a chain of parameter in MiniJaja

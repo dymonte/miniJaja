@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja;
 
 /**
  * Base class for all nodes in the Abstract Syntax Tree (AST)

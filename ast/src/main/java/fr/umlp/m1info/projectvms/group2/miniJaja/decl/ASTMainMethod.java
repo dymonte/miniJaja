@@ -1,8 +1,8 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.decl;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.instrs.ASTInstrs;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.vars.ASTVars;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrs;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVars;
 
 /**
  * Represents a the main method node in the Abstract Syntax Tree (AST)

@@ -1,6 +1,6 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.decl;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
 /**
  * Abstract base class representing a declaration in the MiniJaja AST

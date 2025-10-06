@@ -1,7 +1,7 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.instrs;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTChain;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.instr.ASTInstr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTInstr;
 
 /**
  * Represents a chain of instructions in MiniJaja

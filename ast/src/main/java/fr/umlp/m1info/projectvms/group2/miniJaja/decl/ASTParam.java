@@ -1,9 +1,9 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.decl;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.params.ASTParams;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.type.ASTType;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr.ASTIdent;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTType;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 
 public class ASTParam extends ASTNode implements ASTParams {
 	private ASTType type;

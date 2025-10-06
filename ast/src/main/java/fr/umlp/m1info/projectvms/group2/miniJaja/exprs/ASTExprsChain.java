@@ -1,7 +1,7 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.exprs;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTChain;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr.ASTExpr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 
 /**
  * Represents a chain of expressions in MiniJaja

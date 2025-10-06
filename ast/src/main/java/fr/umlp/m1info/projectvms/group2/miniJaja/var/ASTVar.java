@@ -1,9 +1,9 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.var;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.var;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl.ASTDecl;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr.ASTExpr;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.type.ASTTypeMeth;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTDecl;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
 
 /**
  * Abstract base class for variable declarations in MiniJaja

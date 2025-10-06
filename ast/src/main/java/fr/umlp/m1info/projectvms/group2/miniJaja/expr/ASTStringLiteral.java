@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.expr;
 
 public class ASTStringLiteral extends ASTLiteral {
 	private String value;

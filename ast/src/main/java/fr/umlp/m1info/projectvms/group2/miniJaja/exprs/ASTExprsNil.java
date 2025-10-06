@@ -1,7 +1,6 @@
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs;
 
-package fr.umlp.m1info.projectvms.group2.miniJaja.ast.exprs;
-
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
 /**
  * Represents an empty sequence of expression in MiniJaja
