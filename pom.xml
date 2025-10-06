@@ -25,5 +25,6 @@
     <module>antlr</module>
     <module>ast</module>
     <module>gui</module>
+    <module>memory</module>
   </modules>
 </project>
