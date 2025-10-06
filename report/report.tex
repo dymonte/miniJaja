@@ -1,0 +1,160 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%   Template report - CUINET Antoine   %%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,a4paper, french]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french,english]{babel}
+\usepackage{xcolor}
+\usepackage{blindtext}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{fourier}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb,amsthm,delarray,indentfirst,numprint,manfnt}
+\usepackage{soulutf8}
+\usepackage{eurosym}
+\usepackage{datatool}
+\usepackage{fontawesome5}
+\usepackage{nopageno}
+\usepackage{soul, lettrine}
+\usepackage{ipa,indentfirst,epic,ecltree}
+\usepackage{graphicx}
+\usepackage{floatrow}
+\usepackage{caption}
+\usepackage{wrapfig}
+\usepackage[most]{tcolorbox}
+\usepackage[rightcaption]{sidecap}
+\usepackage{geometry}
+\usepackage{wrapfig}
+\usepackage{moreverb}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{authblk}
+\usepackage{wasysym}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{lipsum}
+\usepackage{tikz}
+\usepackage{pgf}
+\usepackage[linesnumbered,algosection]{algorithm2e}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{lmodern,eso-pic,fullpage}  
+\usepackage{stackengine,scalerel}
+\usepackage[colorlinks=true,
+            urlcolor=black,
+            linkcolor=black,
+            breaklinks=true
+            citecolor= black,
+            plainpages=false
+            ]{hyperref}
+\usepackage[bottom]{footmisc}
+\counterwithin*{footnote}{section}
+\frenchbsetup{AutoSpaceFootnotes,FrenchFootnotes}
+\newlength{\savedparindent}
+\setlength{\savedparindent}{\parindent}
+\newcommand{\restoreparindent}{\setlength{\parindent}{\savedparindent}}
+
+\addto\captionsfrench{%
+  \renewcommand{\listfigurename}{Liste des figures}%
+  \renewcommand{\bibname}{Bibliographie}
+}
+\counterwithin*{footnote}{section}
+\setcounter{secnumdepth}{3}
+\titleformat{\chapter}[hang]
+  {\huge\bfseries}
+  {\thechapter}{1em}
+  {}
+
+\newcommand{\sortitem}[2][]{%
+  \DTLnewrow{list}%
+  \DTLnewdbentry{list}{description}{\textbf{#1~:\xspace}\xspace#2}%
+  }
+\newenvironment{sortedlist}{%
+  \DTLifdbexists{list}{\DTLcleardb{list}}{\DTLnewdb{list}}%
+  }%
+  {%
+  \DTLsort{description}{list}
+  \begin{description}[labelindent=-0.5em]%
+    \DTLforeach*{list}{\theDesc=description}{%
+    \item\theDesc}%
+  \end{description}}
+
+\renewcommand\thechapter{\Roman{chapter}}
+\renewcommand\thesection{\Alph{section}}
+\renewcommand\thesubsection{\thesection\,-\,\arabic{subsection}}
+\interfootnotelinepenalty=150
+\widowpenalty=150
+\clubpenalty=150
+
+\newcommand\AtUpperLeftCorner[3]{\put(\LenToUnit{#1},\LenToUnit{\dimexpr\paperheight-#2}){\blap{#3}}}
+\newcommand\AtTopCenterPage[2]{\put(\LenToUnit{.5\paperwidth},\LenToUnit{\dimexpr\paperheight-#1}){\blap{\hbox to 0pt{\hss#2\hss}}}}
+\newcommand\AtUpperRightCorner[3]{\put(\LenToUnit{\dimexpr\paperwidth-#1},\LenToUnit{\dimexpr\paperheight-#2}){\blap{\llap{#3}}}}
+\lstset{basicstyle=\ttfamily, mathescape=true}
+\pagenumbering{arabic}
+\setlength{\headheight}{25.33461pt}
+\fancyfoot[R]{\leftmark}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancyfoot[C]{\textbf{page \thepage~sur~\pageref{LastPage}}}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\frule}[1][\textwidth]{\rule{#1}{0.4mm}}
+\newcommand{\maj}[1]{\uppercase{#1}}
+\newcommand{\g}[1]{\og#1 \fg} 
+\newcommand{\blap}[1]{\vbox to 0pt{#1\vss}}
+
+\title{\huge{Rapport de projet de développement}\\ [0,7cm]
+       \huge{agile de machines virtuelles}
+      }
+
+\newcommand{\anneeUniversitaire}{\Large{De septembre à décembre 2025}}
+
+\fancypagestyle{plain}{
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.5pt}
+}
+\pagestyle{fancy}
+  \fancyhead[L]{}
+  \fancyhead[R]{\textbf{RAPPORT}\\
+~}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyfoot[L]{M1 Informatique}
+
+%%% Begin document
+\begin{document}%
+\selectlanguage{french}
+\hypersetup{pdfborder=0 0 0}
+
+\input{assets/cover}
+
+\cleardoublepage%
+\phantomsection%
+\small%
+\renewcommand{\contentsname}{Sommaire}%
+\tableofcontents%
+\normalsize%
+
+\cleardoublepage%
+\phantomsection% 
+\large%
+\listoffigures%
+
+\input{assets/introduction}%
+
+\input{assets/chapter-1}%
+% \input{assets/chapter-2}%
+% \input{assets/chapter-3}%
+% \input{assets/chapter-4}%
+% \input{assets/chapter-5}%
+
+\input{assets/conclusion}%
+
+% \input{assets/annexes}%
+
+% \input{assets/bibliographie}%
+
+% \input{assets/4eme-de-couverture}%
+
+\end{document}

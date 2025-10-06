@@ -10,10 +10,15 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
+# ANTLR 
+.antlr
+
 # Eclipse m2e generated files
 # Eclipse Core
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 .DS_Store
-.antlr
+
+# Latex report
+report/build/
