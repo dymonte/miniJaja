@@ -2,7 +2,7 @@ package org.groupe2.projetVMs.miniJaja.visitor;
 
 import org.groupe2.projetVMs.miniJaja.ast.ASTNode;
 import org.groupe2.projetVMs.miniJaja.ast.decl.ASTClass;
-import org.groupe2.projetVMs.miniJaja.ast.decl.ASTDecls;
+import org.groupe2.projetVMs.miniJaja.ast.decls.ASTDecls;
 import org.groupe2.projetVMs.miniJaja.ast.decl.ASTMainMethod;
 import org.groupe2.projetVMs.miniJaja.ast.expr.ASTIdent;
 
