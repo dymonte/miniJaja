@@ -30,7 +30,7 @@ public class AppController implements StatefulController {
     private File chooseFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Code File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("miniJaja codes", "*.mjj")); //TODO: mettre la bonne extension de fichier
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("miniJaja codes", "*.mjj"));
         return fileChooser.showOpenDialog(null);
     }
 
@@ -45,8 +45,7 @@ public class AppController implements StatefulController {
                     // Optionally update code content in state
                     state.codeProperty().set(content);
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
