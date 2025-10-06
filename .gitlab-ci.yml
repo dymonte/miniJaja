@@ -37,7 +37,6 @@ build:
 
 build-report:
   stage: build
-  when: manual
   tags:
     - $RUNNER
   before_script:
@@ -87,11 +86,6 @@ verify:
       -Dsonar.projectName=$SONAR_PROJECT_NAME
       -Dsonar.host.url=$SONAR_HOST_URL
       -Dsonar.token=$SONAR_TOKEN
-  artifacts:
-    paths:
-      - target/site/jacoco
-    expire_in: 1 hour
-  coverage: '/Total.*?([0-9]{1,3})%/'
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
@@ -109,7 +103,7 @@ deploy:
     - mvn deploy -DskipTests
   rules:
     - if: $CI_COMMIT_TAG
-    - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'
 
 release:prepare:
   stage: release

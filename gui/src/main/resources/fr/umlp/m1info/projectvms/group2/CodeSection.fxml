@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+
+<SplitPane dividerPositions="0.75"
+orientation="VERTICAL"
+prefHeight="200.0" prefWidth="160.0"
+xmlns="http://javafx.com/javafx/21.0.8"
+xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="fr.umlp.m1info.projectvms.group2.controller.CodeSectionController">
+              <items>
+                  <TextArea fx:id="codeArea" prefHeight="200.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="265.0" prefWidth="280.0">
+                     <children>
+                        <Label alignment="CENTER" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Execution" textAlignment="CENTER" wrapText="false">
+                           <font>
+                              <Font size="18.0" fx:id="x11" />
+                           </font>
+                           <textFill>
+                              <Color red="0.624" green="0.624" blue="0.624" fx:id="x21" />
+                           </textFill>
+                        </Label>
+                     </children></AnchorPane>
+              </items>
+            </SplitPane>
