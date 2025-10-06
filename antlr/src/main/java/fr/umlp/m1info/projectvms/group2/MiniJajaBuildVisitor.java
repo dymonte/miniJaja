@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja.visitor;
+package fr.umlp.m1info.projectvms.group2.antlr.miniJaja.visitor;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
