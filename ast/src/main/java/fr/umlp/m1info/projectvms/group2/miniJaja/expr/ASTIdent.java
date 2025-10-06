@@ -1,7 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.expr;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-
 /**
  * Represents an identifier node in the Abstract Syntax Tree (AST)
  *
@@ -10,7 +8,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
  * identifier's textual and its source position (line and column) for error
  * reporting and debugging
  */
-public class ASTIdent extends ASTNode {
+public class ASTIdent extends ASTExpr {
 	private String name;
 
 	/**
