@@ -1,10 +1,10 @@
 package fr.umlp.m1info.projectvms.group2.miniJaja.visitor;
 
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.ASTNode;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl.ASTClass;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decls.ASTDecls;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.decl.ASTMainMethod;
-import fr.umlp.m1info.projectvms.group2.miniJaja.ast.expr.ASTIdent;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDecls;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 
 import fr.umlp.m1info.projectvms.group2.parser.MiniJajaBaseVisitor;
 import fr.umlp.m1info.projectvms.group2.parser.MiniJajaParser.ClassContext;
