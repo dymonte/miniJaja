@@ -8,7 +8,7 @@ package fr.umlp.m1info.projectvms.group2.ast.minijaja.expr;
  * identifier's textual and its source position (line and column) for error
  * reporting and debugging
  */
-public class ASTIdent extends ASTExpr {
+public class ASTIdent extends ASTLValue {
 	private String name;
 
 	/**

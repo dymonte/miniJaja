@@ -1,28 +1,28 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.instr;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
 
 /**
  * Represents a write instruction in the MiniJaja AST
  */
 public class ASTWrite extends ASTInstr {
-	private ASTIdent ident;
+	private ASTLValue lvalue;
 	private ASTStringLiteral literal;
 	private boolean isLn;
 
 	/**
 	 * Constructs a write instruction printing a varaible
 	 *
-	 * @param ident the variable reference to write
+	 * @param lvalue the variable reference to write
 	 * @param literal the string to write
 	 * @param isLn true to append a newline (writeln), false for write
 	 * @param line the source code line
 	 * @param column the source code column
 	 */
-	private ASTWrite(ASTIdent ident, ASTStringLiteral literal, boolean isLn, int line, int column) {
+	private ASTWrite(ASTLValue lvalue, ASTStringLiteral literal, boolean isLn, int line, int column) {
 		super(line, column);
-		this.ident = ident;
+		this.lvalue = lvalue;
 		this.literal = literal;
 		this.isLn = isLn;
 	}
@@ -30,13 +30,13 @@ public class ASTWrite extends ASTInstr {
 	/**
 	 * Constructs a write instruction printing a variable
 	 *
-	 * @param ident the variable reference to write
+	 * @param lvalue the variable reference to write
 	 * @param isLn true to append a newline (writeln), false for write
 	 * @param line the source code line
 	 * @param column the source code column
 	 */
-	public ASTWrite(ASTIdent ident, boolean isLn, int line, int column) {
-		this(ident, null, isLn, line, column);
+	public ASTWrite(ASTLValue lvalue, boolean isLn, int line, int column) {
+		this(lvalue, null, isLn, line, column);
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class ASTWrite extends ASTInstr {
 	 * @param a formatted string
 	 */
 	public String toString() {
-		String content = (ident != null ? ident.toString() : "\"" + literal + "\"");
+		String content = (lvalue != null ? lvalue.toString() : "\"" + literal + "\"");
 		return (isLn ? "writeln(" : "write(") + content + ")";
 	}
 }

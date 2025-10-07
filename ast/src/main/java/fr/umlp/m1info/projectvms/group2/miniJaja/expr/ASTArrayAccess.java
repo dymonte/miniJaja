@@ -4,7 +4,7 @@ package fr.umlp.m1info.projectvms.group2.ast.minijaja.expr;
  * Represents an array expression in the Abstract Syntax Tree (AST)
  *
  */
-public class ASTArrayAccess extends ASTExpr {
+public class ASTArrayAccess extends ASTLValue {
 	private ASTIdent ident;
 	private ASTExpr expr;
 
