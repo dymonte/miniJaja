@@ -24,7 +24,7 @@ param:    type ident;
 instrs:   (instr ';')* ;
 instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp              #Assignment
         | ident1 op=('++'|'--')                                #Increment
-        | ident1 '(' listexp ')'                               #CallI
+        | ident '(' listexp ')'                                #CallI
         | 'return' exp                                         #Return
         | 'write' '(' (ident1 | '"'STRING?'"' ) ')'                  #Write
         | 'writeln' '(' (ident1 | '"'STRING?'"' ) ')'                #Writeln
