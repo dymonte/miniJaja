@@ -29,23 +29,4 @@ public class ASTUnaryOp extends ASTExpr {
 	public String toString() {
 		return op + " " + expr;
 	}
-
-	/**
-	 * Enum representing all supported unary operators in MiniJaja
-	 */
-	public enum UnaryOp {
-		NOT("!"),
-		NEG("-");
-
-		private final String symbol;
-
-		UnaryOp(String symbol) {
-			this.symbol = symbol;
-		}
-
-		@Override
-		public String toString() {
-			return symbol;
-		}
-	}
 }

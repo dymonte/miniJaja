@@ -31,31 +31,5 @@ public class ASTBinaryOp extends ASTExpr {
 	 */
 	public String toString() {
 		return "" + left + " " + op + " " + right;
-	}
-
-	/**
-	 * Enum representing all supported binary operators in MiniJaja
-	 */
-	public enum BinaryOp {
-		ADD("+"),
-		SUB("-"),
-		MUL("*"),
-		DIV("/"),
-		AND("&&"),
-		OR("||"),
-		EQ("=="),
-		GT(">"),
-		LT("<");
-
-		private final String symbol;
-
-		BinaryOp(String symbol) {
-			this.symbol = symbol;
-		}
-
-		@Override
-		public String toString() {
-			return symbol;
-		}
-	}
+	}	
 }
