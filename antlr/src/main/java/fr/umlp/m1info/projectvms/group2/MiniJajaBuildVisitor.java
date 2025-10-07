@@ -37,7 +37,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 * @return an ASTClass node containing the class name, its declarations, the main method, and the source position
 	 */
 	@Override
-	public ASTClass visitClass(MiniJajaParser.ClassContext ctx) {
+	public ASTClass visitProg(MiniJajaParser.ProgContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTDecls decls = (ASTDecls) visit(ctx.decls());
 		ASTMainMethod main = (ASTMainMethod) visit(ctx.methmain());
