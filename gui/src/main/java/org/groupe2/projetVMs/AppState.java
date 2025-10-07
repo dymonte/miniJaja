@@ -24,6 +24,15 @@ public class AppState {
     public Optional<File> getOpenedFile() { return openedFile; }
     public void setOpenedFile(File file) { openedFile = Optional.of(file); }
 
+    public Optional<File> getWorkspaceDir() { return workspaceDir; }
+    public void setWorkspaceDir(File file) { this.workspaceDir = Optional.of(file); }
+
+    public Optional<File[]> getWorkspaceFiles() { return workspaceFiles; }
+    public void setWorkspaceFiles(File[] files) { this.workspaceFiles = Optional.of(files); }
+
+
+
+
     public StringProperty codeProperty() {
         return code;
     }

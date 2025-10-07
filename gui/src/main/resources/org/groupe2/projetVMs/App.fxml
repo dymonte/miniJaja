@@ -46,6 +46,8 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
+
+
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.groupe2.projetVMs.controller.AppController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
@@ -53,11 +55,12 @@
         <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem mnemonicParsing="false" text="New" />
-            <MenuItem mnemonicParsing="false" text="Open…" onAction="#openFile"/>
+            <MenuItem mnemonicParsing="false" text="Open File" onAction="#openFile"/>
+          <MenuItem mnemonicParsing="false" text="Open Folder" onAction="#openFolder"/>
             <Menu mnemonicParsing="false" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Close" />
-            <MenuItem mnemonicParsing="false" text="Save" />
+            <MenuItem mnemonicParsing="false" text="Save" onAction="#saveFile" accelerator="Shortcut+S" />
             <MenuItem mnemonicParsing="false" text="Save As…" />
             <MenuItem mnemonicParsing="false" text="Revert" />
             <SeparatorMenuItem mnemonicParsing="false" />
@@ -66,6 +69,7 @@
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
+
         <Menu mnemonicParsing="false" text="Edit">
           <items>
             <MenuItem mnemonicParsing="false" text="Undo" />
@@ -102,20 +106,23 @@
       <items>
         <AnchorPane prefHeight="551.0" prefWidth="294.0">
           <children>
-            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="FileTree" textAlignment="CENTER" wrapText="false">
-              <font>
-                <Font size="18.0" fx:id="x1" />
-              </font>
-              <textFill>
-                <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-              </textFill>
-            </Label>
+              <VBox fx:id="fileTree">
+                  <children>
+                  </children>
+              </VBox>
           </children>
         </AnchorPane>
           <fx:include fx:id="codeSection" source="CodeSection.fxml" />
         <AnchorPane prefHeight="551.0" prefWidth="177.0">
           <children>
-            <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Debug" textAlignment="CENTER" textFill="$x2" wrapText="false" />
+            <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Debug" textAlignment="CENTER" textFill="$x2" wrapText="false">
+                <font>
+                    <Font size="18.0" fx:id="x1" />
+                </font>
+                <textFill>
+                    <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
+                </textFill>
+            </Label>
           </children>
         </AnchorPane>
       </items>
