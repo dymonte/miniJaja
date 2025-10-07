@@ -533,7 +533,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTBoolLiteral visitBool(MiniJajaParser.BoolContext ctx) {
-		return new ASTBoolLiteral((ctx.getText() == "true" ? true : false), VisitorUtils.line(ctx), VisitorUtils.column(ctx)); 
+		return new ASTBoolLiteral((ctx.getText() == "true" ? true : false), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
@@ -542,7 +542,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override 
+	@Override
 	public ASTIntLiteral visitInt(MiniJajaParser.IntContext ctx) {
 		return new ASTIntLiteral(Integer.parseInt(ctx.getText()), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
@@ -613,8 +613,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override
-	public ASTIntType visitIntType(MiniJajaParser.IntTypeContext ctx) { 	
-		return new ASTIntType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)); 
+	public ASTIntType visitIntType(MiniJajaParser.IntTypeContext ctx) {
+		return new ASTIntType(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
@@ -624,7 +624,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override
-	public ASTBoolType visitBoolType(MiniJajaParser.BoolTypeContext ctx) { 
+	public ASTBoolType visitBoolType(MiniJajaParser.BoolTypeContext ctx) {
 		return new ASTBoolType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)); 
 	}
 }
