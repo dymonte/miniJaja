@@ -29,6 +29,6 @@ public class ASTInstrsChain extends ASTInstrs {
 	 */
 	@Override
 	public String toString() {
-		return chain.toString(";");
+		return chain.toString(";\n");
 	}
 }

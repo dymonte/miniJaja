@@ -9,7 +9,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
  */
 public class ASTVarArray extends ASTVar {
 	private ASTTypeMeth type;
-
+	private ASTExpr expr;
 	/**
 	 * Constructs an array variable declaration
 	 *
@@ -20,8 +20,9 @@ public class ASTVarArray extends ASTVar {
 	 * @param column the column number of the array declaration
 	 */
 	public ASTVarArray(ASTTypeMeth type, ASTIdent ident, ASTExpr expr, int line, int column) {
-		super(ident, expr, line, column);
+		super(ident, line, column);
 		this.type = type;
+		this.expr = expr;
 	}
 
 	/**

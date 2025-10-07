@@ -69,7 +69,7 @@ type:     'int'      #IntType
 // LEXER
 //==============================================
 fragment DIGIT:    [0-9];
-fragment NUMBER:   DIGIT+;
+NUMBER:   DIGIT+;
 fragment LETTER:   [a-zA-Z];
 fragment TRUE:     'true';
 fragment FALSE:    'false';

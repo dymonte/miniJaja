@@ -44,6 +44,6 @@ public class Chain<L, R> {
 	 * @return a string representation of the chain node
 	 */
 	public String toString(String delimiter) {
-		return (left != null ? left : "") + delimiter + " " + (right != null ? right : "");
+		return (left != null ? left : "") + delimiter + (right != null ? right : "");
 	}
 }
