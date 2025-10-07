@@ -1,22 +1,25 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 
 /**
  * Represents a chain of expressions in MiniJaja
  */
-public class ASTExprsChain extends ASTChain<ASTExpr, ASTExprs> implements ASTExprs {
+public class ASTExprsChain extends ASTExprs {
+	private Chain<ASTExpr, ASTExprs> chain;
+
 	/**
 	 * Constructs a new ASTExprChain node
 	 *
-	 * @param var    the first expression
-	 * @param vars   the rest of the expressions
+	 * @param expr    the first expression
+	 * @param exprs   the rest of the expressions
 	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
 	 */
 	public ASTExprsChain(ASTExpr expr, ASTExprs exprs, int line, int column) {
-		super(expr, exprs, line, column);
+		super(line, column);
+		chain = new Chain(expr, exprs);
 	}
 
 	/**
@@ -26,6 +29,6 @@ public class ASTExprsChain extends ASTChain<ASTExpr, ASTExprs> implements ASTExp
 	 */
 	@Override
 	public String toString() {
-		return toString(",");
+		return chain.toString(",");
 	}
 }

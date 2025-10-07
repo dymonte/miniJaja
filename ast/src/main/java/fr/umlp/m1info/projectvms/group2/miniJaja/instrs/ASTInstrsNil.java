@@ -1,11 +1,9 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-
 /**
  * Represents an empty sequence of variable declarations in MiniJaja
  */
-public class ASTInstrsNil extends ASTNode implements ASTInstrs {
+public class ASTInstrsNil extends ASTInstrs {
 	/**
 	 * Constructs an empty instruction sequence
 	 *

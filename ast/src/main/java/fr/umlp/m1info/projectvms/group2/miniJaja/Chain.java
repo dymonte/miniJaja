@@ -1,23 +1,19 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja;
 
 /**
- * Abstract base class representing a recursive chain in the AST (Abstract
- * Syntax Tree)
+ * Class representing a recursive chain in the AST (Abstract Syntax Tree)
  */
-public abstract class ASTChain<L, R> extends ASTNode {
-	protected final L left;
-	protected final R right;
+public class Chain<L, R> {
+	private L left;
+	private R right;
 
 	/**
-	 * Constructs a new ASTChain node
+	 * Constructs a new Chain node
 	 *
 	 * @param left   the left element of the chain
 	 * @param right  the right element of the chain
-	 * @param line   the line number of the node appears
-	 * @param column the column of the node appears
 	 */
-	public ASTChain(L left, R right, int line, int column) {
-		super(line, column);
+	public Chain(L left, R right) {
 		this.left = left;
 		this.right = right;
 	}
@@ -48,8 +44,6 @@ public abstract class ASTChain<L, R> extends ASTNode {
 	 * @return a string representation of the chain node
 	 */
 	public String toString(String delimiter) {
-		return (left != null ? left : "")
-				+ delimiter + "\n"
-				+ (right != null ? right : "");
+		return (left != null ? left : "") + delimiter + " " + (right != null ? right : "");
 	}
 }

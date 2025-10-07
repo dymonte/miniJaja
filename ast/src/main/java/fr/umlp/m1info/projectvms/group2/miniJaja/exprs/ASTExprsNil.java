@@ -1,11 +1,9 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-
 /**
  * Represents an empty sequence of expression in MiniJaja
  */
-public class ASTExprsNil extends ASTNode implements ASTExprs {
+public class ASTExprsNil extends ASTExprs {
 	/**
 	 * Constructs an empty expressions sequence
 	 *

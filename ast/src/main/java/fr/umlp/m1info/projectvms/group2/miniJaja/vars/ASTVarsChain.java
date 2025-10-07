@@ -1,12 +1,14 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.vars;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 
 /**
  * Represents a chain of variable declarations in MiniJaja
  */
-public class ASTVarsChain extends ASTChain<ASTVar, ASTVars> implements ASTVars {
+public class ASTVarsChain extends ASTVars {
+	private Chain<ASTVar, ASTVars> chain;
+
 	/**
 	 * Constructs a new ASTVarsChain node
 	 *
@@ -16,7 +18,8 @@ public class ASTVarsChain extends ASTChain<ASTVar, ASTVars> implements ASTVars {
 	 * @param column the source code column of this node
 	 */
 	public ASTVarsChain(ASTVar var, ASTVars vars, int line, int column) {
-		super(var, vars, line, column);
+		super(line, column);
+		chain = new Chain(var, vars);
 	}
 
 	/**
@@ -27,6 +30,6 @@ public class ASTVarsChain extends ASTChain<ASTVar, ASTVars> implements ASTVars {
 	 */
 	@Override
 	public String toString() {
-		return toString(";");
+		return chain.toString(";");
 	}
 }

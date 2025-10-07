@@ -1,10 +1,9 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.decls;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 /**
  * Represents an empty sequence of declaration in MiniJaja
  */
-public class ASTDeclsNil extends ASTNode implements ASTDecls {
+public class ASTDeclsNil extends ASTDecls {
 	/**
 	 * Constructs an empty declaration sequence
 	 *

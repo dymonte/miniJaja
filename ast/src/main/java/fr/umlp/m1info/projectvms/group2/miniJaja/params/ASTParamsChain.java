@@ -1,12 +1,14 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.params;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 
 /**
  * Represents a chain of parameter in MiniJaja
  */
-public class ASTParamsChain extends ASTChain<ASTParam, ASTParams> implements ASTParams {
+public class ASTParamsChain extends ASTParams {
+	private Chain<ASTParam, ASTParams> chain;
+
 	/**
 	 * Constructs a new ASTParamsChain node
 	 *
@@ -16,7 +18,8 @@ public class ASTParamsChain extends ASTChain<ASTParam, ASTParams> implements AST
 	 * @param column the source code column of this node
 	 */
 	public ASTParamsChain(ASTParam param, ASTParams params, int line, int column) {
-		super(param, params, line, column);
+		super(line, column);
+		chain = new Chain(param, params);
 	}
 
 	/**
@@ -26,6 +29,6 @@ public class ASTParamsChain extends ASTChain<ASTParam, ASTParams> implements AST
 	 */
 	@Override
 	public String toString() {
-		return toString(",");
+		return chain.toString(",");
 	}
 }

@@ -1,11 +1,9 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.vars;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-
 /**
  * Represents an empty sequence of variable declarations in MiniJaja
  */
-public class ASTVarsNil extends ASTNode implements ASTVars {
+public class ASTVarsNil extends ASTVars {
 	/**
 	 * Constructs an empty variable declaration sequence
 	 *
