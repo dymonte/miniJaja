@@ -30,22 +30,4 @@ public class ASTIncrementOp extends ASTInstr {
 	public String toString() {
 		return lvalue + " " + op;
 	}
-
-	/**
-	 * Enum representing supported increment or decrement operators
-	 */
-	public enum IncrementOp {
-		INC("++");
-
-		private final String symbol;
-
-		IncrementOp(String symbol) {
-			this.symbol = symbol;
-		}
-
-		@Override
-		public String toString() {
-			return symbol;
-		}
-	}
 }
