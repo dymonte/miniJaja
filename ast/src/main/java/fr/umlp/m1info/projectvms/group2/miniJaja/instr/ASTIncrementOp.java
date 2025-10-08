@@ -28,6 +28,6 @@ public class ASTIncrementOp extends ASTInstr {
 	 * @return a formatted string
 	 */
 	public String toString() {
-		return lvalue + " " + op;
+		return "" + lvalue + op;
 	}
 }

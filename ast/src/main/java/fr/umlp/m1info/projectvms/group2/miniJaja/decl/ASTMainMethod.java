@@ -35,8 +35,8 @@ public class ASTMainMethod extends ASTNode {
 	@Override
 	public String toString() {
 		return "main " + "{\n"
-				+ (vars != null ? vars : "") + "\n"
-				+ (instrs != null ? instrs : "") + "\n"
-				+ "\n}";
+				+ (vars != null ? vars : "")
+				+ (instrs != null ? instrs : "")
+				+ "}";
 	}
 }

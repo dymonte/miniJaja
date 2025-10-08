@@ -27,6 +27,6 @@ public class ASTUnaryOp extends ASTExpr {
 	 * @return a formatted string
 	 */
 	public String toString() {
-		return op + " " + expr;
+		return "" + op + expr;
 	}
 }

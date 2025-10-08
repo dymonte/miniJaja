@@ -33,8 +33,8 @@ public class ASTVarConst extends ASTVar {
 	 */
 	@Override
 	public String toString() {
-		return "final" + (type != null ? type : "") + " "
-				+ (ident != null ? ident : "") + " "
-				+ (vexpr != null ? vexpr : "");
+		return "final " + (type != null ? type : "") + " "
+				+ (ident != null ? ident : "")
+				+ (vexpr != null ? (" " +vexpr) : "");
 	}
 }

@@ -34,7 +34,7 @@ public class ASTVarSimple extends ASTVar {
 	@Override
 	public String toString() {
 		return (type != null ? type : "") + " "
-				+ (ident != null ? ident : "") + " "
-				+ (vexpr != null ? vexpr : "");
+				+ (ident != null ? ident : "")
+				+ (vexpr != null ? (" " + vexpr) : "");
 	}
 }

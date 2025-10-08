@@ -31,6 +31,7 @@ public class ASTWhile extends ASTInstr {
 	 */
 	@Override
 	public String toString() {
-		return "while (" + expr + ") {\n" + instrs + "}\n";
+		return "while (" + expr + ") {\n" + instrs + "}";
+
 	}
 }

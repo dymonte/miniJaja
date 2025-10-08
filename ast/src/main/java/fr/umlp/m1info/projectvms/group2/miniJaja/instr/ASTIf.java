@@ -35,8 +35,8 @@ public class ASTIf extends ASTInstr {
 	@Override
 	public String toString() {
 		return "if (" + expr + ") {\n" +
-				ifInstrs + "\n}" + (elseInstrs != null ? " else {\n" +
-				elseInstrs + "\n}" : "");
+				ifInstrs + "}" + (elseInstrs != null ? " else {\n" +
+				elseInstrs + "}" : "");
 
 	}
 }

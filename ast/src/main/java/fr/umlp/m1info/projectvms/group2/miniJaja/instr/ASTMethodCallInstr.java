@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.instr;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprs;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 
 /**
@@ -8,20 +8,20 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
  */
 public class ASTMethodCallInstr extends ASTInstr {
 	private ASTIdent ident;
-	private ASTParams params;
+	private ASTExprs exprs;
 	
 	/**
 	 * Constructs a new ASTMethodCallInstr node
 	 *
 	 * @param ident the identifier of the method being called
-	 * @param params the list of parameters passed to the method
+	 * @param exprs the list of expressions passed to the method
 	 * @param line the source code line where this node appears
 	 * @param column the source code column where this node begins
 	 */
-	public ASTMethodCallInstr(ASTIdent ident, ASTParams params, int line, int column) {
+	public ASTMethodCallInstr(ASTIdent ident, ASTExprs exprs, int line, int column) {
 		super(line, column);
 		this.ident = ident;
-		this.params = params;
+		this.exprs = exprs;
 	}
 
 	/**
@@ -31,6 +31,6 @@ public class ASTMethodCallInstr extends ASTInstr {
 	 */
 	@Override
 	public String toString() {
-		return ident + "(" + params + ")";
+		return ident + "(" + exprs + ")";
 	}
 }
