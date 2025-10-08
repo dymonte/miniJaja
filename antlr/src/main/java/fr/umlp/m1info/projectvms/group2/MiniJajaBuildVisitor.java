@@ -274,8 +274,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTMethodCallInstr visitCallI(MiniJajaParser.CallIContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
-		ASTParams params = (ASTParams) visit(ctx.listexp());
-		return new ASTMethodCallInstr(ident, params, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		ASTExprs exprs = (ASTExprs) visit(ctx.listexp());
+		return new ASTMethodCallInstr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
@@ -510,8 +510,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTMethodCallExpr visitMethodCall(MiniJajaParser.MethodCallContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
-		ASTParams params = (ASTParams) visit(ctx.listexp());
-		return new ASTMethodCallExpr(ident, params, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		ASTExprs exprs = (ASTExprs) visit(ctx.listexp());
+		return new ASTMethodCallExpr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
