@@ -23,4 +23,20 @@ public class InstNode {
 		nextInstance = instNode;
 	}
 
+	/**
+	 * TODO: javadoc
+	 */
+	public InstNode getNextInStack() {
+		return nextInStack;
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public void swap() {
+		InstNode nextNext = nextInStack.nextInStack;
+		nextInStack.nextInStack = this;
+		nextInStack = nextNext;
+	}
+
 }

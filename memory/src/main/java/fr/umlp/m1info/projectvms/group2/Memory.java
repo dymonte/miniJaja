@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2;
 
 import fr.umlp.m1info.projectvms.group2.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.symtable.Type;
 
 import fr.umlp.m1info.projectvms.group2.stack.Stack;
 
@@ -13,27 +14,89 @@ public class Memory {
 	Stack stack;
 	Heap heap;
 
+	/*
+	 * NOTE: if <T> makes errors with the InstNode Object val, then replace <T> with
+	 * Object.
+	 */
+
+	/* stack Constructor methods */
+
 	/**
 	 * TODO: javadoc
 	 */
-	public boolean addMemState() {
+	public <T> void declVar(String ident, T value, Type sorte) {
 		// TODO: implement this
 		throw new UnsupportedOperationException();
 	}
-	/*
-	 * TODO: all those operations should be implement here
-	 * DeclVar : ID × VAL × SORTE × MEM → MEM
-	 * IdentVal : ID × SORTE × MEM × NAT → MEM
-	 * DeclCst : ID × VAL × SORTE × MEM → MEM
-	 * DeclTab : ID × VAL × SORTE × MEM → MEM
-	 * DeclMeth : ID × VAL × SORTE × MEM → MEM
-	 *
-	 * Afficher, AfficherLn : VAL × MEM → MEM
-	 * RetirerDecl : ID × MEM → MEM
-	 * AffecterVal : ID × VAL × MEM → MEM
-	 * AffecterValT : ID × VAL × VAL × MEM → MEM
-	 * AffecterType : ID × SORTE × MEM → MEM
-	 * ExpParam : VAL × VAL × MEM → MEM
+
+	/**
+	 * TODO: javadoc
 	 */
+	// TODO: understand identval (IdentVal : ID × SORTE × MEM × NAT → MEM)
+
+	/**
+	 * TODO: javadoc
+	 */
+	public void <T> void declCst(String ident, T value, Type sorte) {
+		//TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public void <T> void declArray(String ident, T value, Type sorte) {
+		//TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public void <T> void declMeth(String ident, T value, Type sorte) {
+		//TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/* Memory modification methods */
+
+	// TODO: maybe place print here ?? (Afficher, AfficherLn : VAL × MEM → MEM)
+
+	/**
+	 * TODO: javadoc
+	 */
+	public void removeDecl(String ident) {
+		// TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public <T> void updateVal(String ident, T val) {
+		// TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public <T> void updateValArray(String ident, int index, T val) {
+		// TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public void updateType(String ident, Type sorte) {
+		// TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	// TODO: understand expParam
 
 }
