@@ -10,7 +10,7 @@ import fr.umlp.m1info.projectvms.group2.symtable.Type;
  * Heap
  */
 public class Heap {
-	static int HEAP_SIZE = 1024; // TODO: maybe this should be passed as CLI/GUI param
+	public static int HEAP_SIZE = 1024; // TODO: maybe this should be passed as CLI/GUI param
 	ByteBuffer heap = ByteBuffer.allocate(HEAP_SIZE);
 
 	/**
@@ -57,7 +57,7 @@ public class Heap {
 	/**
 	 * TODO: javadoc
 	 */
-	public boolean setValue(int address, int index) throws HeapOutOfBounds, HeapInvalidAddress {
+	public <T> boolean setValue(int address, int index, T value) throws HeapOutOfBounds, HeapInvalidAddress {
 		// TODO: implement this
 		throw new UnsupportedOperationException();
 	}
