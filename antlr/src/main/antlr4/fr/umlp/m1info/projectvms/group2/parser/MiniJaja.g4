@@ -78,4 +78,8 @@ IDENT:    (LETTER|'_')(LETTER|NUMBER|'_'|'-')*;
 STRING: '"' (~["\\\r\n] | '\\' .)* '"';
 BOOLEAN:  TRUE|FALSE;
 VOID:     'void';
+
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip;
+
 WS:       [ \t\r\n]+ -> skip;
