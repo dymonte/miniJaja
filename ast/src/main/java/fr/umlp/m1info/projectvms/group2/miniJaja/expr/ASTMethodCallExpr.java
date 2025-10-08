@@ -6,7 +6,10 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprs;
 /**
  * Represents a method call from expression in the MiniJaja abstract syntax tee (AST)
  */
-public class ASTMethodCallExpr extends ASTMethodCallInstr {
+public class ASTMethodCallExpr extends ASTExpr {
+	private ASTIdent ident;
+	private ASTExprs exprs;
+	
 	/**
 	 * Constructs a new ASTMethodCallExpr node
 	 *
@@ -16,6 +19,18 @@ public class ASTMethodCallExpr extends ASTMethodCallInstr {
 	 * @param column the source code column where this node begins
 	 */
 	public ASTMethodCallExpr(ASTIdent ident, ASTExprs exprs, int line, int column) {
-		super(ident, exprs, line, column);
+		super(line, column);
+		this.ident = ident;
+		this.exprs = exprs;
+	}
+
+	/**
+	 * Returns a string representation of this method call
+	 *
+	 * @return a formatted string
+	 */
+	@Override
+	public String toString() {
+		return ident + "(" + exprs + ")";
 	}
 }
