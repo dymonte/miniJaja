@@ -332,7 +332,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTIf visitIf(MiniJajaParser.IfContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
 		ASTInstrs ifInstrs = (ASTInstrs) visit(ctx.instrs(0));
-		ASTInstrs elseInstrs = (ASTInstrs) visit(ctx.instrs(1));
+		ASTInstrs elseInstrs = null;
+		if (ctx.instrs().size() >= 2) { 
+			elseInstrs = (ASTInstrs) visit(ctx.instrs(1));
+		}
 		return new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 

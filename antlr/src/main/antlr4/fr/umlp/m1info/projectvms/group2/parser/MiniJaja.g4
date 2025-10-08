@@ -10,8 +10,8 @@ grammar MiniJaja;
 prog: 'class' ident '{' decls methmain '}';
 ident:    IDENT;
 decls:    (decl ';')*;
-decl:     var    #VarDecl
-        | method #MethodDecl
+decl:     method #MethodDecl
+        | var #VarDecl
         ;
 vars:     (var ';')*;
 var:      typemeth ident vexp        #VarDeclSimple 
@@ -77,7 +77,6 @@ fragment FALSE:    'false';
 IDENT:    (LETTER|'_')(LETTER|NUMBER|'_'|'-')*;
 STRING: '"' (~["\\\r\n] | '\\' .)* '"';
 BOOLEAN:  TRUE|FALSE;
-VOID:     'void';
 
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
