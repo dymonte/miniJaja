@@ -1,5 +1,6 @@
 package org.groupe2.projetVMs.controller;
 
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -42,10 +43,11 @@ public class AppController implements StatefulController {
         return fileChooser.showOpenDialog(null);
     }
 
-    @FXML
-    private void openFile() {
-        File file = chooseFile();
+    private void openFile(File file) {
         if (file != null) {
+            if (file.isDirectory()) {
+                openFolder(file);
+            }
             try {
                 String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
                 if (state != null) {
@@ -61,18 +63,34 @@ public class AppController implements StatefulController {
     }
 
     @FXML
+    private void openFile() {
+        File file = chooseFile();
+        openFile(file);
+    }
+
+    @FXML
     private void openFolder() {
         File file = chooseDirectory();
+        openFolder(file);
+    }
+
+    private void openFolder(File file) {
         state.setWorkspaceDir(file);
         try {
             File[] files = Files.list(file.toPath())
-                .map(Path::toFile)
-                .toArray(File[]::new);
+                    .map(Path::toFile)
+                    .toArray(File[]::new);
             state.setWorkspaceFiles(files);
             fileTree.getChildren().clear();
+            if (!file.equals(File.listRoots()[0])) {
+                Button parent_button = new Button("..");
+                parent_button.setOnAction(event -> openFolder(file.getParentFile()));
+                fileTree.getChildren().add(parent_button);
+            }
             for (File f : files) {
-                Label label = new Label(f.getName());
-                fileTree.getChildren().add(label);
+                Button file_button = new Button(f.getName());
+                file_button.setOnAction(event -> openFile(f));
+                fileTree.getChildren().add(file_button);
             }
         }catch (IOException e)
         {
