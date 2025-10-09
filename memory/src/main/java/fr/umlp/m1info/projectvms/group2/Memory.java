@@ -37,24 +37,24 @@ public class Memory {
 	/**
 	 * TODO: javadoc
 	 */
-	public void <T> void declCst(String ident, T value, Type sorte) {
-		//TODO: implement this
+	public <T> void declCst(String ident, T value, Type sorte) {
+		// TODO: implement this
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * TODO: javadoc
 	 */
-	public void <T> void declArray(String ident, T value, Type sorte) {
-		//TODO: implement this
+	public <T> void declArray(String ident, T value, Type sorte) {
+		// TODO: implement this
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * TODO: javadoc
 	 */
-	public void <T> void declMeth(String ident, T value, Type sorte) {
-		//TODO: implement this
+	public <T> void declMeth(String ident, T value, Type sorte) {
+		// TODO: implement this
 		throw new UnsupportedOperationException();
 	}
 
@@ -99,4 +99,15 @@ public class Memory {
 	 */
 	// TODO: understand expParam
 
+	/*
+	 * Accès aux infos de
+	 * T:ID×VAL×
+	 * MEM Long D EM ALOj
+	 * t:ID×MEM→OBJ ∪S
+	 * rte : I MM→ SRE ∪ {P
+	 * ramètre :I ×MM →DCLS ∪é
+	 * laaio ID×MEM → E
+	 * LS ∪ {w}
+	 * Corps : ID × MEM → INSTRS ∪ {w}
+	 */
 }

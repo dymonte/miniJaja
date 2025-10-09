@@ -39,4 +39,12 @@ public class InstNode {
 		nextInStack = nextNext;
 	}
 
+	/**
+	 * TODO: javadoc
+	 * NOTE: maybe replace Object with <T>
+	 */
+	public Object getValue() {
+		return val;
+	}
+
 }
