@@ -20,8 +20,9 @@ class HeapBlockNode {
 	public void addNode(HeapBlockNode node) {
 		if (next == null) {
 			next = node;
+		} else {
+			next.addNode(node);
 		}
-		next.addNode(node);
 	}
 
 	// TODO: maybe add a remove method
@@ -29,5 +30,4 @@ class HeapBlockNode {
 	public int getAddress() {
 		return address;
 	}
-
 }
