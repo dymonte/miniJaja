@@ -50,4 +50,19 @@ public class AppController implements StatefulController {
             }
         }
     }
+
+    @FXML
+    private void createFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("New File");
+        fileChooser.setInitialFileName("untitled.mjj");
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
