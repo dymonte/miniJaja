@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddress;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
-import fr.umlp.m1info.projectvms.group2.symtable.Type;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory;
+import fr.umlp.m1info.projectvms.group2.symtable.Type;
 
 /**
  * Heap
@@ -150,24 +150,87 @@ public class Heap {
 			throw new HeapInvalidAddress(address);
 		}
 
-		localTable.get(address);
-
+		HeapSymbol symbol = localTable.get(address);
+		int blockAddr = symbol.getAddress();
 		int blockSize = localTable.get(address).getSize();
 		int blockIndex = (int) Math.ceil(Math.log(blockSize) / Math.log(2));
 
-		localTable.remove(address);
+		localTable.set(address, null);
 
 		// Replace the block in the free list
-		HeapBlockNode block = new HeapBlockNode(address);
+		HeapBlockNode newBlock = new HeapBlockNode(blockAddr);
+		newBlock.next = blocks[blockIndex];
+		blocks[blockIndex] = newBlock;
 
-		if (blocks[blockIndex] == null) {
-			blocks[blockIndex] = block;
-			return;
+		mergeBlocks(blockIndex);
+	}
+
+	/**
+	 * Merges free blocks starting from the given block index
+	 * 
+	 * @param blockIndex The index of the block size to start merging from
+	 */
+	private void mergeBlocks(int blockIndex) {
+		boolean merged = true;
+
+		while (merged && blockIndex < blocks.length - 1) {
+			merged = false;
+
+			HeapBlockNode prev = null;
+			HeapBlockNode curr = blocks[blockIndex];
+
+			// For each block, search for its buddy
+			while (curr != null) {
+				int buddyAddr = curr.address ^ (1 << blockIndex);
+				HeapBlockNode search = curr.next;
+				HeapBlockNode searchPrev = curr;
+
+				// search for buddy
+				while (search != null) {
+					if (search.address == buddyAddr) {
+						// Buddy found!
+						int mergedAddr = Math.min(curr.address, search.address);
+
+						// Remove both blocks from the list
+						if (prev == null) {
+							blocks[blockIndex] = curr.next;
+						} else {
+							prev.next = curr.next;
+						}
+
+						if (searchPrev == curr) {
+							// special case: buddy is right after
+							curr.next = search.next;
+						} else {
+							searchPrev.next = search.next;
+						}
+
+						// Add merged block to upper list
+						HeapBlockNode mergedBlock = new HeapBlockNode(mergedAddr);
+						mergedBlock.next = blocks[blockIndex + 1];
+						blocks[blockIndex + 1] = mergedBlock;
+
+						// Restart merging for upper size
+						merged = true;
+						break;
+					}
+
+					searchPrev = search;
+					search = search.next;
+				}
+
+				if (merged) {
+					break;
+				}
+
+				prev = curr;
+				curr = curr.next;
+			}
+
+			if (merged) {
+				blockIndex++;
+			}
 		}
-
-		blocks[blockIndex].addNode(block);
-
-		// TODO : merge with buddy if free
 	}
 
 	/**
