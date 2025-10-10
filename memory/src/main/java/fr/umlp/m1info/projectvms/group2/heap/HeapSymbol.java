@@ -8,12 +8,14 @@ import fr.umlp.m1info.projectvms.group2.symtable.Type;
 class HeapSymbol {
 	int address;
 	int size;
+	int blockSize;
 	int ref;
 	Type type;
 
-	HeapSymbol(int address, int size, Type type) {
+	HeapSymbol(int address, int size, int blockSize, Type type) {
 		this.address = address;
 		this.size = size;
+		this.blockSize = blockSize;
 		this.ref = 0;
 		this.type = type;
 	}
@@ -24,6 +26,10 @@ class HeapSymbol {
 
 	public int getSize() {
 		return size;
+	}
+
+	public int getBlockSize() {
+		return blockSize;
 	}
 
 	public int getRef() {
@@ -39,6 +45,6 @@ class HeapSymbol {
 	}
 
 	public void decRef() {
-		ref++;
+		ref--;
 	}
 }

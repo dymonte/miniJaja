@@ -43,27 +43,25 @@ public class Heap {
 		if (size <= 0) {
 			throw new IllegalArgumentException("Size must be positive");
 		}
-		if (size > HEAP_SIZE) {
-			throw new IllegalArgumentException("Size must be less than HEAP_SIZE");
+		if (size >= HEAP_SIZE) {
+			throw new fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory();
 		}
 
 		// Check type size
-		if (type == Type.INT) {
-			size *= 4; // int is 4 bytes
-		}
+		int requestedSize = (type == Type.INT) ? size * 4 : size;
 
 		// Search block > size
 		int blockIndex = (int) Math.ceil(Math.log(size) / Math.log(2));
 		int blockSize = 1 << blockIndex;
 
 		if (blockSize > HEAP_SIZE) {
-			throw new IllegalArgumentException("Size must be less than HEAP_SIZE");
+			throw new fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory();
 		}
 
 		HeapBlockNode block = getFreeBlock(blockIndex);
 
 		// Add to local table
-		HeapSymbol symbol = new HeapSymbol(block.getAddress(), blockSize, type);
+		HeapSymbol symbol = new HeapSymbol(block.getAddress(), requestedSize, blockSize, type);
 		localTable.add(symbol);
 
 		return localTable.size() - 1;
@@ -117,7 +115,7 @@ public class Heap {
 	 * @param address The address of the block to free
 	 */
 	public void free(int address) throws HeapInvalidAddress {
-		if (localTable.contains(address)) {
+		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
 			throw new HeapInvalidAddress(address);
 		}
 
@@ -151,9 +149,36 @@ public class Heap {
 	 * @throws HeapInvalidAddress If the address is invalid
 	 */
 	public <T> T search(int address, int index) throws HeapOutOfBounds, HeapInvalidAddress {
-		// TODO: implement this
-		// Note: if not found, throw exception (segfault)
-		throw new UnsupportedOperationException();
+		if (address < 0 || address >= localTable.size()) {
+			throw new HeapInvalidAddress(address);
+		}
+
+		HeapSymbol symbol = localTable.get(address);
+		if (symbol == null) {
+			throw new HeapInvalidAddress(address);
+		}
+
+		int baseAddr = symbol.getAddress();
+		int typeSize = (symbol.getType() == Type.INT) ? 4 : 1;
+		int offset = index * typeSize;
+
+		if (offset + typeSize > symbol.getSize()) {
+			throw new HeapOutOfBounds(address, index);
+		}
+
+		heap.position(baseAddr + offset);
+
+		Object value;
+		if (symbol.getType() == Type.INT) {
+			value = heap.getInt();
+		} else if (symbol.getType() == Type.BOOL) {
+			byte b = heap.get();
+			value = (b != 0);
+		} else {
+			throw new IllegalArgumentException("Unsupported type: " + symbol.getType());
+		}
+
+		return (T) value;
 	}
 
 	/**
@@ -167,7 +192,34 @@ public class Heap {
 	 * @throws HeapInvalidAddress If the address is invalid
 	 */
 	public <T> boolean setValue(int address, int index, T value) throws HeapOutOfBounds, HeapInvalidAddress {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+		if (address < 0 || address >= localTable.size()) {
+			throw new HeapInvalidAddress(address);
+		}
+
+		HeapSymbol symbol = localTable.get(address);
+		if (symbol == null) {
+			throw new HeapInvalidAddress(address);
+		}
+
+		int baseAddr = symbol.getAddress();
+		int typeSize = (symbol.getType() == Type.INT) ? 4 : 1;
+		int offset = index * typeSize;
+
+		heap.position(baseAddr + offset);
+
+		if (symbol.getType() == Type.INT) {
+			if (!(value instanceof Integer)) {
+				throw new IllegalArgumentException("Expected Integer for type INT");
+			}
+			heap.putInt((Integer) value);
+
+		} else if (symbol.getType() == Type.BOOL) {
+			if (!(value instanceof Boolean)) {
+				throw new IllegalArgumentException("Expected Boolean for type BOOL");
+			}
+			heap.put((byte) ((Boolean) value ? 1 : 0));
+		}
+
+		return true;
 	}
 }
