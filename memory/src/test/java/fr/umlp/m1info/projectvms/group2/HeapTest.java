@@ -1,5 +1,6 @@
 package fr.umlp.m1info.projectvms.group2;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddress;
@@ -7,8 +8,6 @@ import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory;
 import fr.umlp.m1info.projectvms.group2.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.symtable.Type;
-
-import org.junit.Assert;
 
 /**
  * HeapTest
@@ -36,16 +35,6 @@ public class HeapTest {
 		Assert.assertThrows(HeapOutOfMemory.class, () -> heap.allocate(Heap.HEAP_SIZE + 1, Type.INT));
 		heap.allocate(Heap.HEAP_SIZE - 1, Type.INT);
 		Assert.assertThrows(HeapOutOfMemory.class, () -> heap.allocate(10, Type.INT));
-	}
-
-	@Test
-	public void testSetValue() {
-		Heap heap = new Heap();
-		int arraySize = 10;
-		int addr = heap.allocate(arraySize, Type.INT);
-		for (int i = 0; i < arraySize; i++) {
-			Assert.assertTrue(heap.setValue(addr, i, i));
-		}
 	}
 
 	@Test
@@ -78,7 +67,7 @@ public class HeapTest {
 		Heap heap = new Heap();
 		int arraySize = 10;
 		int addr = heap.allocate(arraySize, Type.INT);
-		heap.free(addr);
+		heap.decRef(addr);
 		Assert.assertThrows(HeapInvalidAddress.class, () -> heap.search(addr, 0));
 	}
 
@@ -89,7 +78,19 @@ public class HeapTest {
 		int addr = heap.allocate(arraySize, Type.INT);
 		heap.setValue(addr, 0, 10);
 		Assert.assertEquals((int) heap.search(addr, 0), 10);
-		heap.free(addr);
+		heap.decRef(addr);
+		Assert.assertThrows(HeapInvalidAddress.class, () -> heap.search(addr, 0));
+	}
+
+	@Test
+	public void testFreeMultipleRefs() {
+		Heap heap = new Heap();
+		int arraySize = 10;
+		int addr = heap.allocate(arraySize, Type.INT);
+		heap.incRef(addr);
+		heap.decRef(addr);
+		Assert.assertEquals((int) heap.search(addr, 0), 0);
+		heap.decRef(addr);
 		Assert.assertThrows(HeapInvalidAddress.class, () -> heap.search(addr, 0));
 	}
 }

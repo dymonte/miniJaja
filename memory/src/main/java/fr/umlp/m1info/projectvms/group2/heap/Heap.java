@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddress;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
 import fr.umlp.m1info.projectvms.group2.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory;
 
 /**
  * Heap
@@ -44,7 +45,7 @@ public class Heap {
 			throw new IllegalArgumentException("Size must be positive");
 		}
 		if (size >= HEAP_SIZE) {
-			throw new fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory();
+			throw new HeapOutOfMemory();
 		}
 
 		// Check type size
@@ -55,7 +56,7 @@ public class Heap {
 		int blockSize = 1 << blockIndex;
 
 		if (blockSize > HEAP_SIZE) {
-			throw new fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory();
+			throw new HeapOutOfMemory();
 		}
 
 		HeapBlockNode block = getFreeBlock(blockIndex);
@@ -89,7 +90,7 @@ public class Heap {
 			biggerIndex++;
 		}
 		if (biggerIndex >= blocks.length) {
-			throw new fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory();
+			throw new HeapOutOfMemory();
 		}
 		HeapBlockNode biggerBlock = blocks[biggerIndex];
 		blocks[biggerIndex] = biggerBlock.next; // Remove block from list
@@ -110,11 +111,41 @@ public class Heap {
 	}
 
 	/**
+	 * Increments the reference count of the block at the given address
+	 * 
+	 * @param address
+	 * @throws HeapInvalidAddress
+	 */
+	public void incRef(int address) throws HeapInvalidAddress {
+		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
+			throw new HeapInvalidAddress(address);
+		}
+		localTable.get(address).incRef();
+	}
+
+	/**
+	 * Decrements the reference count of the block at the given address
+	 * 
+	 * @param address
+	 * @throws HeapInvalidAddress
+	 */
+	public void decRef(int address) throws HeapInvalidAddress {
+		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
+			throw new HeapInvalidAddress(address);
+		}
+		localTable.get(address).decRef();
+
+		if (localTable.get(address).getRef() <= 0) {
+			free(address);
+		}
+	}
+
+	/**
 	 * Frees a block of memory at the given address
 	 * 
 	 * @param address The address of the block to free
 	 */
-	public void free(int address) throws HeapInvalidAddress {
+	private void free(int address) throws HeapInvalidAddress {
 		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
 			throw new HeapInvalidAddress(address);
 		}
@@ -187,11 +218,10 @@ public class Heap {
 	 * @param address The address to set the value at
 	 * @param index   The index of the value to set
 	 * @param value   The value to set
-	 * @return true if the value was successfully set, false otherwise
 	 * @throws HeapOutOfBounds  If the address is out of bounds
 	 * @throws HeapInvalidAddress If the address is invalid
 	 */
-	public <T> boolean setValue(int address, int index, T value) throws HeapOutOfBounds, HeapInvalidAddress {
+	public <T> void setValue(int address, int index, T value) throws HeapOutOfBounds, HeapInvalidAddress {
 		if (address < 0 || address >= localTable.size()) {
 			throw new HeapInvalidAddress(address);
 		}
@@ -219,7 +249,5 @@ public class Heap {
 			}
 			heap.put((byte) ((Boolean) value ? 1 : 0));
 		}
-
-		return true;
 	}
 }

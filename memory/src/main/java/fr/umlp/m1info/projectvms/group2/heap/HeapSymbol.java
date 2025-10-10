@@ -16,7 +16,7 @@ class HeapSymbol {
 		this.address = address;
 		this.size = size;
 		this.blockSize = blockSize;
-		this.ref = 0;
+		this.ref = 1;
 		this.type = type;
 	}
 
