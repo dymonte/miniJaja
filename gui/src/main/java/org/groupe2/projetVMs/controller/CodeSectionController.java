@@ -24,23 +24,22 @@ public class CodeSectionController implements StatefulController {
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.getStyleClass().add("code-area");
 
-        // Lier la propriété text du CodeArea à la propriété code de l'AppState
+        // link appState.codeProperty and codeArea.textProperty
         appState.codeProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null && !newValue.equals(codeArea.getText())) {
                 codeArea.replaceText(newValue);
             }
         });
         
-        // Mettre à jour la propriété code de l'AppState lorsque le texte change
         codeArea.textProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null && !newValue.equals(appState.codeProperty().get())) {
                 appState.codeProperty().set(newValue);
             }
         });
         
-        // Initialiser la valeur
         codeArea.replaceText(appState.codeProperty().get());
-        
+
+        // handle save shortcut (ctrl+s)
         codeArea.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN).match(e)) {
                 if (onSaveRequested != null) {

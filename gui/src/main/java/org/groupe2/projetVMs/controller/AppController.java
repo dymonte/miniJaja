@@ -69,11 +69,26 @@ public class AppController implements StatefulController {
                     state.setOpenedFile(file);
                     state.codeProperty().set(content);
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @FXML
+    private File createFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("New File");
+        fileChooser.setInitialFileName("untitled.mjj");
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
     }
 
     /**
@@ -146,14 +161,17 @@ public class AppController implements StatefulController {
      */
     @FXML
     private void saveFile() {
+        File file;
         if(state.getOpenedFile().isEmpty()){
-            System.err.println("Cannot save: no file opened");
-            saveAs();
-            return;
+            System.out.println("No file opened");
+            file = createFile();
+        }
+        else {
+            file = state.getOpenedFile().get();
         }
         try{ // try to save the file
             Files.writeString(
-                state.getOpenedFile().get().toPath(), 
+                file.toPath(),
                 state.codeProperty().get(),
                 StandardCharsets.UTF_8
             );
@@ -162,27 +180,9 @@ public class AppController implements StatefulController {
             System.err.println("Error saving file: " + e.getMessage());
             e.printStackTrace(); // TODO popup error message
         }
+        openFile(file);
     }
 
-    /**
-     * Lets the user choose a file to save the current code
-     */
-    private void saveAs() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("miniJaja codes", "*.mjj"));
-        File file = fileChooser.showSaveDialog(null);
-        if (file != null) {
-            try { // try to save the file
-                Files.writeString(file.toPath(), state.codeProperty().get(), StandardCharsets.UTF_8);
-                openFile(file);
-                System.out.println("File saved successfully");
-            } catch (IOException e) {
-                System.err.println("Error saving file: " + e.getMessage());
-                e.printStackTrace(); // TODO popup error message
-            }
-        }
-    }
 
     /**
      * Change the window name
