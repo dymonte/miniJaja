@@ -2,9 +2,13 @@ package org.groupe2.projetVMs.controller;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.groupe2.projetVMs.AppState;
 
 import javafx.fxml.FXML;
@@ -25,6 +29,8 @@ public class AppController implements StatefulController {
 
     @FXML
     private VBox fileTree;
+    
+    private Stage primaryStage;
 
     private AppState state;
 
@@ -36,6 +42,10 @@ public class AppController implements StatefulController {
         codeSectionController.setOnSaveRequested(this::saveFile);
     }
 
+    /**
+     * Opens a file
+     * @return the file chosen by the user
+     */
     private File chooseFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Code File");
@@ -43,16 +53,20 @@ public class AppController implements StatefulController {
         return fileChooser.showOpenDialog(null);
     }
 
+    /**
+     * Opens a file and updates the code section
+     * @param file the file to open
+     */
     private void openFile(File file) {
         if (file != null) {
             if (file.isDirectory()) {
                 openFolder(file);
             }
+            updateWindowTitle(file.getName());
             try {
                 String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
                 if (state != null) {
                     state.setOpenedFile(file);
-                    // Optionally update code content in state
                     state.codeProperty().set(content);
                 }
             }
@@ -62,18 +76,30 @@ public class AppController implements StatefulController {
         }
     }
 
+    /**
+     * Opens a file and updates the code section
+     * Called by the button
+     */
     @FXML
     private void openFile() {
         File file = chooseFile();
         openFile(file);
     }
 
+    /**
+     * Opens a folder and updates the file tree
+     * Called by the button
+     */
     @FXML
     private void openFolder() {
         File file = chooseDirectory();
         openFolder(file);
     }
 
+    /**
+     * Opens a folder and updates the file tree
+     * @param file the folder to open
+     */
     private void openFolder(File file) {
         state.setWorkspaceDir(file);
         try {
@@ -84,12 +110,18 @@ public class AppController implements StatefulController {
             fileTree.getChildren().clear();
             if (!file.equals(File.listRoots()[0])) {
                 Button parent_button = new Button("..");
+                parent_button.setMaxWidth(Double.MAX_VALUE);
+                parent_button.prefWidthProperty().bind(fileTree.widthProperty());
                 parent_button.setOnAction(event -> openFolder(file.getParentFile()));
+                HBox.setHgrow(parent_button, Priority.ALWAYS);
                 fileTree.getChildren().add(parent_button);
             }
             for (File f : files) {
                 Button file_button = new Button(f.getName());
+                file_button.setMaxWidth(Double.MAX_VALUE);
+                file_button.prefWidthProperty().bind(fileTree.widthProperty());
                 file_button.setOnAction(event -> openFile(f));
+                HBox.setHgrow(file_button, Priority.ALWAYS);
                 fileTree.getChildren().add(file_button);
             }
         }catch (IOException e)
@@ -98,19 +130,28 @@ public class AppController implements StatefulController {
         }
     }
 
+    /**
+     * Lets the user choose a directory
+     * @return the directory chosen by the user
+     */
     private File chooseDirectory() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Open Folder");
         return chooser.showDialog(null);
     }
 
+    /**
+     * Saves the current file
+     * Called by the button or crtl+S
+     */
     @FXML
     private void saveFile() {
         if(state.getOpenedFile().isEmpty()){
             System.err.println("Cannot save: no file opened");
+            saveAs();
             return;
         }
-        try{
+        try{ // try to save the file
             Files.writeString(
                 state.getOpenedFile().get().toPath(), 
                 state.codeProperty().get(),
@@ -119,7 +160,45 @@ public class AppController implements StatefulController {
             System.out.println("File saved successfully");
         } catch (IOException e) {
             System.err.println("Error saving file: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(); // TODO popup error message
         }
+    }
+
+    /**
+     * Lets the user choose a file to save the current code
+     */
+    private void saveAs() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("miniJaja codes", "*.mjj"));
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try { // try to save the file
+                Files.writeString(file.toPath(), state.codeProperty().get(), StandardCharsets.UTF_8);
+                openFile(file);
+                System.out.println("File saved successfully");
+            } catch (IOException e) {
+                System.err.println("Error saving file: " + e.getMessage());
+                e.printStackTrace(); // TODO popup error message
+            }
+        }
+    }
+
+    /**
+     * Change the window name
+     * @param newTitle new window name
+     */
+    public void updateWindowTitle(String newTitle) {
+        if (primaryStage != null) {
+            primaryStage.setTitle(newTitle);
+        }
+    }
+    
+    /**
+     * Sets the primary stage for this controller
+     * @param stage the primary stage
+     */
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
     }
 }
