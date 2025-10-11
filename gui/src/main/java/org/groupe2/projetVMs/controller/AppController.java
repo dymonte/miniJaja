@@ -61,6 +61,7 @@ public class AppController implements StatefulController {
         if (file != null) {
             if (file.isDirectory()) {
                 openFolder(file);
+                return;
             }
             updateWindowTitle(file.getName());
             try {
@@ -72,6 +73,7 @@ public class AppController implements StatefulController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            openFolder(file.getParentFile());
         }
     }
 
@@ -88,6 +90,7 @@ public class AppController implements StatefulController {
                 e.printStackTrace();
             }
         }
+        openFile(file);
         return file;
     }
 
@@ -180,7 +183,6 @@ public class AppController implements StatefulController {
             System.err.println("Error saving file: " + e.getMessage());
             e.printStackTrace(); // TODO popup error message
         }
-        openFile(file);
     }
 
 
