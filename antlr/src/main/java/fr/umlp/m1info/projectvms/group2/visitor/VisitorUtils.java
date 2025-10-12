@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.antlr.miniJaja.visitor;
+package fr.umlp.m1info.projectvms.group2.visitor;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+
 /**
  * Utility class for working with the MiniJaja parse tree when building the AST
  *
@@ -39,15 +40,16 @@ public class VisitorUtils {
 	/**
 	 * Generic method to build a left-recursive AST list chain (Cons/Nil pattern)
 	 *
-	 * @param <Ctx> The ANTLR context type
-	 * @param <Elem> The AST node type
-	 * @param contexts The list of parse rule contexts
+	 * @param <Ctx>          The ANTLR context type
+	 * @param <Elem>         The AST node type
+	 * @param contexts       The list of parse rule contexts
 	 * @param elementBuilder A function that converts a context into an ASTNode
-	 * @param chainFactory A function that wraps (head, tail) into a chain node
-	 * @param nilSupplier A supplier that returns the Nil node
+	 * @param chainFactory   A function that wraps (head, tail) into a chain node
+	 * @param nilSupplier    A supplier that returns the Nil node
 	 * @return The root AST list node
 	 */
-	public static <Ctx, Elem, ListNode> ListNode build(List<Ctx> contexts, Function<Ctx, Elem> elementBuilder, BiFunction<Elem, ListNode, ListNode> chainFactory, Supplier<ListNode> nilSupplier) {
+	public static <Ctx, Elem, ListNode> ListNode build(List<Ctx> contexts, Function<Ctx, Elem> elementBuilder,
+			BiFunction<Elem, ListNode, ListNode> chainFactory, Supplier<ListNode> nilSupplier) {
 		ListNode result = nilSupplier.get();
 		for (int i = contexts.size() - 1; i >= 0; i--) {
 			Elem element = elementBuilder.apply(contexts.get(i));

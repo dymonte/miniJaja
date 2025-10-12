@@ -1,6 +1,6 @@
-package fr.umlp.m1info.projectvms.group2.antlr.miniJaja.parser;
+package fr.umlp.m1info.projectvms.group2.utils;
 
-import fr.umlp.m1info.projectvms.group2.antlr.miniJaja.visitor.MiniJajaBuildVisitor;
+import fr.umlp.m1info.projectvms.group2.visitor.MiniJajaBuildVisitor;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
 import fr.umlp.m1info.projectvms.group2.parser.MiniJajaLexer;
@@ -27,7 +27,7 @@ public class ParserUtils {
 		MiniJajaParser parser = new MiniJajaParser(tokens);
 		ParseTree tree = parser.prog();
 		MiniJajaBuildVisitor builder = new MiniJajaBuildVisitor();
-		return builder.visit(tree); 
+		return builder.visit(tree);
 	}
 
 	/**
@@ -44,6 +44,6 @@ public class ParserUtils {
 		MiniJajaParser parser = new MiniJajaParser(tokens);
 		ParseTree tree = parser.prog();
 		MiniJajaBuildVisitor builder = new MiniJajaBuildVisitor();
-		return builder.visit(tree); 
+		return builder.visit(tree);
 	}
 }
