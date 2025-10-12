@@ -19,6 +19,12 @@ public class Memory {
 	 * Object.
 	 */
 
+	Memory(SymTable symTable, Stack stack, Heap heap) {
+		this.symTable = symTable;
+		this.stack = stack;
+		this.heap = heap;
+	}
+
 	/* stack Constructor methods */
 
 	/**
@@ -45,13 +51,14 @@ public class Memory {
 	/**
 	 * TODO: javadoc
 	 */
-	public <T> void declArray(String ident, T value, Type sorte) {
+	public void declArray(String ident, int size, Type sorte) {
 		// TODO: implement this
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * TODO: javadoc
+	 * TODO: think about how to pass parameters
 	 */
 	public <T> void declMeth(String ident, T value, Type sorte) {
 		// TODO: implement this
@@ -74,6 +81,22 @@ public class Memory {
 	 * TODO: javadoc
 	 */
 	public <T> void updateVal(String ident, T val) {
+		// TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public <T> T getVal(String ident) {
+		// TODO: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * TODO: javadoc
+	 */
+	public <T> T getValArray(String ident, int index) {
 		// TODO: implement this
 		throw new UnsupportedOperationException();
 	}
