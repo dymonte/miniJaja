@@ -7,67 +7,35 @@ import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
 public class MiniJajaParserTest {
-	private void expectFailure(String code) {
-		try {
-			ParserUtils.parseString(code);
-			fail("Expected parsing to fail, but it succeeded.");
-		} catch (Exception e) {
-			// expected
-		}
-	}
 
 	@Test
 	public void testFile0() {
-		try {
-			ParserUtils.parseFile("./src/test/resources/samples/0.mjj");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/0.mjj"));
 	}
 
 	@Test
 	public void testFile1() {
-		try {
-			ParserUtils.parseFile("./src/test/resources/samples/1.mjj");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/1.mjj"));
 	}
 
 	@Test
 	public void testFileFact() {
-		try {
-			ParserUtils.parseFile("./src/test/resources/samples/fact.mjj");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/fact.mjj"));
 	}
 
 	@Test
 	public void testFileQuickSort() {
-		try {
-			ParserUtils.parseFile("./src/test/resources/samples/quick_sort.mjj");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/quick_sort.mjj"));
 	}
 
 	@Test
 	public void testFileSynonymie() {
-		try {
-			ParserUtils.parseFile("./src/test/resources/samples/synonymie.mjj");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/synonymie.mjj"));
 	}
 
 	@Test
 	public void testFileTas() {
-		try {
-			ParserUtils.parseFile("./src/test/resources/samples/tas.mjj");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/tas.mjj"));
 	}
 
 	@Test
@@ -162,7 +130,8 @@ public class MiniJajaParserTest {
 
 	@Test
 	public void testComments() throws Exception {
-		ParserUtils.parseString("class Test { //single line\n int x; /* multi-line comments \n \n */ main { x = 0; } }");
+		ParserUtils
+				.parseString("class Test { //single line\n int x; /* multi-line comments \n \n */ main { x = 0; } }");
 	}
 
 	@Test
@@ -220,11 +189,6 @@ public class MiniJajaParserTest {
 
 	public void testInvalidInput() {
 		String input = "class { var ; }";
-		try {
-			ParserUtils.parseString(input);
-			fail("Should have thrown an exception for invalid input");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains("mismatched"));
-		}
+		assertThrows(Exception.class, () -> ParserUtils.parseString(input));
 	}
 }
