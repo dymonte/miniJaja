@@ -19,7 +19,6 @@ public class MiniJajaParserTest {
 	@Test
 	public void testFile0() {
 		try {
-			// System.out.println("0.mjj");
 			ParserUtils.parseFile("./src/test/resources/samples/0.mjj");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -29,7 +28,6 @@ public class MiniJajaParserTest {
 	@Test
 	public void testFile1() {
 		try {
-			// System.out.println("1.mjj");
 			ParserUtils.parseFile("./src/test/resources/samples/1.mjj");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -39,7 +37,6 @@ public class MiniJajaParserTest {
 	@Test
 	public void testFileFact() {
 		try {
-			// System.out.println("fact.mjj");
 			ParserUtils.parseFile("./src/test/resources/samples/fact.mjj");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -49,7 +46,6 @@ public class MiniJajaParserTest {
 	@Test
 	public void testFileQuickSort() {
 		try {
-			// System.out.println("quick_sort.mjj");
 			ParserUtils.parseFile("./src/test/resources/samples/quick_sort.mjj");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -59,7 +55,6 @@ public class MiniJajaParserTest {
 	@Test
 	public void testFileSynonymie() {
 		try {
-			// System.out.println("synonymie.mjj");
 			ParserUtils.parseFile("./src/test/resources/samples/synonymie.mjj");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,7 +64,6 @@ public class MiniJajaParserTest {
 	@Test
 	public void testFileTas() {
 		try {
-			// System.out.println("tas.mjj");
 			ParserUtils.parseFile("./src/test/resources/samples/tas.mjj");
 		} catch (Exception e) {
 			e.printStackTrace();
