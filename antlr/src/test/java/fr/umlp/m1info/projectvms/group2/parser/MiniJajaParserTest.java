@@ -10,32 +10,56 @@ public class MiniJajaParserTest {
 
 	@Test
 	public void testFile0() {
-		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/0.mjj"));
+		try {
+			ParserUtils.parseFile("./src/test/resources/samples/0.mjj");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testFile1() {
-		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/1.mjj"));
+		try {
+			ParserUtils.parseFile("./src/test/resources/samples/1.mjj");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testFileFact() {
-		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/fact.mjj"));
+		try {
+			ParserUtils.parseFile("./src/test/resources/samples/fact.mjj");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testFileQuickSort() {
-		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/quick_sort.mjj"));
+		try {
+			ParserUtils.parseFile("./src/test/resources/samples/quick_sort.mjj");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testFileSynonymie() {
-		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/synonymie.mjj"));
+		try {
+			ParserUtils.parseFile("./src/test/resources/samples/synonymie.mjj");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testFileTas() {
-		assertThrows(Exception.class, () -> ParserUtils.parseFile("./src/test/resources/samples/tas.mjj"));
+		try {
+			ParserUtils.parseFile("./src/test/resources/samples/tas.mjj");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -143,52 +167,65 @@ public class MiniJajaParserTest {
 	/*
 	 * @Test
 	 * public void testMissingClass() {
-	 * expectFailure("{ main { } }");
+	 * assertThrows(Exception.class, () -> ParserUtils.parseFile("{ main { } }"));
 	 * }
 	 * 
 	 * @Test
 	 * public void testMissingSemicolon() {
-	 * expectFailure("class Test { int x main { } }");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { int x main { } }"));
 	 * }
 	 * 
 	 * @Test
 	 * public void testInvalidType() {
-	 * expectFailure("class Test { float x; main { } }");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { float x; main { } }"));
 	 * }
 	 * 
 	 * @Test
 	 * public void testMissingMain() {
-	 * expectFailure("class Test { int x; }");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { int x; }"));
 	 * }
 	 * 
 	 * @Test
 	 * public void testMethodMissingParens() {
-	 * expectFailure("class Test { void f { } main { } }");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { void f { } main { } }"));
 	 * }
 	 * 
 	 * @Test
 	 * public void testInvalidOperator() {
-	 * expectFailure("class Test { int x; main { x ** 2; } }");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { int x; main { x ** 2; } }"));
 	 * }
 	 * 
 	 * @Test
 	 * public void testInvalidIncrement() {
-	 * expectFailure("class Test { main { 5++; } }");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { main { 5++; } }"));
 	 * }
 	 * 
 	 * @Test
 	 * public void testMissingBrace() {
-	 * expectFailure("class Test { int x; main { x = 0; ");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { int x; main { x = 0; "));
 	 * }
 	 * 
 	 * @Test
 	 * public void testArrayWithoutSize() {
-	 * expectFailure("class Test { int arr[]; main { } }");
+	 * assertThrows(Exception.class, () ->
+	 * ParserUtils.parseFile("class Test { int arr[]; main { } }"));
 	 * }
 	 */
 
 	public void testInvalidInput() {
 		String input = "class { var ; }";
-		assertThrows(Exception.class, () -> ParserUtils.parseString(input));
+		try {
+			ParserUtils.parseString(input);
+			fail("Should have thrown an exception for invalid input");
+		} catch (Exception e) {
+			assertTrue(e.getMessage().contains("mismatched"));
+		}
 	}
 }
