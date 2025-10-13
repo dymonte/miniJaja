@@ -2,7 +2,6 @@ package fr.umlp.m1info.projectvms.group2.ast.minijaja.var;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTDecl;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
 
 /**
  * Abstract base class for variable declarations in MiniJaja
@@ -13,13 +12,17 @@ public abstract class ASTVar extends ASTDecl {
 	/**
 	 * Constructor an AST variable node
 	 *
-	 * @param ident the identifier fo the variable
-	 * @param expr the initialization expression
-	 * @param line the line number of the variable declaration
+	 * @param ident  the identifier fo the variable
+	 * @param expr   the initialization expression
+	 * @param line   the line number of the variable declaration
 	 * @param column the column number of the variable declaration
+	 * @throws IllegalArgumentException if ident is null
 	 */
 	protected ASTVar(ASTIdent ident, int line, int column) {
 		super(line, column);
+		if (ident == null) {
+			throw new IllegalArgumentException("ident cannot be null");
+		}
 		this.ident = ident;
 	}
 }

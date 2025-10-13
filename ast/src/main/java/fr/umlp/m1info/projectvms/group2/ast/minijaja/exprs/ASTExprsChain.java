@@ -16,10 +16,16 @@ public class ASTExprsChain extends ASTExprs {
 	 * @param exprs  the rest of the expressions
 	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws NullPointerException if expr or exprs is null
 	 */
 	public ASTExprsChain(ASTExpr expr, ASTExprs exprs, int line, int column) {
 		super(line, column);
-		chain = new Chain(expr, exprs);
+		if (expr == null) {
+			throw new NullPointerException("expr cannot be null");
+		} else if (exprs == null) {
+			throw new NullPointerException("exprs cannot be null");
+		}
+		chain = new Chain<ASTExpr, ASTExprs>(expr, exprs);
 	}
 
 	/**

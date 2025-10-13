@@ -16,10 +16,16 @@ public class ASTVarsChain extends ASTVars {
 	 * @param vars   the rest of the variable declarations
 	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws NullPointerException if var or vars is null;
 	 */
 	public ASTVarsChain(ASTVar var, ASTVars vars, int line, int column) {
 		super(line, column);
-		chain = new Chain(var, vars);
+		if (var == null) {
+			throw new NullPointerException("var cannot be null");
+		} else if (vars == null) {
+			throw new NullPointerException("vars cannot be null");
+		}
+		chain = new Chain<ASTVar, ASTVars>(var, vars);
 	}
 
 	/**

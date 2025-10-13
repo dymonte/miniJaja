@@ -10,17 +10,21 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTVExpr;
 public class ASTVarConst extends ASTVar {
 	private ASTType type;
 	private ASTVExpr vexpr;
+
 	/**
 	 * Constructs a constant variable declaration
 	 *
 	 * @param type   the type of the variable
 	 * @param ident  the identifier of the varaible
-	 * @param vexpr   the initialization expression
+	 * @param vexpr  the initialization expression
 	 * @param line   the line number of the constant declaration
 	 * @param column the column number of the constant declaration
 	 */
 	public ASTVarConst(ASTType type, ASTIdent ident, ASTVExpr vexpr, int line, int column) {
 		super(ident, line, column);
+		if (type == null) {
+			throw new NullPointerException("type cannot be null");
+		}
 		this.type = type;
 		this.vexpr = vexpr;
 	}
@@ -33,8 +37,6 @@ public class ASTVarConst extends ASTVar {
 	 */
 	@Override
 	public String toString() {
-		return "final " + (type != null ? type : "") + " "
-				+ (ident != null ? ident : "")
-				+ (vexpr != null ? (" " +vexpr) : "");
+		return "final " + type + " " + ident + (vexpr != null ? (" " + vexpr) : "");
 	}
 }

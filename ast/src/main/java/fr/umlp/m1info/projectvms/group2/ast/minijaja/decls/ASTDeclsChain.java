@@ -16,10 +16,16 @@ public class ASTDeclsChain extends ASTDecls {
 	 * @param decls  the rest of the declarations
 	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws NullPointerException if decl or decls is null
 	 */
 	public ASTDeclsChain(ASTDecl decl, ASTDecls decls, int line, int column) {
 		super(line, column);
-		chain = new Chain(decl, decls);
+		if (decl == null) {
+			throw new NullPointerException("decl cannot be null");
+		} else if (decls == null) {
+			throw new NullPointerException("decls cannot be null");
+		}
+		chain = new Chain<ASTDecl, ASTDecls>(decl, decls);
 	}
 
 	/**

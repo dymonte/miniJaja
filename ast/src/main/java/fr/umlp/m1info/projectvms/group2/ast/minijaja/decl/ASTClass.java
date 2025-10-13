@@ -22,9 +22,17 @@ public class ASTClass extends ASTNode {
 	 * @param mainMethod the main method of the class
 	 * @param line       the line number of the class declaration
 	 * @param column     the column number of the class declaration
+	 * @throws NullPointerException if ident, decls or mainMethod is null
 	 */
 	public ASTClass(ASTIdent ident, ASTDecls decls, ASTMainMethod mainMethod, int line, int column) {
 		super(line, column);
+		if (ident == null) {
+			throw new NullPointerException("ident cannot be null");
+		} else if (decls == null) {
+			throw new NullPointerException("decls cannot be null");
+		} else if (mainMethod == null) {
+			throw new NullPointerException("mainMethod cannot be null");
+		}
 		this.ident = ident;
 		this.decls = decls;
 		this.mainMethod = mainMethod;
@@ -37,9 +45,6 @@ public class ASTClass extends ASTNode {
 	 */
 	@Override
 	public String toString() {
-		return "class " + ident + " {\n"
-				+ (decls != null ? decls : "")
-				+ (mainMethod != null ? mainMethod : "")
-				+ "\n}";
+		return "class " + ident + " {\n" + decls + mainMethod + "\n}";
 	}
 }

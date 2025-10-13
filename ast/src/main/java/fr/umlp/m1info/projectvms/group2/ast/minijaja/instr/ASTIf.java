@@ -14,14 +14,20 @@ public class ASTIf extends ASTInstr {
 	/**
 	 * Constructs a new ASTIf node
 	 *
-	 * @param expr the condition expression
-	 * @param ifInstrs the instructions executed if the condition is true
+	 * @param expr       the condition expression
+	 * @param ifInstrs   the instructions executed if the condition is true
 	 * @param elseInstrs the instructions executed if the condition is false
-	 * @param line the source code line of this node
-	 * @param column the source code column of this node
+	 * @param line       the source code line of this node
+	 * @param column     the source code column of this node
+	 * @throws NullPointerException if expr or ifInstrs is null
 	 */
 	public ASTIf(ASTExpr expr, ASTInstrs ifInstrs, ASTInstrs elseInstrs, int line, int column) {
 		super(line, column);
+		if (expr == null) {
+			throw new NullPointerException("expr cannot be null");
+		} else if (ifInstrs == null) {
+			throw new NullPointerException("ifInstrs cannot be null");
+		}
 		this.expr = expr;
 		this.ifInstrs = ifInstrs;
 		this.elseInstrs = elseInstrs;
@@ -36,7 +42,7 @@ public class ASTIf extends ASTInstr {
 	public String toString() {
 		return "if (" + expr + ") {\n" +
 				ifInstrs + "}" + (elseInstrs != null ? " else {\n" +
-				elseInstrs + "}" : "");
+						elseInstrs + "}" : "");
 
 	}
 }

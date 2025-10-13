@@ -16,10 +16,16 @@ public class ASTParamsChain extends ASTParams {
 	 * @param params the rest of the params declarations
 	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws IllegalArgumentException if param or params in null
 	 */
 	public ASTParamsChain(ASTParam param, ASTParams params, int line, int column) {
 		super(line, column);
-		chain = new Chain(param, params);
+		if (param == null) {
+			throw new IllegalArgumentException("param cannot be null");
+		} else if (params == null) {
+			throw new IllegalArgumentException("params cannot be null");
+		}
+		chain = new Chain<ASTParam, ASTParams>(param, params);
 	}
 
 	/**

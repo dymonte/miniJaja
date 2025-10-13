@@ -26,6 +26,7 @@ public class ASTMethod extends ASTDecl {
 	 * @param instrs   inside the method body, the instructions
 	 * @param line     the line number of the class declaration
 	 * @param column   the column number of the class declaration
+	 * @throws NullPointerException if ident, params, vars or instrs is null
 	 */
 	public ASTMethod(ASTTypeMeth typeMeth,
 			ASTIdent ident,
@@ -35,6 +36,15 @@ public class ASTMethod extends ASTDecl {
 			int line,
 			int column) {
 		super(line, column);
+		if (ident == null) {
+			throw new NullPointerException("ident cannot be null");
+		} else if (params == null) {
+			throw new NullPointerException("params cannot be null");
+		} else if (vars == null) {
+			throw new NullPointerException("vars cannot be null");
+		} else if (instrs == null) {
+			throw new NullPointerException("instrs cannot be null");
+		}
 		this.typeMeth = typeMeth;
 		this.ident = ident;
 		this.params = params;
