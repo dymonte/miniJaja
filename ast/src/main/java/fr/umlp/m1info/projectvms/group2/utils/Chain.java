@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.ast.minijaja;
+package fr.umlp.m1info.projectvms.group2.utils;
 
 /**
  * Class representing a recursive chain in the AST (Abstract Syntax Tree)
@@ -10,8 +10,8 @@ public class Chain<L, R> {
 	/**
 	 * Constructs a new Chain node
 	 *
-	 * @param left   the left element of the chain
-	 * @param right  the right element of the chain
+	 * @param left  the left element of the chain
+	 * @param right the right element of the chain
 	 */
 	public Chain(L left, R right) {
 		this.left = left;

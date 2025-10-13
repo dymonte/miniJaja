@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.vars;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
+import fr.umlp.m1info.projectvms.group2.utils.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 
 /**

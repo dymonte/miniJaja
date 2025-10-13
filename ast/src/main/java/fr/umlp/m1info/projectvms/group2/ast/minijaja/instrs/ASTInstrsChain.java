@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
+import fr.umlp.m1info.projectvms.group2.utils.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTInstr;
 
 /**
@@ -12,8 +12,8 @@ public class ASTInstrsChain extends ASTInstrs {
 	/**
 	 * Constructs a new ASTInstrsChain node
 	 *
-	 * @param instr    the first instruction
-	 * @param instrs   the rest of the instructions
+	 * @param instr  the first instruction
+	 * @param instrs the rest of the instructions
 	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
 	 */
