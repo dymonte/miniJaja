@@ -4,12 +4,14 @@ grammar MiniJaja;
   import org.antlr.v4.runtime.Token;
 }
 
-// Declaration of grammar rules
-class:    'class' ident '{' decls methmain '}';
+//==============================================
+// PARSER
+//==============================================
+prog: 'class' ident '{' decls methmain '}';
 ident:    IDENT;
 decls:    (decl ';')*;
-decl:     var    #VarDecl
-        | method #MethodDecl
+decl:     method #MethodDecl
+        | var #VarDecl
         ;
 vars:     (var ';')*;
 var:      typemeth ident vexp        #VarDeclSimple 
@@ -24,10 +26,10 @@ param:    type ident;
 instrs:   (instr ';')* ;
 instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp              #Assignment
         | ident1 op=('++'|'--')                                #Increment
-        | ident1 '(' listexp ')'                               #CallI
+        | ident '(' listexp ')'                                #CallI
         | 'return' exp                                         #Return
-        | 'write' '(' (ident1 | '"'STRING?'"' ) ')'                  #Write
-        | 'writeln' '(' (ident1 | '"'STRING?'"' ) ')'                #Writeln
+        | 'write' '(' (ident1 | STRING ) ')'                  #Write
+        | 'writeln' '(' (ident1 | STRING ) ')'                #Writeln
         | 'if' '('exp')' '{'instrs'}' ('else' '{' instrs '}')? #If
         | 'while' '('exp')''{'instrs'}'                        #While
         ;
@@ -54,7 +56,7 @@ fact:		  ident1                 #VarRef
         | '(' exp ')'            #ParenExp
         ;
 ident1:   ident             #Identificator
-        | ident '[' exp ']' #ArrayAccess
+        | ident '[' exp ']' #ArrayAccess //ident ('[' exp ']')*; //to handle array access in
         ;
 typemeth: 'void' #VoidType
         | type   #TypeMeth
@@ -63,17 +65,20 @@ type:     'int'      #IntType
         | 'boolean' #BoolType
         ;
 
-// ident1:  IDENT ('[' exp ']')* ; // to handle array access in
-
-// Declaration of identifiers and types
-DIGIT:    [0-9];
+//==============================================
+// LEXER
+//==============================================
+fragment DIGIT:    [0-9];
 NUMBER:   DIGIT+;
-LETTER:   [a-zA-Z];
-STRING:   [\u0000-\u007F\u00C0-\u00FF]+;
-WS:       [ \t\r\n]+ -> skip;
+fragment LETTER:   [a-zA-Z];
+fragment TRUE:     'true';
+fragment FALSE:    'false';
 
 IDENT:    (LETTER|'_')(LETTER|NUMBER|'_'|'-')*;
-TRUE:     'true';
-FALSE:    'false';
+STRING: '"' (~["\\\r\n] | '\\' .)* '"';
 BOOLEAN:  TRUE|FALSE;
-VOID:     'void';
+
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip;
+
+WS:       [ \t\r\n]+ -> skip;
