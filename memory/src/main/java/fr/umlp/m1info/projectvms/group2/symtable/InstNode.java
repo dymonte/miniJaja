@@ -12,6 +12,7 @@ public class InstNode {
 	public InstNode(Object val, SymNode symbol, InstNode stackHead) {
 		this.val = val;
 		this.symbol = symbol;
+		this.symbol.addInstance(this);
 		this.nextInStack = stackHead;
 		this.nextInstance = null;
 	}

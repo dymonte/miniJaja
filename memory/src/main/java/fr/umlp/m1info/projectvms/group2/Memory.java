@@ -1,7 +1,11 @@
 package fr.umlp.m1info.projectvms.group2;
 
+import java.util.Optional;
+
 import fr.umlp.m1info.projectvms.group2.heap.Heap;
+import fr.umlp.m1info.projectvms.group2.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.symtable.Type;
 
 import fr.umlp.m1info.projectvms.group2.stack.Stack;
@@ -28,24 +32,33 @@ public class Memory {
 	/* stack Constructor methods */
 
 	/**
-	 * TODO: javadoc
+	 * Add a new variable declaration to the program memory.
+	 * 
+	 * @param ident the variable identifier
+	 * @param value the variable initial value
+	 * @param sorte the variable type TODO: maybe add here type checking
 	 */
 	public <T> void declVar(String ident, T value, Type sorte) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+		Optional<SymNode> symbol = symTable.add(ident, value, ObjectKind.VAR, sorte);
+		if (symbol.isPresent()) {
+			stack.push(value, symbol.get());
+		}
 	}
 
-	/**
-	 * TODO: javadoc
-	 */
 	// TODO: understand identval (IdentVal : ID × SORTE × MEM × NAT → MEM)
 
 	/**
-	 * TODO: javadoc
+	 * Add a new constant declaration to the program memory.
+	 * 
+	 * @param ident the constant identifier
+	 * @param value the constant initial value
+	 * @param sorte the constant type TODO: maybe add here type checking
 	 */
 	public <T> void declCst(String ident, T value, Type sorte) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+		Optional<SymNode> symbol = symTable.add(ident, value, ObjectKind.CONST, sorte);
+		if (symbol.isPresent()) {
+			stack.push(value, symbol.get());
+		}
 	}
 
 	/**

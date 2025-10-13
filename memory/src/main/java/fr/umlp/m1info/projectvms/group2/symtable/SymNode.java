@@ -35,5 +35,17 @@ public class SymNode {
 		firstInstance = instNode;
 	}
 
+	public String getIdent() {
+		return ident;
+	}
+
+	public SymNode getNextSymbol() {
+		return nextSymbol;
+	}
+
+	public MemInfo getInfo() {
+		return info;
+	}
+
 	// TODO: remove symbol and search symbol and remove instance
 }
