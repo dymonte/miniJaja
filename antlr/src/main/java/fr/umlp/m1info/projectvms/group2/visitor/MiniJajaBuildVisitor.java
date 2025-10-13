@@ -1,5 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.visitor;
 
+import java.util.function.Supplier;
+
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
@@ -36,10 +38,14 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTClass visitProg(MiniJajaParser.ProgContext ctx) {
+		VisitorUtils.info("Starting AST construction for program");
+		VisitorUtils.debug("Visiting program (class) [" + VisitorUtils.line(ctx) + "," + VisitorUtils.column(ctx) + "]");
+
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTDecls decls = (ASTDecls) visit(ctx.decls());
 		ASTMainMethod main = (ASTMainMethod) visit(ctx.methmain());
-		return new ASTClass(ident, decls, main, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Prog",
+				() -> new ASTClass(ident, decls, main, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -52,7 +58,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTIdent visitIdent(MiniJajaParser.IdentContext ctx) {
-		return new ASTIdent(ctx.getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Ident",
+				() -> new ASTIdent(ctx.getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -65,11 +72,13 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTDecls visitDecls(MiniJajaParser.DeclsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.DeclContext, ASTDecl, ASTDecls>build(
+		return VisitorUtils.safeBuild("Decls", () -> VisitorUtils.<MiniJajaParser.DeclContext, ASTDecl, ASTDecls>build(
 				ctx.decl(),
 				declCtx -> (ASTDecl) visit(declCtx),
-				(head, tail) -> new ASTDeclsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTDeclsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+				(head, tail) -> VisitorUtils.safeBuild("DeclsChain",
+						() -> new ASTDeclsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
+				() -> VisitorUtils.safeBuild("DeclsNil",
+						() -> new ASTDeclsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
 	}
 
 	/**
@@ -82,7 +91,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTVar visitVarDecl(MiniJajaParser.VarDeclContext ctx) {
-		return (ASTVar) visit(ctx.var());
+		return VisitorUtils.safeBuild("VarDecl", () -> (ASTVar) visit(ctx.var()));
 	}
 
 	/**
@@ -95,7 +104,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTMethod visitMethodDecl(MiniJajaParser.MethodDeclContext ctx) {
-		return (ASTMethod) visit(ctx.method());
+		return VisitorUtils.safeBuild("MethodDecl", () -> (ASTMethod) visit(ctx.method()));
 	}
 
 	/**
@@ -108,11 +117,13 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTVars visitVars(MiniJajaParser.VarsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.VarContext, ASTVar, ASTVars>build(
+		return VisitorUtils.safeBuild("Vars", () -> VisitorUtils.<MiniJajaParser.VarContext, ASTVar, ASTVars>build(
 				ctx.var(),
 				varCtx -> (ASTVar) visit(varCtx),
-				(head, tail) -> new ASTVarsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTVarsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+				(head, tail) -> VisitorUtils.safeBuild("VarsChain",
+						() -> new ASTVarsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
+				() -> VisitorUtils.safeBuild("VarsNil",
+						() -> new ASTVarsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
 	}
 
 	/**
@@ -128,7 +139,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTTypeMeth typemeth = (ASTTypeMeth) visit(ctx.typemeth());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTVExpr vexpr = (ASTVExpr) visit(ctx.vexp());
-		return new ASTVarSimple(typemeth, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("VarDeclSimple",
+				() -> new ASTVarSimple(typemeth, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -144,7 +156,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTTypeMeth typemeth = (ASTTypeMeth) visit(ctx.typemeth());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return new ASTVarArray(typemeth, ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("VarDeclArray",
+				() -> new ASTVarArray(typemeth, ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -160,7 +173,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTType type = (ASTType) visit(ctx.type());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTVExpr vexpr = (ASTVExpr) visit(ctx.vexp());
-		return new ASTVarConst(type, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("VarDeclFinal",
+				() -> new ASTVarConst(type, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -177,7 +191,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 			return null;
 		}
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return new ASTVExpr(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("VExp", () -> new ASTVExpr(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -195,7 +209,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTParams params = (ASTParams) visit(ctx.params());
 		ASTVars vars = (ASTVars) visit(ctx.vars());
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
-		return new ASTMethod(typemeth, ident, params, vars, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Method",
+				() -> new ASTMethod(typemeth, ident, params, vars, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -210,7 +225,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTMainMethod visitMethmain(MiniJajaParser.MethmainContext ctx) {
 		ASTVars vars = (ASTVars) visit(ctx.vars());
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
-		return new ASTMainMethod(vars, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("MainMethod",
+				() -> new ASTMainMethod(vars, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -223,11 +239,13 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTParams visitParams(MiniJajaParser.ParamsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.ParamContext, ASTParam, ASTParams>build(
+		return VisitorUtils.safeBuild("Params", () -> VisitorUtils.<MiniJajaParser.ParamContext, ASTParam, ASTParams>build(
 				ctx.param(),
 				paramCtx -> (ASTParam) visit(paramCtx),
-				(head, tail) -> new ASTParamsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTParamsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+				(head, tail) -> VisitorUtils.safeBuild("ParamsChain",
+						() -> new ASTParamsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
+				() -> VisitorUtils.safeBuild("ParamsNil",
+						() -> new ASTParamsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
 	}
 
 	/**
@@ -242,7 +260,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTParam visitParam(MiniJajaParser.ParamContext ctx) {
 		ASTType type = (ASTType) visit(ctx.type());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
-		return new ASTParam(type, ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Param",
+				() -> new ASTParam(type, ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -255,11 +274,13 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTInstrs visitInstrs(MiniJajaParser.InstrsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.InstrContext, ASTInstr, ASTInstrs>build(
+		return VisitorUtils.safeBuild("Instrs", () -> VisitorUtils.<MiniJajaParser.InstrContext, ASTInstr, ASTInstrs>build(
 				ctx.instr(),
 				instrCtx -> (ASTInstr) visit(instrCtx),
-				(head, tail) -> new ASTInstrsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+				(head, tail) -> VisitorUtils.safeBuild("InstrsChain",
+						() -> new ASTInstrsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
+				() -> VisitorUtils.safeBuild("InstrsNil",
+						() -> new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
 	}
 
 	/**
@@ -274,8 +295,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTAssignmentOp visitAssignment(MiniJajaParser.AssignmentContext ctx) {
 		ASTLValue lvalue = (ASTLValue) visit(ctx.ident1());
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return new ASTAssignmentOp(lvalue, expr, AssignmentOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Assignment",
+				() -> new ASTAssignmentOp(lvalue, expr, AssignmentOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -289,8 +311,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTIncrementOp visitIncrement(MiniJajaParser.IncrementContext ctx) {
 		ASTLValue lvalue = (ASTLValue) visit(ctx.ident1());
-		return new ASTIncrementOp(lvalue, IncrementOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Increment",
+				() -> new ASTIncrementOp(lvalue, IncrementOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -305,7 +328,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTMethodCallInstr visitCallI(MiniJajaParser.CallIContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExprs exprs = (ASTExprs) visit(ctx.listexp());
-		return new ASTMethodCallInstr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("MethodCallInstr",
+				() -> new ASTMethodCallInstr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -319,7 +343,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTReturn visitReturn(MiniJajaParser.ReturnContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return new ASTReturn(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Return",
+				() -> new ASTReturn(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -334,12 +359,13 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTWrite visitWrite(MiniJajaParser.WriteContext ctx) {
 		MiniJajaParser.Ident1Context ident1 = ctx.ident1();
 		if (ident1 == null) {
-			return new ASTWrite(
+			return VisitorUtils.safeBuild("WriteString", () -> new ASTWrite(
 					new ASTStringLiteral(ctx.STRING().getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx)), false,
-					VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+					VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 		}
 		ASTLValue lvalue = (ASTLValue) visit(ident1);
-		return new ASTWrite(lvalue, false, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("WriteValue",
+				() -> new ASTWrite(lvalue, false, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -354,12 +380,13 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTWrite visitWriteln(MiniJajaParser.WritelnContext ctx) {
 		MiniJajaParser.Ident1Context ident1 = ctx.ident1();
 		if (ident1 == null) {
-			return new ASTWrite(
+			return VisitorUtils.safeBuild("WritelnString", () -> new ASTWrite(
 					new ASTStringLiteral(ctx.STRING().getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx)), true,
-					VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+					VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 		}
 		ASTLValue lvalue = (ASTLValue) visit(ident1);
-		return new ASTWrite(lvalue, true, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("WritelnValue",
+				() -> new ASTWrite(lvalue, true, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -374,11 +401,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTIf visitIf(MiniJajaParser.IfContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
 		ASTInstrs ifInstrs = (ASTInstrs) visit(ctx.instrs(0));
-		ASTInstrs elseInstrs = null;
-		if (ctx.instrs().size() >= 2) {
-			elseInstrs = (ASTInstrs) visit(ctx.instrs(1));
-		}
-		return new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		ASTInstrs elseInstrs = (ctx.instrs().size() >= 2 ? (ASTInstrs) visit(ctx.instrs(1)) : null);
+		return VisitorUtils.safeBuild("If",
+				() -> new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -393,7 +418,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTWhile visitWhile(MiniJajaParser.WhileContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
-		return new ASTWhile(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("While",
+				() -> new ASTWhile(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -406,11 +432,13 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTExprs visitListexp(MiniJajaParser.ListexpContext ctx) {
-		return VisitorUtils.<MiniJajaParser.ExpContext, ASTExpr, ASTExprs>build(
+		return VisitorUtils.safeBuild("ListExp", () -> VisitorUtils.<MiniJajaParser.ExpContext, ASTExpr, ASTExprs>build(
 				ctx.exp(),
 				exprCtx -> (ASTExpr) visit(exprCtx),
-				(head, tail) -> new ASTExprsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTExprsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+				(head, tail) -> VisitorUtils.safeBuild("ExprsChain",
+						() -> new ASTExprsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
+				() -> VisitorUtils.safeBuild("ExprsNil",
+						() -> new ASTExprsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
 	}
 
 	/**
@@ -424,7 +452,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTUnaryOp visitNotExp(MiniJajaParser.NotExpContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp1());
-		return new ASTUnaryOp(expr, UnaryOp.fromSymbol("!"), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("NotExp",
+				() -> new ASTUnaryOp(expr, UnaryOp.fromSymbol("!"), VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -439,8 +468,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTBinaryOp visitLogicExp(MiniJajaParser.LogicExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.exp());
 		ASTExpr right = (ASTExpr) visit(ctx.exp1());
-		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("LogicExp",
+				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -483,8 +513,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTBinaryOp visitCompExp(MiniJajaParser.CompExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.exp1());
 		ASTExpr right = (ASTExpr) visit(ctx.exp2());
-		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("CompExp",
+				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -498,7 +529,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTUnaryOp visitNegExp(MiniJajaParser.NegExpContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.term());
-		return new ASTUnaryOp(expr, UnaryOp.fromSymbol("-"), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("NegExp",
+				() -> new ASTUnaryOp(expr, UnaryOp.fromSymbol("-"), VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -513,8 +545,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTBinaryOp visitAddSubExp(MiniJajaParser.AddSubExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.exp2());
 		ASTExpr right = (ASTExpr) visit(ctx.term());
-		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("AddSubExp",
+				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -543,8 +576,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTBinaryOp visitMulDivExp(MiniJajaParser.MulDivExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.term());
 		ASTExpr right = (ASTExpr) visit(ctx.fact());
-		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("MulDivExp",
+				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -587,7 +621,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTMethodCallExpr visitMethodCall(MiniJajaParser.MethodCallContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExprs exprs = (ASTExprs) visit(ctx.listexp());
-		return new ASTMethodCallExpr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("MethodCallExpr",
+				() -> new ASTMethodCallExpr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -601,7 +636,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTLength visitLength(MiniJajaParser.LengthContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
-		return new ASTLength(ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Length",
+				() -> new ASTLength(ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -614,8 +650,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTBoolLiteral visitBool(MiniJajaParser.BoolContext ctx) {
-		return new ASTBoolLiteral((ctx.BOOLEAN().getText() == "true" ? true : false), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Bool",
+				() -> new ASTBoolLiteral((ctx.BOOLEAN().getText() == "true" ? true : false), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -628,8 +665,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTIntLiteral visitInt(MiniJajaParser.IntContext ctx) {
-		return new ASTIntLiteral(Integer.parseInt(ctx.NUMBER().getText()), VisitorUtils.line(ctx),
-				VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("Int",
+				() -> new ASTIntLiteral(Integer.parseInt(ctx.NUMBER().getText()), VisitorUtils.line(ctx),
+						VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -672,7 +710,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTArrayAccess visitArrayAccess(MiniJajaParser.ArrayAccessContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return new ASTArrayAccess(ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("ArrayAccess",
+				() -> new ASTArrayAccess(ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -685,7 +724,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTVoidType visitVoidType(MiniJajaParser.VoidTypeContext ctx) {
-		return new ASTVoidType(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("VoidType", () -> new ASTVoidType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -711,7 +750,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTIntType visitIntType(MiniJajaParser.IntTypeContext ctx) {
-		return new ASTIntType(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("IntType", () -> new ASTIntType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 
 	/**
@@ -724,6 +763,6 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTBoolType visitBoolType(MiniJajaParser.BoolTypeContext ctx) {
-		return new ASTBoolType(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		return VisitorUtils.safeBuild("BoolType", () -> new ASTBoolType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
 }

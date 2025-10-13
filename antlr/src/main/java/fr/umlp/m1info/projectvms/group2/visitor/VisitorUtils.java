@@ -2,6 +2,9 @@ package fr.umlp.m1info.projectvms.group2.visitor;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+
 import java.util.List;
 
 import java.util.function.Function;
@@ -16,6 +19,7 @@ import java.util.function.Supplier;
  * semantic analysis
  */
 public class VisitorUtils {
+	private static ParserLogger log = ParserLogger.getInstance();
 
 	/**
 	 * Returns the line number of the first token in the given parser context
@@ -56,5 +60,33 @@ public class VisitorUtils {
 			result = chainFactory.apply(element, result);
 		}
 		return result;
+	}
+
+	public static void debug(String msg) {
+		log.log(msg, ParserLogger.MessageLevel.DEBUG);
+	}
+
+	public static void info(String msg) {
+		log.log(msg, ParserLogger.MessageLevel.INFO);
+	}
+
+	public static void warn(String msg) {
+		log.log(msg, ParserLogger.MessageLevel.WARNING);
+	}
+
+	public static void error(String msg) {
+		log.log(msg, ParserLogger.MessageLevel.ERROR);
+	}
+
+	public static <T extends ASTNode> T safeBuild(String contextName, Supplier<T> builder) {
+		try {
+			T node = builder.get();
+			debug("Build node: " + node.getClass().getSimpleName() + " (" + contextName + ")[" + node.getLine() + ","
+					+ node.getColumn() + "]");
+			return node;
+		} catch (Exception e) {
+			error("Failed to build node for " + contextName + ": " + e.getMessage());
+			throw new RuntimeException("AST build error in " + contextName, e);
+		}
 	}
 }
