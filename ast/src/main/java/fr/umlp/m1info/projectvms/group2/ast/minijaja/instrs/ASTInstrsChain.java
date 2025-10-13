@@ -25,7 +25,7 @@ public class ASTInstrsChain extends ASTInstrs {
 		} else if (instrs == null) {
 			throw new NullPointerException("instrs cannot be null");
 		}
-		chain = new Chain<ASTInstr, ASTInstrs>(instr, instrs);
+		chain = new Chain<>(instr, instrs);
 	}
 
 	/**

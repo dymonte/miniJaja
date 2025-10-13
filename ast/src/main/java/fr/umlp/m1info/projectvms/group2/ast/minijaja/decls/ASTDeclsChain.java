@@ -25,7 +25,7 @@ public class ASTDeclsChain extends ASTDecls {
 		} else if (decls == null) {
 			throw new NullPointerException("decls cannot be null");
 		}
-		chain = new Chain<ASTDecl, ASTDecls>(decl, decls);
+		chain = new Chain<>(decl, decls);
 	}
 
 	/**

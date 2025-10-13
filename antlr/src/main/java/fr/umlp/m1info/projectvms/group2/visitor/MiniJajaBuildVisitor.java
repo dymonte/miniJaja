@@ -1,7 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.visitor;
 
-import java.util.function.Supplier;
-
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
@@ -483,8 +481,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTExpr visitSingleExp1(MiniJajaParser.SingleExp1Context ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.exp1());
-		return expr;
+		return (ASTExpr) visit(ctx.exp1());
 	}
 
 	/**
@@ -497,8 +494,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTExpr visitExp2Only(MiniJajaParser.Exp2OnlyContext ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.exp2());
-		return expr;
+		return (ASTExpr) visit(ctx.exp2());
 	}
 
 	/**
@@ -560,8 +556,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTExpr visitTermOnly(MiniJajaParser.TermOnlyContext ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.term());
-		return expr;
+		return (ASTExpr) visit(ctx.term());
 	}
 
 	/**
@@ -591,8 +586,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTExpr visitFactOnly(MiniJajaParser.FactOnlyContext ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.fact());
-		return expr;
+		return (ASTExpr) visit(ctx.fact());
 	}
 
 	/**
@@ -605,8 +599,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTExpr visitVarRef(MiniJajaParser.VarRefContext ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.ident1());
-		return expr;
+		return (ASTExpr) visit(ctx.ident1());
 	}
 
 	/**
@@ -651,7 +644,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTBoolLiteral visitBool(MiniJajaParser.BoolContext ctx) {
 		return VisitorUtils.safeBuild("Bool",
-				() -> new ASTBoolLiteral((ctx.BOOLEAN().getText().equals("true") ? true : false), VisitorUtils.line(ctx),
+				() -> new ASTBoolLiteral((ctx.BOOLEAN().getText().equals("true")), VisitorUtils.line(ctx),
 						VisitorUtils.column(ctx)));
 	}
 
@@ -680,8 +673,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTExpr visitParenExp(MiniJajaParser.ParenExpContext ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return expr;
+		return (ASTExpr) visit(ctx.exp());
 	}
 
 	/**
@@ -694,8 +686,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTIdent visitIdentificator(MiniJajaParser.IdentificatorContext ctx) {
-		ASTIdent ident = (ASTIdent) visit(ctx.ident());
-		return ident;
+		return (ASTIdent) visit(ctx.ident());
 	}
 
 	/**

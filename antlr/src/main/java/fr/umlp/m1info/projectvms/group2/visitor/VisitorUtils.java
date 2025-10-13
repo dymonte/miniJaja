@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.exception.VisitorBuildException;
 
 import java.util.List;
 
@@ -19,6 +20,9 @@ import java.util.function.Supplier;
  * semantic analysis
  */
 public class VisitorUtils {
+	private VisitorUtils() {
+	}
+
 	private static ParserLogger log = ParserLogger.getInstance();
 
 	/**
@@ -44,19 +48,20 @@ public class VisitorUtils {
 	/**
 	 * Generic method to build a left-recursive AST list chain (Cons/Nil pattern)
 	 *
-	 * @param <Ctx>          The ANTLR context type
-	 * @param <Elem>         The AST node type
+	 * @param <C>            The ANTLR context type
+	 * @param <E>            The AST node type
+	 * @param <L>            The List node type
 	 * @param contexts       The list of parse rule contexts
 	 * @param elementBuilder A function that converts a context into an ASTNode
 	 * @param chainFactory   A function that wraps (head, tail) into a chain node
 	 * @param nilSupplier    A supplier that returns the Nil node
 	 * @return The root AST list node
 	 */
-	public static <Ctx, Elem, ListNode> ListNode build(List<Ctx> contexts, Function<Ctx, Elem> elementBuilder,
-			BiFunction<Elem, ListNode, ListNode> chainFactory, Supplier<ListNode> nilSupplier) {
-		ListNode result = nilSupplier.get();
+	public static <C, E, L> L build(List<C> contexts, Function<C, E> elementBuilder,
+			BiFunction<E, L, L> chainFactory, Supplier<L> nilSupplier) {
+		L result = nilSupplier.get();
 		for (int i = contexts.size() - 1; i >= 0; i--) {
-			Elem element = elementBuilder.apply(contexts.get(i));
+			E element = elementBuilder.apply(contexts.get(i));
 			result = chainFactory.apply(element, result);
 		}
 		return result;
@@ -86,7 +91,7 @@ public class VisitorUtils {
 			return node;
 		} catch (Exception e) {
 			error("Failed to build node for " + contextName + ": " + e.getMessage());
-			throw new RuntimeException("AST build error in " + contextName, e);
+			throw new VisitorBuildException("AST build error in " + contextName, e);
 		}
 	}
 }

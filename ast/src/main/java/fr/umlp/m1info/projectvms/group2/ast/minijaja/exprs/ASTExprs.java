@@ -10,10 +10,10 @@ public abstract class ASTExprs extends ASTNode {
 	/**
 	 * Constructs a new ASTExprs node
 	 *
-	 * @param line the line number of the node appears
+	 * @param line   the line number of the node appears
 	 * @param column the column of the node appears
 	 */
-	public ASTExprs(int line, int column) {
+	protected ASTExprs(int line, int column) {
 		super(line, column);
 	}
 }

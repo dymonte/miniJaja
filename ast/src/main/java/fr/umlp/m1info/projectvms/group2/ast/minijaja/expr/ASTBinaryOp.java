@@ -38,6 +38,7 @@ public class ASTBinaryOp extends ASTExpr {
 	 *
 	 * @return a formatted string
 	 */
+	@Override
 	public String toString() {
 		return "" + left + " " + op + " " + right;
 	}

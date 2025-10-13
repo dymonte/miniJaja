@@ -25,7 +25,7 @@ public class ASTParamsChain extends ASTParams {
 		} else if (params == null) {
 			throw new IllegalArgumentException("params cannot be null");
 		}
-		chain = new Chain<ASTParam, ASTParams>(param, params);
+		chain = new Chain<>(param, params);
 	}
 
 	/**

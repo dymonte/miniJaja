@@ -25,7 +25,7 @@ public class ASTExprsChain extends ASTExprs {
 		} else if (exprs == null) {
 			throw new NullPointerException("exprs cannot be null");
 		}
-		chain = new Chain<ASTExpr, ASTExprs>(expr, exprs);
+		chain = new Chain<>(expr, exprs);
 	}
 
 	/**

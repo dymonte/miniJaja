@@ -28,6 +28,7 @@ public class ASTLength extends ASTExpr {
 	 *
 	 * @return formatted string of length
 	 */
+	@Override
 	public String toString() {
 		return "length(" + ident + ")";
 	}

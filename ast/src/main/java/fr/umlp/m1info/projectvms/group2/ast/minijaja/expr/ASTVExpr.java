@@ -26,6 +26,7 @@ public class ASTVExpr extends ASTExpr {
 	 *
 	 * @return a formatted string
 	 */
+	@Override
 	public String toString() {
 		return "= " + expr;
 	}

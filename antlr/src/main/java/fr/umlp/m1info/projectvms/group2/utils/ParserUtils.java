@@ -13,6 +13,9 @@ import org.antlr.v4.runtime.tree.*;
  * Utility class for parsing Minijaja source code from strings or files
  */
 public class ParserUtils {
+	private ParserUtils() {
+	}
+
 	/**
 	 * Parse a MiniJaja source code from a string input
 	 *
