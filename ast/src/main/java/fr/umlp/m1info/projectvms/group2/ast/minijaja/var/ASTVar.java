@@ -13,7 +13,6 @@ public abstract class ASTVar extends ASTDecl {
 	 * Constructor an AST variable node
 	 *
 	 * @param ident  the identifier fo the variable
-	 * @param expr   the initialization expression
 	 * @param line   the line number of the variable declaration
 	 * @param column the column number of the variable declaration
 	 * @throws IllegalArgumentException if ident is null
