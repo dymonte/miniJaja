@@ -11,12 +11,16 @@ public class ASTReturn extends ASTInstr {
 	/**
 	 * Constructs a new ASTReturn node
 	 *
-	 * @param expr the expression to return
-	 * @param line the source code line of this node
+	 * @param expr   the expression to return
+	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws NullPointerException if expr is null
 	 */
 	public ASTReturn(ASTExpr expr, int line, int column) {
 		super(line, column);
+		if (expr == null) {
+			throw new NullPointerException("expr cannot be null");
+		}
 		this.expr = expr;
 	}
 

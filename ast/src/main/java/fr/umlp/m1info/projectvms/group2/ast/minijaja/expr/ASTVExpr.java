@@ -9,11 +9,15 @@ public class ASTVExpr extends ASTExpr {
 	/**
 	 * Constructs a new ASTVExpr node
 	 *
-	 * @param line the source code line
+	 * @param line   the source code line
 	 * @param column the source code column
+	 * @throws NullPointerException if expr is null
 	 */
 	public ASTVExpr(ASTExpr expr, int line, int column) {
 		super(line, column);
+		if (expr == null) {
+			throw new NullPointerException("expr cannot be null");
+		}
 		this.expr = expr;
 	}
 
@@ -22,6 +26,7 @@ public class ASTVExpr extends ASTExpr {
 	 *
 	 * @return a formatted string
 	 */
+	@Override
 	public String toString() {
 		return "= " + expr;
 	}

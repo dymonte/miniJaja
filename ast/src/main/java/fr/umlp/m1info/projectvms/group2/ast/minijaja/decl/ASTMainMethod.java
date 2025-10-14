@@ -20,9 +20,15 @@ public class ASTMainMethod extends ASTNode {
 	 * @param instrs the list of instructions inside the main method
 	 * @param line   the line number of the main method declaration
 	 * @param column the column number of the main method declaration
+	 * @throws NullPointerException if vars or instrs is null
 	 */
 	public ASTMainMethod(ASTVars vars, ASTInstrs instrs, int line, int column) {
 		super(line, column);
+		if (vars == null) {
+			throw new NullPointerException("vars cannot be null");
+		} else if (instrs == null) {
+			throw new NullPointerException("intrs cannot be null");
+		}
 		this.vars = vars;
 		this.instrs = instrs;
 	}
@@ -34,9 +40,6 @@ public class ASTMainMethod extends ASTNode {
 	 */
 	@Override
 	public String toString() {
-		return "main " + "{\n"
-				+ (vars != null ? vars : "")
-				+ (instrs != null ? instrs : "")
-				+ "}";
+		return "main " + "{\n" + vars + instrs + "}";
 	}
 }

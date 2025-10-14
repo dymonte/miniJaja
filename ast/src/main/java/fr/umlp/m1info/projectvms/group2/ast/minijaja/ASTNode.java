@@ -16,8 +16,14 @@ public abstract class ASTNode {
 	 * 
 	 * @param line   the line number where the node appears
 	 * @param column the column number where the node starts
+	 * @throws IllegalArgumentException if line or column is less than 0
 	 */
-	public ASTNode(int line, int column) {
+	protected ASTNode(int line, int column) {
+		if (line < 0) {
+			throw new IllegalArgumentException("line must be higher than -1");
+		} else if (column < 0) {
+			throw new IllegalArgumentException("column must be higher than -1");
+		}
 		this.line = line;
 		this.column = column;
 	}

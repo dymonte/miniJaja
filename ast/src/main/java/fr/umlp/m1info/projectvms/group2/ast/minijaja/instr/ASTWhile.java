@@ -4,7 +4,8 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrs;
 
 /**
- * Represents a while loop instruction in the MiniJaja abstract syntax tree (AST)
+ * Represents a while loop instruction in the MiniJaja abstract syntax tree
+ * (AST)
  */
 public class ASTWhile extends ASTInstr {
 	private ASTExpr expr;
@@ -13,13 +14,18 @@ public class ASTWhile extends ASTInstr {
 	/**
 	 * Constructs a new ASTWhile node
 	 *
-	 * @param expr the condition expression of the while loop
+	 * @param expr   the condition expression of the while loop
 	 * @param instrs the body instructions executed when the condition is true
-	 * @param line the source code line where this node appears
+	 * @param line   the source code line where this node appears
 	 * @param column the source code column where this node appears
 	 */
 	public ASTWhile(ASTExpr expr, ASTInstrs instrs, int line, int column) {
 		super(line, column);
+		if (expr == null) {
+			throw new NullPointerException("expr cannot be null");
+		} else if (instrs == null) {
+			throw new NullPointerException("instrs cannot be null");
+		}
 		this.expr = expr;
 		this.instrs = instrs;
 	}

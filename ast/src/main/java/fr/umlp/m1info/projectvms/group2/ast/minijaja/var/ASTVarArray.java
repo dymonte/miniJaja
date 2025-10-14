@@ -10,6 +10,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 public class ASTVarArray extends ASTVar {
 	private ASTTypeMeth type;
 	private ASTExpr expr;
+
 	/**
 	 * Constructs an array variable declaration
 	 *
@@ -18,9 +19,15 @@ public class ASTVarArray extends ASTVar {
 	 * @param expr   the expression for the array size
 	 * @param line   the line number of the array declaration
 	 * @param column the column number of the array declaration
+	 * @throws NullPointerException if type or expr is null
 	 */
 	public ASTVarArray(ASTTypeMeth type, ASTIdent ident, ASTExpr expr, int line, int column) {
 		super(ident, line, column);
+		if (type == null) {
+			throw new NullPointerException("type cannot be null");
+		} else if (expr == null) {
+			throw new NullPointerException("expr cannot be null");
+		}
 		this.type = type;
 		this.expr = expr;
 	}
@@ -33,8 +40,6 @@ public class ASTVarArray extends ASTVar {
 	 */
 	@Override
 	public String toString() {
-		return (type != null ? type : "") + " "
-				+ (ident != null ? ident : "")
-				+ "[" + (expr != null ? expr : "") + "]";
+		return type + " " + ident + "[" + expr + "]";
 	}
 }

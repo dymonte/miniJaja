@@ -14,14 +14,18 @@ public class ASTWrite extends ASTInstr {
 	/**
 	 * Constructs a write instruction printing a varaible
 	 *
-	 * @param lvalue the variable reference to write
+	 * @param lvalue  the variable reference to write
 	 * @param literal the string to write
-	 * @param isLn true to append a newline (writeln), false for write
-	 * @param line the source code line
-	 * @param column the source code column
+	 * @param isLn    true to append a newline (writeln), false for write
+	 * @param line    the source code line
+	 * @param column  the source code column
+	 * @throws NullPointerException if lvalue and literral is null
 	 */
 	private ASTWrite(ASTLValue lvalue, ASTStringLiteral literal, boolean isLn, int line, int column) {
 		super(line, column);
+		if (lvalue == null && literal == null) {
+			throw new NullPointerException("lvalue and literal cannot be null");
+		}
 		this.lvalue = lvalue;
 		this.literal = literal;
 		this.isLn = isLn;
@@ -31,21 +35,21 @@ public class ASTWrite extends ASTInstr {
 	 * Constructs a write instruction printing a variable
 	 *
 	 * @param lvalue the variable reference to write
-	 * @param isLn true to append a newline (writeln), false for write
-	 * @param line the source code line
+	 * @param isLn   true to append a newline (writeln), false for write
+	 * @param line   the source code line
 	 * @param column the source code column
 	 */
 	public ASTWrite(ASTLValue lvalue, boolean isLn, int line, int column) {
 		this(lvalue, null, isLn, line, column);
 	}
-	
+
 	/**
 	 * Constructs a write instruction printing a variable
 	 *
 	 * @param literal the string to write
-	 * @param isLn true to append a newline (writeln), false for write
-	 * @param line the source code line
-	 * @param column the source code column
+	 * @param isLn    true to append a newline (writeln), false for write
+	 * @param line    the source code line
+	 * @param column  the source code column
 	 */
 	public ASTWrite(ASTStringLiteral literal, boolean isLn, int line, int column) {
 		this(null, literal, isLn, line, column);

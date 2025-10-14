@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.params;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
+import fr.umlp.m1info.projectvms.group2.utils.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 
 /**
@@ -12,18 +12,25 @@ public class ASTParamsChain extends ASTParams {
 	/**
 	 * Constructs a new ASTParamsChain node
 	 *
-	 * @param param the first param declaration
+	 * @param param  the first param declaration
 	 * @param params the rest of the params declarations
-	 * @param line the source code line of this node
+	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws IllegalArgumentException if param or params in null
 	 */
 	public ASTParamsChain(ASTParam param, ASTParams params, int line, int column) {
 		super(line, column);
-		chain = new Chain(param, params);
+		if (param == null) {
+			throw new IllegalArgumentException("param cannot be null");
+		} else if (params == null) {
+			throw new IllegalArgumentException("params cannot be null");
+		}
+		chain = new Chain<>(param, params);
 	}
 
 	/**
-	 * Returns a string representation of the parameter declarations in MiniJaja syntax
+	 * Returns a string representation of the parameter declarations in MiniJaja
+	 * syntax
 	 *
 	 * @return formatted string of this AST node
 	 */

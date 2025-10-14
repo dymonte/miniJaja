@@ -7,10 +7,10 @@ public abstract class ASTLValue extends ASTExpr {
 	/**
 	 * Constructs a new ASTLValue node
 	 *
-	 * @param line the line in the source code
+	 * @param line   the line in the source code
 	 * @param column the column in the source code
 	 */
-	public ASTLValue(int line, int column) {
+	protected ASTLValue(int line, int column) {
 		super(line, column);
 	}
 }

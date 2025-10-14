@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.decls;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
+import fr.umlp.m1info.projectvms.group2.utils.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTDecl;
 
 /**
@@ -12,14 +12,20 @@ public class ASTDeclsChain extends ASTDecls {
 	/**
 	 * Constructs a new ASTDeclsChain node
 	 *
-	 * @param decl the first declaration
-	 * @param decls the rest of the declarations
-	 * @param line the source code line of this node
+	 * @param decl   the first declaration
+	 * @param decls  the rest of the declarations
+	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws NullPointerException if decl or decls is null
 	 */
 	public ASTDeclsChain(ASTDecl decl, ASTDecls decls, int line, int column) {
 		super(line, column);
-		chain = new Chain(decl, decls);
+		if (decl == null) {
+			throw new NullPointerException("decl cannot be null");
+		} else if (decls == null) {
+			throw new NullPointerException("decls cannot be null");
+		}
+		chain = new Chain<>(decl, decls);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.ast.minijaja.vars;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.Chain;
+import fr.umlp.m1info.projectvms.group2.utils.Chain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 
 /**
@@ -12,14 +12,20 @@ public class ASTVarsChain extends ASTVars {
 	/**
 	 * Constructs a new ASTVarsChain node
 	 *
-	 * @param var    the first variable declaration
+	 * @param v      the first variable declaration
 	 * @param vars   the rest of the variable declarations
 	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
+	 * @throws NullPointerException if var or vars is null;
 	 */
-	public ASTVarsChain(ASTVar var, ASTVars vars, int line, int column) {
+	public ASTVarsChain(ASTVar v, ASTVars vars, int line, int column) {
 		super(line, column);
-		chain = new Chain(var, vars);
+		if (v == null) {
+			throw new NullPointerException("var cannot be null");
+		} else if (vars == null) {
+			throw new NullPointerException("vars cannot be null");
+		}
+		chain = new Chain<>(v, vars);
 	}
 
 	/**
