@@ -25,8 +25,6 @@ class HeapBlockNode {
 		}
 	}
 
-	// TODO: maybe add a remove method
-
 	public int getAddress() {
 		return address;
 	}

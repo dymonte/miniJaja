@@ -17,7 +17,9 @@ public class SymNode {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Adds a symbol to the symbol linked list
+	 *
+	 * @param symNode the symbol to add at the end of the list
 	 */
 	public void addSymbol(SymNode symNode) {
 		if (symNode.nextSymbol != null) {
@@ -28,25 +30,40 @@ public class SymNode {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Adds an instance at the beginning of the instance linked list
+	 *
+	 * @param instNode the instance node to add at the beginning of the list
 	 */
 	public void addInstance(InstNode instNode) {
-		instNode.addInstance(firstInstance);
+		instNode.setNextInstance(firstInstance);
 		firstInstance = instNode;
 	}
 
+	/**
+	 * @return the symbol identifier
+	 */
 	public String getIdent() {
 		return ident;
 	}
 
+	/**
+	 * @return the next symbol in the symbol linked list
+	 */
 	public SymNode getNextSymbol() {
 		return nextSymbol;
 	}
 
+	/**
+	 * @return the informations of this symbol (object kind, type...) stored as a
+	 *         MemInfo object
+	 */
 	public MemInfo getInfo() {
 		return info;
 	}
 
+	/**
+	 * @return the first element of the instance linked list
+	 */
 	public InstNode getFirstInstance() {
 		return firstInstance;
 	}

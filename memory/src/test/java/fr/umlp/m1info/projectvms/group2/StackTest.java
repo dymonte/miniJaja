@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -14,9 +15,15 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
  */
 public class StackTest {
 
+	private Stack s;
+
+	@Before
+	public void setUp() {
+		s = new Stack(32000);
+	}
+
 	@Test
 	public void testPushAndPop() {
-		Stack s = new Stack();
 		SymNode symbol = Mockito.mock(SymNode.class);
 		s.push(10, symbol);
 		s.push(20, symbol);
@@ -28,7 +35,6 @@ public class StackTest {
 
 	@Test
 	public void testSwap() {
-		Stack s = new Stack();
 		SymNode symbol = Mockito.mock(SymNode.class);
 		s.push(10, symbol);
 		s.push(20, symbol);
@@ -42,15 +48,13 @@ public class StackTest {
 
 	@Test
 	public void testPopEmptyStack() {
-		Stack s = new Stack();
 		Assert.assertNull(s.pop());
 	}
 
 	@Test
 	public void testStackOverflow() {
-		Stack s = new Stack();
 		SymNode symbol = Mockito.mock(SymNode.class);
-		for (int i = 0; i < Stack.MAX_DEPTH; i++) {
+		for (int i = 0; i < s.getMaxDepth(); i++) {
 			s.push(1, symbol);
 		}
 		Assert.assertThrows(StackOverflowException.class, () -> s.push(1, symbol));

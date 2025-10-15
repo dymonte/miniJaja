@@ -36,7 +36,7 @@ public class Memory {
 	 * 
 	 * @param ident the variable identifier
 	 * @param value the variable initial value
-	 * @param sorte the variable type TODO: maybe add here type checking
+	 * @param sorte the variable type
 	 */
 	public <T> void declVar(String ident, T value, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VAR, sorte);
@@ -50,7 +50,7 @@ public class Memory {
 	 * 
 	 * @param ident the constant identifier
 	 * @param value the constant initial value
-	 * @param sorte the constant type TODO: maybe add here type checking
+	 * @param sorte the constant type
 	 */
 	public <T> void declCst(String ident, T value, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.CONST, sorte);

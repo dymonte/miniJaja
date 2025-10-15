@@ -18,7 +18,7 @@ public class HeapTest {
 
 	@Before
 	public void setup() {
-		heap = new Heap();
+		heap = new Heap(1024);
 	}
 
 	@Test
@@ -36,8 +36,8 @@ public class HeapTest {
 
 	@Test
 	public void testTooMuchAllocation() {
-		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(Heap.HEAP_SIZE + 1, Type.INT));
-		heap.allocate(Heap.HEAP_SIZE - 1, Type.INT);
+		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(heap.getHeapSize() + 1, Type.INT));
+		heap.allocate(heap.getHeapSize() - 1, Type.INT);
 		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(10, Type.INT));
 	}
 

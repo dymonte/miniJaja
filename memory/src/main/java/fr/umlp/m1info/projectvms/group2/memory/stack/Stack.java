@@ -7,13 +7,28 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.*;
  * Stack
  */
 public class Stack {
-	InstNode head;
-	// TODO: maybe parameterize this via GUI/CLI args
-	public static int MAX_DEPTH = 32000;
-	int depth = 0;
+	private InstNode head;
+	private final int MAX_DEPTH;
+	private int depth;
+
+	public Stack(int maxDepth) {
+		if (maxDepth <= 0) {
+			throw new IllegalArgumentException("Cannot create an empty sized stack.");
+		}
+		this.MAX_DEPTH = maxDepth;
+		this.head = null;
+		this.depth = 0;
+	}
+
+	public int getMaxDepth() {
+		return MAX_DEPTH;
+	}
 
 	/**
-	 * TODO: javadoc
+	 * Adds an element on top of the stack.
+	 *
+	 * @param val    the element's value to add
+	 * @param symbol the element's symbol to add
 	 */
 	public <T> void push(T val, SymNode symbol) {
 		if (depth >= MAX_DEPTH) {
@@ -24,7 +39,9 @@ public class Stack {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Removes the element on top of the stack and returns it.
+	 *
+	 * @returns the InstNode on top of the stack or null if the stack is empty.
 	 */
 	public InstNode pop() {
 		if (head == null) {
@@ -37,7 +54,7 @@ public class Stack {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Swaps the element on top of the stack with the element below it.
 	 */
 	public void swap() {
 		InstNode newHead = head.getNextInStack();

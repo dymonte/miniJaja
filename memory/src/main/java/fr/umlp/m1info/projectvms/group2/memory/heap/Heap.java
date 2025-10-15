@@ -12,20 +12,34 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
  * Heap
  */
 public class Heap {
-	public static int HEAP_SIZE = 1024; // TODO: maybe this should be passed as CLI/GUI param
-	ByteBuffer heap = ByteBuffer.allocate(HEAP_SIZE);
+	private final int HEAP_SIZE;
+	private ByteBuffer heap;
+	private HeapBlockNode[] blocks;
+	private ArrayList<HeapSymbol> localTable;
+
+	public Heap(int heapSize) {
+		if (heapSize <= 0) {
+			throw new IllegalArgumentException("Cannot create an empty sized heap.");
+		}
+
+		this.HEAP_SIZE = heapSize;
+		this.heap = ByteBuffer.allocate(HEAP_SIZE);
+
+		/**
+		 * This array is of size log2(HEAP_SIZE).
+		 * each index i corresponds to blocks of size 2^(i-1)
+		 * for instance, addresses of blocks of size 256 are stored at index 7.
+		 */
+		this.blocks = new HeapBlockNode[(int) (Math.log(HEAP_SIZE) / Math.log(2)) + 1];
+		this.blocks[blocks.length - 1] = new HeapBlockNode(0);
+		this.localTable = new ArrayList<>();
+	}
 
 	/**
-	 * This array is of size log2(HEAP_SIZE).
-	 * each index i corresponds to blocks of size 2^(i-1)
-	 * for instance, addresses of blocks of size 256 are stored at index 7.
+	 * @return The heap size
 	 */
-	HeapBlockNode[] blocks = new HeapBlockNode[(int) (Math.log(HEAP_SIZE) / Math.log(2)) + 1];
-
-	ArrayList<HeapSymbol> localTable = new ArrayList<HeapSymbol>();
-
-	public Heap() {
-		blocks[blocks.length - 1] = new HeapBlockNode(0);
+	public int getHeapSize() {
+		return HEAP_SIZE;
 	}
 
 	/**

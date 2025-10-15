@@ -4,7 +4,7 @@ package fr.umlp.m1info.projectvms.group2.memory.symtable;
  * InstNode
  */
 public class InstNode {
-	private Object val; // TODO: maybe change this to something like a generic type
+	private Object val;
 	private SymNode symbol;
 	private InstNode nextInStack;
 	private InstNode nextInstance;
@@ -17,19 +17,24 @@ public class InstNode {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Sets the next element in the linked list
+	 *
+	 * @param instNode the instance node to become the next of this one in the list
 	 */
-	public void addInstance(InstNode instNode) {
+	public void setNextInstance(InstNode instNode) {
 		nextInstance = instNode;
 	}
 
 	/**
-	 * TODO: javadoc
+	 * @return the instance below this one in the stack
 	 */
 	public InstNode getNextInStack() {
 		return nextInStack;
 	}
 
+	/**
+	 * @return the next instance in the instance linked list.
+	 */
 	public InstNode getNextInstance() {
 		return nextInstance;
 	}
@@ -52,7 +57,7 @@ public class InstNode {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Swaps this instance node with the next one in the stack
 	 */
 	public void swap() {
 		InstNode nextNext = nextInStack.nextInStack;
@@ -61,13 +66,15 @@ public class InstNode {
 	}
 
 	/**
-	 * TODO: javadoc
-	 * NOTE: maybe replace Object with <T>
+	 * @return the instance's value
 	 */
 	public Object getValue() {
 		return val;
 	}
 
+	/**
+	 * @return the instance's symbol
+	 */
 	public SymNode getSymbol() {
 		return symbol;
 	}
