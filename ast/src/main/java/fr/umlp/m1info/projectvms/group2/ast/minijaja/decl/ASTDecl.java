@@ -1,0 +1,19 @@
+package fr.umlp.m1info.projectvms.group2.ast.minijaja.decl;
+
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+
+/**
+ * Abstract base class representing a declaration in the MiniJaja AST
+ */
+public abstract class ASTDecl extends ASTNode {
+
+	/**
+	 * Constructs a new declaration node with the specified source code position
+	 *
+	 * @param line   the line number in the source code
+	 * @param column the column number in the source code
+	 */
+	protected ASTDecl(int line, int column) {
+		super(line, column);
+	}
+}

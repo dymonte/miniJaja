@@ -3,11 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.groupe2.projetVMs</groupId>
-    <artifactId>projet-VMs</artifactId>
+    <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+    <artifactId>project-vms</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.groupe2.projetVMs</groupId>
+  <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>gui</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>gui</name>
@@ -42,7 +42,7 @@
       <artifactId>javafx-maven-plugin</artifactId>
       <version>0.0.8</version>
       <configuration>
-        <mainClass>org.groupe2.projetVMs.App</mainClass>
+        <mainClass>fr.umlp.m1info.projectvms.group2.App</mainClass>
       </configuration>
     </plugin>
   </plugins>
