@@ -59,7 +59,7 @@
           <MenuItem mnemonicParsing="false" text="Open Folder" onAction="#openFolder"/>
             <Menu mnemonicParsing="false" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Close" />
+            <MenuItem mnemonicParsing="false" text="Close" onAction="#closeCurrentFile"/>
             <MenuItem mnemonicParsing="false" text="Save" onAction="#saveFile" accelerator="Shortcut+S" />
             <MenuItem mnemonicParsing="false" text="Save As…" />
             <MenuItem mnemonicParsing="false" text="Revert" />

@@ -75,6 +75,11 @@ public class AppController implements StatefulController {
         }
     }
 
+    /**
+     * Create a file with "untilted.mjj as default name
+     * Called by the button
+     * @return the file created
+     */
     @FXML
     private File createFile() {
         FileChooser fileChooser = new FileChooser();
@@ -182,6 +187,17 @@ public class AppController implements StatefulController {
             System.err.println("Error saving file: " + e.getMessage());
             e.printStackTrace(); // TODO popup error message
         }
+    }
+
+    /**
+     * Closes the current file
+     * Called by the button
+     */
+    @FXML
+    private void closeCurrentFile() {
+        state.closeOpenedFile();
+        state.codeProperty().set("");
+        updateWindowTitle("MiniJaja IDE");
     }
 
 

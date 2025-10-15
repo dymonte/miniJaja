@@ -20,6 +20,7 @@ public class AppState {
 
     public Optional<File> getOpenedFile() { return openedFile; }
     public void setOpenedFile(File file) { openedFile = Optional.of(file); }
+    public void closeOpenedFile() { openedFile = Optional.empty(); }
 
     public Optional<File> getWorkspaceDir() { return workspaceDir; }
     public void setWorkspaceDir(File file) { this.workspaceDir = Optional.of(file); }
