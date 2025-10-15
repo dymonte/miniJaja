@@ -35,6 +35,7 @@
     <module>ast</module>
     <module>gui</module>
     <module>memory</module>
+    <module>interpreter</module>
   </modules>
   <distributionManagement>
     <repository>
