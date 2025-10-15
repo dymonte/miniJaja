@@ -1,15 +1,12 @@
 package org.groupe2.projetVMs;
 
-import javafx.stage.FileChooser;
+
 import org.groupe2.projetVMs.controller.AppController;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
-
-import java.io.File;
-import java.nio.file.Path;
 
 /**
  * Entry point of the project GUI

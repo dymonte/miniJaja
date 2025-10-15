@@ -5,9 +5,6 @@ import java.util.Optional;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
-import javax.swing.text.html.Option;
-
 /**
  * AppState
  */

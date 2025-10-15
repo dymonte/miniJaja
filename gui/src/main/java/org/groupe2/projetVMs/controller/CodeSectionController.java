@@ -10,7 +10,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.groupe2.projetVMs.AppState;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
 
 public class CodeSectionController implements StatefulController {
 

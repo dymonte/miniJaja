@@ -1,10 +1,8 @@
 package org.groupe2.projetVMs.controller;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -90,7 +88,7 @@ public class AppController implements StatefulController {
                 e.printStackTrace();
             }
         }
-        openFile(file);
+        if (state.getOpenedFile().isPresent()) openFile(file);
         return file;
     }
 
@@ -168,6 +166,7 @@ public class AppController implements StatefulController {
         if(state.getOpenedFile().isEmpty()){
             System.out.println("No file opened");
             file = createFile();
+            openFile(file);
         }
         else {
             file = state.getOpenedFile().get();
