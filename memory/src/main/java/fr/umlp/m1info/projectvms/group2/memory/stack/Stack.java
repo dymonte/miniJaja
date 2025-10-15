@@ -1,7 +1,7 @@
-package fr.umlp.m1info.projectvms.group2.stack;
+package fr.umlp.m1info.projectvms.group2.memory.stack;
 
-import fr.umlp.m1info.projectvms.group2.exception.StackOverflow;
-import fr.umlp.m1info.projectvms.group2.symtable.*;
+import fr.umlp.m1info.projectvms.group2.exception.StackOverflowException;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.*;
 
 /**
  * Stack
@@ -17,7 +17,7 @@ public class Stack {
 	 */
 	public <T> void push(T val, SymNode symbol) {
 		if (depth >= MAX_DEPTH) {
-			throw new StackOverflow();
+			throw new StackOverflowException();
 		}
 		head = new InstNode(val, symbol, head);
 		depth++;

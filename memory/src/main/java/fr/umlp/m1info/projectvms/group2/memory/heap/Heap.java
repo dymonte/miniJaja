@@ -1,12 +1,12 @@
-package fr.umlp.m1info.projectvms.group2.heap;
+package fr.umlp.m1info.projectvms.group2.memory.heap;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddress;
-import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
-import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory;
-import fr.umlp.m1info.projectvms.group2.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddressException;
+import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
+import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemoryException;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
 /**
  * Heap
@@ -45,7 +45,7 @@ public class Heap {
 			throw new IllegalArgumentException("Size must be positive");
 		}
 		if (size >= HEAP_SIZE) {
-			throw new HeapOutOfMemory();
+			throw new HeapOutOfMemoryException();
 		}
 
 		// Check type size
@@ -56,7 +56,7 @@ public class Heap {
 		int blockSize = 1 << blockIndex;
 
 		if (blockSize > HEAP_SIZE) {
-			throw new HeapOutOfMemory();
+			throw new HeapOutOfMemoryException();
 		}
 
 		HeapBlockNode block = getFreeBlock(blockIndex);
@@ -90,7 +90,7 @@ public class Heap {
 			biggerIndex++;
 		}
 		if (biggerIndex >= blocks.length) {
-			throw new HeapOutOfMemory();
+			throw new HeapOutOfMemoryException();
 		}
 		HeapBlockNode biggerBlock = blocks[biggerIndex];
 		blocks[biggerIndex] = biggerBlock.next; // Remove block from list
@@ -105,7 +105,7 @@ public class Heap {
 			HeapBlockNode buddy = new HeapBlockNode(addr2);
 			buddy.next = blocks[biggerIndex]; // Add to list
 			blocks[biggerIndex] = buddy;
-    	}
+		}
 
 		return biggerBlock;
 	}
@@ -114,11 +114,11 @@ public class Heap {
 	 * Increments the reference count of the block at the given address
 	 * 
 	 * @param address
-	 * @throws HeapInvalidAddress
+	 * @throws HeapInvalidAddressException
 	 */
-	public void incRef(int address) throws HeapInvalidAddress {
+	public void incRef(int address) throws HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
-			throw new HeapInvalidAddress(address);
+			throw new HeapInvalidAddressException(address);
 		}
 		localTable.get(address).incRef();
 	}
@@ -127,11 +127,11 @@ public class Heap {
 	 * Decrements the reference count of the block at the given address
 	 * 
 	 * @param address
-	 * @throws HeapInvalidAddress
+	 * @throws HeapInvalidAddressException
 	 */
-	public void decRef(int address) throws HeapInvalidAddress {
+	public void decRef(int address) throws HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
-			throw new HeapInvalidAddress(address);
+			throw new HeapInvalidAddressException(address);
 		}
 		localTable.get(address).decRef();
 
@@ -145,9 +145,9 @@ public class Heap {
 	 * 
 	 * @param address The address of the block to free
 	 */
-	private void free(int address) throws HeapInvalidAddress {
+	private void free(int address) throws HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
-			throw new HeapInvalidAddress(address);
+			throw new HeapInvalidAddressException(address);
 		}
 
 		HeapSymbol symbol = localTable.get(address);
@@ -239,17 +239,17 @@ public class Heap {
 	 * @param address The address to search
 	 * @param index   The index of the value to search
 	 * @return The value found at the given address and index
-	 * @throws HeapOutOfBounds  If the address is out of bounds
-	 * @throws HeapInvalidAddress If the address is invalid
+	 * @throws HeapOutOfBoundsException    If the address is out of bounds
+	 * @throws HeapInvalidAddressException If the address is invalid
 	 */
-	public <T> T search(int address, int index) throws HeapOutOfBounds, HeapInvalidAddress {
+	public <T> T search(int address, int index) throws HeapOutOfBoundsException, HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size()) {
-			throw new HeapInvalidAddress(address);
+			throw new HeapInvalidAddressException(address);
 		}
 
 		HeapSymbol symbol = localTable.get(address);
 		if (symbol == null) {
-			throw new HeapInvalidAddress(address);
+			throw new HeapInvalidAddressException(address);
 		}
 
 		int baseAddr = symbol.getAddress();
@@ -257,7 +257,7 @@ public class Heap {
 		int offset = index * typeSize;
 
 		if (offset + typeSize > symbol.getSize()) {
-			throw new HeapOutOfBounds(address, index);
+			throw new HeapOutOfBoundsException(address, index);
 		}
 
 		heap.position(baseAddr + offset);
@@ -281,17 +281,18 @@ public class Heap {
 	 * @param address The address to set the value at
 	 * @param index   The index of the value to set
 	 * @param value   The value to set
-	 * @throws HeapOutOfBounds  If the address is out of bounds
-	 * @throws HeapInvalidAddress If the address is invalid
+	 * @throws HeapOutOfBoundsException    If the address is out of bounds
+	 * @throws HeapInvalidAddressException If the address is invalid
 	 */
-	public <T> void setValue(int address, int index, T value) throws HeapOutOfBounds, HeapInvalidAddress {
+	public <T> void setValue(int address, int index, T value)
+			throws HeapOutOfBoundsException, HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size()) {
-			throw new HeapInvalidAddress(address);
+			throw new HeapInvalidAddressException(address);
 		}
 
 		HeapSymbol symbol = localTable.get(address);
 		if (symbol == null) {
-			throw new HeapInvalidAddress(address);
+			throw new HeapInvalidAddressException(address);
 		}
 
 		int baseAddr = symbol.getAddress();

@@ -1,14 +1,14 @@
-package fr.umlp.m1info.projectvms.group2;
+package fr.umlp.m1info.projectvms.group2.memory;
 
 import java.util.Optional;
 
-import fr.umlp.m1info.projectvms.group2.heap.Heap;
-import fr.umlp.m1info.projectvms.group2.symtable.ObjectKind;
-import fr.umlp.m1info.projectvms.group2.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.symtable.SymNode;
-import fr.umlp.m1info.projectvms.group2.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
-import fr.umlp.m1info.projectvms.group2.stack.Stack;
+import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 
 /**
  * Memory
@@ -23,7 +23,7 @@ public class Memory {
 	 * Object.
 	 */
 
-	Memory(SymTable symTable, Stack stack, Heap heap) {
+	public Memory(SymTable symTable, Stack stack, Heap heap) {
 		this.symTable = symTable;
 		this.stack = stack;
 		this.heap = heap;
@@ -39,13 +39,11 @@ public class Memory {
 	 * @param sorte the variable type TODO: maybe add here type checking
 	 */
 	public <T> void declVar(String ident, T value, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, value, ObjectKind.VAR, sorte);
+		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VAR, sorte);
 		if (symbol.isPresent()) {
 			stack.push(value, symbol.get());
 		}
 	}
-
-	// TODO: understand identval (IdentVal : ID × SORTE × MEM × NAT → MEM)
 
 	/**
 	 * Add a new constant declaration to the program memory.
@@ -55,7 +53,7 @@ public class Memory {
 	 * @param sorte the constant type TODO: maybe add here type checking
 	 */
 	public <T> void declCst(String ident, T value, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, value, ObjectKind.CONST, sorte);
+		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.CONST, sorte);
 		if (symbol.isPresent()) {
 			stack.push(value, symbol.get());
 		}

@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.heap;
+package fr.umlp.m1info.projectvms.group2.memory.heap;
 
 /**
  * HeapBlockNode

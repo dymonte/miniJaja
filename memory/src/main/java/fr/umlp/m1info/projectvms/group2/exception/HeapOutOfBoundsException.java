@@ -9,9 +9,9 @@ package fr.umlp.m1info.projectvms.group2.exception;
  * It is occured when the user tries to access an element in an array
  * at an invalid index.
  */
-public class HeapOutOfBounds extends RuntimeException {
+public class HeapOutOfBoundsException extends RuntimeException {
 
-	public HeapOutOfBounds(int address, int index) {
+	public HeapOutOfBoundsException(int address, int index) {
 		super("" + address + "[" + index + "]" + " out of bounds.");
 	}
 

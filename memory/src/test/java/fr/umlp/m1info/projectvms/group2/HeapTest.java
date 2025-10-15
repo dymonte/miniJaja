@@ -4,11 +4,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddress;
-import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
-import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemory;
-import fr.umlp.m1info.projectvms.group2.heap.Heap;
-import fr.umlp.m1info.projectvms.group2.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddressException;
+import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
+import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemoryException;
+import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
 /**
  * HeapTest
@@ -16,10 +16,10 @@ import fr.umlp.m1info.projectvms.group2.symtable.Type;
 public class HeapTest {
 	private Heap heap;
 
-    @Before
-    public void setup() {
-        heap = new Heap();
-    }
+	@Before
+	public void setup() {
+		heap = new Heap();
+	}
 
 	@Test
 	public void testAllocation() {
@@ -36,9 +36,9 @@ public class HeapTest {
 
 	@Test
 	public void testTooMuchAllocation() {
-		Assert.assertThrows(HeapOutOfMemory.class, () -> heap.allocate(Heap.HEAP_SIZE + 1, Type.INT));
+		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(Heap.HEAP_SIZE + 1, Type.INT));
 		heap.allocate(Heap.HEAP_SIZE - 1, Type.INT);
-		Assert.assertThrows(HeapOutOfMemory.class, () -> heap.allocate(10, Type.INT));
+		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(10, Type.INT));
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class HeapTest {
 		for (int i = 0; i < arraySize; i++) {
 			heap.setValue(addr, i, i);
 		}
-		Assert.assertThrows(HeapOutOfBounds.class, () -> heap.search(addr, arraySize));
+		Assert.assertThrows(HeapOutOfBoundsException.class, () -> heap.search(addr, arraySize));
 
 	}
 
@@ -69,7 +69,7 @@ public class HeapTest {
 		int arraySize = 10;
 		int addr = heap.allocate(arraySize, Type.INT);
 		heap.decRef(addr);
-		Assert.assertThrows(HeapInvalidAddress.class, () -> heap.search(addr, 0));
+		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.search(addr, 0));
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class HeapTest {
 		heap.setValue(addr, 0, 10);
 		Assert.assertEquals((int) heap.search(addr, 0), 10);
 		heap.decRef(addr);
-		Assert.assertThrows(HeapInvalidAddress.class, () -> heap.search(addr, 0));
+		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.search(addr, 0));
 	}
 
 	@Test
@@ -90,35 +90,35 @@ public class HeapTest {
 		heap.decRef(addr);
 		Assert.assertEquals((int) heap.search(addr, 0), 0);
 		heap.decRef(addr);
-		Assert.assertThrows(HeapInvalidAddress.class, () -> heap.search(addr, 0));
+		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.search(addr, 0));
 	}
 
 	@Test
-    public void testSimpleFreeAndMerge() throws HeapInvalidAddress {
-        int a1 = heap.allocate(4, Type.INT);
-        int a2 = heap.allocate(4, Type.INT);
+	public void testSimpleFreeAndMerge() throws HeapInvalidAddressException {
+		int a1 = heap.allocate(4, Type.INT);
+		int a2 = heap.allocate(4, Type.INT);
 
 		heap.decRef(a1);
-        heap.decRef(a2);
+		heap.decRef(a2);
 
-        int large = heap.allocate(8, Type.INT);
-        Assert.assertTrue(large >= 0);
-    }
+		int large = heap.allocate(8, Type.INT);
+		Assert.assertTrue(large >= 0);
+	}
 
 	@Test
-    public void testRecursiveMerge() throws HeapInvalidAddress {
-        int a1 = heap.allocate(4, Type.INT);
-        int a2 = heap.allocate(4, Type.INT);
-        int a3 = heap.allocate(4, Type.INT);
-        int a4 = heap.allocate(4, Type.INT);
+	public void testRecursiveMerge() throws HeapInvalidAddressException {
+		int a1 = heap.allocate(4, Type.INT);
+		int a2 = heap.allocate(4, Type.INT);
+		int a3 = heap.allocate(4, Type.INT);
+		int a4 = heap.allocate(4, Type.INT);
 
-        heap.decRef(a1);
-        heap.decRef(a2);
-        heap.decRef(a3);
-        heap.decRef(a4);
+		heap.decRef(a1);
+		heap.decRef(a2);
+		heap.decRef(a3);
+		heap.decRef(a4);
 
-        // Merge twice to get a block of 16
-        int large = heap.allocate(16, Type.INT);
-        Assert.assertTrue(large >= 0);
-    }
+		// Merge twice to get a block of 16
+		int large = heap.allocate(16, Type.INT);
+		Assert.assertTrue(large >= 0);
+	}
 }

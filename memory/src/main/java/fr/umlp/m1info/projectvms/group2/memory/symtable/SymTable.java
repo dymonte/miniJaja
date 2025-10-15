@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.symtable;
+package fr.umlp.m1info.projectvms.group2.memory.symtable;
 
 import java.util.Optional;
 
@@ -6,8 +6,16 @@ import java.util.Optional;
  * SymTable
  */
 public class SymTable {
-	static int TABLE_LENGTH = 32;
-	SymNode[] table = new SymNode[TABLE_LENGTH];
+	final int TABLE_LENGTH;
+	SymNode[] table;
+
+	public SymTable(int tableLength) {
+		if (tableLength <= 0) {
+			throw new IllegalArgumentException("The sym table length should be stricly positive.");
+		}
+		TABLE_LENGTH = tableLength;
+		table = new SymNode[TABLE_LENGTH];
+	}
 
 	/**
 	 * Hashes an identifier into an index in the sym table.
@@ -36,16 +44,16 @@ public class SymTable {
 		int id = hash(ident);
 		Optional<SymNode> n = search(ident);
 		if (n.isPresent()) {
-			if (n.get().getInfo().getSize() != size) {
+			MemInfo otherInfos = n.get().getInfo();
+			if (!otherInfos.equals(new MemInfo(type, kind, size))) {
 				return Optional.empty();
 			}
 			return n;
 		}
 
-		// TODO: maybe do here type checking (no void vars...)
 		SymNode node = null;
-		if (size < 0) {
-			return Optional.empty();
+		if (size <= 0) {
+			throw new IllegalArgumentException("Data size should be > 0.");
 		}
 		node = new SymNode(ident, new MemInfo(type, kind, size));
 
@@ -92,10 +100,68 @@ public class SymTable {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Checks wether a symbol is in the table or not.
+	 *
+	 * @param symbol the symbol to look for
+	 * @return true if found in the table, false otherwise
+	 */
+	private boolean hasSymbol(SymNode symbol) {
+		int id = hash(symbol.getIdent());
+		SymNode current = table[id];
+		while (current != null) {
+			if (current == symbol) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Removes an instance node from it's symbol
+	 * If no instance node remains for a symbol, it is deleted
+	 * If the instance's symbol does not belong to the table, does nothing.
+	 *
+	 * @param instance the instance to be removed
+	 * @return true if the instance was removed, false otherwise
 	 */
 	public boolean remove(InstNode instance) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+		if (instance == null || instance.getSymbol() == null) {
+			return false;
+		}
+
+		SymNode symbol = instance.getSymbol();
+		if (!hasSymbol(symbol)) {
+			return false;
+		}
+		boolean isRemoved = symbol.removeInstance(instance);
+
+		if (!isRemoved || symbol.getFirstInstance() != null) {
+			return isRemoved;
+		}
+
+		// delete symbol node if no instances remains
+		int id = hash(symbol.getIdent());
+		SymNode current = table[id];
+		if (current == null) {
+			return isRemoved;
+		}
+
+		String ident = symbol.getIdent();
+
+		if (current.getNextSymbol() == null && ident.equals(current.getIdent())) {
+			table[id] = null;
+			return isRemoved;
+		}
+
+		while (current != null) {
+			SymNode next = current.getNextSymbol();
+			if (next == symbol) {
+				current.removeNextSymbol();
+				break;
+			}
+			current = next;
+		}
+
+		return isRemoved;
 	}
 }

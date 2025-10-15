@@ -1,6 +1,6 @@
-package fr.umlp.m1info.projectvms.group2.heap;
+package fr.umlp.m1info.projectvms.group2.memory.heap;
 
-import fr.umlp.m1info.projectvms.group2.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
 /**
  * HeapSymbol

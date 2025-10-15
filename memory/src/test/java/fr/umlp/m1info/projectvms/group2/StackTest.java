@@ -4,10 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import fr.umlp.m1info.projectvms.group2.exception.StackOverflow;
-import fr.umlp.m1info.projectvms.group2.stack.Stack;
-import fr.umlp.m1info.projectvms.group2.symtable.SymNode;
-import fr.umlp.m1info.projectvms.group2.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.exception.StackOverflowException;
+import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
 
 /**
  * StackTest
@@ -53,7 +53,7 @@ public class StackTest {
 		for (int i = 0; i < Stack.MAX_DEPTH; i++) {
 			s.push(1, symbol);
 		}
-		Assert.assertThrows(StackOverflow.class, () -> s.push(1, symbol));
+		Assert.assertThrows(StackOverflowException.class, () -> s.push(1, symbol));
 	}
 
 }
