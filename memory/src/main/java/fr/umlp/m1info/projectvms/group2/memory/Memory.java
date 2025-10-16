@@ -3,13 +3,13 @@ package fr.umlp.m1info.projectvms.group2.memory;
 import java.util.Optional;
 
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
-import fr.umlp.m1info.projectvms.group2.heap.Heap;
-import fr.umlp.m1info.projectvms.group2.stack.Stack;
-import fr.umlp.m1info.projectvms.group2.symtable.InstNode;
-import fr.umlp.m1info.projectvms.group2.symtable.ObjectKind;
-import fr.umlp.m1info.projectvms.group2.symtable.SymNode;
-import fr.umlp.m1info.projectvms.group2.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
+import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
 /**
  * Memory
