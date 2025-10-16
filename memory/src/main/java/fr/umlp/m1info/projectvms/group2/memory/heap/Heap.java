@@ -17,6 +17,11 @@ public class Heap {
 	private HeapBlockNode[] blocks;
 	private ArrayList<HeapSymbol> localTable;
 
+	/**
+	 * Constructs a new Heap
+	 *
+	 * @throws IllegalArgumentException when heapSize <= 0 (empty heap)
+	 */
 	public Heap(int heapSize) {
 		if (heapSize <= 0) {
 			throw new IllegalArgumentException("Cannot create an empty sized heap.");

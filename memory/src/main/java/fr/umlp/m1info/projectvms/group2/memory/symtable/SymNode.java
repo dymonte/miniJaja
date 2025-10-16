@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2.memory.symtable;
 
 /**
  * SymNode
+ * A symbol node
  */
 public class SymNode {
 	private String ident;
@@ -9,6 +10,12 @@ public class SymNode {
 	private SymNode nextSymbol;
 	private InstNode firstInstance;
 
+	/**
+	 * Constructs a symbol node
+	 *
+	 * @param ident the symbol identifier
+	 * @param info the symbol informations
+	 */
 	public SymNode(String ident, MemInfo info) {
 		this.ident = ident;
 		this.info = info;

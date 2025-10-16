@@ -25,6 +25,9 @@ class HeapBlockNode {
 		}
 	}
 
+	/**
+	 * @return the address of the heap block in the heap
+	 */
 	public int getAddress() {
 		return address;
 	}

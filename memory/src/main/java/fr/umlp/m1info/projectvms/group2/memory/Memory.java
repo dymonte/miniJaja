@@ -24,6 +24,13 @@ public class Memory {
 	 * Object.
 	 */
 
+	/**
+	 * Constructs a new Memory
+	 *
+	 * @param symTable the memory symbol table
+	 * @param stack the memory stack
+	 * @param heap the memory heap
+	 */
 	public Memory(SymTable symTable, Stack stack, Heap heap) {
 		this.symTable = symTable;
 		this.stack = stack;

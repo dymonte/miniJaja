@@ -11,7 +11,13 @@ public class Stack {
 	private final int MAX_DEPTH;
 	private int depth;
 
-	public Stack(int maxDepth) {
+	/**
+	 * Constructs a new stack.
+	 *
+	 * @param maxDepth the maximal Stack depth
+	 * @throws IllegalArgumentException if maxDepth <= 0
+	 */
+	public Stack(int maxDepth) throws IllegalArgumentException {
 		if (maxDepth <= 0) {
 			throw new IllegalArgumentException("Cannot create an empty sized stack.");
 		}
@@ -20,6 +26,9 @@ public class Stack {
 		this.depth = 0;
 	}
 
+	/**
+	 * @return the maximum depth of the stack
+	 */
 	public int getMaxDepth() {
 		return MAX_DEPTH;
 	}

@@ -4,12 +4,20 @@ import java.util.Optional;
 
 /**
  * SymTable
+ * The memory table of symbols
+ * It stores all the program's symbols and it's related informations and instances
  */
 public class SymTable {
 	final int TABLE_LENGTH;
 	SymNode[] table;
 
-	public SymTable(int tableLength) {
+	/**
+	 * Constructs a new Symbol Table
+	 *
+	 * @param tableLength the table length
+	 * @throws IllegalArgumentException if tableLength <= 0
+	 */
+	public SymTable(int tableLength) throws IllegalArgumentException {
 		if (tableLength <= 0) {
 			throw new IllegalArgumentException("The sym table length should be stricly positive.");
 		}
