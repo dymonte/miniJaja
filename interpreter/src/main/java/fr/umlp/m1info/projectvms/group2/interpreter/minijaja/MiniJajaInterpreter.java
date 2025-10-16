@@ -3,7 +3,7 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 
-import fr.umlp.m1info.projectvms.group2.Memory;
+import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
