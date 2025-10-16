@@ -57,14 +57,9 @@ public class Heap {
 	 * @return The address in the heap local table of the newly allocated data
 	 *         (note: this should then be stored as the variable value in the
 	 *         stack/symtable)
-<<<<<<< HEAD
 	 * @throws IllegalArgumentException thrown if arguments size <= 0 or type is VOID
 	 * @throws HeapOutOfMemoryException when the argument size >= HEAP_SIZE 
 	 *									or no more space is available
-=======
-	 * @throws IllegalArgumentException If size <= 0 or type is VOID
-	 * @throws HeapOutOfMemoryException If there is not enough memory to allocate
->>>>>>> f99a25f (fix(memory): add additionnal javadoc and refactor mergeBlocks)
 	 */
 	public int allocate(int size, Type type) throws IllegalArgumentException, HeapOutOfMemoryException {
 		if (type == Type.VOID) {
@@ -107,7 +102,7 @@ public class Heap {
 	 * @throws HeapOutOfMemoryException If there is not enough memory to allocate
 	 * @throws IllegalArgumentException If the blockIndex is invalid
 	 */
-	private HeapBlockNode getFreeBlock(int blockIndex) {
+	private HeapBlockNode getFreeBlock(int blockIndex) throws HeapOutOfMemoryException, IllegalArgumentException {
 		if (blockIndex < 0 || blockIndex >= blocks.length) {
 			throw new IllegalArgumentException("Invalid block index: " + blockIndex);
 		}
