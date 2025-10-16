@@ -21,9 +21,9 @@ public class ASTParamsChain extends ASTParams {
 	public ASTParamsChain(ASTParam param, ASTParams params, int line, int column) {
 		super(line, column);
 		if (param == null) {
-			throw new IllegalArgumentException("param cannot be null");
+			throw new NullPointerException("param cannot be null");
 		} else if (params == null) {
-			throw new IllegalArgumentException("params cannot be null");
+			throw new NullPointerException("params cannot be null");
 		}
 		chain = new Chain<>(param, params);
 	}
@@ -36,6 +36,6 @@ public class ASTParamsChain extends ASTParams {
 	 */
 	@Override
 	public String toString() {
-		return chain.toString(",");
+		return chain.toString(", ");
 	}
 }

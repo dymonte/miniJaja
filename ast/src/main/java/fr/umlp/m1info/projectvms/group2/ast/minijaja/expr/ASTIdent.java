@@ -28,7 +28,7 @@ public class ASTIdent extends ASTLValue {
 	 *
 	 * @return the identifier's name
 	 */
-	String getName() {
+	public String getName() {
 		return name;
 	}
 
