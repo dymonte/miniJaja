@@ -3,6 +3,9 @@ package fr.umlp.m1info.projectvms.group2.memory;
 import java.util.Optional;
 
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
+import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
+import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
+import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
@@ -130,28 +133,24 @@ public class Memory {
 	public <T> T getValArray(String ident, int index) {
 		Optional<SymNode> symbolOpt = symTable.search(ident);
 		if (symbolOpt.isEmpty()) {
-			throw new RuntimeException("Error : array '" + ident + "' doesn't exist.");
+			throw new SymbolNotFoundException(ident);
 		}
 
 		SymNode symbol = symbolOpt.get();
 
 		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
-			throw new RuntimeException("Error : '" + ident + "' isn't an array.");
+			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), ObjectKind.ARRAY);
 		}
 
 		// Get first instance of the symbol
 		InstNode instance = symbol.getFirstInstance();
 		if (instance == null) {
-			throw new RuntimeException("Error : no instance for array '" + ident + "'.");
+			throw new NoInstanceException(ident);
 		}
 
 		int address = (int) instance.getValue();
 
-		try {
-			return heap.search(address, index);
-		} catch (HeapOutOfBoundsException e) {
-			throw new RuntimeException("Error : reading array '" + ident + "' : " + e.getMessage());
-		}
+		return heap.search(address, index);
 	}
 
 	/**
@@ -164,28 +163,24 @@ public class Memory {
 	public <T> void updateValArray(String ident, int index, T val) {
 		Optional<SymNode> symbolOpt = symTable.search(ident);
 		if (symbolOpt.isEmpty()) {
-			throw new RuntimeException("Error : array '" + ident + "' doesn't exist.");
+			throw new SymbolNotFoundException(ident);
 		}
 
 		SymNode symbol = symbolOpt.get();
 
 		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
-			throw new RuntimeException("Error: '" + ident + "' isn't an array.");
+			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), ObjectKind.ARRAY);
 		}
 
 		// Get first instance of the symbol
 		InstNode instance = symbol.getFirstInstance();
 		if (instance == null) {
-			throw new RuntimeException("Error : no instance for array '" + ident + "'.");
+			throw new NoInstanceException(ident);
 		}
 
 		int address = (int) instance.getValue();
 
-		try {
-			heap.setValue(address, index, val);
-		} catch (HeapOutOfBoundsException e) {
-			throw new RuntimeException("Error: writing array '" + ident + "' : " + e.getMessage());
-		}
+		heap.setValue(address, index, val);
 	}
 
 	/**
