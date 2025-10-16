@@ -22,7 +22,7 @@ public class Heap {
 	 *
 	 * @throws IllegalArgumentException when heapSize <= 0 (empty heap)
 	 */
-	public Heap(int heapSize) {
+	public Heap(int heapSize) throws IllegalArgumentException {
 		if (heapSize <= 0) {
 			throw new IllegalArgumentException("Cannot create an empty sized heap.");
 		}
@@ -55,8 +55,11 @@ public class Heap {
 	 * @return The address in the heap local table of the newly allocated data
 	 *         (note: this should then be stored as the variable value in the
 	 *         stack/symtable)
+	 * @throws IllegalArgumentException thrown if arguments size <= 0 or type is VOID
+	 * @throws HeapOutOfMemoryException when the argument size >= HEAP_SIZE 
+	 *									or no more space is available
 	 */
-	public int allocate(int size, Type type) {
+	public int allocate(int size, Type type) throws IllegalArgumentException, HeapOutOfMemoryException {
 		if (type == Type.VOID) {
 			throw new IllegalArgumentException("Cannot allocate array of void");
 		}
@@ -94,8 +97,9 @@ public class Heap {
 	 * 
 	 * @param blockIndex The index of the desired block size
 	 * @return A free block of the desired size
+	 * @throws HeapOutOfMemoryException when no more space is available in the heap
 	 */
-	private HeapBlockNode getFreeBlock(int blockIndex) {
+	private HeapBlockNode getFreeBlock(int blockIndex) throws HeapOutOfMemoryException {
 
 		if (blocks[blockIndex] != null) {
 			HeapBlockNode block = blocks[blockIndex];

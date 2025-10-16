@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddressException;
@@ -39,6 +40,16 @@ public class HeapTest {
 		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(heap.getHeapSize() + 1, Type.INT));
 		heap.allocate(heap.getHeapSize() - 1, Type.INT);
 		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(10, Type.INT));
+	}
+
+	@Test
+	@Ignore
+	public void testTooMuchSmallAllocations() {
+		heap = new Heap(10);
+		for (int i = 0; i < 8; i++) {
+			heap.allocate(1, Type.BOOL);
+		}
+		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(1, Type.BOOL));
 	}
 
 	@Test

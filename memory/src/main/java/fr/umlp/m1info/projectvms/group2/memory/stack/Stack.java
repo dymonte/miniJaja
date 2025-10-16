@@ -38,8 +38,9 @@ public class Stack {
 	 *
 	 * @param val    the element's value to add
 	 * @param symbol the element's symbol to add
+	 * @throws StackOverflowException when the stack depth exceeds MAX_DEPTH
 	 */
-	public <T> void push(T val, SymNode symbol) {
+	public <T> void push(T val, SymNode symbol) throws StackOverflowException {
 		if (depth >= MAX_DEPTH) {
 			throw new StackOverflowException();
 		}
