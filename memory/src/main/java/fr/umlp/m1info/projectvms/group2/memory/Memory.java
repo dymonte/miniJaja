@@ -2,7 +2,7 @@ package fr.umlp.m1info.projectvms.group2.memory;
 
 import java.util.Optional;
 
-import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
+import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
@@ -142,7 +142,7 @@ public class Memory {
 
 		try {
 			return heap.search(address, index);
-		} catch (HeapOutOfBounds e) {
+		} catch (HeapOutOfBoundsException e) {
 			throw new RuntimeException("Error : reading array '" + ident + "' : " + e.getMessage());
 		}
 	}
@@ -176,7 +176,7 @@ public class Memory {
 
 		try {
 			heap.setValue(address, index, val);
-		} catch (HeapOutOfBounds e) {
+		} catch (HeapOutOfBoundsException e) {
 			throw new RuntimeException("Error: writing array '" + ident + "' : " + e.getMessage());
 		}
 	}
