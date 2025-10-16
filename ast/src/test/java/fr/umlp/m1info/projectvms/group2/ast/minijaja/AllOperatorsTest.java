@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.UnaryOp;

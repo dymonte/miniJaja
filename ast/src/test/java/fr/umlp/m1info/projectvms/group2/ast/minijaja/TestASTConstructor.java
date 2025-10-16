@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.miniJaja;
+package fr.umlp.m1info.projectvms.group2.ast.minijaja;
 
 import org.junit.Test;
 
