@@ -2,13 +2,14 @@ package fr.umlp.m1info.projectvms.group2.memory;
 
 import java.util.Optional;
 
-import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
-
-import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
+import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBounds;
+import fr.umlp.m1info.projectvms.group2.heap.Heap;
+import fr.umlp.m1info.projectvms.group2.stack.Stack;
+import fr.umlp.m1info.projectvms.group2.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.symtable.ObjectKind;
+import fr.umlp.m1info.projectvms.group2.symtable.SymNode;
+import fr.umlp.m1info.projectvms.group2.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.symtable.Type;
 
 /**
  * Memory
@@ -60,11 +61,19 @@ public class Memory {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Add a new array declaration to the program memory.
+	 * 
+	 * @param ident the array identifier
+	 * @param size  the array size
+	 * @param sorte the array type TODO: maybe add here type checking
 	 */
 	public void declArray(String ident, int size, Type sorte) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.ARRAY, sorte, size);
+
+		if (symbol.isPresent()) {
+			int address = heap.allocate(size, sorte);
+			stack.push(address, symbol.get());
+		}
 	}
 
 	/**
@@ -105,19 +114,71 @@ public class Memory {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Get the value at a given index in an array.
+	 * 
+	 * @param ident the array identifier
+	 * @param index the index to read
+	 * @return the value at the given index in the array
 	 */
 	public <T> T getValArray(String ident, int index) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new RuntimeException("Error : array '" + ident + "' doesn't exist.");
+		}
+
+		SymNode symbol = symbolOpt.get();
+
+		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
+			throw new RuntimeException("Error : '" + ident + "' isn't an array.");
+		}
+
+		// Get first instance of the symbol
+		InstNode instance = symbol.getFirstInstance();
+		if (instance == null) {
+			throw new RuntimeException("Error : no instance for array '" + ident + "'.");
+		}
+
+		int address = (int) instance.getValue();
+
+		try {
+			return heap.search(address, index);
+		} catch (HeapOutOfBounds e) {
+			throw new RuntimeException("Error : reading array '" + ident + "' : " + e.getMessage());
+		}
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Update the value at a given index in an array.
+	 *
+	 * @param ident the array identifier
+	 * @param index the index to write to
+	 * @param val   the new value
 	 */
 	public <T> void updateValArray(String ident, int index, T val) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new RuntimeException("Error : array '" + ident + "' doesn't exist.");
+		}
+
+		SymNode symbol = symbolOpt.get();
+
+		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
+			throw new RuntimeException("Error: '" + ident + "' isn't an array.");
+		}
+
+		// Get first instance of the symbol
+		InstNode instance = symbol.getFirstInstance();
+		if (instance == null) {
+			throw new RuntimeException("Error : no instance for array '" + ident + "'.");
+		}
+
+		int address = (int) instance.getValue();
+
+		try {
+			heap.setValue(address, index, val);
+		} catch (HeapOutOfBounds e) {
+			throw new RuntimeException("Error: writing array '" + ident + "' : " + e.getMessage());
+		}
 	}
 
 	/**
