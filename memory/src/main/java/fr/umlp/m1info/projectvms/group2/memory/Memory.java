@@ -31,8 +31,8 @@ public class Memory {
 	 * Constructs a new Memory
 	 *
 	 * @param symTable the memory symbol table
-	 * @param stack the memory stack
-	 * @param heap the memory heap
+	 * @param stack    the memory stack
+	 * @param heap     the memory heap
 	 */
 	public Memory(SymTable symTable, Stack stack, Heap heap) {
 		this.symTable = symTable;
@@ -108,19 +108,73 @@ public class Memory {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Sets the value stored in the first instance of the symbol of identifier
+	 * ident
+	 * 
+	 * @param ident the symbol identifier
+	 * @param val   the new value to set
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
+	 * @throws BadSymbolKindException  thrown when the symbol data type is not a
+	 *                                 variable
+	 * @throws NoInstanceException     thrown when the symbol does not have any
+	 *                                 instance/value
 	 */
-	public <T> void updateVal(String ident, T val) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public void updateVal(String ident, Object val) {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		SymNode symbol = symbolOpt.get();
+		ObjectKind kind = symbol.getInfo().getKind();
+
+		if (kind != ObjectKind.VAR) {
+			throw new BadSymbolKindException(ident, kind);
+		}
+
+		InstNode instance = symbol.getFirstInstance();
+		if (instance == null) {
+			throw new NoInstanceException(ident);
+		}
+
+		instance.updateValue(val);
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Returns the value stored in the first instance of the symbol of identifier
+	 * ident
+	 * 
+	 * @param ident the symbol identifier
+	 * @return the value stored in the symbol's first instance
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
+	 * @throws BadSymbolKindException  thrown when the symbol data type is an array
+	 *                                 or a method
+	 * @throws NoInstanceException     thrown when the symbol does not have any
+	 *                                 instance/value
 	 */
-	public <T> T getVal(String ident) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public Object getVal(String ident) throws SymbolNotFoundException, BadSymbolKindException, NoInstanceException {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		SymNode symbol = symbolOpt.get();
+		ObjectKind kind = symbol.getInfo().getKind();
+
+		if (kind == ObjectKind.ARRAY || kind == ObjectKind.METH) {
+			throw new BadSymbolKindException(ident, kind);
+		}
+
+		InstNode instance = symbol.getFirstInstance();
+		if (instance == null) {
+			throw new NoInstanceException(ident);
+		}
+
+		return instance.getValue();
 	}
 
 	/**
@@ -129,8 +183,16 @@ public class Memory {
 	 * @param ident the array identifier
 	 * @param index the index to read
 	 * @return the value at the given index in the array
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
+	 * @throws BadSymbolKindException  thrown when the symbol data type is not an
+	 *                                 array
+	 * @throws NoInstanceException     thrown when the symbol does not have any
+	 *                                 instance/value
 	 */
-	public <T> T getValArray(String ident, int index) {
+	public Object getValArray(String ident, int index)
+			throws SymbolNotFoundException, BadSymbolKindException, NoInstanceException {
 		Optional<SymNode> symbolOpt = symTable.search(ident);
 		if (symbolOpt.isEmpty()) {
 			throw new SymbolNotFoundException(ident);
@@ -159,8 +221,16 @@ public class Memory {
 	 * @param ident the array identifier
 	 * @param index the index to write to
 	 * @param val   the new value
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
+	 * @throws BadSymbolKindException  thrown when the symbol data type is not an
+	 *                                 array
+	 * @throws NoInstanceException     thrown when the symbol does not have any
+	 *                                 instance/value
 	 */
-	public <T> void updateValArray(String ident, int index, T val) {
+	public void updateValArray(String ident, int index, Object val)
+			throws SymbolNotFoundException, BadSymbolKindException, NoInstanceException {
 		Optional<SymNode> symbolOpt = symTable.search(ident);
 		if (symbolOpt.isEmpty()) {
 			throw new SymbolNotFoundException(ident);

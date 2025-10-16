@@ -4,13 +4,12 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
+import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * MemoryTest
@@ -18,40 +17,33 @@ import org.mockito.Mockito;
 public class MemoryTest {
 
 	private Memory m;
-	private SymTable st;
-	private Stack s;
-	private Heap h;
 
 	@Before
 	public void setUp() {
-		st = Mockito.mock(SymTable.class);
-		s = Mockito.mock(Stack.class);
-		h = Mockito.mock(Heap.class);
-		m = new Memory(st, s, h);
+		m = new Memory(new SymTable(100), new Stack(100), new Heap(100));
 	}
 
-	/**
-	 * IMPORTANT
-	 * TODO: maybe we need to do things with the mocks in each test for
-	 * those to work. (like setting stack.pop() to a certain value...)
-	 */
-
 	@Test
-	@Ignore
 	public void testDeclVar() {
-		m.declVar("i", 2, Type.INT);
-		Assert.assertEquals((int) m.getVal("i"), 2);
+		String ident = "i";
+		int value = 2;
+		Type sorte = Type.INT;
+
+		m.declVar(ident, value, sorte);
+		int retrievedValue = (int) m.getVal(ident);
+
+		Assert.assertEquals(value, retrievedValue);
 	}
 
 	@Test
-	@Ignore
 	public void testDeclCst() {
 		m.declCst("i", 1, Type.INT);
 		Assert.assertEquals((int) m.getVal("i"), 1);
+
+		Assert.assertThrows(BadSymbolKindException.class, () -> m.updateVal("i", 2));
 	}
 
 	@Test
-	@Ignore
 	public void testDeclArray() {
 		int arraySize = 10;
 		m.declArray("arr", arraySize, Type.INT);
@@ -63,20 +55,17 @@ public class MemoryTest {
 		}
 	}
 
-	@Test
-	@Ignore
+	@Test(expected = UnsupportedOperationException.class)
 	public void testDeclMeth() {
-		// TODO: understand how to create this and implement it
+		m.declMeth("meth", 0, Type.VOID);
 	}
 
-	@Test
-	@Ignore
+	@Test(expected = UnsupportedOperationException.class)
 	public void testRemoveDecl() {
-		// TODO: implement this
+		m.removeDecl("i");
 	}
 
 	@Test
-	@Ignore
 	public void testUpdateVal() {
 		m.declVar("i", 0, Type.INT);
 		Assert.assertEquals((int) m.getVal("i"), 0);

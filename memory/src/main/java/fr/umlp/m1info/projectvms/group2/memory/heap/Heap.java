@@ -57,9 +57,10 @@ public class Heap {
 	 * @return The address in the heap local table of the newly allocated data
 	 *         (note: this should then be stored as the variable value in the
 	 *         stack/symtable)
-	 * @throws IllegalArgumentException thrown if arguments size <= 0 or type is VOID
-	 * @throws HeapOutOfMemoryException when the argument size >= HEAP_SIZE 
-	 *									or no more space is available
+	 * @throws IllegalArgumentException thrown if arguments size <= 0 or type is
+	 *                                  VOID
+	 * @throws HeapOutOfMemoryException when the argument size >= HEAP_SIZE
+	 *                                  or no more space is available
 	 */
 	public int allocate(int size, Type type) throws IllegalArgumentException, HeapOutOfMemoryException {
 		if (type == Type.VOID) {

@@ -16,11 +16,21 @@ public class BadSymbolKindException extends RuntimeException {
 	 * Constructs a BadSymbolKindException.
 	 *
 	 * @param identifier the symbol identifier
-	 * @param expected the expected kind
-	 * @param actual the actual kind
+	 * @param expected   the expected kind
+	 * @param actual     the actual kind
 	 */
 	public BadSymbolKindException(String identifier, ObjectKind expected, ObjectKind actual) {
 		super(identifier + " type should be " + expected.name() + " but is actually " + actual.name() + ".");
+	}
+
+	/**
+	 * Constructs a BadSymbolKindException.
+	 *
+	 * @param identifier the symbol identifier
+	 * @param actual     the actual kind
+	 */
+	public BadSymbolKindException(String identifier, ObjectKind actual) {
+		super(identifier + " type should not be " + actual.name() + ".");
 	}
 
 }

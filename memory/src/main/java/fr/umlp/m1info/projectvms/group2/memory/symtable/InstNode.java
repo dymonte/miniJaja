@@ -73,6 +73,15 @@ public class InstNode {
 	}
 
 	/**
+	 * Sets a new value to this instance
+	 *
+	 * @param newValue the new value to set
+	 */
+	public void updateValue(Object newValue) {
+		val = newValue;
+	}
+
+	/**
 	 * @return the instance's symbol
 	 */
 	public SymNode getSymbol() {

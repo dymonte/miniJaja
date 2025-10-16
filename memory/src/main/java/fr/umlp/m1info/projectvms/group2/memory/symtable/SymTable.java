@@ -5,7 +5,8 @@ import java.util.Optional;
 /**
  * SymTable
  * The memory table of symbols
- * It stores all the program's symbols and it's related informations and instances
+ * It stores all the program's symbols and it's related informations and
+ * instances
  */
 public class SymTable {
 	final int TABLE_LENGTH;
@@ -47,8 +48,9 @@ public class SymTable {
 	 * @param size  the size of the data (1 for variables, >0 for arrays...)
 	 * @return an optional containing possibly the added (or already existing)
 	 *         symbol
+	 * @throws IllegalArgumentException is thrown when parameter size <= 0
 	 */
-	public Optional<SymNode> add(String ident, ObjectKind kind, Type type, int size) {
+	public Optional<SymNode> add(String ident, ObjectKind kind, Type type, int size) throws IllegalArgumentException {
 		int id = hash(ident);
 		Optional<SymNode> n = search(ident);
 		if (n.isPresent()) {
