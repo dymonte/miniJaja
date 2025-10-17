@@ -29,12 +29,19 @@
       <version>4.13</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.12.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <modules>
     <module>antlr</module>
     <module>ast</module>
     <module>gui</module>
     <module>memory</module>
+    <module>interpreter</module>
   </modules>
   <distributionManagement>
     <repository>

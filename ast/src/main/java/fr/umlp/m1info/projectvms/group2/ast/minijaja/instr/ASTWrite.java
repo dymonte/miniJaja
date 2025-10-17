@@ -58,8 +58,9 @@ public class ASTWrite extends ASTInstr {
 	/**
 	 * Returns a string representation of this node
 	 * 
-	 * @param a formatted string
+	 * @return a formatted string
 	 */
+	@Override
 	public String toString() {
 		String content = (lvalue != null ? lvalue.toString() : "\"" + literal + "\"");
 		return (isLn ? "writeln(" : "write(") + content + ")";
