@@ -61,23 +61,26 @@ public class AppController implements StatefulController {
      * @param file the file to open
      */
     private void openFile(File file) {
-        if (file != null) {
-            if (file.isDirectory()) {
-                openFolder(file);
-                return;
-            }
-            updateWindowTitle(file.getName());
-            try {
-                String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-                if (state != null) {
-                    state.setOpenedFile(file);
-                    state.codeProperty().set(content);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            openFolder(file.getParentFile());
+        if (file == null) {
+            return;
         }
+
+        if (file.isDirectory()) {
+            openFolder(file);
+            return;
+        }
+        updateWindowTitle(file.getName());
+        try {
+            String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            if (state != null) {
+                state.setOpenedFile(file);
+                state.codeProperty().set(content);
+            }
+        } catch (IOException e) {
+            // TODO: use a logger instead
+            System.err.println("Error while opening file " + file.toPath());
+        }
+        openFolder(file.getParentFile());
     }
 
     /**
@@ -105,7 +108,7 @@ public class AppController implements StatefulController {
                 System.out.println(file.getAbsolutePath() + " already exists.");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error while creating new file " + file.getAbsolutePath());
         }
 
         if (state.getOpenedFile().isPresent())
@@ -161,7 +164,7 @@ public class AppController implements StatefulController {
                 fileTree.getChildren().add(file_button);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error while opening folder " + file.getAbsolutePath());
         }
     }
 
@@ -205,7 +208,6 @@ public class AppController implements StatefulController {
             System.out.println("File saved successfully");
         } catch (IOException e) {
             System.err.println("Error saving file: " + e.getMessage());
-            e.printStackTrace(); // TODO popup error message
         }
     }
 
