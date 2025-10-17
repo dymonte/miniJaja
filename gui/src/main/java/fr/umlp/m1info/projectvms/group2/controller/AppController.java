@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * AppController
@@ -28,7 +30,7 @@ public class AppController implements StatefulController {
 
     @FXML
     private VBox fileTree;
-    
+
     private Stage primaryStage;
 
     private AppState state;
@@ -43,6 +45,7 @@ public class AppController implements StatefulController {
 
     /**
      * Opens a file
+     * 
      * @return the file chosen by the user
      */
     private File chooseFile() {
@@ -54,6 +57,7 @@ public class AppController implements StatefulController {
 
     /**
      * Opens a file and updates the code section
+     * 
      * @param file the file to open
      */
     private void openFile(File file) {
@@ -79,6 +83,7 @@ public class AppController implements StatefulController {
     /**
      * Create a file with "untilted.mjj as default name
      * Called by the button
+     * 
      * @return the file created
      */
     @FXML
@@ -87,14 +92,24 @@ public class AppController implements StatefulController {
         fileChooser.setTitle("New File");
         fileChooser.setInitialFileName("untitled.mjj");
         File file = fileChooser.showSaveDialog(null);
-        if (file != null) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (file == null) {
+            return null;
         }
-        if (state.getOpenedFile().isPresent()) openFile(file);
+
+        try {
+            boolean created = file.createNewFile();
+            if (created && state.getOpenedFile().isPresent()) {
+                openFile(file);
+            } else {
+                // TODO: use a logger instead
+                System.out.println(file.getAbsolutePath() + " already exists.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (state.getOpenedFile().isPresent())
+            openFile(file);
         return file;
     }
 
@@ -120,14 +135,13 @@ public class AppController implements StatefulController {
 
     /**
      * Opens a folder and updates the file tree
+     * 
      * @param file the folder to open
      */
     private void openFolder(File file) {
         state.setWorkspaceDir(file);
-        try {
-            File[] files = Files.list(file.toPath())
-                    .map(Path::toFile)
-                    .toArray(File[]::new);
+        try (Stream<Path> stream = Files.list(file.toPath())) {
+            File[] files = stream.map(Path::toFile).toArray(File[]::new);
             state.setWorkspaceFiles(files);
             fileTree.getChildren().clear();
             if (!file.equals(File.listRoots()[0])) {
@@ -146,14 +160,14 @@ public class AppController implements StatefulController {
                 HBox.setHgrow(file_button, Priority.ALWAYS);
                 fileTree.getChildren().add(file_button);
             }
-        }catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Lets the user choose a directory
+     * 
      * @return the directory chosen by the user
      */
     private File chooseDirectory() {
@@ -169,20 +183,25 @@ public class AppController implements StatefulController {
     @FXML
     private void saveFile() {
         File file;
-        if(state.getOpenedFile().isEmpty()){
+        Optional<File> openedFile = state.getOpenedFile();
+        if (openedFile.isEmpty()) {
             System.out.println("No file opened");
             file = createFile();
             openFile(file);
+        } else {
+            file = openedFile.get();
         }
-        else {
-            file = state.getOpenedFile().get();
+
+        if (file == null) {
+            System.err.println("Error while trying to save file : file is null.");
+            return;
         }
-        try{ // try to save the file
+
+        try { // try to save the file
             Files.writeString(
-                file.toPath(),
-                state.codeProperty().get(),
-                StandardCharsets.UTF_8
-            );
+                    file.toPath(),
+                    state.codeProperty().get(),
+                    StandardCharsets.UTF_8);
             System.out.println("File saved successfully");
         } catch (IOException e) {
             System.err.println("Error saving file: " + e.getMessage());
@@ -201,9 +220,9 @@ public class AppController implements StatefulController {
         updateWindowTitle("MiniJaja IDE");
     }
 
-
     /**
      * Change the window name
+     * 
      * @param newTitle new window name
      */
     public void updateWindowTitle(String newTitle) {
@@ -211,9 +230,10 @@ public class AppController implements StatefulController {
             primaryStage.setTitle(newTitle);
         }
     }
-    
+
     /**
      * Sets the primary stage for this controller
+     * 
      * @param stage the primary stage
      */
     public void setPrimaryStage(Stage stage) {
