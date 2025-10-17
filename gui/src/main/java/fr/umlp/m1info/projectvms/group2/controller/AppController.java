@@ -1,6 +1,13 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
 import fr.umlp.m1info.projectvms.group2.AppState;
 
 import javafx.fxml.FXML;
@@ -9,6 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * AppController
@@ -18,6 +28,11 @@ public class AppController implements StatefulController {
     @FXML
     private CodeSectionController codeSectionController;
 
+    @FXML
+    private VBox fileTree;
+
+    private Stage primaryStage;
+
     private AppState state;
 
     @Override
@@ -25,8 +40,14 @@ public class AppController implements StatefulController {
         // set App state to all controllers
         this.state = appState;
         codeSectionController.bindState(appState);
+        codeSectionController.setOnSaveRequested(this::saveFile);
     }
 
+    /**
+     * Opens a file
+     * 
+     * @return the file chosen by the user
+     */
     private File chooseFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Code File");
@@ -34,20 +55,190 @@ public class AppController implements StatefulController {
         return fileChooser.showOpenDialog(null);
     }
 
+    /**
+     * Opens a file and updates the code section
+     * 
+     * @param file the file to open
+     */
+    private void openFile(File file) {
+        if (file == null) {
+            return;
+        }
+
+        if (file.isDirectory()) {
+            openFolder(file);
+            return;
+        }
+        updateWindowTitle(file.getName());
+        try {
+            String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            if (state != null) {
+                state.setOpenedFile(file);
+                state.codeProperty().set(content);
+            }
+        } catch (IOException e) {
+            // TODO: use a logger instead
+            System.err.println("Error while opening file " + file.toPath());
+        }
+        openFolder(file.getParentFile());
+    }
+
+    /**
+     * Create a file with "untilted.mjj as default name
+     * Called by the button
+     * 
+     * @return the file created
+     */
+    @FXML
+    private File createFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("New File");
+        fileChooser.setInitialFileName("untitled.mjj");
+        File file = fileChooser.showSaveDialog(null);
+        if (file == null) {
+            return null;
+        }
+
+        try {
+            boolean created = file.createNewFile();
+            if (created && state.getOpenedFile().isPresent()) {
+                openFile(file);
+            } else {
+                // TODO: use a logger instead
+                System.out.println(file.getAbsolutePath() + " already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error while creating new file " + file.getAbsolutePath());
+        }
+
+        if (state.getOpenedFile().isPresent())
+            openFile(file);
+        return file;
+    }
+
+    /**
+     * Opens a file and updates the code section
+     * Called by the button
+     */
     @FXML
     private void openFile() {
         File file = chooseFile();
-        if (file != null) {
-            try {
-                String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-                if (state != null) {
-                    state.setOpenedFile(file);
-                    // Optionally update code content in state
-                    state.codeProperty().set(content);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        openFile(file);
+    }
+
+    /**
+     * Opens a folder and updates the file tree
+     * Called by the button
+     */
+    @FXML
+    private void openFolder() {
+        File file = chooseDirectory();
+        openFolder(file);
+    }
+
+    /**
+     * Opens a folder and updates the file tree
+     * 
+     * @param file the folder to open
+     */
+    private void openFolder(File file) {
+        state.setWorkspaceDir(file);
+        try (Stream<Path> stream = Files.list(file.toPath())) {
+            File[] files = stream.map(Path::toFile).toArray(File[]::new);
+            state.setWorkspaceFiles(files);
+            fileTree.getChildren().clear();
+            if (!file.equals(File.listRoots()[0])) {
+                Button parent_button = new Button("..");
+                parent_button.setMaxWidth(Double.MAX_VALUE);
+                parent_button.prefWidthProperty().bind(fileTree.widthProperty());
+                parent_button.setOnAction(event -> openFolder(file.getParentFile()));
+                HBox.setHgrow(parent_button, Priority.ALWAYS);
+                fileTree.getChildren().add(parent_button);
             }
+            for (File f : files) {
+                Button file_button = new Button(f.getName());
+                file_button.setMaxWidth(Double.MAX_VALUE);
+                file_button.prefWidthProperty().bind(fileTree.widthProperty());
+                file_button.setOnAction(event -> openFile(f));
+                HBox.setHgrow(file_button, Priority.ALWAYS);
+                fileTree.getChildren().add(file_button);
+            }
+        } catch (IOException e) {
+            System.err.println("Error while opening folder " + file.getAbsolutePath());
         }
+    }
+
+    /**
+     * Lets the user choose a directory
+     * 
+     * @return the directory chosen by the user
+     */
+    private File chooseDirectory() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Open Folder");
+        return chooser.showDialog(null);
+    }
+
+    /**
+     * Saves the current file
+     * Called by the button or crtl+S
+     */
+    @FXML
+    private void saveFile() {
+        File file;
+        Optional<File> openedFile = state.getOpenedFile();
+        if (openedFile.isEmpty()) {
+            System.out.println("No file opened");
+            file = createFile();
+            openFile(file);
+        } else {
+            file = openedFile.get();
+        }
+
+        if (file == null) {
+            System.err.println("Error while trying to save file : file is null.");
+            return;
+        }
+
+        try { // try to save the file
+            Files.writeString(
+                    file.toPath(),
+                    state.codeProperty().get(),
+                    StandardCharsets.UTF_8);
+            System.out.println("File saved successfully");
+        } catch (IOException e) {
+            System.err.println("Error saving file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Closes the current file
+     * Called by the button
+     */
+    @FXML
+    private void closeCurrentFile() {
+        state.closeOpenedFile();
+        state.codeProperty().set("");
+        updateWindowTitle("MiniJaja IDE");
+    }
+
+    /**
+     * Change the window name
+     * 
+     * @param newTitle new window name
+     */
+    public void updateWindowTitle(String newTitle) {
+        if (primaryStage != null) {
+            primaryStage.setTitle(newTitle);
+        }
+    }
+
+    /**
+     * Sets the primary stage for this controller
+     * 
+     * @param stage the primary stage
+     */
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
     }
 }
