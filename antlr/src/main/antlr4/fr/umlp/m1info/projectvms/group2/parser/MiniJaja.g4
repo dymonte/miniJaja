@@ -48,8 +48,8 @@ exp2:     exp2 op=('+'|'-') term #AddSubExp
 term:     term op=('*'|'/'|'%') fact #MulDivExp
         | fact                       #FactOnly
         ;
-fact:	   ( 'true' | 'false')     #Bool
-				| ident1                 #VarRef
+fact:     ( 'true' | 'false')    #Bool
+        | ident1                 #VarRef
         | ident '(' listexp ')'  #MethodCall
         | 'length' '(' ident ')' #Length
         | NUMBER                 #Int
