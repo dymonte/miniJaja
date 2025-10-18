@@ -41,6 +41,7 @@ public class ParserLoggerTest {
 	@Test
 	public void testNullListener() {
 		ParserLogger.getInstance().addListener(null);
+		Assert.assertEquals(0, ParserLogger.getInstance().getListeners().size());
 	}
 
 	@Test
@@ -49,7 +50,9 @@ public class ParserLoggerTest {
 		ParserLogger.ParserListener listener = (msg, level) -> {
 		};
 		ParserLogger.getInstance().addListener(listener);
+		Assert.assertEquals(1, ParserLogger.getInstance().getListeners().size());
 		ParserLogger.getInstance().removeListener(listener);
+		Assert.assertEquals(0, ParserLogger.getInstance().getListeners().size());
 	}
 
 	@Test
@@ -60,6 +63,7 @@ public class ParserLoggerTest {
 		ParserLogger.ParserListener listener = (msg, level) -> {
 		};
 		ParserLogger.getInstance().addListener(listener);
+		Assert.assertEquals(1, ParserLogger.getInstance().getListeners().size());
 		logger.log("ah", ParserLogger.MessageLevel.INFO);
 	}
 }

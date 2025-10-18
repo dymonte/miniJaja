@@ -38,44 +38,50 @@ import org.junit.Assert;
 public class TestASTConstructor {
 	@Test
 	public void constructorVarSimpleTest() {
-		Assert.assertThrows(NullPointerException.class, () -> new ASTVarSimple(null, new ASTIdent("a", 0, 0), null, 0, 0));
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		Assert.assertThrows(NullPointerException.class, () -> new ASTVarSimple(null, ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorVarConstTest() {
-		Assert.assertThrows(NullPointerException.class, () -> new ASTVarConst(null, new ASTIdent("a", 0, 0), null, 0, 0));
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		Assert.assertThrows(NullPointerException.class, () -> new ASTVarConst(null, ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorIfTest() {
+		ASTIntLiteral literal = new ASTIntLiteral(1, 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTIf(null, null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTIf(new ASTIntLiteral(1, 0, 0), null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTIf(literal, null, null, 0, 0));
 	}
 
 	@Test
 	public void constructorBinaryOpTest() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTBinaryOp(null, null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTBinaryOp(new ASTIdent("a", 0, 0), null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTBinaryOp(new ASTIdent("a", 0, 0), new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTBinaryOp(ident, null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTBinaryOp(ident, ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorArrayAccessTest() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTArrayAccess(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTArrayAccess(new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTArrayAccess(ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorUnaryOpTest() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTUnaryOp(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTUnaryOp(new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTUnaryOp(ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorMethodCallExpr() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTMethodCallExpr(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTMethodCallExpr(new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTMethodCallExpr(ident, null, 0, 0));
 	}
 
 	@Test
@@ -90,46 +96,46 @@ public class TestASTConstructor {
 
 	@Test
 	public void constructorExprsChain() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTExprsChain(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTExprsChain(new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTExprsChain(ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorVarArray() {
-		Assert.assertThrows(IllegalArgumentException.class, () -> new ASTVarArray(new ASTBoolType(0, 0), null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTVarArray(null, new ASTIdent("a", 0, 0), null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTVarArray(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0));
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTBoolType boolType = new ASTBoolType(0, 0);
+		Assert.assertThrows(IllegalArgumentException.class, () -> new ASTVarArray(boolType, null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTVarArray(null, ident, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTVarArray(boolType, ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorVarsChain() {
+		ASTVarSimple varSimple = new ASTVarSimple(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTVarsChain(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTVarsChain(new ASTVarSimple(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0), null, 0,
-						0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTVarsChain(varSimple, null, 0, 0));
 	}
 
 	@Test
 	public void constructorInstrsChain() {
+		ASTReturn astReturn = new ASTReturn(new ASTIdent("a", 0, 0), 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTInstrsChain(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTInstrsChain(new ASTReturn(new ASTIdent("a", 0, 0), 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTInstrsChain(astReturn, null, 0, 0));
 	}
 
 	@Test
 	public void constructorParamsChain() {
+		ASTParam param = new ASTParam(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTParamsChain(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTParamsChain(new ASTParam(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTParamsChain(param, null, 0, 0));
 	}
 
 	@Test
 	public void constructorDeclsChain() {
+		ASTVarSimple varSimple = new ASTVarSimple(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTDeclsChain(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTDeclsChain(new ASTVarSimple(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0), null, 0,
-						0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTDeclsChain(varSimple, null, 0, 0));
 	}
 
 	@Test
@@ -139,45 +145,52 @@ public class TestASTConstructor {
 
 	@Test
 	public void constructorIncrementOp() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTIncrementOp(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTIncrementOp(new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTIncrementOp(ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorMethodCallInstr() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTMethodCallInstr(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTMethodCallInstr(new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTMethodCallInstr(ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorWhile() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTWhile(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTWhile(new ASTIdent("a", 0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTWhile(ident, null, 0, 0));
 	}
 
 	@Test
 	public void constructorWrite() {
+
 		Assert.assertThrows(NullPointerException.class, () -> new ASTWrite((ASTIdent) null, false, 0, 0));
 	}
 
 	@Test
 	public void constructorMainMethod() {
+		ASTVarsNil varsNil = new ASTVarsNil(0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTMainMethod(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTMainMethod(new ASTVarsNil(0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTMainMethod(varsNil, null, 0, 0));
 	}
 
 	@Test
 	public void constructorParam() {
+		ASTBoolType bool = new ASTBoolType(0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTParam(null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTParam(new ASTBoolType(0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTParam(bool, null, 0, 0));
 	}
 
 	@Test
 	public void constructorClass() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTDeclsNil declsNil = new ASTDeclsNil(0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTClass(null, null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class, () -> new ASTClass(new ASTIdent("a", 0, 0), null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTClass(new ASTIdent("a", 0, 0), new ASTDeclsNil(0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTClass(ident, null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTClass(ident, declsNil, null, 0, 0));
 	}
 
 	@Test
@@ -188,15 +201,14 @@ public class TestASTConstructor {
 
 	@Test
 	public void constructorMethod() {
+		ASTBoolType bool = new ASTBoolType(0, 0);
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTParamsNil paramsNil = new ASTParamsNil(0, 0);
+		ASTVarsNil varsNil = new ASTVarsNil(0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(null, null, null, null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTMethod(new ASTBoolType(0, 0), null, null, null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTMethod(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), null, null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTMethod(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), new ASTParamsNil(0, 0), null, null, 0, 0));
-		Assert.assertThrows(NullPointerException.class,
-				() -> new ASTMethod(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), new ASTParamsNil(0, 0),
-						new ASTVarsNil(0, 0), null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(bool, null, null, null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(bool, ident, null, null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(bool, ident, paramsNil, null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(bool, ident, paramsNil, varsNil, null, 0, 0));
 	}
 }
