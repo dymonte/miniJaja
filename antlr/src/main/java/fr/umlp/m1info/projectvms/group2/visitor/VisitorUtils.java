@@ -91,7 +91,7 @@ public class VisitorUtils {
 			return node;
 		} catch (Exception e) {
 			error("Failed to build node for " + contextName + ": " + e.getMessage());
-			throw new VisitorBuildException("AST build error in " + contextName, e);
+			throw new VisitorBuildException("AST build error in " + contextName);
 		}
 	}
 }
