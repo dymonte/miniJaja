@@ -14,15 +14,4 @@ public class VisitorBuildException extends RuntimeException {
 	public VisitorBuildException(String message) {
 		super(message);
 	}
-
-	/**
-	 * Constructs a new ASTBuildException with the specified detail message and
-	 * cause.
-	 *
-	 * @param message the detail message
-	 * @param cause   the cause of this exception
-	 */
-	public VisitorBuildException(String message, Throwable cause) {
-		super(message, cause);
-	}
 }

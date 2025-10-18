@@ -644,7 +644,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTBoolLiteral visitBool(MiniJajaParser.BoolContext ctx) {
 		return VisitorUtils.safeBuild("Bool",
-				() -> new ASTBoolLiteral((ctx.BOOLEAN().getText().equals("true")), VisitorUtils.line(ctx),
+				() -> new ASTBoolLiteral((ctx.getText().equals("true")), VisitorUtils.line(ctx),
 						VisitorUtils.column(ctx)));
 	}
 

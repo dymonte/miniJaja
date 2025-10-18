@@ -48,10 +48,10 @@ exp2:     exp2 op=('+'|'-') term #AddSubExp
 term:     term op=('*'|'/'|'%') fact #MulDivExp
         | fact                       #FactOnly
         ;
-fact:		  ident1                 #VarRef
+fact:	   ( 'true' | 'false')     #Bool
+				| ident1                 #VarRef
         | ident '(' listexp ')'  #MethodCall
         | 'length' '(' ident ')' #Length
-        | BOOLEAN                #Bool
         | NUMBER                 #Int
         | '(' exp ')'            #ParenExp
         ;
@@ -71,12 +71,9 @@ type:     'int'      #IntType
 fragment DIGIT:    [0-9];
 NUMBER:   DIGIT+;
 fragment LETTER:   [a-zA-Z];
-fragment TRUE:     'true';
-fragment FALSE:    'false';
 
 IDENT:    (LETTER|'_')(LETTER|NUMBER|'_'|'-')*;
 STRING: '"' (~["\\\r\n] | '\\' .)* '"';
-BOOLEAN:  TRUE|FALSE;
 
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
