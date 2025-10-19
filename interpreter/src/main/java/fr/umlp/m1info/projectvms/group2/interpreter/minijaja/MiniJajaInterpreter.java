@@ -215,11 +215,13 @@ public class MiniJajaInterpreter {
 
 	/** Interprets an if-(else)-statement */
 	protected void interpretIf(ASTIf node) {
-		Boolean value = (Boolean) eval(node.getExpr());
-		if (Boolean.TRUE.equals(value)) {
-			interpret(node.getIfInstrs());
-		} else if (Boolean.FALSE.equals(value)) {
-			interpret(node.getElseInstrs());
+		Object value = eval(node.getExpr());
+		if (value instanceof Boolean) {
+			if ((Boolean) value) {
+				interpret(node.getIfInstrs());
+			} else {
+				interpret(node.getElseInstrs());
+			}
 		} else {
 			throw new InterpretRuntimeException("Condition must evaluate to a boolean value");
 		}
