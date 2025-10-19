@@ -58,11 +58,10 @@ public class MemoryTest {
 		}
 	}
 
-
-    @Test
-    public void testGetMethKey() {
-        Assert.assertEquals("4methIB", m.getMethKey("meth", List.of(Type.INT, Type.BOOL)));
-    }
+	@Test
+	public void testGetMethKey() {
+		Assert.assertEquals("4methIB", m.getMethKey("meth", List.of(Type.INT, Type.BOOL)));
+	}
 
 	@Test
 	public void testRemoveDecl() {
@@ -73,14 +72,15 @@ public class MemoryTest {
 		Assert.assertThrows(SymbolNotFoundException.class, () -> m.removeDecl("ii"));
 	}
 
+	@Test
 	public void testDeclMeth() {
-        m.declMeth("meth1", null, List.of(Type.INT, Type.BOOL), Type.VOID);
+		m.declMeth("meth1", null, List.of(Type.INT, Type.BOOL), Type.VOID);
 
-        Assert.assertNull(m.getVal("5meth1IB"));
+		Assert.assertNull(m.getVal("5meth1IB"));
 
-        m.declMeth("method2", 0, List.of(), Type.INT);
+		m.declMeth("method2", 0, List.of(), Type.INT);
 
-        Assert.assertEquals(0, (int) m.getVal("7method2"));
+		Assert.assertEquals(0, (int) m.getVal("7method2"));
 	}
 
 	@Test
