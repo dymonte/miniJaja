@@ -1,18 +1,14 @@
 package fr.umlp.m1info.projectvms.group2.memory;
 
+import java.util.List;
 import java.util.Optional;
 
-import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
 import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.*;
 
 /**
  * Memory
@@ -21,11 +17,6 @@ public class Memory {
 	SymTable symTable;
 	Stack stack;
 	Heap heap;
-
-	/*
-	 * NOTE: if <T> makes errors with the InstNode Object val, then replace <T> with
-	 * Object.
-	 */
 
 	/**
 	 * Constructs a new Memory
@@ -87,24 +78,62 @@ public class Memory {
 	}
 
 	/**
-	 * TODO: javadoc
-	 * TODO: think about how to pass parameters
+	 * Add a new method declaration to the program memory.
+	 *
+	 * @param ident       the method identifier
+	 * @param meth        node in ast
+	 * @param paramsTypes list of the method parameters types
+	 * @param sorte       the method type
 	 */
-	public <T> void declMeth(String ident, T value, Type sorte) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public void declMeth(String ident, Object meth, List<Type> paramsTypes, Type sorte) {
+		String identWithTypes = getMethKey(ident, paramsTypes);
+		Optional<SymNode> symbol = symTable.add(identWithTypes, ObjectKind.METH, sorte);
+		symbol.ifPresent(symNode -> stack.push(meth, symNode));
+	}
+
+	/**
+	 * Returns the method identifier with its parameters types.
+	 * example: "myMethod", "[int, int]" -> "myMethod(int_int)"
+	 *
+	 * @param ident  the method identifier
+	 * @param params list of the method parameters types
+	 * @return the method identifier with its parameters types
+	 */
+	public String getMethKey(String ident, List<Type> params) {
+		String size = String.format("%d", ident.length());
+		StringBuilder ret = new StringBuilder(size);
+		ret.append(ident);
+
+		for (Type t : params) {
+			ret.append(t.toString().charAt(0));
+		}
+		return ret.toString();
 	}
 
 	/* Memory modification methods */
 
-	// TODO: maybe place print here ?? (Afficher, AfficherLn : VAL × MEM → MEM)
-
 	/**
-	 * TODO: javadoc
+	 * Removes the latest instance of symbol ident.
+	 *
+	 * @param ident the identifier of the instance to remove
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
+	 * @throws NoInstanceException     thrown when the symbol does not have any
+	 *                                 instance/value
 	 */
-	public void removeDecl(String ident) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public void removeDecl(String ident) throws SymbolNotFoundException, NoInstanceException {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		InstNode instance = symbolOpt.get().getFirstInstance();
+		if (instance == null) {
+			throw new NoInstanceException(ident);
+		}
+
+		symTable.remove(instance);
 	}
 
 	/**
@@ -165,7 +194,7 @@ public class Memory {
 		SymNode symbol = symbolOpt.get();
 		ObjectKind kind = symbol.getInfo().getKind();
 
-		if (kind == ObjectKind.ARRAY || kind == ObjectKind.METH) {
+		if (kind == ObjectKind.ARRAY) {
 			throw new BadSymbolKindException(ident, kind);
 		}
 
@@ -254,27 +283,39 @@ public class Memory {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Gets the type of the symbol of indentifier ident
+	 * 
+	 * @param ident the symbol identifier
+	 * @returns the symbol's data type
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
 	 */
-	public void updateType(String ident, Type sorte) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public Type getType(String ident) {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		return symbolOpt.get().getInfo().getSorte();
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Sets the type of the symbol of indentifier ident
+	 * 
+	 * @param ident the symbol identifier
+	 * @param sorte the new type to set
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
 	 */
-	// TODO: understand expParam
+	public void updateType(String ident, Type sorte) {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
 
-	/*
-	 * Accès aux infos de
-	 * T:ID×VAL×
-	 * MEM Long D EM ALOj
-	 * t:ID×MEM→OBJ ∪S
-	 * rte : I MM→ SRE ∪ {P
-	 * ramètre :I ×MM →DCLS ∪é
-	 * laaio ID×MEM → E
-	 * LS ∪ {w}
-	 * Corps : ID × MEM → INSTRS ∪ {w}
-	 */
+		symbolOpt.get().setType(sorte);
+	}
+
 }

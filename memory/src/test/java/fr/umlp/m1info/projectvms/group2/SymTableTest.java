@@ -153,4 +153,14 @@ public class SymTableTest {
 	public void removeNullTest() {
 		Assert.assertFalse(symTable.remove(null));
 	}
+
+	@Test
+	public void removeWithMultipleSymbolsSameHash() {
+		Optional<SymNode> s1 = symTable.add("ab", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s2 = symTable.add("ba", ObjectKind.VAR, Type.INT);
+		Assert.assertTrue(s1.isPresent());
+		Assert.assertTrue(s2.isPresent());
+		new InstNode(0, s2.get(), null);
+		Assert.assertTrue(symTable.remove(s2.get().getFirstInstance()));
+	}
 }
