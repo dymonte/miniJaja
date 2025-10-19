@@ -21,12 +21,8 @@ import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 
 public class MiniJajaInterpreterTest {
@@ -52,8 +48,20 @@ public class MiniJajaInterpreterTest {
 	}
 
 	@Test
+	public void interpretNotExist() {
+		Assert.assertThrows(InterpretRuntimeException.class, () -> interpreter.interpret(new ASTBoolLiteral(true, 0, 0)));
+	}
+
+	@Test
 	public void evalNull() {
 		Assert.assertThrows(EvalRuntimeException.class, () -> interpreter.eval(null));
+	}
+
+	@Test
+	public void evalNotExist() {
+		ASTWrite write = new ASTWrite(new ASTIdent("a", 0, 0), false, 0, 0);
+		Assert.assertThrows(EvalRuntimeException.class,
+				() -> interpreter.eval(write));
 	}
 
 	@Test
@@ -178,7 +186,7 @@ public class MiniJajaInterpreterTest {
 	public void interpretWriteArrayTest() {
 		ASTArrayAccess arrayAccess = new ASTArrayAccess(new ASTIdent("tab", 0, 0), new ASTIntLiteral(1, 0, 0), 0, 0);
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		Mockito.doReturn(1).when(spyInterpreter).eval(arrayAccess);
+		Mockito.doReturn(1).when(spyInterpreter).evalArrayAccess(arrayAccess);
 
 		logger.addListener((message, level) -> {
 			Assert.assertEquals("1\n", message);
@@ -271,6 +279,22 @@ public class MiniJajaInterpreterTest {
 		ASTIf astIf = new ASTIf(bool, chain, chain2, 0, 0);
 		spyInterpreter.interpret(astIf);
 		logger.clearListeners();
+	}
+
+	@Test
+	public void interpretIfExceptionTest() {
+		ASTStringLiteral stringLiteral = new ASTStringLiteral("WRITE", 0, 0);
+		ASTStringLiteral stringLiteral2 = new ASTStringLiteral("AH", 0, 0);
+		ASTInstrsChain chain = new ASTInstrsChain(new ASTWrite(stringLiteral, false, 0, 0), new ASTInstrsNil(0, 0), 0, 0);
+		ASTInstrsChain chain2 = new ASTInstrsChain(new ASTWrite(stringLiteral, false, 0, 0), new ASTInstrsNil(0, 0), 0, 0);
+		ASTBoolLiteral bool = new ASTBoolLiteral(true, 0, 0);
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("WRITE").when(spyInterpreter).eval(stringLiteral);
+		Mockito.doReturn("AH").when(spyInterpreter).eval(stringLiteral2);
+		Mockito.doReturn(null).when(spyInterpreter).eval(bool);
+
+		ASTIf astIf = new ASTIf(bool, chain, chain2, 0, 0);
+		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpret(astIf));
 	}
 
 	@Test

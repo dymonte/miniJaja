@@ -39,7 +39,6 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 
 /**
  * The Interpreter class traverses and executes an Abstract Syntax Tree(AST) by
@@ -217,10 +216,12 @@ public class MiniJajaInterpreter {
 	/** Interprets an if-(else)-statement */
 	protected void interpretIf(ASTIf node) {
 		Boolean value = (Boolean) eval(node.getExpr());
-		if (value) {
+		if (Boolean.TRUE.equals(value)) {
 			interpret(node.getIfInstrs());
-		} else {
+		} else if (Boolean.FALSE.equals(value)) {
 			interpret(node.getElseInstrs());
+		} else {
+			throw new InterpretRuntimeException("Condition must evaluate to a boolean value");
 		}
 	}
 
@@ -249,7 +250,7 @@ public class MiniJajaInterpreter {
 	/** Interprets a while loop */
 	protected void interpretWhile(ASTWhile node) {
 		Boolean value = (Boolean) eval(node.getExpr());
-		if (value) {
+		if (Boolean.TRUE.equals(value)) {
 			interpret(node.getInstrs());
 			interpret(node);
 		}
@@ -279,6 +280,7 @@ public class MiniJajaInterpreter {
 
 	/** Interprets an empty instruction list */
 	protected void interpretInstrsNil(ASTInstrsNil node) {
+		return; // do nothing
 	}
 
 	/** Interprets a parameter list chain */

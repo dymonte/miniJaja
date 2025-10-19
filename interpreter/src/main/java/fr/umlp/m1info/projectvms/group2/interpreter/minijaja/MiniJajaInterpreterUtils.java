@@ -53,11 +53,11 @@ public class MiniJajaInterpreterUtils {
 			return lb || rb;
 		}
 
-		if (left instanceof Boolean) {
-			left = ((Boolean) left) ? 1 : 0;
+		if (left instanceof Boolean bool) {
+			left = bool ? 1 : 0;
 		}
-		if (right instanceof Boolean) {
-			right = ((Boolean) right) ? 1 : 0;
+		if (right instanceof Boolean bool) {
+			right = bool ? 1 : 0;
 		}
 
 		if (left instanceof Integer li && right instanceof Integer ri) {

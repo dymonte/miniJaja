@@ -33,7 +33,7 @@ public class ASTClass extends ASTNode {
 		} else if (mainMethod == null) {
 			throw new NullPointerException("mainMethod cannot be null");
 		}
-		this.ident = ident;
+		ASTClass.ident = ident;
 		this.decls = decls;
 		this.mainMethod = mainMethod;
 	}
@@ -53,7 +53,7 @@ public class ASTClass extends ASTNode {
 	 * @return the ASTIdent representing the name of this class
 	 */
 	public ASTIdent getIdent() {
-		return ident;
+		return ASTClass.getClassVar();
 	}
 
 	/**
