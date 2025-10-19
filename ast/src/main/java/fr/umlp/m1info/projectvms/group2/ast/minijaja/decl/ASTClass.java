@@ -70,7 +70,7 @@ public class ASTClass extends ASTNode {
 	 *
 	 * @return the ASTMainMethod node representing the main method
 	 */
-	public ASTMainMethod mainMethod() {
+	public ASTMainMethod getMainMethod() {
 		return mainMethod;
 	}
 

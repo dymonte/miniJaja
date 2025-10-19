@@ -24,13 +24,4 @@ public abstract class ASTVar extends ASTDecl {
 		}
 		this.ident = ident;
 	}
-
-	/**
-	 * Returns the identifier of the variable
-	 *
-	 * @return the ASTIdent representing the variable name
-	 */
-	public ASTIdent getIdent() {
-		return ident;
-	}
 }
