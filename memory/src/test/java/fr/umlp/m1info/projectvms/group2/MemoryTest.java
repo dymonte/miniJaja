@@ -5,6 +5,7 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
+import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 
 import org.junit.Assert;
@@ -57,12 +58,21 @@ public class MemoryTest {
 		}
 	}
 
+
     @Test
     public void testGetMethKey() {
         Assert.assertEquals("4methIB", m.getMethKey("meth", List.of(Type.INT, Type.BOOL)));
     }
 
 	@Test
+	public void testRemoveDecl() {
+		m.declVar("i", 0, Type.INT);
+		m.declVar("i", 1, Type.INT);
+		m.removeDecl("i");
+		m.removeDecl("i");
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.removeDecl("ii"));
+	}
+
 	public void testDeclMeth() {
         m.declMeth("meth1", null, List.of(Type.INT, Type.BOOL), Type.VOID);
 
@@ -73,17 +83,28 @@ public class MemoryTest {
         Assert.assertEquals(0, (int) m.getVal("7method2"));
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRemoveDecl() {
-		m.removeDecl("i");
-	}
-
 	@Test
-	public void testUpdateVal() {
+	public void testUpdateGetVal() {
 		m.declVar("i", 0, Type.INT);
 		Assert.assertEquals(0, (int) m.getVal("i"));
 		m.updateVal("i", 10);
+
 		Assert.assertEquals(10, (int) m.getVal("i"));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.updateVal("aa", 9));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
+		m.declArray("aa", 1, Type.INT);
+		Assert.assertThrows(BadSymbolKindException.class, () -> m.getVal("aa"));
+	}
+
+	@Test
+	public void testUpdateType() {
+		m.declVar("i", 0, Type.INT);
+		Assert.assertEquals(Type.INT, m.getType("i"));
+		m.updateType("i", Type.BOOL);
+		Assert.assertEquals(Type.BOOL, m.getType("i"));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.updateType("aa", Type.BOOL));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getType("aa"));
 	}
 
 }
