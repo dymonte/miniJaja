@@ -1,18 +1,14 @@
 package fr.umlp.m1info.projectvms.group2.memory;
 
+import java.util.List;
 import java.util.Optional;
 
-import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
 import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.*;
 
 /**
  * Memory
@@ -86,14 +82,38 @@ public class Memory {
 		}
 	}
 
-	/**
-	 * TODO: javadoc
-	 * TODO: think about how to pass parameters
+    /**
+     * Add a new method declaration to the program memory.
+     *
+     * @param ident         the method identifier
+     * @param meth          node in ast
+     * @param paramsTypes   list of the method parameters types
+     * @param sorte         the method type
 	 */
-	public <T> void declMeth(String ident, T value, Type sorte) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public void declMeth(String ident, Object meth, List<Type> paramsTypes, Type sorte) {
+        String identWithTypes = getMethKey(ident, paramsTypes);
+        Optional<SymNode> symbol = symTable.add(identWithTypes, ObjectKind.METH, sorte);
+        symbol.ifPresent(symNode -> stack.push(meth, symNode));
 	}
+
+    /**
+     * Returns the method identifier with its parameters types.
+     * example: "myMethod", "[int, int]" -> "myMethod(int_int)"
+     *
+     * @param ident     the method identifier
+     * @param params    list of the method parameters types
+     * @return          the method identifier with its parameters types
+     */
+    public String getMethKey(String ident, List<Type> params) {
+        String size = String.format("%d",ident.length());
+        StringBuilder ret = new StringBuilder(size);
+        ret.append(ident);
+
+        for(Type t : params) {
+            ret.append(t.toString().charAt(0));
+        }
+        return ret.toString();
+    }
 
 	/* Memory modification methods */
 
@@ -165,7 +185,7 @@ public class Memory {
 		SymNode symbol = symbolOpt.get();
 		ObjectKind kind = symbol.getInfo().getKind();
 
-		if (kind == ObjectKind.ARRAY || kind == ObjectKind.METH) {
+		if (kind == ObjectKind.ARRAY) {
 			throw new BadSymbolKindException(ident, kind);
 		}
 

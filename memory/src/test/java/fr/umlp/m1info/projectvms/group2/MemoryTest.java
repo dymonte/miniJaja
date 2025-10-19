@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  * MemoryTest
  */
@@ -38,7 +40,7 @@ public class MemoryTest {
 	@Test
 	public void testDeclCst() {
 		m.declCst("i", 1, Type.INT);
-		Assert.assertEquals((int) m.getVal("i"), 1);
+		Assert.assertEquals(1, (int) m.getVal("i"));
 
 		Assert.assertThrows(BadSymbolKindException.class, () -> m.updateVal("i", 2));
 	}
@@ -55,9 +57,20 @@ public class MemoryTest {
 		}
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
+    @Test
+    public void testGetMethKey() {
+        Assert.assertEquals("4methIB", m.getMethKey("meth", List.of(Type.INT, Type.BOOL)));
+    }
+
+	@Test
 	public void testDeclMeth() {
-		m.declMeth("meth", 0, Type.VOID);
+        m.declMeth("meth1", null, List.of(Type.INT, Type.BOOL), Type.VOID);
+
+        Assert.assertNull(m.getVal("5meth1IB"));
+
+        m.declMeth("method2", 0, List.of(), Type.INT);
+
+        Assert.assertEquals(0, (int) m.getVal("7method2"));
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
@@ -68,9 +81,9 @@ public class MemoryTest {
 	@Test
 	public void testUpdateVal() {
 		m.declVar("i", 0, Type.INT);
-		Assert.assertEquals((int) m.getVal("i"), 0);
+		Assert.assertEquals(0, (int) m.getVal("i"));
 		m.updateVal("i", 10);
-		Assert.assertEquals((int) m.getVal("i"), 10);
+		Assert.assertEquals(10, (int) m.getVal("i"));
 	}
 
 }
