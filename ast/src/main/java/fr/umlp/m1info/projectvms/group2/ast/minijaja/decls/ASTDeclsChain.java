@@ -29,6 +29,25 @@ public class ASTDeclsChain extends ASTDecls {
 	}
 
 	/**
+	 * Returns the first declaration in this chain
+	 *
+	 * @return the ASTDecl node representing the first declaration in the chain
+	 */
+	public ASTDecl getDecl() {
+		return chain.getLeft();
+	}
+
+	/**
+	 * Returns the reset of the declarations in this chain
+	 *
+	 * @return the ASTDecls node representing the remaining declarations in the
+	 *         chain
+	 */
+	public ASTDecls getDecls() {
+		return chain.getRight();
+	}
+
+	/**
 	 * Returns a string representation of the declarations in MiniJaja syntax
 	 *
 	 * @return formatted string of this AST node

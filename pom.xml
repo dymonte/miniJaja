@@ -40,8 +40,8 @@
     <module>antlr</module>
     <module>ast</module>
     <module>gui</module>
-    <module>memory</module>
-    <module>interpreter</module>
+		<module>memory</module>
+		<module>interpreter</module>
   </modules>
   <distributionManagement>
     <repository>
@@ -73,6 +73,33 @@
                 </additionalJOptions>
             </configuration>
         </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report-aggregate</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report-aggregate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -82,15 +109,10 @@
           <version>3.9.0.2155</version>
           </plugin>
         <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.7</version>
-          </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>3.1.1</version>
-        </plugin>
+				</plugin>
       </plugins>
     </pluginManagement>
   </build>

@@ -124,10 +124,12 @@ public class TestASTToString {
 
 	@Test
 	public void testToStringIf() {
+		ASTInstrsChain chain = new ASTInstrsChain(new ASTWrite(new ASTStringLiteral("AH", 0, 0), false, 0, 0),
+				new ASTInstrsNil(0, 0), 0, 0);
 		Assert.assertEquals("if (true) {\n}",
-				(new ASTIf(new ASTBoolLiteral(true, 0, 0), new ASTInstrsNil(0, 0), null, 0, 0)).toString());
-		Assert.assertEquals("if (true) {\n} else {\n}",
 				(new ASTIf(new ASTBoolLiteral(true, 0, 0), new ASTInstrsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0)).toString());
+		Assert.assertEquals("if (true) {\n} else {\nwrite(\"AH\");\n}",
+				(new ASTIf(new ASTBoolLiteral(true, 0, 0), new ASTInstrsNil(0, 0), chain, 0, 0)).toString());
 	}
 
 	/**

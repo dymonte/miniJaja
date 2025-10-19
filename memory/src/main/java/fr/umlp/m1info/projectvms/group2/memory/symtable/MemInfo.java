@@ -1,5 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.memory.symtable;
 
+import java.util.Objects;
+
 /**
  * MemInfo
  * The informations of a symbol
@@ -13,8 +15,8 @@ public class MemInfo {
 	 * Constructs a new Memory informations object
 	 *
 	 * @param sorte the data type (INT, BOOL, ...)
-	 * @param kind the object kind (VAR, METH, ...)
-	 * @param size the data size
+	 * @param kind  the object kind (VAR, METH, ...)
+	 * @param size  the data size
 	 * @throws IllegalArgumentException when size < 0 (negative data size)
 	 */
 	public MemInfo(Type sorte, ObjectKind kind, int size) throws IllegalArgumentException {
@@ -60,5 +62,10 @@ public class MemInfo {
 		return otherInfo.getSize() == size &&
 				otherInfo.getSorte() == sorte &&
 				otherInfo.getKind() == kind;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(size, sorte, kind);
 	}
 }

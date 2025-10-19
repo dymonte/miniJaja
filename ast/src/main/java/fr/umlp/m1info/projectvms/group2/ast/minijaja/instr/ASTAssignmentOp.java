@@ -15,9 +15,9 @@ public class ASTAssignmentOp extends ASTInstr {
 	 * Constructs a new ASTAssignmentOp node
 	 *
 	 * @param lvalue the target variable
-	 * @param expr the expression to assing
-	 * @param op the compound operator
-	 * @param line the source code line of this node
+	 * @param expr   the expression to assing
+	 * @param op     the compound operator
+	 * @param line   the source code line of this node
 	 * @param column the source code column of this node
 	 */
 	public ASTAssignmentOp(ASTLValue lvalue, ASTExpr expr, AssignmentOp op, int line, int column) {
@@ -25,6 +25,33 @@ public class ASTAssignmentOp extends ASTInstr {
 		this.lvalue = lvalue;
 		this.expr = expr;
 		this.op = op;
+	}
+
+	/**
+	 * Returns the target variable of the assignement
+	 *
+	 * @return the ASTLValue representing the variable
+	 */
+	public ASTLValue getLValue() {
+		return lvalue;
+	}
+
+	/**
+	 * Returns the expression whose value is assigned to the variable
+	 *
+	 * @return the ASTExpr representing the assigned value
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
+	 * Returns the assignment operator
+	 *
+	 * @return the AssignmentOp used in this assignment
+	 */
+	public AssignmentOp getOp() {
+		return op;
 	}
 
 	/**

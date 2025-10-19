@@ -32,6 +32,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
 
 import org.junit.Assert;
 
@@ -51,8 +52,10 @@ public class TestASTConstructor {
 	@Test
 	public void constructorIfTest() {
 		ASTIntLiteral literal = new ASTIntLiteral(1, 0, 0);
+		ASTInstrsNil instrs = new ASTInstrsNil(0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTIf(null, null, null, 0, 0));
 		Assert.assertThrows(NullPointerException.class, () -> new ASTIf(literal, null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTIf(literal, instrs, null, 0, 0));
 	}
 
 	@Test

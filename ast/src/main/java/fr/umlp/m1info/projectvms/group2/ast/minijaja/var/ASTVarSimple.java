@@ -31,6 +31,33 @@ public class ASTVarSimple extends ASTVar {
 	}
 
 	/**
+	 * Returns the type of the variable
+	 *
+	 * @return the ASTTypeMeth representing the variable type
+	 */
+	public ASTTypeMeth getType() {
+		return type;
+	}
+
+	/**
+	 * Returns the identifier of the variable
+	 *
+	 * @return the ASTIdent representing the variable name
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
+	 * Returns the initialization expression of the variable
+	 *
+	 * @return the ASTVExpr representing the initialization, may be null
+	 */
+	public ASTVExpr getVExpr() {
+		return vexpr;
+	}
+
+	/**
 	 * Returns a string representaion of this variable declaration in MiniJaja
 	 * syntax
 	 *

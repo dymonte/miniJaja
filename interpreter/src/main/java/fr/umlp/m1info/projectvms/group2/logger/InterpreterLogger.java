@@ -12,6 +12,7 @@ public class InterpreterLogger {
 	 * The severity level of a log message
 	 */
 	public enum MessageLevel {
+		WRITE, // The write ast function
 		INFO, // General interpreter info
 		DEBUG, // Detailed
 		WARNING, // Non-critical problems

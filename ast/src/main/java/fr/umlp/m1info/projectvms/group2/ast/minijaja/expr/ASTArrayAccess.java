@@ -29,6 +29,24 @@ public class ASTArrayAccess extends ASTLValue {
 	}
 
 	/**
+	 * Returns the identifer of the array being accessed
+	 *
+	 * @return the ASTIdent representing the array name
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
+	 * Retunrs the expression used as the index into the array
+	 *
+	 * @return the ASTExpr representing the array index
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
 	 * returns a string representation of this array access expression
 	 *
 	 * @return a formatted string
