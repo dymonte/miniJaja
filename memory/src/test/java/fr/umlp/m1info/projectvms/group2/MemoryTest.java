@@ -79,4 +79,14 @@ public class MemoryTest {
 		Assert.assertThrows(SymbolNotFoundException.class, () -> m.updateVal("aa", 9));
 	}
 
+	@Test
+	public void testUpdateType() {
+		m.declVar("i", 0, Type.INT);
+		Assert.assertEquals(m.getType("i"), Type.INT);
+		m.updateType("i", Type.BOOL);
+		Assert.assertEquals(m.getType("i"), Type.BOOL);
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.updateType("aa", Type.BOOL));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getType("aa"));
+	}
+
 }

@@ -22,11 +22,6 @@ public class Memory {
 	Stack stack;
 	Heap heap;
 
-	/*
-	 * NOTE: if <T> makes errors with the InstNode Object val, then replace <T> with
-	 * Object.
-	 */
-
 	/**
 	 * Constructs a new Memory
 	 *
@@ -270,27 +265,39 @@ public class Memory {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Gets the type of the symbol of indentifier ident
+	 * 
+	 * @param ident the symbol identifier
+	 * @returns the symbol's data type
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
 	 */
-	public void updateType(String ident, Type sorte) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public Type getType(String ident) {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		return symbolOpt.get().getInfo().getSorte();
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Sets the type of the symbol of indentifier ident
+	 * 
+	 * @param ident the symbol identifier
+	 * @param sorte the new type to set
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
 	 */
-	// TODO: understand expParam
+	public void updateType(String ident, Type sorte) {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
 
-	/*
-	 * Accès aux infos de
-	 * T:ID×VAL×
-	 * MEM Long D EM ALOj
-	 * t:ID×MEM→OBJ ∪S
-	 * rte : I MM→ SRE ∪ {P
-	 * ramètre :I ×MM →DCLS ∪é
-	 * laaio ID×MEM → E
-	 * LS ∪ {w}
-	 * Corps : ID × MEM → INSTRS ∪ {w}
-	 */
+		symbolOpt.get().setType(sorte);
+	}
+
 }
