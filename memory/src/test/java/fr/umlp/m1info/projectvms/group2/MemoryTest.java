@@ -5,6 +5,7 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
+import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 
 import org.junit.Assert;
@@ -55,14 +56,18 @@ public class MemoryTest {
 		}
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testDeclMeth() {
-		m.declMeth("meth", 0, Type.VOID);
+	@Test
+	public void testRemoveDecl() {
+		m.declVar("i", 0, Type.INT);
+		m.declVar("i", 1, Type.INT);
+		m.removeDecl("i");
+		m.removeDecl("i");
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.removeDecl("ii"));
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void testRemoveDecl() {
-		m.removeDecl("i");
+	public void testDeclMeth() {
+		m.declMeth("meth", 0, Type.VOID);
 	}
 
 	@Test
@@ -71,6 +76,7 @@ public class MemoryTest {
 		Assert.assertEquals((int) m.getVal("i"), 0);
 		m.updateVal("i", 10);
 		Assert.assertEquals((int) m.getVal("i"), 10);
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.updateVal("aa", 9));
 	}
 
 }

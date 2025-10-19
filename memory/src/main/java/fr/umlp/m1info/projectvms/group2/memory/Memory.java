@@ -100,11 +100,27 @@ public class Memory {
 	// TODO: maybe place print here ?? (Afficher, AfficherLn : VAL × MEM → MEM)
 
 	/**
-	 * TODO: javadoc
+	 * Removes the latest instance of symbol ident.
+	 *
+	 * @param ident the identifier of the instance to remove
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not
+	 *                                 belong to this memory's symbol table
+	 * @throws NoInstanceException     thrown when the symbol does not have any
+	 *                                 instance/value
 	 */
-	public void removeDecl(String ident) {
-		// TODO: implement this
-		throw new UnsupportedOperationException();
+	public void removeDecl(String ident) throws SymbolNotFoundException, NoInstanceException {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		InstNode instance = symbolOpt.get().getFirstInstance();
+		if (instance == null) {
+			throw new NoInstanceException(ident);
+		}
+
+		symTable.remove(instance);
 	}
 
 	/**
