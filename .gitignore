@@ -20,5 +20,10 @@ buildNumber.properties
 .classpath
 .DS_Store
 
+
+# IntelliJ files
+.idea
+
 # Latex report
 report/build/
+

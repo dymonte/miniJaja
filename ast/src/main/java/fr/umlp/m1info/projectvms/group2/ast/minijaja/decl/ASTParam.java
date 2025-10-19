@@ -57,6 +57,6 @@ public class ASTParam extends ASTParams {
 	 */
 	@Override
 	public String toString() {
-		return "" + type + ident;
+		return "" + type + " " + ident;
 	}
 }

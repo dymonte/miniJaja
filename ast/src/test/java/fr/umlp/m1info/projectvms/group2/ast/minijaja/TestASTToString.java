@@ -119,7 +119,7 @@ public class TestASTToString {
 	@Test
 	public void testToStringWrite() {
 		Assert.assertEquals("write(\"ah\")", (new ASTWrite(new ASTStringLiteral("ah", 0, 0), false, 0, 0)).toString());
-		Assert.assertEquals("writeln(\"ah\")", (new ASTWrite(new ASTStringLiteral("ah", 0, 0), true, 0, 0)).toString());
+		Assert.assertEquals("writeln(ah)", (new ASTWrite(new ASTIdent("ah", 0, 0), true, 0, 0)).toString());
 	}
 
 	@Test
@@ -130,6 +130,19 @@ public class TestASTToString {
 				(new ASTIf(new ASTBoolLiteral(true, 0, 0), new ASTInstrsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0)).toString());
 		Assert.assertEquals("if (true) {\n} else {\nwrite(\"AH\");\n}",
 				(new ASTIf(new ASTBoolLiteral(true, 0, 0), new ASTInstrsNil(0, 0), chain, 0, 0)).toString());
+	}
+
+	/**
+	 * Instrs
+	 */
+	@Test
+	public void testToStringInstrsChain() {
+		Assert.assertEquals("while (true) {\n};\nwrite(\"ah\");\n",
+				(new ASTInstrsChain(new ASTWhile(new ASTBoolLiteral(true, 0, 0), new ASTInstrsNil(0, 0), 0, 0),
+						new ASTInstrsChain(new ASTWrite(new ASTStringLiteral("ah", 0, 0), false, 0, 0), new ASTInstrsNil(0, 0), 0,
+								0),
+						0,
+						0)).toString());
 	}
 
 	/**
@@ -176,6 +189,19 @@ public class TestASTToString {
 	}
 
 	/**
+	 * Vars
+	 */
+	@Test
+	public void testToStringVarsChain() {
+		Assert.assertEquals("int x;\nint tab[1];\n",
+				(new ASTVarsChain((new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("x", 0, 0), null, 0, 0)),
+						new ASTVarsChain(
+								new ASTVarArray(new ASTIntType(0, 0), new ASTIdent("tab", 0, 0), new ASTIntLiteral(1, 0, 0), 0, 0),
+								new ASTVarsNil(0, 0), 0, 0),
+						0, 0)).toString());
+	}
+
+	/**
 	 * Decl
 	 */
 	@Test
@@ -195,4 +221,28 @@ public class TestASTToString {
 		Assert.assertEquals("class A {\nmain {\n}\n}", (new ASTClass(new ASTIdent("A", 0, 0), new ASTDeclsNil(0, 0),
 				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0)).toString());
 	}
+
+	/**
+	 * Decls
+	 */
+	@Test
+	public void testToStringDeclsChain() {
+		Assert.assertEquals("int a;\nint a;\n",
+				(new ASTDeclsChain(new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0),
+						new ASTDeclsChain(new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0),
+								new ASTDeclsNil(0, 0), 0, 0),
+						0, 0)).toString());
+	}
+
+	/**
+	 * Params
+	 */
+	@Test
+	public void testToStringParamsChain() {
+		Assert.assertEquals("boolean a, int b, ",
+				(new ASTParamsChain(new ASTParam(new ASTBoolType(0, 0), new ASTIdent("a", 0, 0), 0, 0), new ASTParamsChain(
+						new ASTParam(new ASTIntType(0, 0), new ASTIdent("b", 0, 0), 0, 0), new ASTParamsNil(0, 0), 0, 0), 0, 0))
+						.toString());
+	}
+
 }
