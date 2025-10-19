@@ -10,7 +10,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDecls;
  * An ASTClass corresponds to a MiniJaja class definition
  */
 public class ASTClass extends ASTNode {
-	private ASTIdent ident;
+	private static ASTIdent ident;
 	private ASTDecls decls;
 	private ASTMainMethod mainMethod;
 
@@ -36,6 +36,42 @@ public class ASTClass extends ASTNode {
 		this.ident = ident;
 		this.decls = decls;
 		this.mainMethod = mainMethod;
+	}
+
+	/**
+	 * Returns the identifier of the current MiniJaja class as a static reference
+	 *
+	 * @return the ASTIdent representing the class identifier
+	 */
+	public static ASTIdent getClassVar() {
+		return ident;
+	}
+
+	/**
+	 * Returns the identifier of this class
+	 *
+	 * @return the ASTIdent representing the name of this class
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
+	 * Returns the declaration contained within this class
+	 *
+	 * @return the ASTDecls node representing the class declaration
+	 */
+	public ASTDecls getDecls() {
+		return decls;
+	}
+
+	/**
+	 * Returns the main method associated with this class
+	 *
+	 * @return the ASTMainMethod node representing the main method
+	 */
+	public ASTMainMethod mainMethod() {
+		return mainMethod;
 	}
 
 	/**

@@ -22,6 +22,15 @@ public class ASTVExpr extends ASTExpr {
 	}
 
 	/**
+	 * Returns the expression contained in this assignment
+	 *
+	 * @return the ASTExpr representing the rigth-hand side of the assignment
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
 	 * Returns a string of this ndde
 	 *
 	 * @return a formatted string

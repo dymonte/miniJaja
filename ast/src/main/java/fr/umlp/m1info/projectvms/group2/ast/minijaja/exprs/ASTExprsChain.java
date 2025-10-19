@@ -29,6 +29,24 @@ public class ASTExprsChain extends ASTExprs {
 	}
 
 	/**
+	 * Returns the first expression in this chain
+	 *
+	 * @return the ASTExpr representing the first expression
+	 */
+	public ASTExpr getExpr() {
+		return chain.getLeft();
+	}
+
+	/**
+	 * Returns the rest of the expressions in this chain
+	 *
+	 * @return the ASTExprs representing the remaining expression
+	 */
+	public ASTExprs getExprs() {
+		return chain.getRight();
+	}
+
+	/**
 	 * Returns a string representation of the expressions in MiniJaja syntax
 	 *
 	 * @return formatted string of this AST node

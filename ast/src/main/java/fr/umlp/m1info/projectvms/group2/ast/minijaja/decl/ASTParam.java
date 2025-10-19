@@ -32,6 +32,29 @@ public class ASTParam extends ASTParams {
 		this.ident = ident;
 	}
 
+	/**
+	 * Returns the type of this parameter
+	 *
+	 * @return the ASTType representing the declared type of the parameter
+	 */
+	public ASTType getType() {
+		return type;
+	}
+
+	/**
+	 * Returns the identifier associated with this parameter
+	 *
+	 * @return the ASTIdent representing the parameter name
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
+	 * Returns a string representation of the class in MiniJaja syntax
+	 *
+	 * @return the class as a formatted string
+	 */
 	@Override
 	public String toString() {
 		return "" + type + ident;

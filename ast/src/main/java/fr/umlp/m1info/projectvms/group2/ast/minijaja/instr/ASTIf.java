@@ -27,10 +27,39 @@ public class ASTIf extends ASTInstr {
 			throw new NullPointerException("expr cannot be null");
 		} else if (ifInstrs == null) {
 			throw new NullPointerException("ifInstrs cannot be null");
+		} else if (elseInstrs == null) {
+			throw new NullPointerException("elseInstrs cannot be null");
 		}
 		this.expr = expr;
 		this.ifInstrs = ifInstrs;
 		this.elseInstrs = elseInstrs;
+	}
+
+	/**
+	 * Returns the condition expression of this if statement
+	 *
+	 * @return the ASTExpr representing the condition
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
+	 * Returns the instructions executed when the condition is true
+	 *
+	 * @return the ASTIsntrs representing the if branch instructions
+	 */
+	public ASTInstrs getIfInstrs() {
+		return ifInstrs;
+	}
+
+	/**
+	 * Returns the instructions executed when the condition is false
+	 *
+	 * @return the ASTInstrs representing the else branch instructions
+	 */
+	public ASTInstrs getElseInstrs() {
+		return elseInstrs;
 	}
 
 	/**

@@ -29,6 +29,24 @@ public class ASTParamsChain extends ASTParams {
 	}
 
 	/**
+	 * Returns the first parameter in this chain
+	 *
+	 * @return the ASTParam representing the first parameter
+	 */
+	public ASTParam getParam() {
+		return chain.getLeft();
+	}
+
+	/**
+	 * Returns the rest of the parameters in this chain
+	 *
+	 * @return the ASTParams representing the remaining parameters
+	 */
+	public ASTParams getParams() {
+		return chain.getRight();
+	}
+
+	/**
 	 * Returns a string representation of the parameter declarations in MiniJaja
 	 * syntax
 	 *

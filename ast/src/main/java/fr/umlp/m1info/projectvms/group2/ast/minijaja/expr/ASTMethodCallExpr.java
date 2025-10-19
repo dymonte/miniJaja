@@ -31,6 +31,24 @@ public class ASTMethodCallExpr extends ASTExpr {
 	}
 
 	/**
+	 * Returns the identifier of the method being called
+	 *
+	 * @return the ASTIdent representing the method name
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
+	 * Returns the list of expressions passed as arguments to the method
+	 *
+	 * @return the ASTExprs representing the method arguments
+	 */
+	public ASTExprs getExprs() {
+		return exprs;
+	}
+
+	/**
 	 * Returns a string representation of this method call
 	 *
 	 * @return a formatted string
