@@ -14,15 +14,4 @@ public class EvalRuntimeException extends RuntimeException {
 	public EvalRuntimeException(String message) {
 		super(message);
 	}
-
-	/**
-	 * Constructs a new EvalRuntimeException with the specified detail message
-	 * and cause.
-	 *
-	 * @param message a detailed message describing the evaluation error
-	 * @param cause   the underlying cause of the error
-	 */
-	public EvalRuntimeException(String message, Throwable cause) {
-		super(message, cause);
-	}
 }
