@@ -372,8 +372,8 @@ public class MiniJajaInterpreterTest {
 	@Test
 	public void testBinaryOp_ADD() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTIntLiteral a = new ASTIntLiteral(5,0,0);
-		ASTIntLiteral b = new ASTIntLiteral(10,0,0);
+		ASTIntLiteral a = new ASTIntLiteral(5, 0, 0);
+		ASTIntLiteral b = new ASTIntLiteral(10, 0, 0);
 
 		Mockito.doReturn(5).when(spyInterpreter).eval(a);
 		Mockito.doReturn(10).when(spyInterpreter).eval(b);
@@ -385,9 +385,9 @@ public class MiniJajaInterpreterTest {
 	@Test
 	public void testBinaryOp_SUB() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTIntLiteral a = new ASTIntLiteral(10,0,0);
-		ASTIntLiteral b = new ASTIntLiteral(5,0,0);
-		ASTBoolLiteral boolVal = new ASTBoolLiteral(true,0,0);
+		ASTIntLiteral a = new ASTIntLiteral(10, 0, 0);
+		ASTIntLiteral b = new ASTIntLiteral(5, 0, 0);
+		ASTBoolLiteral boolVal = new ASTBoolLiteral(true, 0, 0);
 
 		Mockito.doReturn(10).when(spyInterpreter).eval(a);
 		Mockito.doReturn(5).when(spyInterpreter).eval(b);
@@ -403,9 +403,9 @@ public class MiniJajaInterpreterTest {
 	@Test
 	public void testBinaryOp_MUL() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTIntLiteral a = new ASTIntLiteral(3,0,0);
-		ASTIntLiteral b = new ASTIntLiteral(4,0,0);
-		ASTBoolLiteral boolVal = new ASTBoolLiteral(false,0,0);
+		ASTIntLiteral a = new ASTIntLiteral(3, 0, 0);
+		ASTIntLiteral b = new ASTIntLiteral(4, 0, 0);
+		ASTBoolLiteral boolVal = new ASTBoolLiteral(false, 0, 0);
 
 		Mockito.doReturn(3).when(spyInterpreter).eval(a);
 		Mockito.doReturn(4).when(spyInterpreter).eval(b);
@@ -421,9 +421,9 @@ public class MiniJajaInterpreterTest {
 	@Test
 	public void testBinaryOp_DIV() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTIntLiteral a = new ASTIntLiteral(10,0,0);
-		ASTIntLiteral b = new ASTIntLiteral(2,0,0);
-		ASTIntLiteral zero = new ASTIntLiteral(0,0,0);
+		ASTIntLiteral a = new ASTIntLiteral(10, 0, 0);
+		ASTIntLiteral b = new ASTIntLiteral(2, 0, 0);
+		ASTIntLiteral zero = new ASTIntLiteral(0, 0, 0);
 
 		Mockito.doReturn(10).when(spyInterpreter).eval(a);
 		Mockito.doReturn(2).when(spyInterpreter).eval(b);
@@ -439,10 +439,10 @@ public class MiniJajaInterpreterTest {
 	@Test
 	public void testBinaryOp_AND() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTBoolLiteral t = new ASTBoolLiteral(true,0,0);
-		ASTBoolLiteral f = new ASTBoolLiteral(false,0,0);
-		ASTIntLiteral zero = new ASTIntLiteral(0,0,0);
-		ASTIntLiteral five = new ASTIntLiteral(5,0,0);
+		ASTBoolLiteral t = new ASTBoolLiteral(true, 0, 0);
+		ASTBoolLiteral f = new ASTBoolLiteral(false, 0, 0);
+		ASTIntLiteral zero = new ASTIntLiteral(0, 0, 0);
+		ASTIntLiteral five = new ASTIntLiteral(5, 0, 0);
 
 		Mockito.doReturn(true).when(spyInterpreter).eval(t);
 		Mockito.doReturn(false).when(spyInterpreter).eval(f);
@@ -450,22 +450,22 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(5).when(spyInterpreter).eval(five);
 
 		// bool && bool
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, f,BinaryOp.AND, 0,0)));
+		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, f, BinaryOp.AND, 0, 0)));
 		// int && bool
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, f,BinaryOp.AND, 0,0)));
+		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, f, BinaryOp.AND, 0, 0)));
 		// bool && int
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, zero,BinaryOp.AND, 0,0)));
+		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, zero, BinaryOp.AND, 0, 0)));
 		// int && int
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, zero,BinaryOp.AND, 0,0)));
+		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, zero, BinaryOp.AND, 0, 0)));
 	}
 
 	@Test
 	public void testBinaryOp_OR() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTBoolLiteral t = new ASTBoolLiteral(true,0,0);
-		ASTBoolLiteral f = new ASTBoolLiteral(false,0,0);
-		ASTIntLiteral zero = new ASTIntLiteral(0,0,0);
-		ASTIntLiteral five = new ASTIntLiteral(5,0,0);
+		ASTBoolLiteral t = new ASTBoolLiteral(true, 0, 0);
+		ASTBoolLiteral f = new ASTBoolLiteral(false, 0, 0);
+		ASTIntLiteral zero = new ASTIntLiteral(0, 0, 0);
+		ASTIntLiteral five = new ASTIntLiteral(5, 0, 0);
 
 		Mockito.doReturn(true).when(spyInterpreter).eval(t);
 		Mockito.doReturn(false).when(spyInterpreter).eval(f);
@@ -473,21 +473,21 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(5).when(spyInterpreter).eval(five);
 
 		// bool || bool
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, f, BinaryOp.OR, 0,0)));
+		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, f, BinaryOp.OR, 0, 0)));
 		// int || bool
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, f, BinaryOp.OR, 0,0)));
+		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, f, BinaryOp.OR, 0, 0)));
 		// bool || int
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(f, five, BinaryOp.OR, 0,0)));
+		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(f, five, BinaryOp.OR, 0, 0)));
 		// int || int
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(zero, five, BinaryOp.OR, 0,0)));
+		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(zero, five, BinaryOp.OR, 0, 0)));
 	}
 
 	@Test
 	public void testBinaryOp_EQ() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTIntLiteral a = new ASTIntLiteral(5,0,0);
-		ASTIntLiteral b = new ASTIntLiteral(5,0,0);
-		ASTIntLiteral c = new ASTIntLiteral(3,0,0);
+		ASTIntLiteral a = new ASTIntLiteral(5, 0, 0);
+		ASTIntLiteral b = new ASTIntLiteral(5, 0, 0);
+		ASTIntLiteral c = new ASTIntLiteral(3, 0, 0);
 
 		Mockito.doReturn(5).when(spyInterpreter).eval(a);
 		Mockito.doReturn(5).when(spyInterpreter).eval(b);
@@ -500,31 +500,33 @@ public class MiniJajaInterpreterTest {
 	@Test
 	public void testBinaryOp_GT() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTIntLiteral a = new ASTIntLiteral(5,0,0);
-		ASTIntLiteral b = new ASTIntLiteral(3,0,0);
-		ASTBoolLiteral boolVal = new ASTBoolLiteral(true,0,0);
+		ASTIntLiteral a = new ASTIntLiteral(5, 0, 0);
+		ASTIntLiteral b = new ASTIntLiteral(3, 0, 0);
+		ASTBoolLiteral boolVal = new ASTBoolLiteral(true, 0, 0);
 
 		Mockito.doReturn(5).when(spyInterpreter).eval(a);
 		Mockito.doReturn(3).when(spyInterpreter).eval(b);
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
 
 		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, b, BinaryOp.GT, 0, 0)));
-		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0)));
+		Assert.assertThrows(InterpretRuntimeException.class,
+				() -> spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0)));
 	}
 
 	@Test
 	public void testBinaryOp_LT() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
-		ASTIntLiteral a = new ASTIntLiteral(3,0,0);
-		ASTIntLiteral b = new ASTIntLiteral(5,0,0);
-		ASTBoolLiteral boolVal = new ASTBoolLiteral(true,0,0);
+		ASTIntLiteral a = new ASTIntLiteral(3, 0, 0);
+		ASTIntLiteral b = new ASTIntLiteral(5, 0, 0);
+		ASTBoolLiteral boolVal = new ASTBoolLiteral(true, 0, 0);
 
 		Mockito.doReturn(3).when(spyInterpreter).eval(a);
 		Mockito.doReturn(5).when(spyInterpreter).eval(b);
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
 
 		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, b, BinaryOp.LT, 0, 0)));
-		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, boolVal, BinaryOp.LT, 0, 0)));
+		Assert.assertThrows(InterpretRuntimeException.class,
+				() -> spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, boolVal, BinaryOp.LT, 0, 0)));
 	}
 
 	@Test
@@ -539,9 +541,7 @@ public class MiniJajaInterpreterTest {
 	@Test
 	public void evalIdent() {
 		ASTIdent ident = new ASTIdent("a", 0, 0);
-		memory.declVar("a", 42, Type.INT);
-
-		Assert.assertEquals(42, interpreter.eval(ident));
+		Assert.assertEquals("a", interpreter.eval(ident));
 	}
 
 	@Test
@@ -573,7 +573,7 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(0).when(spyInterpreter).eval(zeroLiteral);
 
 		ASTUnaryOp negIntNode = new ASTUnaryOp(intLiteral, UnaryOp.NEG, 0, 0);
-    	Assert.assertEquals(-5, spyInterpreter.evalUnaryOp(negIntNode));
+		Assert.assertEquals(-5, spyInterpreter.evalUnaryOp(negIntNode));
 
 		ASTUnaryOp notBoolTrueNode = new ASTUnaryOp(boolLiteralTrue, UnaryOp.NOT, 0, 0);
 		ASTUnaryOp notBoolFalseNode = new ASTUnaryOp(boolLiteralFalse, UnaryOp.NOT, 0, 0);
