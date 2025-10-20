@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreter;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
@@ -29,8 +30,10 @@ public class CLI {
         Stack stack = new Stack(opts.getStackDepth());
         Heap heap = new Heap(opts.getHeapSize());
         Memory memory = new Memory(symTable, stack, heap);
+        MiniJajaInterpreter interpreter = new MiniJajaInterpreter(memory);
         try {
             ASTNode root = ParserUtils.parseFile(opts.getFilePath());
+            // interpreter.interpret(root); TODO: remove this when interpreter implemented
         } catch (Exception e) {
             System.err.println("Error while interpreting file " + e.getMessage());
         }
