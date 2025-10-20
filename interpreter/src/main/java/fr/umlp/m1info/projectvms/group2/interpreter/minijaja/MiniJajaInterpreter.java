@@ -1,10 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
-import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
-import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
-import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
-
-import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
@@ -16,6 +11,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLength;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTMethodCallExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
@@ -38,7 +34,10 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
+import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+import fr.umlp.m1info.projectvms.group2.memory.Memory;
 
 /**
  * The Interpreter class traverses and executes an Abstract Syntax Tree(AST) by
@@ -322,27 +321,27 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates an array element access expression */
 	protected Object evalArrayAccess(ASTArrayAccess node) {
-		throw new EvalRuntimeException("evalArrayAccess() not implemented");
+		return memory.getValArray((String) eval(node.getIdent()), (Integer) eval(node.getExpr()));
 	}
 
 	/** Evaluates a binary operation */
 	protected Object evalBinaryOp(ASTBinaryOp node) {
-		throw new EvalRuntimeException("evalBinaryOp() not implemented");
+		return MiniJajaInterpreterUtils.evalBinaryOp(node.getOp(), eval(node.getLeft()), eval(node.getRight()));
 	}
 
 	/** Evaluates a boolean literal */
 	protected Object evalBoolLiteral(ASTBoolLiteral node) {
-		throw new EvalRuntimeException("evalBoolLiteral() not implemented");
+		return node.getValue();
 	}
 
 	/** Evaluates an identifier expression */
 	protected Object evalIdent(ASTIdent node) {
-		throw new EvalRuntimeException("evalIdent() not implemented");
+		return node.getName();
 	}
 
 	/** Evaluates an integer literal */
 	protected Object evalIntLiteral(ASTIntLiteral node) {
-		throw new EvalRuntimeException("evalIntLiteral() not implemented");
+		return node.getValue();
 	}
 
 	/** Evaluates a length expression on arrays */
@@ -357,11 +356,11 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates a string literal */
 	protected Object evalStringLiteral(ASTStringLiteral node) {
-		throw new EvalRuntimeException("evalStringLiteral() not implemented");
+		return node.getValue();
 	}
 
 	/** Evaluates a unary operation */
 	protected Object evalUnaryOp(ASTUnaryOp node) {
-		throw new EvalRuntimeException("evalUnaryOp() not implemented");
+		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
 	}
 }

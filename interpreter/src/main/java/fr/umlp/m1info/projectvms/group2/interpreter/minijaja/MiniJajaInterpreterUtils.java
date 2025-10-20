@@ -1,10 +1,12 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.UnaryOp;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
 
 public class MiniJajaInterpreterUtils {
 	private MiniJajaInterpreterUtils() {
@@ -66,5 +68,98 @@ public class MiniJajaInterpreterUtils {
 
 		throw new InterpretRuntimeException(
 				"Cannot add values : " + left.getClass().getSimpleName() + " + " + right.getClass().getSimpleName());
+	}
+
+	public static Object evalBinaryOp(BinaryOp op, Object left, Object right) {
+		return switch (op) {
+			case ADD -> addValues(left, right);
+			case SUB -> {
+				if (left instanceof Integer li && right instanceof Integer ri) {
+					yield li - ri;
+				} else {
+					throw new InterpretRuntimeException("Cannot subtract non-integer values");
+				}
+			}
+			case MUL -> {
+				if (left instanceof Integer li && right instanceof Integer ri) {
+					yield li * ri;
+				} else {
+					throw new InterpretRuntimeException("Cannot multiply non-integer values");
+				}
+			}
+			case DIV -> {
+				if (left instanceof Integer li && right instanceof Integer ri && ri > 0) {
+					yield li / ri;
+				} else {
+					throw new InterpretRuntimeException("Cannot divide non-integer values");
+				}
+			}
+			case AND -> {
+				if (left instanceof Boolean lb && right instanceof Boolean rb) {
+					yield lb && rb;
+				} else if (left instanceof Integer li && right instanceof Boolean rb) {
+					yield (li != 0) && rb;
+				} else if (left instanceof Boolean lb && right instanceof Integer ri) {
+					yield lb && (ri != 0);
+				} else if (left instanceof Integer li && right instanceof Integer ri) {
+					yield (li != 0) && (ri != 0);
+				} else {
+					throw new InterpretRuntimeException("Cannot apply AND to non-boolean values");
+				}
+			}
+			case OR -> {
+				if (left instanceof Boolean lb && right instanceof Boolean rb) {
+					yield lb || rb;
+				} else if (left instanceof Integer li && right instanceof Boolean rb) {
+					yield (li != 0) || rb;
+				} else if (left instanceof Boolean lb && right instanceof Integer ri) {
+					yield lb || (ri != 0);
+				} else if (left instanceof Integer li && right instanceof Integer ri) {
+					yield (li != 0) || (ri != 0);
+				} else {
+					throw new InterpretRuntimeException("Cannot apply OR to non-boolean values");
+				}
+			}
+			case EQ -> {
+				yield left.equals(right);
+			}
+			case GT -> {
+				if (left instanceof Integer li && right instanceof Integer ri) {
+					yield li > ri;
+				} else {
+					throw new InterpretRuntimeException("Cannot compare non-integer values");
+				}
+			}
+			case LT -> {
+				if (left instanceof Integer li && right instanceof Integer ri) {
+					yield li < ri;
+				} else {
+					throw new InterpretRuntimeException("Cannot compare non-integer values");
+				}
+			}
+			default -> throw new InterpretRuntimeException("Unknown binary operator: " + op);
+		};
+	}
+
+	public static Object unaryOperation(UnaryOp op, Object value) {
+		switch(op) {
+			case NEG -> {
+				if (value instanceof Integer intValue) {
+					return -intValue;
+				} else {
+					throw new InterpretRuntimeException("Cannot apply negation to value of type: " + value.getClass().getSimpleName());
+				}
+			}
+			case NOT -> {
+				if (value instanceof Boolean boolValue) {
+					return !boolValue;
+				} else if (value instanceof Integer intValue) {
+					return intValue != 0;
+				} else {
+					throw new InterpretRuntimeException("Cannot apply logical NOT to value of type: " + value.getClass().getSimpleName());
+				}
+			}
+			default -> throw new InterpretRuntimeException("Unknown unary operator: " + op);
+		}
 	}
 }
