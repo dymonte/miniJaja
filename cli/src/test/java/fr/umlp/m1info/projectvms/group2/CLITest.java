@@ -57,11 +57,11 @@ public class CLITest {
     @Test
     public void testInvalidOptionValue() {
         CLI.main(new String[] { "execute:mjj", "--set-heap-size", "52.2345", "file.mjj" });
-        Assert.assertTrue(errContent.toString().contains("Error: Invalid value for --set-heap-size"));
+        Assert.assertTrue(errContent.toString().contains("Error Invalid value for: --set-heap-size"));
         CLI.main(new String[] { "execute:mjj", "--set-stack-depth", "52.2345", "file.mjj" });
-        Assert.assertTrue(errContent.toString().contains("Error: Invalid value for --set-stack-depth"));
+        Assert.assertTrue(errContent.toString().contains("Error Invalid value for: --set-stack-depth"));
         CLI.main(new String[] { "execute:mjj", "--set-symtable-size", "52.2345", "file.mjj" });
-        Assert.assertTrue(errContent.toString().contains("Error: Invalid value for --set-symtable-size"));
+        Assert.assertTrue(errContent.toString().contains("Error Invalid value for: --set-symtable-size"));
     }
 
     @Test
@@ -88,6 +88,6 @@ public class CLITest {
         CLI.main(new String[] { "execute:mjj", "--set-heap-size", "512",
                 "./src/test/resources/emptyyyyy.mjj" });
         Assert.assertTrue(errContent.toString()
-                .contains("Unexpected CLI Argument or File not found : ./src/test/resources/emptyyyyy.mjj"));
+                .contains("Unexpected CLI Argument or File not found: ./src/test/resources/emptyyyyy.mjj"));
     }
 }
