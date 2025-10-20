@@ -5,11 +5,14 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
+import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * MemoryTest
@@ -38,7 +41,7 @@ public class MemoryTest {
 	@Test
 	public void testDeclCst() {
 		m.declCst("i", 1, Type.INT);
-		Assert.assertEquals((int) m.getVal("i"), 1);
+		Assert.assertEquals(1, (int) m.getVal("i"));
 
 		Assert.assertThrows(BadSymbolKindException.class, () -> m.updateVal("i", 2));
 	}
@@ -55,22 +58,53 @@ public class MemoryTest {
 		}
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testDeclMeth() {
-		m.declMeth("meth", 0, Type.VOID);
-	}
-
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRemoveDecl() {
-		m.removeDecl("i");
+	@Test
+	public void testGetMethKey() {
+		Assert.assertEquals("4methIB", m.getMethKey("meth", List.of(Type.INT, Type.BOOL)));
 	}
 
 	@Test
-	public void testUpdateVal() {
+	public void testRemoveDecl() {
 		m.declVar("i", 0, Type.INT);
-		Assert.assertEquals((int) m.getVal("i"), 0);
+		m.declVar("i", 1, Type.INT);
+		m.removeDecl("i");
+		m.removeDecl("i");
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.removeDecl("ii"));
+	}
+
+	@Test
+	public void testDeclMeth() {
+		m.declMeth("meth1", null, List.of(Type.INT, Type.BOOL), Type.VOID);
+
+		Assert.assertNull(m.getVal("5meth1IB"));
+
+		m.declMeth("method2", 0, List.of(), Type.INT);
+
+		Assert.assertEquals(0, (int) m.getVal("7method2"));
+	}
+
+	@Test
+	public void testUpdateGetVal() {
+		m.declVar("i", 0, Type.INT);
+		Assert.assertEquals(0, (int) m.getVal("i"));
 		m.updateVal("i", 10);
-		Assert.assertEquals((int) m.getVal("i"), 10);
+
+		Assert.assertEquals(10, (int) m.getVal("i"));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.updateVal("aa", 9));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
+		m.declArray("aa", 1, Type.INT);
+		Assert.assertThrows(BadSymbolKindException.class, () -> m.getVal("aa"));
+	}
+
+	@Test
+	public void testUpdateType() {
+		m.declVar("i", 0, Type.INT);
+		Assert.assertEquals(Type.INT, m.getType("i"));
+		m.updateType("i", Type.BOOL);
+		Assert.assertEquals(Type.BOOL, m.getType("i"));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.updateType("aa", Type.BOOL));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getType("aa"));
 	}
 
 }
