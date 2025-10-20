@@ -20,7 +20,7 @@ public class CLIOptions {
      */
     public static final String SET_SYMTABLE_SIZE = "--set-symtable-size";
 
-    private int symTableLength = 256;
+    private int symTableSize = 256;
     private int heapSize = 1024;
     private int stackDepth = 1024;
     private String filePath;
@@ -31,17 +31,17 @@ public class CLIOptions {
      *
      * @return the symbol table length
      */
-    public int getSymTableLength() {
-        return symTableLength;
+    public int getSymTableSize() {
+        return symTableSize;
     }
 
     /**
-     * Sets the symbol table length.
+     * Sets the symbol table size.
      *
-     * @param symTableLength the new symbol table length
+     * @param symTableSize the new symbol table size
      */
-    public void setSymTableLength(int symTableLength) {
-        this.symTableLength = symTableLength;
+    public void setSymTableSize(int symTableSize) {
+        this.symTableSize = symTableSize;
     }
 
     /**

@@ -67,11 +67,11 @@ public class CLITest {
     @Test
     public void testMissingValue() {
         CLI.main(new String[] { "execute:mjj", "--set-heap-size" });
-        Assert.assertTrue(errContent.toString().contains("Error: Missing value for --set-heap-size"));
+        Assert.assertTrue(errContent.toString().contains("Error Missing value for: --set-heap-size"));
         CLI.main(new String[] { "execute:mjj", "--set-stack-depth" });
-        Assert.assertTrue(errContent.toString().contains("Error: Missing value for --set-stack-depth"));
+        Assert.assertTrue(errContent.toString().contains("Error Missing value for: --set-stack-depth"));
         CLI.main(new String[] { "execute:mjj", "--set-symtable-size" });
-        Assert.assertTrue(errContent.toString().contains("Error: Missing value for --set-symtable-size"));
+        Assert.assertTrue(errContent.toString().contains("Error Missing value for: --set-symtable-size"));
     }
 
     @Test

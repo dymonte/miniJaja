@@ -26,7 +26,7 @@ public class CLI {
      * @param opts the command-line options
      */
     private static void executeMiniJaJa(CLIOptions opts) {
-        SymTable symTable = new SymTable(opts.getSymTableLength());
+        SymTable symTable = new SymTable(opts.getSymTableSize());
         Stack stack = new Stack(opts.getStackDepth());
         Heap heap = new Heap(opts.getHeapSize());
         Memory memory = new Memory(symTable, stack, heap);
@@ -35,7 +35,7 @@ public class CLI {
             ASTNode root = ParserUtils.parseFile(opts.getFilePath());
             // interpreter.interpret(root); TODO: remove this when interpreter implemented
         } catch (Exception e) {
-            System.err.println("Error while interpreting file " + e.getMessage());
+            CLIOutput.error("while interpreting file", e.getMessage());
         }
     }
 
@@ -45,7 +45,8 @@ public class CLI {
      * @param opts the command-line options
      */
     private static void executeJaJaCode(CLIOptions opts) {
-
+        // TODO: implement this when JajaCode interpreter is implemented
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -55,6 +56,8 @@ public class CLI {
      * @param opts the command-line options
      */
     private static void compile(CLIOptions opts) {
+        // TODO: implement this when miniJaJa compiler is implemented
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -68,14 +71,14 @@ public class CLI {
      */
     private static boolean handleIntOption(String[] args, int i, Consumer<Integer> setter, String optionName) {
         if (i + 1 >= args.length) {
-            System.err.println("Error: Missing value for " + optionName);
+            CLIOutput.error("Missing value for", optionName);
             return false;
         }
 
         try {
             setter.accept(Integer.parseInt(args[i + 1]));
         } catch (NumberFormatException e) {
-            System.err.println("Error: Invalid value for " + optionName);
+            CLIOutput.error("Invalid value for", optionName);
             return false;
         }
 
@@ -109,7 +112,7 @@ public class CLI {
             options.setFilePath(arg);
             return true;
         }
-        System.err.println("Unexpected CLI Argument or File not found : " + arg);
+        CLIOutput.error("Unexpected CLI Argument or File not found", arg);
         return false;
     }
 
@@ -132,7 +135,7 @@ public class CLI {
             case CLIOptions.SET_STACK_DEPTH ->
                 handleIntOption(args, i, options::setStackDepth, CLIOptions.SET_STACK_DEPTH) ? i + 1 : -1;
             case CLIOptions.SET_SYMTABLE_SIZE ->
-                handleIntOption(args, i, options::setSymTableLength, CLIOptions.SET_SYMTABLE_SIZE) ? i + 1 : -1;
+                handleIntOption(args, i, options::setSymTableSize, CLIOptions.SET_SYMTABLE_SIZE) ? i + 1 : -1;
             default -> parseFileOption(args[i], options) ? i : -1;
         };
     }
@@ -164,16 +167,16 @@ public class CLI {
      * Shows the help message.
      */
     private static void showHelp() {
-        System.out.println("Usage: compile|execute:mjj|execute:jjc [options] file");
-        System.out.println("Commands:");
-        System.out.println("  compile\tCompile the given miniJaJa file into JaJaCode.");
-        System.out.println("  execute:mjj\tExecute the given miniJaJa file.");
-        System.out.println("  execute:jjc\tExecute the given JaJaCode file.");
-        System.out.println("\nOptions:");
-        System.out.println("  " + CLIOptions.SET_HEAP_SIZE + " N\tSet the heap size");
-        System.out.println("  " + CLIOptions.SET_STACK_DEPTH + " N\tSet the stack depth");
-        System.out.println("  " + CLIOptions.SET_SYMTABLE_SIZE + " N\tSet the Symbol table size");
-        System.out.println("  --help\t\tShow this help message");
+        CLIOutput.info("Usage: compile|execute:mjj|execute:jjc [options] file");
+        CLIOutput.info("Commands:");
+        CLIOutput.info("  compile\tCompile the given miniJaJa file into JaJaCode.");
+        CLIOutput.info("  execute:mjj\tExecute the given miniJaJa file.");
+        CLIOutput.info("  execute:jjc\tExecute the given JaJaCode file.");
+        CLIOutput.info("\nOptions:");
+        CLIOutput.info("  " + CLIOptions.SET_HEAP_SIZE + " N\tSet the heap size");
+        CLIOutput.info("  " + CLIOptions.SET_STACK_DEPTH + " N\tSet the stack depth");
+        CLIOutput.info("  " + CLIOptions.SET_SYMTABLE_SIZE + " N\tSet the Symbol table size");
+        CLIOutput.info("  --help\t\tShow this help message");
     }
 
     /**
@@ -191,7 +194,7 @@ public class CLI {
 
         if (options == null || options.getFilePath() == null) {
             if (options != null) {
-                System.err.println("Error: File path is missing.");
+                CLIOutput.error("File path is missing.");
             }
             showHelp();
             return;
@@ -208,7 +211,7 @@ public class CLI {
                 executeJaJaCode(options);
                 break;
             default:
-                System.out.println("Unrecognized CLI command. type --help for help.");
+                CLIOutput.error("Unrecognized CLI command. type --help for help.");
                 break;
         }
     }
