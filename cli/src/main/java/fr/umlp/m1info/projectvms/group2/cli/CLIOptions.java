@@ -2,6 +2,10 @@ package fr.umlp.m1info.projectvms.group2.cli;
 
 public class CLIOptions {
 
+    public static final String SET_HEAP_SIZE = "--set-heap-size";
+    public static final String SET_STACK_DEPTH = "--set-stack-depth";
+    public static final String SET_SYMTABLE_SIZE = "--set-symtable-size";
+
     private int symTableLength = 256;
     private int heapSize = 1024;
     private int stackDepth = 1024;

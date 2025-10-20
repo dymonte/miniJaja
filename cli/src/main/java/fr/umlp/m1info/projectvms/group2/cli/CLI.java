@@ -57,20 +57,20 @@ public class CLI {
 
         for (int i = 1; i < args.length; i++) {
             switch (args[i]) {
-                case "--set-heap-size":
-                    if (!handleIntOption(args, i, options::setHeapSize, "--set-heap-size")) {
+                case CLIOptions.SET_HEAP_SIZE:
+                    if (!handleIntOption(args, i, options::setHeapSize, CLIOptions.SET_HEAP_SIZE)) {
                         return null;
                     }
                     i++;
                     break;
-                case "--set-stack-depth":
-                    if (!handleIntOption(args, i, options::setHeapSize, "--set-heap-size")) {
+                case CLIOptions.SET_STACK_DEPTH:
+                    if (!handleIntOption(args, i, options::setStackDepth, CLIOptions.SET_STACK_DEPTH)) {
                         return null;
                     }
                     i++;
                     break;
-                case "--set-symtable-size":
-                    if (!handleIntOption(args, i, options::setSymTableLength, "--set-symtable-size")) {
+                case CLIOptions.SET_SYMTABLE_SIZE:
+                    if (!handleIntOption(args, i, options::setSymTableLength, CLIOptions.SET_SYMTABLE_SIZE)) {
                         return null;
                     }
                     i++;
@@ -94,9 +94,9 @@ public class CLI {
         System.out.println("  compile\tCompile the given file");
         System.out.println("  execute\tExecute the given file");
         System.out.println("\nOptions:");
-        System.out.println("  --set-heap-size N\tSet the heap size");
-        System.out.println("  --set-stack-depth N\tSet the stack depth");
-        System.out.println("  --set-symtable-size N\tSet the Symbol table size");
+        System.out.println("  " + CLIOptions.SET_HEAP_SIZE + " N\tSet the heap size");
+        System.out.println("  " + CLIOptions.SET_STACK_DEPTH + " N\tSet the stack depth");
+        System.out.println("  " + CLIOptions.SET_SYMTABLE_SIZE + " N\tSet the Symbol table size");
         System.out.println("  --help\t\tShow this help message");
     }
 
