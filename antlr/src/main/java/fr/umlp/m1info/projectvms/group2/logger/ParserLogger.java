@@ -72,7 +72,9 @@ public class ParserLogger {
 	 * @param listener the listener to remove
 	 */
 	public void removeListener(ParserListener listener) {
-		listeners.remove(listener);
+		if (listener != null) {
+			listeners.remove(listener);
+		}
 	}
 
 	/**
@@ -102,11 +104,7 @@ public class ParserLogger {
 			return;
 		}
 		for (ParserListener listener : listeners) {
-			try {
-				listener.receiveMessage(message, level);
-			} catch (Exception e) {
-				System.err.println("[ParserLogger] Listener error: " + e.getMessage());
-			}
+			listener.receiveMessage(message, level);
 		}
 	}
 }

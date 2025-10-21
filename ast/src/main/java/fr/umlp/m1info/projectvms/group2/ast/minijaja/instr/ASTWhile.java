@@ -31,6 +31,24 @@ public class ASTWhile extends ASTInstr {
 	}
 
 	/**
+	 * Returns the condition expression of this while loop
+	 *
+	 * @return the ASTExpr representing the loop condition
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
+	 * Returns the instructions excecuted in the body of the loop
+	 *
+	 * @return the ASTInstrs representing the loop body
+	 */
+	public ASTInstrs getInstrs() {
+		return instrs;
+	}
+
+	/**
 	 * Returns a string representation of this while loop in MiniJaja syntax
 	 *
 	 * @return a formatted string

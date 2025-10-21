@@ -34,6 +34,26 @@ public class ASTMainMethod extends ASTNode {
 	}
 
 	/**
+	 * Returns the variable declarations defined within the main method
+	 *
+	 * @return the ASTVars node representing the local variable declarations of the
+	 *         main method
+	 */
+	public ASTVars getVars() {
+		return vars;
+	}
+
+	/**
+	 * Returns the instructions contained in the body of the main method
+	 *
+	 * @return the ASTInstrs node representing the instructions inside the main
+	 *         method
+	 */
+	public ASTInstrs getInstrs() {
+		return instrs;
+	}
+
+	/**
 	 * Returns a string representation of the class in MiniJaja syntax
 	 *
 	 * @return the class as a formatted string

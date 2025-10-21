@@ -24,6 +24,16 @@ public class ASTLength extends ASTExpr {
 	}
 
 	/**
+	 * Returns the identifier associated with the length expression
+	 *
+	 * @return the ASTIdent representing the array identifier used in the length
+	 *         expression
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
 	 * Returns a string representation of this node
 	 *
 	 * @return formatted string of length

@@ -13,6 +13,7 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 
 /**
  * Memory
@@ -115,8 +116,6 @@ public class Memory {
 	}
 
 	/* Memory modification methods */
-
-	// TODO: maybe place print here ?? (Afficher, AfficherLn : VAL × MEM → MEM)
 
 	/**
 	 * Removes the latest instance of symbol ident.

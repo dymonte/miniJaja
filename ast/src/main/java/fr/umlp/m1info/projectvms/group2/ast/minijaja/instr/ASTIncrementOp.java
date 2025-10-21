@@ -30,6 +30,24 @@ public class ASTIncrementOp extends ASTInstr {
 	}
 
 	/**
+	 * Returns the variable being incremented
+	 *
+	 * @return the ASTLValue representing the target variable
+	 */
+	public ASTLValue getLValue() {
+		return lvalue;
+	}
+
+	/**
+	 * Returns the increment operator applied to the variable
+	 *
+	 * @return the IncrementOp representing the operation
+	 */
+	public IncrementOp getOp() {
+		return op;
+	}
+
+	/**
 	 * Returns a string representation of this increment in MiniJaja
 	 *
 	 * @return a formatted string

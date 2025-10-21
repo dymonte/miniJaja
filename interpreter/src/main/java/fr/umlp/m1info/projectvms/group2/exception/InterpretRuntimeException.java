@@ -14,15 +14,4 @@ public class InterpretRuntimeException extends RuntimeException {
 	public InterpretRuntimeException(String message) {
 		super(message);
 	}
-
-	/**
-	 * Constructs a new InterpretRuntimeException with the specified detail message
-	 * and cause.
-	 *
-	 * @param message a detailed message describing the interpretation error
-	 * @param cause   the underlying cause of the error
-	 */
-	public InterpretRuntimeException(String message, Throwable cause) {
-		super(message, cause);
-	}
 }

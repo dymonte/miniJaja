@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
+import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
@@ -37,6 +38,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
 
 /**
  * The Interpreter class traverses and executes an Abstract Syntax Tree(AST) by
@@ -56,10 +58,14 @@ public class MiniJajaInterpreter {
 	 * Interprets (executes) a statement node
 	 *
 	 * @param node the AST node to interpret
-	 * @throws InterpretRunTimeException if the node type is not supported for
-	 *                                   interpretation
+	 * @throws InterpretRuntimeException if the node type is not supported for
+	 *                                   interpretation or if node is null
 	 */
 	public void interpret(ASTNode node) {
+		if (node == null) {
+			throw new InterpretRuntimeException("node cannot be null");
+		}
+
 		if (node instanceof ASTClass astClass) {
 			interpretClass(astClass);
 		} else if (node instanceof ASTMainMethod astMainMethod) {
@@ -121,6 +127,10 @@ public class MiniJajaInterpreter {
 	 * @throws EvalRuntimeException if the node type is not supported for evaluation
 	 */
 	public Object eval(ASTNode node) {
+		if (node == null) {
+			throw new EvalRuntimeException("node cannot be null");
+		}
+
 		if (node instanceof ASTArrayAccess astArray) {
 			return evalArrayAccess(astArray);
 		} else if (node instanceof ASTBinaryOp astBinaryOp) {
@@ -186,17 +196,46 @@ public class MiniJajaInterpreter {
 
 	/** Interprets an assignement operation */
 	protected void interpretAssignment(ASTAssignmentOp node) {
-		throw new InterpretRuntimeException("interpretAssignment() not implemented");
+		var ref = MiniJajaInterpreterUtils.resolveLValue(memory, node.getLValue(), this);
+		Object value;
+		if (node.getExpr() instanceof ASTLValue astLValue) {
+			var refValue = MiniJajaInterpreterUtils.resolveLValue(memory, astLValue, this);
+			value = MiniJajaInterpreterUtils.getValMemory(memory, refValue);
+		} else {
+			value = eval(node.getExpr());
+		}
+
+		Object newValue = switch (node.getOp()) {
+			case EQ -> value;
+			case ADD -> MiniJajaInterpreterUtils.addValues(ref.currentValue(), value);
+		};
+
+		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
 	}
 
 	/** Interprets an if-(else)-statement */
 	protected void interpretIf(ASTIf node) {
-		throw new InterpretRuntimeException("interpretIf() not implemented");
+		Object value = eval(node.getExpr());
+		if (value instanceof Boolean) {
+			if ((Boolean) value) {
+				interpret(node.getIfInstrs());
+			} else {
+				interpret(node.getElseInstrs());
+			}
+		} else {
+			throw new InterpretRuntimeException("Condition must evaluate to a boolean value");
+		}
 	}
 
 	/** Interprets an increment operation */
 	protected void interpretIncrement(ASTIncrementOp node) {
-		throw new InterpretRuntimeException("interpretIncrement() not implemented");
+		var ref = MiniJajaInterpreterUtils.resolveLValue(memory, node.getLValue(), this);
+
+		Object newValue = switch (node.getOp()) {
+			case INC -> MiniJajaInterpreterUtils.addValues(ref.currentValue(), 1);
+		};
+
+		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
 	}
 
 	/** Interprets a method call used as an instruction */
@@ -206,27 +245,44 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a return statement */
 	protected void interpretReturn(ASTReturn node) {
-		throw new InterpretRuntimeException("interpretReturn() not implemented");
+		Object value = eval(node.getExpr());
+		memory.updateVal(ASTClass.getClassVar().getName(), value);
 	}
 
 	/** Interprets a while loop */
 	protected void interpretWhile(ASTWhile node) {
-		throw new InterpretRuntimeException("interpretWhile() not implemented");
+		Boolean value = (Boolean) eval(node.getExpr());
+		if (Boolean.TRUE.equals(value)) {
+			interpret(node.getInstrs());
+			interpret(node);
+		}
 	}
 
 	/** Interprets a write statement */
 	protected void interpretWrite(ASTWrite node) {
-		throw new InterpretRuntimeException("interpretWrite() not implemented");
+		boolean isLn = node.getIsLn();
+		Object value = node.getValue();
+
+		if (value instanceof ASTLValue lvalue) {
+			Object write = eval(lvalue);
+			InterpreterLogger.getInstance().log(write + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
+		} else if (value instanceof ASTStringLiteral stringLiteral) {
+			String str = (String) eval(stringLiteral);
+			InterpreterLogger.getInstance().log(str + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
+		} else {
+			throw new InterpretRuntimeException("Invalid value type to write: " + value.getClass().getSimpleName());
+		}
 	}
 
 	/** Interprets a chain of instructions */
 	protected void interpretInstrsChain(ASTInstrsChain node) {
-		throw new InterpretRuntimeException("interpretInstrsChain() not implemented");
+		interpret(node.getInstr());
+		interpret(node.getInstrs());
 	}
 
 	/** Interprets an empty instruction list */
 	protected void interpretInstrsNil(ASTInstrsNil node) {
-		throw new InterpretRuntimeException("interpretInstrsNil() not implemented");
+		return; // do nothing
 	}
 
 	/** Interprets a parameter list chain */

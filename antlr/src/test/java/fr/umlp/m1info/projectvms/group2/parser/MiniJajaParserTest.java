@@ -4,6 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
+import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
 public class MiniJajaParserTest {

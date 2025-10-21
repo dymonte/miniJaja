@@ -30,6 +30,33 @@ public class ASTVarConst extends ASTVar {
 	}
 
 	/**
+	 * Returns the type of the constant variable
+	 *
+	 * @return the ASTType representing the variable type
+	 */
+	public ASTType getType() {
+		return type;
+	}
+
+	/**
+	 * Returns the identifier of the constant variable
+	 *
+	 * @return the ASTIdent representing the variable name
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
+	 * Returns the initialization expression of the constant variable
+	 *
+	 * @return the ASTVExpr representing the initialization, may be null
+	 */
+	public ASTVExpr getVExpr() {
+		return vexpr;
+	}
+
+	/**
 	 * Returns a string representation of this constant variable declaration in
 	 * MiniJaja syntax
 	 *

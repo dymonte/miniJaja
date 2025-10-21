@@ -399,7 +399,8 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTIf visitIf(MiniJajaParser.IfContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
 		ASTInstrs ifInstrs = (ASTInstrs) visit(ctx.instrs(0));
-		ASTInstrs elseInstrs = (ctx.instrs().size() >= 2 ? (ASTInstrs) visit(ctx.instrs(1)) : null);
+		ASTInstrs elseInstrs = (ctx.instrs().size() >= 2 ? (ASTInstrs) visit(ctx.instrs(1))
+				: new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 		return VisitorUtils.safeBuild("If",
 				() -> new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
 	}
@@ -644,7 +645,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTBoolLiteral visitBool(MiniJajaParser.BoolContext ctx) {
 		return VisitorUtils.safeBuild("Bool",
-				() -> new ASTBoolLiteral((ctx.BOOLEAN().getText().equals("true")), VisitorUtils.line(ctx),
+				() -> new ASTBoolLiteral((ctx.getText().equals("true")), VisitorUtils.line(ctx),
 						VisitorUtils.column(ctx)));
 	}
 

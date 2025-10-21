@@ -29,6 +29,24 @@ public class ASTUnaryOp extends ASTExpr {
 	}
 
 	/**
+	 * Returns the operand expression of this unary operation
+	 *
+	 * @return the ASTExpr representing the operand
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
+	 * Returns the unary operator applied to the operand
+	 *
+	 * @return the UnaryOp representing the operator
+	 */
+	public UnaryOp getOp() {
+		return op;
+	}
+
+	/**
 	 * Returns a string representation of this unary expression operation in
 	 * MiniJaja syntax
 	 *

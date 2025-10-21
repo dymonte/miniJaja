@@ -34,6 +34,33 @@ public class ASTBinaryOp extends ASTExpr {
 	}
 
 	/**
+	 * Returns the left-hand side expression of this binary operation
+	 *
+	 * @return the ASTExpr representating the left operand
+	 */
+	public ASTExpr getLeft() {
+		return left;
+	}
+
+	/**
+	 * Returns the right-hand side expression of this binary operation.
+	 *
+	 * @return the ASTExpr representing the right operand
+	 */
+	public ASTExpr getRight() {
+		return right;
+	}
+
+	/**
+	 * Returns the binary operator of this expression.
+	 *
+	 * @return the BinaryOp representing the operator
+	 */
+	public BinaryOp getOp() {
+		return op;
+	}
+
+	/**
 	 * Returns a string representation of this binary operation in MiniJaja syntax
 	 *
 	 * @return a formatted string
