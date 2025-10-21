@@ -3,12 +3,16 @@ package fr.umlp.m1info.projectvms.group2.memory;
 import java.util.List;
 import java.util.Optional;
 
-import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
-import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
+import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
+import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.*;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
 /**
  * Memory
@@ -300,6 +304,25 @@ public class Memory {
 		}
 
 		return symbolOpt.get().getInfo().getSorte();
+	}
+
+	/**
+	 * Gets the head of the stack as a Quad
+	 * 
+	 * @return the head of the stack as a Quad
+	 */
+	public Quad getHead() {
+		return new Quad(stack.getHead());
+	}
+
+	/**
+	 * Pushes a new value and symbol onto the stack
+	 * 
+	 * @param val    the value to push
+	 * @param symbol the symbol to push
+	 */
+	public void push(Object val, SymNode symbol) {
+		stack.push(val, symbol);
 	}
 
 	/**
