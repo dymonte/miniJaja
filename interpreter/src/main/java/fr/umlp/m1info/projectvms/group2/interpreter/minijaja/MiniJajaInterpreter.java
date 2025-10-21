@@ -1,43 +1,25 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLength;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTMethodCallExpr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTUnaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTMethodCallInstr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarArray;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
+
+import java.util.ArrayList;
+
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 
 /**
  * The Interpreter class traverses and executes an Abstract Syntax Tree(AST) by
@@ -153,6 +135,28 @@ public class MiniJajaInterpreter {
 		}
 	}
 
+	/**
+	 * Remove declaration of the node
+	 *
+	 * @param node the AST node to remove declaration
+	 * @throws InterpretRuntimeException if the node is null or not supported
+	 */
+	public void free(ASTNode node) {
+		if (node == null) {
+			throw new InterpretRuntimeException("node cannot be null");
+		}
+
+		if (node instanceof ASTVarsChain astVarsChain) {
+			freeVarsChain(astVarsChain);
+		} else if (node instanceof ASTVarsNil astVarsNil) {
+			freeVarsNil(astVarsNil);
+		} else if (node instanceof ASTVar astVar) {
+			freeVar(astVar);
+		} else {
+			throw new InterpretRuntimeException("Cannot free node: " + node.getClass().getSimpleName());
+		}
+	}
+
 	/** Interprets a class declaration */
 	protected void interpretClass(ASTClass node) {
 		throw new InterpretRuntimeException("interpretClass() not implemented");
@@ -206,7 +210,7 @@ public class MiniJajaInterpreter {
 
 		Object newValue = switch (node.getOp()) {
 			case EQ -> value;
-			case ADD -> MiniJajaInterpreterUtils.addValues(ref.currentValue(), value);
+			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, ref.currentValue(), value);
 		};
 
 		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
@@ -231,7 +235,7 @@ public class MiniJajaInterpreter {
 		var ref = MiniJajaInterpreterUtils.resolveLValue(memory, node.getLValue(), this);
 
 		Object newValue = switch (node.getOp()) {
-			case INC -> MiniJajaInterpreterUtils.addValues(ref.currentValue(), 1);
+			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, ref.currentValue(), 1);
 		};
 
 		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
@@ -239,7 +243,22 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a method call used as an instruction */
 	protected void interpretMethodCallInstr(ASTMethodCallInstr node) {
-		throw new InterpretRuntimeException("interpretMethodCallInstr() not implemented");
+		String methodName = (String) eval(node.getIdent());
+		ASTExprs exprs = node.getExprs();
+
+		ArrayList<Type> argumentTypes = MiniJajaInterpreterUtils.collectExprTypes(exprs, this);
+
+		String methodKey = memory.getMethKey(methodName, argumentTypes);
+		ASTMethod method = (ASTMethod) memory.getVal(methodKey);
+
+		MiniJajaInterpreterUtils.bindParameters(memory, method.getParams(), node.getExprs(), this);
+		try {
+			interpret(method.getVars());
+			interpret(method.getInstrs());
+		} finally {
+			MiniJajaInterpreterUtils.unbindParameters(memory, method.getParams());
+			free(method.getVars());
+		}
 	}
 
 	/** Interprets a return statement */
@@ -326,7 +345,7 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates a binary operation */
 	protected Object evalBinaryOp(ASTBinaryOp node) {
-		return MiniJajaInterpreterUtils.evalBinaryOp(node.getOp(), eval(node.getLeft()), eval(node.getRight()));
+		return MiniJajaInterpreterUtils.binaryOperation(node.getOp(), eval(node.getLeft()), eval(node.getRight()));
 	}
 
 	/** Evaluates a boolean literal */
@@ -362,5 +381,22 @@ public class MiniJajaInterpreter {
 	/** Evaluates a unary operation */
 	protected Object evalUnaryOp(ASTUnaryOp node) {
 		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
+	}
+
+	/** Free a variable for memory */
+	protected void freeVarsChain(ASTVarsChain node) {
+		free(node.getVar());
+		free(node.getVars());
+	}
+
+	/** Free an empty variable */
+	protected void freeVarsNil(ASTVarsNil node) {
+		return; // Do nothing
+	}
+
+	/** Free an variable */
+	protected void freeVar(ASTVar node) {
+		String name = (String) eval(node.getIdent());
+		memory.removeDecl(name);
 	}
 }

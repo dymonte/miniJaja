@@ -5,32 +5,25 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTUnaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.UnaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.AssignmentOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.IncrementOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
+import java.util.List;
+
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
+
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
+
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
@@ -352,6 +345,105 @@ public class MiniJajaInterpreterTest {
 	}
 
 	@Test
+	public void interpretMethodCallInstrIntTest() {
+		int[] i = { 0, 0 };
+		ASTVoidType type = new ASTVoidType(0, 0);
+		ASTIdent ident = new ASTIdent("fct", 0, 0);
+		ASTIdent identParam = new ASTIdent("i", 0, 0);
+		ASTIdent identWrite = new ASTIdent("i", 0, 0);
+		ASTParam param = new ASTParam(new ASTIntType(0, 0), identParam, 0, 0);
+		ASTParams params = new ASTParamsChain(param, new ASTParamsNil(0, 0), 0, 0);
+		ASTVars vars = new ASTVarsNil(0, 0);
+		ASTInstrs instrs = new ASTInstrsChain(new ASTWrite(identWrite, false, 0, 0), new ASTInstrsNil(0, 0), 0, 0);
+
+		ASTIntLiteral intLiteral = new ASTIntLiteral(1, 0, 0);
+		ASTExprs exprs = new ASTExprsChain(intLiteral, new ASTExprsNil(0, 0), 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("fct").when(spyInterpreter).eval(ident);
+		Mockito.doReturn("i").when(spyInterpreter).eval(identParam);
+		Mockito.doReturn("i").when(spyInterpreter).eval(identWrite);
+		Mockito.doReturn(1).when(spyInterpreter).eval(intLiteral);
+		Mockito.doAnswer(invocation -> i[0]++).when(spyInterpreter).interpret(Mockito.isA(ASTVarsNil.class));
+		Mockito.doAnswer(invocation -> i[1]++).when(spyInterpreter).interpret(Mockito.isA(ASTWrite.class));
+
+		ASTMethod method = new ASTMethod(type, ident, params, vars, instrs, 0, 0);
+
+		memory.declMeth(ident.getName(), method, List.of(Type.INT), Type.VOID);
+
+		ASTMethodCallInstr methodCall = new ASTMethodCallInstr(ident, exprs, 0, 0);
+		spyInterpreter.interpret(methodCall);
+
+		Assert.assertEquals(1, i[0]);
+		Assert.assertEquals(1, i[1]);
+	}
+
+	@Test
+	public void interpretMethodCallInstrBoolTest() {
+		int[] i = { 0, 0 };
+		ASTVoidType type = new ASTVoidType(0, 0);
+		ASTIdent ident = new ASTIdent("fct", 0, 0);
+		ASTIdent identParam = new ASTIdent("i", 0, 0);
+		ASTIdent identWrite = new ASTIdent("i", 0, 0);
+		ASTParam param = new ASTParam(new ASTBoolType(0, 0), identParam, 0, 0);
+		ASTParams params = new ASTParamsChain(param, new ASTParamsNil(0, 0), 0, 0);
+		ASTVars vars = new ASTVarsNil(0, 0);
+		ASTInstrs instrs = new ASTInstrsChain(new ASTWrite(identWrite, false, 0, 0), new ASTInstrsNil(0, 0), 0, 0);
+
+		ASTBoolLiteral bool = new ASTBoolLiteral(false, 0, 0);
+		ASTExprs exprs = new ASTExprsChain(bool, new ASTExprsNil(0, 0), 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("fct").when(spyInterpreter).eval(ident);
+		Mockito.doReturn("i").when(spyInterpreter).eval(identParam);
+		Mockito.doReturn("i").when(spyInterpreter).eval(identWrite);
+		Mockito.doReturn(false).when(spyInterpreter).eval(bool);
+		Mockito.doAnswer(invocation -> i[0]++).when(spyInterpreter).interpret(Mockito.isA(ASTVarsNil.class));
+		Mockito.doAnswer(invocation -> i[1]++).when(spyInterpreter).interpret(Mockito.isA(ASTWrite.class));
+
+		ASTMethod method = new ASTMethod(type, ident, params, vars, instrs, 0, 0);
+
+		memory.declMeth(ident.getName(), method, List.of(Type.BOOL), Type.VOID);
+
+		ASTMethodCallInstr methodCall = new ASTMethodCallInstr(ident, exprs, 0, 0);
+		spyInterpreter.interpret(methodCall);
+
+		Assert.assertEquals(1, i[0]);
+		Assert.assertEquals(1, i[1]);
+	}
+
+	@Test
+	public void interpretMethodCallInstrExceptionTest() {
+		int[] i = { 0, 0 };
+		ASTVoidType type = new ASTVoidType(0, 0);
+		ASTIdent ident = new ASTIdent("fct", 0, 0);
+		ASTIdent identParam = new ASTIdent("i", 0, 0);
+		ASTIdent identWrite = new ASTIdent("i", 0, 0);
+		ASTParam param = new ASTParam(new ASTBoolType(0, 0), identParam, 0, 0);
+		ASTParams params = new ASTParamsChain(param, new ASTParamsNil(0, 0), 0, 0);
+		ASTVars vars = new ASTVarsNil(0, 0);
+		ASTInstrs instrs = new ASTInstrsChain(new ASTWrite(identWrite, false, 0, 0), new ASTInstrsNil(0, 0), 0, 0);
+
+		ASTBoolLiteral bool = new ASTBoolLiteral(false, 0, 0);
+		ASTExprs exprs = new ASTExprsChain(bool, new ASTExprsNil(0, 0), 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("fct").when(spyInterpreter).eval(ident);
+		Mockito.doReturn("i").when(spyInterpreter).eval(identParam);
+		Mockito.doReturn("i").when(spyInterpreter).eval(identWrite);
+		Mockito.doReturn(null).when(spyInterpreter).eval(bool);
+		Mockito.doAnswer(invocation -> i[0]++).when(spyInterpreter).interpret(Mockito.isA(ASTVarsNil.class));
+		Mockito.doAnswer(invocation -> i[1]++).when(spyInterpreter).interpret(Mockito.isA(ASTWrite.class));
+
+		ASTMethod method = new ASTMethod(type, ident, params, vars, instrs, 0, 0);
+
+		memory.declMeth(ident.getName(), method, List.of(Type.BOOL), Type.VOID);
+
+		ASTMethodCallInstr methodCall = new ASTMethodCallInstr(ident, exprs, 0, 0);
+		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpret(methodCall));
+	}
+
+	@Test
 	public void evalArrayAccess() {
 		ASTIdent ident = new ASTIdent("tab", 0, 0);
 		ASTIntLiteral intLiteral = new ASTIntLiteral(1, 0, 0);
@@ -379,7 +471,7 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(10).when(spyInterpreter).eval(b);
 
 		ASTBinaryOp node = new ASTBinaryOp(a, b, BinaryOp.ADD, 0, 0);
-		Assert.assertEquals(15, spyInterpreter.evalBinaryOp(node));
+		Assert.assertEquals(15, spyInterpreter.eval(node));
 	}
 
 	@Test
@@ -394,10 +486,10 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
 
 		ASTBinaryOp node = new ASTBinaryOp(a, b, BinaryOp.SUB, 0, 0);
-		Assert.assertEquals(5, spyInterpreter.evalBinaryOp(node));
+		Assert.assertEquals(5, spyInterpreter.eval(node));
 
 		ASTBinaryOp invalidNode = new ASTBinaryOp(a, boolVal, BinaryOp.SUB, 0, 0);
-		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.evalBinaryOp(invalidNode));
+		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.eval(invalidNode));
 	}
 
 	@Test
@@ -412,10 +504,10 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(false).when(spyInterpreter).eval(boolVal);
 
 		ASTBinaryOp node = new ASTBinaryOp(a, b, BinaryOp.MUL, 0, 0);
-		Assert.assertEquals(12, spyInterpreter.evalBinaryOp(node));
+		Assert.assertEquals(12, spyInterpreter.eval(node));
 
 		ASTBinaryOp invalidNode = new ASTBinaryOp(a, boolVal, BinaryOp.MUL, 0, 0);
-		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.evalBinaryOp(invalidNode));
+		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.eval(invalidNode));
 	}
 
 	@Test
@@ -430,10 +522,10 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(0).when(spyInterpreter).eval(zero);
 
 		ASTBinaryOp node = new ASTBinaryOp(a, b, BinaryOp.DIV, 0, 0);
-		Assert.assertEquals(5, spyInterpreter.evalBinaryOp(node));
+		Assert.assertEquals(5, spyInterpreter.eval(node));
 
 		ASTBinaryOp zeroNode = new ASTBinaryOp(a, zero, BinaryOp.DIV, 0, 0);
-		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.evalBinaryOp(zeroNode));
+		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.eval(zeroNode));
 	}
 
 	@Test
@@ -441,22 +533,11 @@ public class MiniJajaInterpreterTest {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
 		ASTBoolLiteral t = new ASTBoolLiteral(true, 0, 0);
 		ASTBoolLiteral f = new ASTBoolLiteral(false, 0, 0);
-		ASTIntLiteral zero = new ASTIntLiteral(0, 0, 0);
-		ASTIntLiteral five = new ASTIntLiteral(5, 0, 0);
 
 		Mockito.doReturn(true).when(spyInterpreter).eval(t);
 		Mockito.doReturn(false).when(spyInterpreter).eval(f);
-		Mockito.doReturn(0).when(spyInterpreter).eval(zero);
-		Mockito.doReturn(5).when(spyInterpreter).eval(five);
 
-		// bool && bool
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, f, BinaryOp.AND, 0, 0)));
-		// int && bool
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, f, BinaryOp.AND, 0, 0)));
-		// bool && int
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, zero, BinaryOp.AND, 0, 0)));
-		// int && int
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, zero, BinaryOp.AND, 0, 0)));
+		Assert.assertEquals(false, spyInterpreter.eval(new ASTBinaryOp(t, f, BinaryOp.AND, 0, 0)));
 	}
 
 	@Test
@@ -464,22 +545,11 @@ public class MiniJajaInterpreterTest {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
 		ASTBoolLiteral t = new ASTBoolLiteral(true, 0, 0);
 		ASTBoolLiteral f = new ASTBoolLiteral(false, 0, 0);
-		ASTIntLiteral zero = new ASTIntLiteral(0, 0, 0);
-		ASTIntLiteral five = new ASTIntLiteral(5, 0, 0);
 
 		Mockito.doReturn(true).when(spyInterpreter).eval(t);
 		Mockito.doReturn(false).when(spyInterpreter).eval(f);
-		Mockito.doReturn(0).when(spyInterpreter).eval(zero);
-		Mockito.doReturn(5).when(spyInterpreter).eval(five);
 
-		// bool || bool
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(t, f, BinaryOp.OR, 0, 0)));
-		// int || bool
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(five, f, BinaryOp.OR, 0, 0)));
-		// bool || int
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(f, five, BinaryOp.OR, 0, 0)));
-		// int || int
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(zero, five, BinaryOp.OR, 0, 0)));
+		Assert.assertEquals(true, spyInterpreter.eval(new ASTBinaryOp(t, f, BinaryOp.OR, 0, 0)));
 	}
 
 	@Test
@@ -493,8 +563,8 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(5).when(spyInterpreter).eval(b);
 		Mockito.doReturn(3).when(spyInterpreter).eval(c);
 
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, b, BinaryOp.EQ, 0, 0)));
-		Assert.assertEquals(false, spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, c, BinaryOp.EQ, 0, 0)));
+		Assert.assertEquals(true, spyInterpreter.eval(new ASTBinaryOp(a, b, BinaryOp.EQ, 0, 0)));
+		Assert.assertEquals(false, spyInterpreter.eval(new ASTBinaryOp(a, c, BinaryOp.EQ, 0, 0)));
 	}
 
 	@Test
@@ -508,9 +578,9 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(3).when(spyInterpreter).eval(b);
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
 
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, b, BinaryOp.GT, 0, 0)));
+		Assert.assertEquals(true, spyInterpreter.eval(new ASTBinaryOp(a, b, BinaryOp.GT, 0, 0)));
 		Assert.assertThrows(InterpretRuntimeException.class,
-				() -> spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0)));
+				() -> spyInterpreter.eval(new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0)));
 	}
 
 	@Test
@@ -524,9 +594,9 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(5).when(spyInterpreter).eval(b);
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
 
-		Assert.assertEquals(true, spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, b, BinaryOp.LT, 0, 0)));
+		Assert.assertEquals(true, spyInterpreter.eval(new ASTBinaryOp(a, b, BinaryOp.LT, 0, 0)));
 		Assert.assertThrows(InterpretRuntimeException.class,
-				() -> spyInterpreter.evalBinaryOp(new ASTBinaryOp(a, boolVal, BinaryOp.LT, 0, 0)));
+				() -> spyInterpreter.eval(new ASTBinaryOp(a, boolVal, BinaryOp.LT, 0, 0)));
 	}
 
 	@Test
@@ -573,16 +643,54 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(0).when(spyInterpreter).eval(zeroLiteral);
 
 		ASTUnaryOp negIntNode = new ASTUnaryOp(intLiteral, UnaryOp.NEG, 0, 0);
-		Assert.assertEquals(-5, spyInterpreter.evalUnaryOp(negIntNode));
+		Assert.assertEquals(-5, spyInterpreter.eval(negIntNode));
 
 		ASTUnaryOp notBoolTrueNode = new ASTUnaryOp(boolLiteralTrue, UnaryOp.NOT, 0, 0);
 		ASTUnaryOp notBoolFalseNode = new ASTUnaryOp(boolLiteralFalse, UnaryOp.NOT, 0, 0);
-		Assert.assertEquals(false, spyInterpreter.evalUnaryOp(notBoolTrueNode));
-		Assert.assertEquals(true, spyInterpreter.evalUnaryOp(notBoolFalseNode));
+		Assert.assertEquals(false, spyInterpreter.eval(notBoolTrueNode));
+		Assert.assertEquals(true, spyInterpreter.eval(notBoolFalseNode));
+	}
 
-		ASTUnaryOp notIntNode = new ASTUnaryOp(intLiteral, UnaryOp.NOT, 0, 0);
-		ASTUnaryOp notZeroNode = new ASTUnaryOp(zeroLiteral, UnaryOp.NOT, 0, 0);
-		Assert.assertEquals(true, spyInterpreter.evalUnaryOp(notIntNode));
-		Assert.assertEquals(false, spyInterpreter.evalUnaryOp(notZeroNode));
+	@Test
+	public void freeVarTest() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("a").when(spyInterpreter).eval(ident);
+		memory.declVar("a", 0, Type.INT);
+		interpreter.freeVar(new ASTVarSimple(new ASTIntType(0, 0), ident, null, 0, 0));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> memory.getVal("a"));
+	}
+
+	@Test
+	public void freeVarsChainTest() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("a").when(spyInterpreter).eval(ident);
+		memory.declVar("a", 0, Type.INT);
+		interpreter.freeVarsChain(
+				new ASTVarsChain(new ASTVarSimple(new ASTIntType(0, 0), ident, null, 0, 0), new ASTVarsNil(0, 0), 0, 0));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> memory.getVal("a"));
+	}
+
+	@Test
+	public void freeTest() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("a").when(spyInterpreter).eval(ident);
+		memory.declVar("a", 0, Type.INT);
+		interpreter.free(
+				new ASTVarsChain(new ASTVarSimple(new ASTIntType(0, 0), ident, null, 0, 0), new ASTVarsNil(0, 0), 0, 0));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> memory.getVal("a"));
+	}
+
+	@Test
+	public void freeException() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		Assert.assertThrows(InterpretRuntimeException.class, () -> interpreter.free(ident));
+		Assert.assertThrows(InterpretRuntimeException.class, () -> interpreter.free(null));
 	}
 }
