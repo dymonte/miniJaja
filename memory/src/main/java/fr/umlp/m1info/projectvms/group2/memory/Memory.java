@@ -81,38 +81,38 @@ public class Memory {
 		}
 	}
 
-    /**
-     * Add a new method declaration to the program memory.
-     *
-     * @param ident         the method identifier
-     * @param meth          node in ast
-     * @param paramsTypes   list of the method parameters types
-     * @param sorte         the method type
+	/**
+	 * Add a new method declaration to the program memory.
+	 *
+	 * @param ident       the method identifier
+	 * @param meth        node in ast
+	 * @param paramsTypes list of the method parameters types
+	 * @param sorte       the method type
 	 */
 	public void declMeth(String ident, Object meth, List<Type> paramsTypes, Type sorte) {
-        String identWithTypes = getMethKey(ident, paramsTypes);
-        Optional<SymNode> symbol = symTable.add(identWithTypes, ObjectKind.METH, sorte);
-        symbol.ifPresent(symNode -> stack.push(meth, symNode));
+		String identWithTypes = getMethKey(ident, paramsTypes);
+		Optional<SymNode> symbol = symTable.add(identWithTypes, ObjectKind.METH, sorte);
+		symbol.ifPresent(symNode -> stack.push(meth, symNode));
 	}
 
-    /**
-     * Returns the method identifier with its parameters types.
-     * example: "myMethod", "[int, int]" -> "myMethod(int_int)"
-     *
-     * @param ident     the method identifier
-     * @param params    list of the method parameters types
-     * @return          the method identifier with its parameters types
-     */
-    public String getMethKey(String ident, List<Type> params) {
-        String size = String.format("%d",ident.length());
-        StringBuilder ret = new StringBuilder(size);
-        ret.append(ident);
+	/**
+	 * Returns the method identifier with its parameters types.
+	 * example: "myMethod", "[int, int]" -> "myMethod(int_int)"
+	 *
+	 * @param ident  the method identifier
+	 * @param params list of the method parameters types
+	 * @return the method identifier with its parameters types
+	 */
+	public String getMethKey(String ident, List<Type> params) {
+		String size = String.format("%d", ident.length());
+		StringBuilder ret = new StringBuilder(size);
+		ret.append(ident);
 
-        for(Type t : params) {
-            ret.append(t.toString().charAt(0));
-        }
-        return ret.toString();
-    }
+		for (Type t : params) {
+			ret.append(t.toString().charAt(0));
+		}
+		return ret.toString();
+	}
 
 	/* Memory modification methods */
 
@@ -286,6 +286,30 @@ public class Memory {
 		int address = (int) instance.getValue();
 
 		heap.setValue(address, index, val);
+	}
+
+	/**
+	 * Get the size of an array
+	 *
+	 * @param ident the array identifier
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not belong to this memory's symbol table
+	 * @throws BadSymbolKindException  thrown when the symbol data type is not an
+	 *                                 array
+	 */
+	public int getLengthArray(String ident) throws SymbolNotFoundException, BadSymbolKindException {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		SymNode symbol = symbolOpt.get();
+		MemInfo info = symbol.getInfo();
+
+		if (info.getKind() != ObjectKind.ARRAY) {
+			throw new BadSymbolKindException(ident, info.getKind(), ObjectKind.ARRAY);
+		}
+		return info.getSize();
 	}
 
 	/**

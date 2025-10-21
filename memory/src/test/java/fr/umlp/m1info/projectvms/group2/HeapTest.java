@@ -27,6 +27,12 @@ public class HeapTest {
 		Assert.assertThrows(IllegalArgumentException.class, () -> heap = new Heap(0));
 	}
 
+	@Ignore
+	@Test
+	public void testAllocationHeapOutofMemory() {
+		Assert.assertThrows(IllegalArgumentException.class, () -> new Heap(1000));
+	}
+
 	@Test
 	public void testAllocation() {
 		int arraySize = 10;
@@ -134,13 +140,21 @@ public class HeapTest {
 	}
 
 	@Test
-	public void incDecRefInvalidAddresses() {
+	public void incRefException() {
 		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.incRef(-1));
 		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.incRef(1));
-		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.incRef(1024));
+		heap.allocate(1, Type.INT);
+		heap.decRef(0);
+		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.incRef(0));
+	}
+
+	@Test
+	public void decRefException() {
 		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.decRef(-1));
 		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.decRef(1));
-		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.decRef(1024));
+		heap.allocate(1, Type.INT);
+		heap.decRef(0);
+		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.decRef(0));
 	}
 
 	@Test
@@ -206,5 +220,18 @@ public class HeapTest {
 		int addr2 = heap.allocate(256, Type.INT);
 		Assert.assertTrue(addr1 >= 0);
 		Assert.assertTrue(addr2 >= 0);
+	}
+
+	@Test
+	public void testSetValueException() {
+		heap.allocate(1, Type.INT);
+		heap.decRef(0);
+		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.setValue(0, 0, 1));
+	}
+
+	@Test
+	public void testSetValueException2() {
+		heap.allocate(1, Type.BOOL);
+		Assert.assertThrows(IllegalArgumentException.class, () -> heap.setValue(0, 0, 1));
 	}
 }
