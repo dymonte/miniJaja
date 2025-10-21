@@ -3,6 +3,8 @@ package fr.umlp.m1info.projectvms.group2;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
@@ -10,6 +12,7 @@ import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
+import fr.umlp.m1info.projectvms.group2.memory.Quad;
 
 import java.util.Optional;
 
@@ -247,5 +250,40 @@ public class MemoryTest {
 		m.declArray(ident, size, sorte);
 
 		Assert.assertEquals(2, m.getLengthArray(ident));
+	}
+
+	@Test
+	public void testQuad() {
+		SymNode symNode = new SymNode("a", new MemInfo(Type.INT, ObjectKind.VAR));
+
+		InstNode inst1 = new InstNode(1, symNode, null);
+		InstNode inst2 = new InstNode(2, symNode, inst1);
+		InstNode inst3 = new InstNode(3, symNode, inst2);
+
+		Quad quad3 = new Quad(inst3);
+		Assert.assertFalse(quad3.isEmpty());
+		Assert.assertEquals("a", quad3.getIdent());
+		Assert.assertEquals(3, quad3.getVal());
+		Assert.assertEquals(ObjectKind.VAR, quad3.getKind());
+		Assert.assertEquals(Type.INT, quad3.getSorte());
+
+		Quad quad2 = quad3.next();
+		Assert.assertFalse(quad2.isEmpty());
+		Assert.assertEquals("a", quad2.getIdent());
+		Assert.assertEquals(2, quad2.getVal());
+		Assert.assertEquals(ObjectKind.VAR, quad2.getKind());
+		Assert.assertEquals(Type.INT, quad2.getSorte());
+
+		Quad quad1 = quad2.next();
+		Assert.assertFalse(quad1.isEmpty());
+		Assert.assertEquals("a", quad1.getIdent());
+		Assert.assertEquals(1, quad1.getVal());
+		Assert.assertEquals(ObjectKind.VAR, quad1.getKind());
+		Assert.assertEquals(Type.INT, quad1.getSorte());
+
+		Quad quad = new Quad(null);
+		Assert.assertTrue(quad.isEmpty());
+
+		Assert.assertEquals("< a, 2, VAR, INT >", quad2.toString());
 	}
 }
