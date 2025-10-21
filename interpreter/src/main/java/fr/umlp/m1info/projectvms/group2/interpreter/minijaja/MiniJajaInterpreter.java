@@ -96,7 +96,8 @@ public class MiniJajaInterpreter {
 		} else if (node instanceof ASTVarsNil astVarsNil) {
 			interpretVarsNil(astVarsNil);
 		} else {
-			throw new InterpretRuntimeException("Cannot interpret node: " + node.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"Cannot interpret node: " + node.getClass().getSimpleName());
 		}
 	}
 
@@ -174,12 +175,19 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a chain of declaration */
 	protected void interpretDeclsChain(ASTDeclsChain node) {
-		throw new InterpretRuntimeException("interpretDeclsChain() not implemented");
+		interpret(node.getDecl());
+		ASTDecls decls = node.getDecls();
+		if (decls instanceof ASTDeclsNil declsNil) {
+			interpretDeclsNil(declsNil);
+		}
+		if (decls instanceof ASTDeclsChain declsChain) {
+			interpretDeclsChain(declsChain);
+		}
 	}
 
 	/** Interprets an empty declaration list */
 	protected void interpretDeclsNil(ASTDeclsNil node) {
-		throw new InterpretRuntimeException("interpretDeclsNil() not implemented");
+		return;// do nothing
 	}
 
 	/** Interprets an identifier as a standalone statement */
@@ -283,12 +291,15 @@ public class MiniJajaInterpreter {
 
 		if (value instanceof ASTLValue lvalue) {
 			Object write = eval(lvalue);
-			InterpreterLogger.getInstance().log(write + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
+			InterpreterLogger.getInstance().log(write + (isLn ? "\n" : ""),
+					InterpreterLogger.MessageLevel.WRITE);
 		} else if (value instanceof ASTStringLiteral stringLiteral) {
 			String str = (String) eval(stringLiteral);
-			InterpreterLogger.getInstance().log(str + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
+			InterpreterLogger.getInstance().log(str + (isLn ? "\n" : ""),
+					InterpreterLogger.MessageLevel.WRITE);
 		} else {
-			throw new InterpretRuntimeException("Invalid value type to write: " + value.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"Invalid value type to write: " + value.getClass().getSimpleName());
 		}
 	}
 
@@ -345,7 +356,8 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates a binary operation */
 	protected Object evalBinaryOp(ASTBinaryOp node) {
-		return MiniJajaInterpreterUtils.binaryOperation(node.getOp(), eval(node.getLeft()), eval(node.getRight()));
+		return MiniJajaInterpreterUtils.binaryOperation(node.getOp(), eval(node.getLeft()),
+				eval(node.getRight()));
 	}
 
 	/** Evaluates a boolean literal */
