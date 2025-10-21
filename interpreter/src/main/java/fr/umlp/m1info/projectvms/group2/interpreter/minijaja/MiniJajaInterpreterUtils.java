@@ -12,7 +12,10 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTBoolType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTIntType;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
@@ -46,11 +49,13 @@ public class MiniJajaInterpreterUtils {
 		}
 	}
 
-	public static void bindParameters(Memory memory, ASTParams params, ASTExprs exprs, MiniJajaInterpreter interpreter) {
+	public static void bindParameters(Memory memory, ASTParams params, ASTExprs exprs,
+			MiniJajaInterpreter interpreter) {
 		ASTParams currentParams = params;
 		ASTExprs currentExprs = exprs;
 
-		while (currentParams instanceof ASTParamsChain paramsChain && currentExprs instanceof ASTExprsChain exprsChain) {
+		while (currentParams instanceof ASTParamsChain paramsChain
+				&& currentExprs instanceof ASTExprsChain exprsChain) {
 			ASTParam param = paramsChain.getParam();
 			ASTExpr expr = exprsChain.getExpr();
 
@@ -89,6 +94,30 @@ public class MiniJajaInterpreterUtils {
 		}
 
 		return types;
+	}
+
+	public static ArrayList<Type> collectParamTypes(ASTParams params) {
+		ArrayList<Type> types = new ArrayList<>();
+		ASTParams currentParams = params;
+
+		while (currentParams instanceof ASTParamsChain chain) {
+			types.add(getTypeFromParam(chain.getParam()));
+			currentParams = chain.getParams();
+		}
+
+		return types;
+	}
+
+	public static Type getTypeFromTypeMeth(ASTTypeMeth node) {
+		Type type = null;
+		if (node instanceof ASTIntType) {
+			type = Type.INT;
+		} else if (node instanceof ASTBoolType) {
+			type = Type.BOOL;
+		} else if (node instanceof ASTVoidType) {
+			type = Type.VOID;
+		}
+		return type;
 	}
 
 	public static LValueRef resolveLValue(Memory memory, ASTLValue lvalue, MiniJajaInterpreter interpreter) {
@@ -157,8 +186,9 @@ public class MiniJajaInterpreterUtils {
 		if (left instanceof Integer li && right instanceof Integer ri) {
 			return op.applyAsInt(li, ri);
 		}
-		throw new InterpretRuntimeException("Cannot " + opName + " non-integer values: " + left.getClass().getSimpleName()
-				+ ", " + right.getClass().getSimpleName());
+		throw new InterpretRuntimeException(
+				"Cannot " + opName + " non-integer values: " + left.getClass().getSimpleName()
+						+ ", " + right.getClass().getSimpleName());
 	}
 
 	@FunctionalInterface

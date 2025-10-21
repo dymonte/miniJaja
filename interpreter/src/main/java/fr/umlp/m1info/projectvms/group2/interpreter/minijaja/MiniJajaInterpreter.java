@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
+import java.awt.List;
 import java.util.ArrayList;
 
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
@@ -81,10 +82,6 @@ public class MiniJajaInterpreter {
 			interpretInstrsChain(astInstrsChain);
 		} else if (node instanceof ASTInstrsNil astInstrsNil) {
 			interpretInstrsNil(astInstrsNil);
-		} else if (node instanceof ASTParamsChain astParamsChain) {
-			interpretParamsChain(astParamsChain);
-		} else if (node instanceof ASTParamsNil astParamsNil) {
-			interpretParamsNil(astParamsNil);
 		} else if (node instanceof ASTVarArray astVarArray) {
 			interpretVarArray(astVarArray);
 		} else if (node instanceof ASTVarConst astVarConst) {
@@ -160,29 +157,30 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a class declaration */
 	protected void interpretClass(ASTClass node) {
-		throw new InterpretRuntimeException("interpretClass() not implemented");
+		interpret(node.getDecls());
+		interpret(node.getMainMethod());
 	}
 
 	/** Interprets the main method of a program */
 	protected void interpretMainMethod(ASTMainMethod node) {
-		throw new InterpretRuntimeException("interpretMainMethod() not implemented");
+		interpret(node.getVars());
+		interpret(node.getInstrs());
 	}
 
 	/** Interprets a method declaration */
 	protected void interpretMethod(ASTMethod node) {
-		throw new InterpretRuntimeException("interpretMethod() not implemented");
+		String ident = (String) eval(node.getIdent());
+		ASTParams params = node.getParams();
+		ArrayList<Type> paramsTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
+		Type returnType = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+
+		memory.declMeth(ident, node, paramsTypes, returnType);
 	}
 
 	/** Interprets a chain of declaration */
 	protected void interpretDeclsChain(ASTDeclsChain node) {
 		interpret(node.getDecl());
-		ASTDecls decls = node.getDecls();
-		if (decls instanceof ASTDeclsNil declsNil) {
-			interpretDeclsNil(declsNil);
-		}
-		if (decls instanceof ASTDeclsChain declsChain) {
-			interpretDeclsChain(declsChain);
-		}
+		interpret(node.getDecls());
 	}
 
 	/** Interprets an empty declaration list */
@@ -312,16 +310,6 @@ public class MiniJajaInterpreter {
 	/** Interprets an empty instruction list */
 	protected void interpretInstrsNil(ASTInstrsNil node) {
 		return; // do nothing
-	}
-
-	/** Interprets a parameter list chain */
-	protected void interpretParamsChain(ASTParamsChain node) {
-		throw new InterpretRuntimeException("interpretParamsChain() not implemented");
-	}
-
-	/** Interprets an empty parameter list */
-	protected void interpretParamsNil(ASTParamsNil node) {
-		throw new InterpretRuntimeException("interpretParamsNil() not implemented");
 	}
 
 	/** Interprets a array variable declaration */
