@@ -285,4 +285,21 @@ public class GetterTest {
 		Assert.assertEquals(ident, (new ASTExprsChain(ident, exprsNil, 0, 0)).getExpr());
 		Assert.assertEquals(exprsNil, (new ASTExprsChain(ident, exprsNil, 0, 0)).getExprs());
 	}
+
+	@Test
+	public void getterVar() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		class ASTTestVar extends ASTVar {
+			public ASTTestVar(ASTIdent ident, int line, int column) {
+				super(ident, line, column);
+			}
+
+			@Override
+			public String toString() {
+				return "";
+			}
+		}
+		Assert.assertEquals(ident, (new ASTTestVar(ident, 0, 0)).getIdent());
+
+	}
 }
