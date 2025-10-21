@@ -84,6 +84,35 @@ public class CLITest {
     }
 
     @Test
+    public void testEmptyFile() {
+        CLI.main(new String[] { "execute:mjj", "--set-heap-size", "512",
+                "./src/test/resources/empty_file.mjj" });
+        Assert.assertTrue(errContent.toString()
+                .contains("Error"));
+    }
+
+    @Test
+    public void testCompilation() {
+        // TODO: replace this when jajacode compilation is implemented
+        Assert.assertThrows(UnsupportedOperationException.class,
+                () -> CLI.main(new String[] { "compile", "./src/test/resources/empty.mjj" }));
+    }
+
+    @Test
+    public void testJaJaCodeInterpretation() {
+        // TODO: replace this when jajacode interpretation is implemented
+        Assert.assertThrows(UnsupportedOperationException.class,
+                () -> CLI.main(new String[] { "execute:jjc", "./src/test/resources/empty.mjj" }));
+    }
+
+    @Test
+    public void testUnknownCommand() {
+        CLI.main(new String[] { "exec:mjj", "./src/test/resources/empty.mjj" });
+        Assert.assertTrue(errContent.toString()
+                .contains("Unrecognized CLI command. type --help for help."));
+    }
+
+    @Test
     public void testFileNotFound() {
         CLI.main(new String[] { "execute:mjj", "--set-heap-size", "512",
                 "./src/test/resources/emptyyyyy.mjj" });

@@ -131,12 +131,12 @@ public class CLI {
 
         return switch (args[i]) {
             case CLIOptions.SET_HEAP_SIZE ->
-                handleIntOption(args, i, options::setHeapSize, CLIOptions.SET_HEAP_SIZE) ? i + 1 : -1;
+                handleIntOption(args, i, options::setHeapSize, CLIOptions.SET_HEAP_SIZE) ? i + 2 : -1;
             case CLIOptions.SET_STACK_DEPTH ->
-                handleIntOption(args, i, options::setStackDepth, CLIOptions.SET_STACK_DEPTH) ? i + 1 : -1;
+                handleIntOption(args, i, options::setStackDepth, CLIOptions.SET_STACK_DEPTH) ? i + 2 : -1;
             case CLIOptions.SET_SYMTABLE_SIZE ->
-                handleIntOption(args, i, options::setSymTableSize, CLIOptions.SET_SYMTABLE_SIZE) ? i + 1 : -1;
-            default -> parseFileOption(args[i], options) ? i : -1;
+                handleIntOption(args, i, options::setSymTableSize, CLIOptions.SET_SYMTABLE_SIZE) ? i + 2 : -1;
+            default -> parseFileOption(args[i], options) ? i + 1 : -1;
         };
     }
 
@@ -154,7 +154,8 @@ public class CLI {
 
         options.setCommand(args[0]);
 
-        for (int i = 1; i < args.length; i++) {
+        int i = 1;
+        while (i < args.length) {
             i = parseOption(args, i, options);
             if (i == -1) {
                 return null;
