@@ -73,7 +73,9 @@ public class InterpreterLogger {
 	 * @param listener the listener to remove
 	 */
 	public void removeListener(InterpreterListener listener) {
-		listeners.remove(listener);
+		if (listener != null) {
+			listeners.remove(listener);
+		}
 	}
 
 	/**
