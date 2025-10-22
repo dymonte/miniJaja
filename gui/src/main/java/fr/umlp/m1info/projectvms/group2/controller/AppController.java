@@ -1,11 +1,14 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
@@ -231,6 +234,19 @@ public class AppController implements StatefulController {
         if (primaryStage != null) {
             primaryStage.setTitle(newTitle);
         }
+    }
+
+    @FXML
+    private void openHelpPopup() {
+        /**     * Opens help window     */
+        final Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.initOwner(primaryStage);
+        popup.setTitle("Help");
+        WebView webView = new WebView();
+        webView.getEngine().loadContent("<html><body><h1>Help</h1></body></html>");
+        popup.setScene(new Scene(webView));
+        popup.show();
     }
 
     /**
