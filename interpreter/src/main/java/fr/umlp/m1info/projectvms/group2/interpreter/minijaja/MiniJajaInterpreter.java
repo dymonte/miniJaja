@@ -370,7 +370,9 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates a method call used as an expression */
 	protected Object evalMethodCall(ASTMethodCallExpr node) {
-		throw new EvalRuntimeException("evalMethodCall() not implemented");
+		interpret(new ASTMethodCallInstr(node.getIdent(), node.getExprs(), node.getLine(), node.getColumn()));
+
+		return memory.getVal(ASTClass.getClassVar().getName());
 	}
 
 	/** Evaluates a string literal */

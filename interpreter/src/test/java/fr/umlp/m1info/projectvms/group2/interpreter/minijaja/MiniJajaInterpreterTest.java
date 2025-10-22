@@ -459,6 +459,42 @@ public class MiniJajaInterpreterTest {
 	}
 
 	@Test
+	public void interpretMethodCallExprIntTest() {
+		int[] i = { 0, 0 };
+		ASTVoidType type = new ASTVoidType(0, 0);
+		ASTIdent ident = new ASTIdent("fct", 0, 0);
+		ASTIdent identParam = new ASTIdent("i", 0, 0);
+		ASTParam param = new ASTParam(new ASTIntType(0, 0), identParam, 0, 0);
+		ASTParams params = new ASTParamsChain(param, new ASTParamsNil(0, 0), 0, 0);
+		ASTVars vars = new ASTVarsNil(0, 0);
+		ASTIntLiteral intLiteral = new ASTIntLiteral(1, 0, 0);
+		ASTReturn astReturn = new ASTReturn(intLiteral, 0, 0);
+		ASTInstrs instrs1 = new ASTInstrsChain(astReturn, new ASTInstrsNil(0, 0), 0, 0);
+
+		ASTExprs exprs = new ASTExprsChain(intLiteral, new ASTExprsNil(0, 0), 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn("fct").when(spyInterpreter).eval(ident);
+		Mockito.doReturn("i").when(spyInterpreter).eval(identParam);
+		Mockito.doReturn(1).when(spyInterpreter).eval(intLiteral);
+		Mockito.doAnswer(invocation -> i[0]++).when(spyInterpreter).interpret(Mockito.isA(ASTVarsNil.class));
+		Mockito.doAnswer(invocation -> i[1]++).when(spyInterpreter).interpret(Mockito.isA(ASTReturn.class));
+		new ASTClass(new ASTIdent("expr", 0, 0), new ASTDeclsNil(0, 0),
+				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+
+		memory.declVar("expr", 1, Type.INT);
+		ASTMethod method = new ASTMethod(type, ident, params, vars, instrs1, 0, 0);
+
+		memory.declMeth(ident.getName(), method, List.of(Type.INT), Type.VOID);
+
+		ASTMethodCallExpr methodCall = new ASTMethodCallExpr(ident, exprs, 0, 0);
+		Assert.assertEquals(1, spyInterpreter.eval(methodCall));
+
+		Assert.assertEquals(1, i[0]);
+		Assert.assertEquals(1, i[1]);
+	}
+
+	@Test
 	public void testEvalArrayAccess() {
 		ASTIdent ident = new ASTIdent("tab", 0, 0);
 		ASTIntLiteral intLiteral = new ASTIntLiteral(1, 0, 0);
