@@ -3,12 +3,17 @@ package fr.umlp.m1info.projectvms.group2.memory;
 import java.util.List;
 import java.util.Optional;
 
-import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
-import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
+import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
+import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.*;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 
 /**
  * Memory
@@ -283,6 +288,30 @@ public class Memory {
 	}
 
 	/**
+	 * Get the size of an array
+	 *
+	 * @param ident the array identifier
+	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
+	 *                                 does not belong to this memory's symbol table
+	 * @throws BadSymbolKindException  thrown when the symbol data type is not an
+	 *                                 array
+	 */
+	public int getLengthArray(String ident) throws SymbolNotFoundException, BadSymbolKindException {
+		Optional<SymNode> symbolOpt = symTable.search(ident);
+		if (symbolOpt.isEmpty()) {
+			throw new SymbolNotFoundException(ident);
+		}
+
+		SymNode symbol = symbolOpt.get();
+		MemInfo info = symbol.getInfo();
+
+		if (info.getKind() != ObjectKind.ARRAY) {
+			throw new BadSymbolKindException(ident, info.getKind(), ObjectKind.ARRAY);
+		}
+		return info.getSize();
+	}
+
+	/**
 	 * Gets the type of the symbol of indentifier ident
 	 * 
 	 * @param ident the symbol identifier
@@ -298,6 +327,25 @@ public class Memory {
 		}
 
 		return symbolOpt.get().getInfo().getSorte();
+	}
+
+	/**
+	 * Gets the head of the stack as a Quad
+	 * 
+	 * @return the head of the stack as a Quad
+	 */
+	public Quad getHead() {
+		return new Quad(stack.getHead());
+	}
+
+	/**
+	 * Pushes a new value and symbol onto the stack
+	 * 
+	 * @param val    the value to push
+	 * @param symbol the symbol to push
+	 */
+	public void push(Object val, SymNode symbol) {
+		stack.push(val, symbol);
 	}
 
 	/**

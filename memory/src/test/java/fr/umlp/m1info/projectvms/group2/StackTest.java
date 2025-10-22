@@ -60,4 +60,9 @@ public class StackTest {
 		Assert.assertThrows(StackOverflowException.class, () -> s.push(1, symbol));
 	}
 
+	@Test
+	public void testConstructorException() {
+		Assert.assertThrows(IllegalArgumentException.class, () -> new Stack(0));
+		Assert.assertThrows(IllegalArgumentException.class, () -> new Stack(-1));
+	}
 }
