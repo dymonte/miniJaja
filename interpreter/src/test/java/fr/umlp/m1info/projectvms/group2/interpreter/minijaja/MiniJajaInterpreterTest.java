@@ -823,4 +823,109 @@ public class MiniJajaInterpreterTest {
 		Assert.assertNotNull(memory.getVal(fullIdent));
 	}
 
+    @Test
+    public void testInterpretVarSimple() {
+        MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+        ASTTypeMeth intType = new ASTIntType(0, 0);
+        ASTTypeMeth boolType = new ASTBoolType(0, 0);
+        ASTIdent ident = new ASTIdent("x", 0, 0);
+        ASTIdent ident2 = new ASTIdent("x2", 0, 0);
+        ASTIdent ident3 = new ASTIdent("x3", 0, 0);
+        ASTIdent ident4 = new ASTIdent("x4", 0, 0);
+        ASTIntLiteral intLiteral = new ASTIntLiteral(3, 0, 0);
+        ASTBoolLiteral boolLiteral = new ASTBoolLiteral(true, 0, 0);
+
+        Mockito.doReturn(3).when(spyInterpreter).eval(intLiteral);
+        Mockito.doReturn(true).when(spyInterpreter).eval(boolLiteral);
+
+        ASTVarSimple varSimple = new ASTVarSimple(intType, ident, new ASTVExpr(intLiteral, 0, 0), 0, 0);
+        ASTVarSimple varSimple2 = new ASTVarSimple(intType, ident2, null, 0, 0);
+        ASTVarSimple varSimple3 = new ASTVarSimple(intType, ident3, new ASTVExpr(boolLiteral, 0, 0), 0, 0);
+        ASTVarSimple varSimple4 = new ASTVarSimple(boolType, ident4, new ASTVExpr(boolLiteral, 0, 0), 0, 0);
+
+        spyInterpreter.interpretVarSimple(varSimple);
+        spyInterpreter.interpretVarSimple(varSimple2);
+        spyInterpreter.interpretVarSimple(varSimple4);
+        Assert.assertEquals(3, memory.getVal(ident.toString()));
+        Assert.assertNull(memory.getVal(ident2.toString()));
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpretVarSimple(varSimple3));
+        Assert.assertEquals(true, memory.getVal(ident4.toString()));
+    }
+
+    @Test
+    public void testInterpretVarConst() {
+        MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+        ASTType intType = new ASTIntType(0, 0);
+        ASTType boolType = new ASTBoolType(0, 0);
+        ASTIdent ident = new ASTIdent("x", 0, 0);
+        ASTIdent ident2 = new ASTIdent("x2", 0, 0);
+        ASTIdent ident3 = new ASTIdent("x3", 0, 0);
+        ASTIdent ident4 = new ASTIdent("x4", 0, 0);
+        ASTIntLiteral intLiteral = new ASTIntLiteral(3, 0, 0);
+        ASTBoolLiteral boolLiteral = new ASTBoolLiteral(true, 0, 0);
+
+        Mockito.doReturn(3).when(spyInterpreter).eval(intLiteral);
+        Mockito.doReturn(true).when(spyInterpreter).eval(boolLiteral);
+
+        ASTVarConst varConst = new ASTVarConst(intType, ident, new ASTVExpr(intLiteral, 0, 0), 0, 0);
+        ASTVarConst varConst2 = new ASTVarConst(intType, ident2, null, 0, 0);
+        ASTVarConst varConst3 = new ASTVarConst(intType, ident3, new ASTVExpr(boolLiteral, 0, 0), 0, 0);
+        ASTVarConst varConst4 = new ASTVarConst(boolType, ident4, new ASTVExpr(boolLiteral, 0, 0), 0, 0);
+
+        spyInterpreter.interpretVarConst(varConst);
+        spyInterpreter.interpretVarConst(varConst4);
+        Assert.assertEquals(3, memory.getVal(ident.toString()));
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpretVarConst(varConst2));
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpretVarConst(varConst3));
+        Assert.assertEquals(true, memory.getVal(ident4.toString()));
+    }
+
+    @Test
+    public void testInterpretVarArray() {
+        MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+        ASTTypeMeth intType = new ASTIntType(0, 0);
+        ASTTypeMeth boolType = new ASTBoolType(0, 0);
+        ASTIdent ident = new ASTIdent("t", 0, 0);
+        ASTIdent ident2 = new ASTIdent("t2", 0, 0);
+        ASTIntLiteral intLiteral = new ASTIntLiteral(3, 0, 0);
+        ASTIntLiteral intLiteral2 = new ASTIntLiteral(0, 0, 0);
+        ASTBoolLiteral boolLiteral = new ASTBoolLiteral(true, 0, 0);
+
+        Mockito.doReturn(3).when(spyInterpreter).eval(intLiteral);
+
+        ASTVarArray tab = new ASTVarArray(intType, ident, intLiteral, 0, 0);
+        ASTVarArray tab2 = new ASTVarArray(intType, ident, intLiteral2, 0, 0);
+        ASTVarArray tab3 = new ASTVarArray(intType, ident, boolLiteral, 0, 0);
+        ASTVarArray tab4 = new ASTVarArray(boolType, ident2, intLiteral, 0, 0);
+
+        spyInterpreter.interpretVarArray(tab);
+        spyInterpreter.interpretVarArray(tab4);
+
+        Assert.assertEquals(Type.INT, memory.getType(ident.getName()));
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpretVarArray(tab2));
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpretVarArray(tab3));
+        Assert.assertEquals(Type.BOOL, memory.getType(ident2.getName()));
+    }
+
+    @Test
+    public void TestInterpretVarsChain() {
+        MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+        ASTVarSimple var1 = Mockito.mock(ASTVarSimple.class);
+        ASTVarSimple var2 = Mockito.mock(ASTVarSimple.class);
+
+        ASTVarsNil nil = new ASTVarsNil(0, 0);
+        ASTVarsChain innerChain = new ASTVarsChain(var2, nil, 0, 0);
+        ASTVarsChain outerChain = new ASTVarsChain(var1, innerChain, 0, 0);
+
+        Mockito.doNothing().when(spyInterpreter).interpret(Mockito.any(ASTVarSimple.class));
+
+        spyInterpreter.interpretVarsChain(outerChain);
+
+        Mockito.verify(spyInterpreter).interpret(var1);
+        Mockito.verify(spyInterpreter).interpret(var2);
+        Mockito.verify(spyInterpreter, Mockito.times(2)).interpretVarsChain(Mockito.any(ASTVarsChain.class));
+        Mockito.verify(spyInterpreter).interpretVarsNil(nil);
+    }
+
 }

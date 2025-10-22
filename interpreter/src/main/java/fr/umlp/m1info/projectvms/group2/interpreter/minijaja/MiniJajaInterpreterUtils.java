@@ -212,7 +212,7 @@ public class MiniJajaInterpreterUtils {
 		}
 	}
 
-	private static Type getTypeFromObject(Object value) {
+	public static Type getTypeFromObject(Object value) {
 		if (value instanceof Integer) {
 			return Type.INT;
 		}

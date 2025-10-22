@@ -5,6 +5,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import java.awt.List;
 import java.util.ArrayList;
 
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
@@ -314,27 +315,63 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a array variable declaration */
 	protected void interpretVarArray(ASTVarArray node) {
-		throw new InterpretRuntimeException("interpretVarArray() not implemented");
+        String ident = node.getIdent().getName();
+        Object value = eval(node.getExpr());
+        Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+        if (value instanceof Integer) {
+            if ((int) value > 0) {
+                memory.declArray(ident, (int) value, type);
+            } else {
+                throw new InterpretRuntimeException("Size must evaluate to an integer value greater than 0");
+            }
+        } else {
+            throw new InterpretRuntimeException("Size must evaluate to an integer value");
+        }
 	}
 
 	/** Interprets a constant variable declaration */
 	protected void interpretVarConst(ASTVarConst node) {
-		throw new InterpretRuntimeException("interpretVarConst() not implemented");
+        String ident = node.getIdent().getName();
+        var vexp = node.getVExpr();
+        Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth((ASTTypeMeth) node.getType());
+        if (vexp == null) {
+            throw new InterpretRuntimeException("Constant value cannot be null");
+        } else {
+            Object value = eval(vexp.getExpr());
+            if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
+                memory.declCst(ident, value, type);
+            } else {
+                throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
+            }
+        }
 	}
 
 	/** Interprets a simple variable declaration */
 	protected void interpretVarSimple(ASTVarSimple node) {
-		throw new InterpretRuntimeException("interpretVarSimple() not implemented");
+        String ident = node.getIdent().getName();
+        var vexp = node.getVExpr();
+        Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+        if (vexp == null) {
+            memory.declVar(ident, null, type);
+        } else {
+            Object value = eval(vexp.getExpr());
+            if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
+                memory.declVar(ident, value, type);
+            } else {
+                throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
+            }
+        }
 	}
 
 	/** Interprets a chain of variable declarations */
 	protected void interpretVarsChain(ASTVarsChain node) {
-		throw new InterpretRuntimeException("interpretVarsChain() not implemented");
+		interpret(node.getVar());
+        interpret(node.getVars());
 	}
 
 	/** Interprets an empty variable declaration list */
 	protected void interpretVarsNil(ASTVarsNil node) {
-		throw new InterpretRuntimeException("interpretVarsNil() not implemented");
+		return; // do nothing
 	}
 
 	/** Evaluates an array element access expression */
