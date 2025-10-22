@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
@@ -69,7 +69,7 @@ public class CLI {
      * @param optionName the name of the option
      * @return true if the option was handled successfully, false otherwise
      */
-    private static boolean handleIntOption(String[] args, int i, Consumer<Integer> setter, String optionName) {
+    private static boolean handleIntOption(String[] args, int i, IntConsumer setter, String optionName) {
         if (i + 1 >= args.length) {
             CLIOutput.error("Missing value for", optionName);
             return false;
