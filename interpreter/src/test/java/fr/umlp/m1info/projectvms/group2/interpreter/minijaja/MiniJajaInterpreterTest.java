@@ -269,7 +269,7 @@ public class MiniJajaInterpreterTest {
 		ASTWrite mockWrite = Mockito.mock(ASTWrite.class);
 
 		Mockito.when(mockWrite.getValue()).thenReturn(mockNode);
-		Assert.assertThrows(EvalRuntimeException.class, () -> interpreter.interpret(mockWrite));
+		Assert.assertThrows(InterpretRuntimeException.class, () -> interpreter.interpret(mockWrite));
 	}
 
 	@Test
@@ -957,5 +957,11 @@ public class MiniJajaInterpreterTest {
 		memory.declArray("tab", 2, Type.INT);
 
 		Assert.assertEquals(2, spyInterpreter.eval(length));
+	}
+
+	@Test
+	public void TestExceptionFree() {
+		Assert.assertThrows(InterpretRuntimeException.class,
+				() -> interpreter.free(new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0)));
 	}
 }
