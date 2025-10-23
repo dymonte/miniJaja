@@ -29,26 +29,6 @@ public class MiniJajaInterpreterUtils {
 	private MiniJajaInterpreterUtils() {
 	}
 
-	/** Represents a resolved lvalue: name, optional index, current value */
-	public record LValueRef(String name, Integer index, Object currentValue) {
-	}
-
-	public static Object getValMemory(Memory memory, LValueRef ref) {
-		if (ref.index() == null) {
-			return memory.getVal(ref.name());
-		} else {
-			return memory.getValArray(ref.name(), ref.index());
-		}
-	}
-
-	public static void updateValMemory(Memory memory, LValueRef ref, Object newValue) {
-		if (ref.index() == null) {
-			memory.updateVal(ref.name(), newValue);
-		} else {
-			memory.updateValArray(ref.name(), ref.index(), newValue);
-		}
-	}
-
 	public static void bindParameters(Memory memory, ASTParams params, ASTExprs exprs,
 			MiniJajaInterpreter interpreter) {
 		ASTParams currentParams = params;
@@ -118,20 +98,6 @@ public class MiniJajaInterpreterUtils {
 			type = Type.VOID;
 		}
 		return type;
-	}
-
-	public static LValueRef resolveLValue(Memory memory, ASTLValue lvalue, MiniJajaInterpreter interpreter) {
-		if (lvalue instanceof ASTIdent ident) {
-			String name = (String) interpreter.eval(ident);
-			return new LValueRef(name, null, memory.getVal(name));
-		} else if (lvalue instanceof ASTArrayAccess array) {
-			String name = (String) interpreter.eval(array.getIdent());
-			Integer index = (Integer) interpreter.eval(array.getExpr());
-			return new LValueRef(name, index, memory.getValArray(name, index));
-		} else {
-			throw new InterpretRuntimeException(
-					"Invalid lvalue type: " + lvalue.getClass().getSimpleName());
-		}
 	}
 
 	public static Object binaryOperation(BinaryOp op, Object left, Object right) {
