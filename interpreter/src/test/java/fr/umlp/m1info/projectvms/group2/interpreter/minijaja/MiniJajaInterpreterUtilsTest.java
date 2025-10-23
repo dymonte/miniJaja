@@ -22,27 +22,6 @@ import org.junit.Assert;
 public class MiniJajaInterpreterUtilsTest {
 
 	@Test
-	public void resolveLValueExceptionTest() {
-		class ASTInvalidLValue extends ASTLValue {
-			public ASTInvalidLValue(int line, int column) {
-				super(line, column);
-			}
-
-			@Override
-			public String toString() {
-				return "";
-			}
-		}
-
-		ASTLValue invalidLValue = new ASTInvalidLValue(0, 0);
-
-		Memory memory = new Memory(new SymTable(10), new Stack(10), new Heap(10));
-		MiniJajaInterpreter interpreter = new MiniJajaInterpreter(memory);
-		Assert.assertThrows(InterpretRuntimeException.class,
-				() -> MiniJajaInterpreterUtils.resolveLValue(memory, invalidLValue, interpreter));
-	}
-
-	@Test
 	public void bindParametersNotSameSize1Test() {
 		ASTParam param = new ASTParam(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), 0, 0);
 		ASTParams params = new ASTParamsChain(param, new ASTParamsNil(0, 0), 0, 0);

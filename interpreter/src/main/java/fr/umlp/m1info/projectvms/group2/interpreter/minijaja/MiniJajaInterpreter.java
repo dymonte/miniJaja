@@ -162,7 +162,7 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a method declaration */
 	protected void interpretMethod(ASTMethod node) {
-		String ident = (String) eval(node.getIdent());
+		String ident = node.getIdent().getName();
 		ASTParams params = node.getParams();
 		ArrayList<Type> paramsTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
 		Type returnType = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
@@ -183,21 +183,21 @@ public class MiniJajaInterpreter {
 
 	/** Interprets an assignement operation */
 	protected void interpretAssignment(ASTAssignmentOp node) {
-		var ref = MiniJajaInterpreterUtils.resolveLValue(memory, node.getLValue(), this);
-		Object value;
-		if (node.getExpr() instanceof ASTLValue astLValue) {
-			var refValue = MiniJajaInterpreterUtils.resolveLValue(memory, astLValue, this);
-			value = MiniJajaInterpreterUtils.getValMemory(memory, refValue);
-		} else {
-			value = eval(node.getExpr());
-		}
+		Object currentValue = eval(node.getLValue());
+		Object exprValue = eval(node.getExpr());
 
 		Object newValue = switch (node.getOp()) {
-			case EQ -> value;
-			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, ref.currentValue(), value);
+			case EQ -> exprValue;
+			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, currentValue, exprValue);
 		};
 
-		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
+		if (node.getLValue() instanceof ASTIdent ident) {
+			memory.updateVal(ident.getName(), newValue);
+		} else if (node.getLValue() instanceof ASTArrayAccess arrayAccess) {
+			memory.updateValArray(arrayAccess.getIdent().getName(), (int) eval(arrayAccess.getExpr()), newValue);
+		} else {
+			throw new InterpretRuntimeException("Left value not compatible");
+		}
 	}
 
 	/** Interprets an if-(else)-statement */
@@ -216,18 +216,24 @@ public class MiniJajaInterpreter {
 
 	/** Interprets an increment operation */
 	protected void interpretIncrement(ASTIncrementOp node) {
-		var ref = MiniJajaInterpreterUtils.resolveLValue(memory, node.getLValue(), this);
+		Object currentValue = eval(node.getLValue());
 
 		Object newValue = switch (node.getOp()) {
-			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, ref.currentValue(), 1);
+			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, currentValue, 1);
 		};
 
-		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
+		if (node.getLValue() instanceof ASTIdent ident) {
+			memory.updateVal(ident.getName(), newValue);
+		} else if (node.getLValue() instanceof ASTArrayAccess arrayAccess) {
+			memory.updateValArray(arrayAccess.getIdent().getName(), (int) eval(arrayAccess.getExpr()), newValue);
+		} else {
+			throw new InterpretRuntimeException("Left value not compatible");
+		}
 	}
 
 	/** Interprets a method call used as an instruction */
 	protected void interpretMethodCallInstr(ASTMethodCallInstr node) {
-		String methodName = (String) eval(node.getIdent());
+		String methodName = node.getIdent().getName();
 		ASTExprs exprs = node.getExprs();
 
 		ArrayList<Type> argumentTypes = MiniJajaInterpreterUtils.collectExprTypes(exprs, this);
@@ -263,20 +269,8 @@ public class MiniJajaInterpreter {
 	/** Interprets a write statement */
 	protected void interpretWrite(ASTWrite node) {
 		boolean isLn = node.getIsLn();
-		Object value = node.getValue();
-
-		if (value instanceof ASTLValue lvalue) {
-			Object write = eval(lvalue);
-			InterpreterLogger.getInstance().log(write + (isLn ? "\n" : ""),
-					InterpreterLogger.MessageLevel.WRITE);
-		} else if (value instanceof ASTStringLiteral stringLiteral) {
-			String str = (String) eval(stringLiteral);
-			InterpreterLogger.getInstance().log(str + (isLn ? "\n" : ""),
-					InterpreterLogger.MessageLevel.WRITE);
-		} else {
-			throw new InterpretRuntimeException(
-					"Invalid value type to write: " + value.getClass().getSimpleName());
-		}
+		Object value = eval((ASTNode) node.getValue());
+		InterpreterLogger.getInstance().log(value + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
 	}
 
 	/** Interprets a chain of instructions */
@@ -356,7 +350,7 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates an array element access expression */
 	protected Object evalArrayAccess(ASTArrayAccess node) {
-		return memory.getValArray((String) eval(node.getIdent()), (Integer) eval(node.getExpr()));
+		return memory.getValArray(node.getIdent().getName(), (Integer) eval(node.getExpr()));
 	}
 
 	/** Evaluates a binary operation */
@@ -372,7 +366,7 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates an identifier expression */
 	protected Object evalIdent(ASTIdent node) {
-		return node.getName();
+		return memory.getVal(node.getName());
 	}
 
 	/** Evaluates an integer literal */
@@ -382,7 +376,7 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates a length expression on arrays */
 	protected Object evalLength(ASTLength node) {
-		return memory.getLengthArray((String) eval(node.getIdent()));
+		return memory.getLengthArray(node.getIdent().getName());
 	}
 
 	/** Evaluates a method call used as an expression */
@@ -415,7 +409,6 @@ public class MiniJajaInterpreter {
 
 	/** Free an variable */
 	protected void freeVar(ASTVar node) {
-		String name = (String) eval(node.getIdent());
-		memory.removeDecl(name);
+		memory.removeDecl(node.getIdent().getName());
 	}
 }
