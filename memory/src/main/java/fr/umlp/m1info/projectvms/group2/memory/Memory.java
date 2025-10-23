@@ -9,11 +9,11 @@ import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 
 /**
  * Memory
@@ -364,6 +364,13 @@ public class Memory {
 		}
 
 		symbolOpt.get().setType(sorte);
+	}
+
+	/**
+	 * @return a string representation of the heap
+	 */
+	public String getHeap() {
+		return heap.toString();
 	}
 
 }
