@@ -20,15 +20,22 @@
       </font>
     </Label>
 
-    <TextArea fx:id="memoryTextArea"
-            layoutX="0.0" layoutY="50.0"
-            prefWidth="150.0"
-            editable="false"
-            wrapText="false"
-            AnchorPane.topAnchor="50.0"
-            AnchorPane.leftAnchor="0.0"
-            AnchorPane.rightAnchor="0.0"
-            AnchorPane.bottomAnchor="0.0" 
-    />
+    <VBox spacing="5.0" AnchorPane.topAnchor="50" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
+      <TextArea fx:id="memoryStackTextArea"
+              prefWidth="150.0"
+              prefHeight="245.0"
+              editable="false"
+              wrapText="false"
+              VBox.vgrow="ALWAYS"
+      />
+
+      <TextArea fx:id="memoryHeapTextArea"
+              prefWidth="150.0"
+              prefHeight="245.0"
+              editable="false"
+              wrapText="false"
+              VBox.vgrow="ALWAYS"
+      />
+    </VBox>
   </children>
 </AnchorPane>

@@ -18,7 +18,7 @@
     -fx-padding: 3;
 }
 
-#memoryTextArea {
+#memoryStackTextArea, #memoryHeapTextArea {
     -fx-control-inner-background: #edf6ff;
     -fx-text-fill: black;
     -fx-border-color: black;
