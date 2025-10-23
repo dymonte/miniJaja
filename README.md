@@ -95,6 +95,13 @@ Avant d’exécuter le projet, assurez-vous d’avoir installé :
     mvn clean javafx:run
     ```
 
+5. Exécuter la CLI : 
+
+    ````bash
+    mvn clean install
+    mvn exec:java -pl cli -Dexec.mainClass="fr.umlp.m1info.projectvms.group2.cli.CLI" -Dexec.args="--help"
+    ```
+
 ### Git
 
 Afin de réaliser un travail **propre**, voici quelque remarque sur le fonctionnement du dépot git :
