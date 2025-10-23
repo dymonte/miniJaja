@@ -10,6 +10,9 @@ public class InstNode {
 	private InstNode nextInstance;
 
 	public InstNode(Object val, SymNode symbol, InstNode stackHead) {
+		if (symbol == null) {
+			throw new NullPointerException("Symbol cannot be null");
+		}
 		this.val = val;
 		this.symbol = symbol;
 		this.symbol.addInstance(this);

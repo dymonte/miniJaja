@@ -137,7 +137,7 @@ public class SymTable {
 	 * @return true if the instance was removed, false otherwise
 	 */
 	public boolean remove(InstNode instance) {
-		if (instance == null || instance.getSymbol() == null) {
+		if (instance == null) {
 			return false;
 		}
 
@@ -150,7 +150,6 @@ public class SymTable {
 		if (!isRemoved || symbol.getFirstInstance() != null) {
 			return isRemoved;
 		}
-
 		// delete symbol node if no instances remains
 		int id = hash(symbol.getIdent());
 		SymNode current = table[id];
