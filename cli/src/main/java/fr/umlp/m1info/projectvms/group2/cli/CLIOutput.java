@@ -2,13 +2,15 @@ package fr.umlp.m1info.projectvms.group2.cli;
 
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger.InterpreterListener;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger.MessageLevel;
+import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
+import fr.umlp.m1info.projectvms.group2.logger.ParserLogger.ParserListener;
 
 /**
  * CLIOutput
  *
  * Simple wrapper around standard output and error streams.
  */
-public class CLIOutput implements InterpreterListener {
+public class CLIOutput implements InterpreterListener, ParserListener {
 
     /**
      * Singleton Holder pattern
@@ -63,6 +65,17 @@ public class CLIOutput implements InterpreterListener {
     public void receiveMessage(String message, MessageLevel level) {
         switch (level) {
             case WRITE -> write(message);
+            case INFO -> info(message);
+            case DEBUG -> debug(message);
+            case WARNING -> warning(message);
+            case ERROR -> error(message);
+            default -> info(message);
+        }
+    }
+
+    @Override
+    public void receiveMessage(String message, ParserLogger.MessageLevel level) {
+        switch (level) {
             case INFO -> info(message);
             case DEBUG -> debug(message);
             case WARNING -> warning(message);
