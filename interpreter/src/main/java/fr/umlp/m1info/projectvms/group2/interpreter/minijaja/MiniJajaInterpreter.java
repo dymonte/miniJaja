@@ -1,10 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-
 import java.util.ArrayList;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
@@ -12,6 +9,8 @@ import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
@@ -300,7 +299,8 @@ public class MiniJajaInterpreter {
 			if ((int) value > 0) {
 				memory.declArray(ident, (int) value, type);
 			} else {
-				throw new InterpretRuntimeException("Size must evaluate to an integer value greater than 0");
+				throw new InterpretRuntimeException(
+						"Size must evaluate to an integer value greater than 0");
 			}
 		} else {
 			throw new InterpretRuntimeException("Size must evaluate to an integer value");
@@ -319,7 +319,8 @@ public class MiniJajaInterpreter {
 			if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
 				memory.declCst(ident, value, type);
 			} else {
-				throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
+				throw new InterpretRuntimeException(
+						"Variable type does not match the type of the assigned value");
 			}
 		}
 	}
@@ -336,7 +337,8 @@ public class MiniJajaInterpreter {
 			if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
 				memory.declVar(ident, value, type);
 			} else {
-				throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
+				throw new InterpretRuntimeException(
+						"Variable type does not match the type of the assigned value");
 			}
 		}
 	}
