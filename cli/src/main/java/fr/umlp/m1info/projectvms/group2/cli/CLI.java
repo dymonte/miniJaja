@@ -4,11 +4,14 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreter;
+import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
@@ -31,9 +34,13 @@ public class CLI {
         Heap heap = new Heap(opts.getHeapSize());
         Memory memory = new Memory(symTable, stack, heap);
         MiniJajaInterpreter interpreter = new MiniJajaInterpreter(memory);
+        InterpreterLogger.getInstance().addListener(CLIOutput.getInstance());
+        if (opts.getDebug()) {
+            ParserLogger.getInstance().addListener(CLIOutput.getInstance());
+        }
         try {
             ASTNode root = ParserUtils.parseFile(opts.getFilePath());
-            // interpreter.interpret(root); TODO: remove this when interpreter implemented
+            interpreter.interpret(root);
         } catch (Exception e) {
             CLIOutput.error("while interpreting file", e.getMessage());
         }
@@ -83,6 +90,18 @@ public class CLI {
         }
 
         return true;
+    }
+
+    /**
+     * Handles a boolean option from the command line.
+     *
+     * @param setter the setter for the option
+     * @param value  the boolean value to set, i.e. true or false
+     * @param i      the index of the option
+     */
+    private static int handleBooleanOption(Consumer<Boolean> setter, boolean value, int i) {
+        setter.accept(value);
+        return i + 1;
     }
 
     /**
@@ -136,6 +155,7 @@ public class CLI {
                 handleIntOption(args, i, options::setStackDepth, CLIOptions.SET_STACK_DEPTH) ? i + 2 : -1;
             case CLIOptions.SET_SYMTABLE_SIZE ->
                 handleIntOption(args, i, options::setSymTableSize, CLIOptions.SET_SYMTABLE_SIZE) ? i + 2 : -1;
+            case CLIOptions.DEBUG -> handleBooleanOption(options::setDebug, true, i);
             default -> parseFileOption(args[i], options) ? i + 1 : -1;
         };
     }
@@ -168,16 +188,17 @@ public class CLI {
      * Shows the help message.
      */
     private static void showHelp() {
-        CLIOutput.info("Usage: compile|execute:mjj|execute:jjc [options] file");
-        CLIOutput.info("Commands:");
-        CLIOutput.info("  compile\tCompile the given miniJaJa file into JaJaCode.");
-        CLIOutput.info("  execute:mjj\tExecute the given miniJaJa file.");
-        CLIOutput.info("  execute:jjc\tExecute the given JaJaCode file.");
-        CLIOutput.info("\nOptions:");
-        CLIOutput.info("  " + CLIOptions.SET_HEAP_SIZE + " N\tSet the heap size");
-        CLIOutput.info("  " + CLIOptions.SET_STACK_DEPTH + " N\tSet the stack depth");
-        CLIOutput.info("  " + CLIOptions.SET_SYMTABLE_SIZE + " N\tSet the Symbol table size");
-        CLIOutput.info("  --help\t\tShow this help message");
+        CLIOutput.write("Usage: compile|execute:mjj|execute:jjc [options] file");
+        CLIOutput.write("Commands:");
+        CLIOutput.write("  compile\tCompile the given miniJaJa file into JaJaCode.");
+        CLIOutput.write("  execute:mjj\tExecute the given miniJaJa file.");
+        CLIOutput.write("  execute:jjc\tExecute the given JaJaCode file.");
+        CLIOutput.write("\nOptions:");
+        CLIOutput.write("  " + CLIOptions.SET_HEAP_SIZE + " N\tSet the heap size");
+        CLIOutput.write("  " + CLIOptions.SET_STACK_DEPTH + " N\tSet the stack depth");
+        CLIOutput.write("  " + CLIOptions.SET_SYMTABLE_SIZE + " N\tSet the Symbol table size");
+        CLIOutput.write("  " + CLIOptions.DEBUG + " N\tShow every debug logger messages");
+        CLIOutput.write("  --help\t\tShow this help message");
     }
 
     /**

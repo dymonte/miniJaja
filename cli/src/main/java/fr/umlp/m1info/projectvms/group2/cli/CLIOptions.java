@@ -20,9 +20,15 @@ public class CLIOptions {
      */
     public static final String SET_SYMTABLE_SIZE = "--set-symtable-size";
 
+    /**
+     * Command-line option to set the debug output.
+     */
+    public static final String DEBUG = "--debug";
+
     private int symTableSize = 256;
     private int heapSize = 1024;
     private int stackDepth = 1024;
+    private boolean debug = false;
     private String filePath;
     private String command;
 
@@ -114,5 +120,23 @@ public class CLIOptions {
      */
     public void setCommand(String command) {
         this.command = command;
+    }
+
+    /**
+     * Gets wether the output shows every debug messages or not
+     *
+     * @return true is the output shows every debug messages, false otherwise.
+     */
+    public boolean getDebug() {
+        return debug;
+    }
+
+    /**
+     * Sets the output mode to debug (show every logger messages)
+     *
+     * @param debug a boolean (true for activating debug mode, false to deactivate)
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }
