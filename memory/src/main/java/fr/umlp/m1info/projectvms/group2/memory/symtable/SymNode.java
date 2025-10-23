@@ -29,8 +29,11 @@ public class SymNode {
 	 * @param symNode the symbol to add at the end of the list
 	 */
 	public void addSymbol(SymNode symNode) {
-		if (symNode.nextSymbol != null) {
-			symNode.addSymbol(nextSymbol);
+		if (symNode == null) {
+			throw new NullPointerException("SymNode cannot be null");
+		}
+		if (nextSymbol != null) {
+			nextSymbol.addSymbol(symNode);
 		} else {
 			nextSymbol = symNode;
 		}
