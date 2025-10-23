@@ -72,7 +72,7 @@ fragment DIGIT:    [0-9];
 NUMBER:   DIGIT+;
 fragment LETTER:   [a-zA-Z];
 
-IDENT:    (LETTER|'_')(LETTER|NUMBER|'_'|'-')*;
+IDENT:    (LETTER|'_')(LETTER|NUMBER|'_')*;
 STRING: '"' (~["\\\r\n] | '\\' .)* '"';
 
 LINE_COMMENT: '//' ~[\r\n]* -> skip;

@@ -150,6 +150,7 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a class declaration */
 	protected void interpretClass(ASTClass node) {
+		memory.declVar(node.getIdent().getName(), 0, Type.INT);
 		interpret(node.getDecls());
 		interpret(node.getMainMethod());
 	}

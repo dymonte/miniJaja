@@ -792,10 +792,12 @@ public class MiniJajaInterpreterTest {
 	public void testInterpretClass() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
 		ASTClass astClass = Mockito.mock(ASTClass.class);
+		ASTIdent astIdent = new ASTIdent("class", 0, 0);
 		ASTDeclsChain decls = Mockito.mock(ASTDeclsChain.class);
 		ASTMainMethod main = Mockito.mock(ASTMainMethod.class);
 
 		Mockito.when(astClass.getDecls()).thenReturn(decls);
+		Mockito.when(astClass.getIdent()).thenReturn(astIdent);
 		Mockito.when(astClass.getMainMethod()).thenReturn(main);
 		Mockito.doNothing().when(spyInterpreter).interpretDeclsChain(Mockito.any());
 		Mockito.doNothing().when(spyInterpreter).interpretMainMethod(Mockito.any());

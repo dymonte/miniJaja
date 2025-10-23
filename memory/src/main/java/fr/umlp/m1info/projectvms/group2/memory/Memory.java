@@ -132,12 +132,14 @@ public class Memory {
 		if (symbolOpt.isEmpty()) {
 			throw new SymbolNotFoundException(ident);
 		}
-
 		InstNode instance = symbolOpt.get().getFirstInstance();
+		System.out.println(new Quad(instance));
 		if (instance == null) {
 			throw new NoInstanceException(ident);
 		}
-
+		if (symbolOpt.get().getInfo().getKind() == ObjectKind.ARRAY) {
+			heap.decRef((int) instance.getValue());
+		}
 		symTable.remove(instance);
 	}
 
@@ -164,7 +166,11 @@ public class Memory {
 		SymNode symbol = symbolOpt.get();
 		ObjectKind kind = symbol.getInfo().getKind();
 
-		if (kind != ObjectKind.VAR) {
+		if (kind == ObjectKind.ARRAY) {
+			heap.incRef((int) val);
+		}
+
+		if (kind != ObjectKind.VAR && kind != ObjectKind.ARRAY) {
 			throw new BadSymbolKindException(ident, kind);
 		}
 
@@ -197,11 +203,6 @@ public class Memory {
 		}
 
 		SymNode symbol = symbolOpt.get();
-		ObjectKind kind = symbol.getInfo().getKind();
-
-		if (kind == ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, kind);
-		}
 
 		InstNode instance = symbol.getFirstInstance();
 		if (instance == null) {
