@@ -110,18 +110,22 @@ public class MiniJajaInterpreter {
 
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
 			Class<?> nodeClass) {
-		for (Method method : this.getClass().getDeclaredMethods()) {
-			var annotation = method.getAnnotation(annotationClass);
-			if (annotation != null) {
-				try {
-					Class<?> handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
-					if (handledType.isAssignableFrom(nodeClass)) {
-						method.setAccessible(true);
-						return method;
+		Class<?> cls = this.getClass();
+		while (cls != null) {
+			for (Method method : cls.getDeclaredMethods()) {
+				var annotation = method.getAnnotation(annotationClass);
+				if (annotation != null) {
+					try {
+						Class<?> handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
+						if (handledType.isAssignableFrom(nodeClass)) {
+							method.setAccessible(true);
+							return method;
+						}
+					} catch (Exception ignored) {
 					}
-				} catch (Exception ignored) {
 				}
 			}
+			cls = cls.getSuperclass();
 		}
 		return null;
 	}
