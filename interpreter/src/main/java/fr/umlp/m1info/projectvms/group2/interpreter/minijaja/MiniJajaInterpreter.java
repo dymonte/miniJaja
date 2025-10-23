@@ -1,44 +1,25 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
-import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import java.util.ArrayList;
+
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLength;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTMethodCallExpr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTUnaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTMethodCallInstr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarArray;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 
 /**
  * The Interpreter class traverses and executes an Abstract Syntax Tree(AST) by
@@ -76,12 +57,6 @@ public class MiniJajaInterpreter {
 			interpretDeclsChain(astDeclsChain);
 		} else if (node instanceof ASTDeclsNil astDeclsNil) {
 			interpretDeclsNil(astDeclsNil);
-		} else if (node instanceof ASTIdent astIdent) {
-			interpretIdent(astIdent);
-		} else if (node instanceof ASTExprsChain astExprsChain) {
-			interpretExprsChain(astExprsChain);
-		} else if (node instanceof ASTExprsNil astExprsNil) {
-			interpretExprsNil(astExprsNil);
 		} else if (node instanceof ASTAssignmentOp astAssignment) {
 			interpretAssignment(astAssignment);
 		} else if (node instanceof ASTIf astIf) {
@@ -100,10 +75,6 @@ public class MiniJajaInterpreter {
 			interpretInstrsChain(astInstrsChain);
 		} else if (node instanceof ASTInstrsNil astInstrsNil) {
 			interpretInstrsNil(astInstrsNil);
-		} else if (node instanceof ASTParamsChain astParamsChain) {
-			interpretParamsChain(astParamsChain);
-		} else if (node instanceof ASTParamsNil astParamsNil) {
-			interpretParamsNil(astParamsNil);
 		} else if (node instanceof ASTVarArray astVarArray) {
 			interpretVarArray(astVarArray);
 		} else if (node instanceof ASTVarConst astVarConst) {
@@ -115,7 +86,8 @@ public class MiniJajaInterpreter {
 		} else if (node instanceof ASTVarsNil astVarsNil) {
 			interpretVarsNil(astVarsNil);
 		} else {
-			throw new InterpretRuntimeException("Cannot interpret node: " + node.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"Cannot interpret node: " + node.getClass().getSimpleName());
 		}
 	}
 
@@ -154,44 +126,59 @@ public class MiniJajaInterpreter {
 		}
 	}
 
+	/**
+	 * Remove declaration of the node
+	 *
+	 * @param node the AST node to remove declaration
+	 * @throws InterpretRuntimeException if the node is null or not supported
+	 */
+	public void free(ASTNode node) {
+		if (node == null) {
+			throw new InterpretRuntimeException("node cannot be null");
+		}
+
+		if (node instanceof ASTVarsChain astVarsChain) {
+			freeVarsChain(astVarsChain);
+		} else if (node instanceof ASTVarsNil astVarsNil) {
+			freeVarsNil(astVarsNil);
+		} else if (node instanceof ASTVar astVar) {
+			freeVar(astVar);
+		} else {
+			throw new InterpretRuntimeException("Cannot free node: " + node.getClass().getSimpleName());
+		}
+	}
+
 	/** Interprets a class declaration */
 	protected void interpretClass(ASTClass node) {
-		throw new InterpretRuntimeException("interpretClass() not implemented");
+		interpret(node.getDecls());
+		interpret(node.getMainMethod());
 	}
 
 	/** Interprets the main method of a program */
 	protected void interpretMainMethod(ASTMainMethod node) {
-		throw new InterpretRuntimeException("interpretMainMethod() not implemented");
+		interpret(node.getVars());
+		interpret(node.getInstrs());
 	}
 
 	/** Interprets a method declaration */
 	protected void interpretMethod(ASTMethod node) {
-		throw new InterpretRuntimeException("interpretMethod() not implemented");
+		String ident = (String) eval(node.getIdent());
+		ASTParams params = node.getParams();
+		ArrayList<Type> paramsTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
+		Type returnType = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+
+		memory.declMeth(ident, node, paramsTypes, returnType);
 	}
 
 	/** Interprets a chain of declaration */
 	protected void interpretDeclsChain(ASTDeclsChain node) {
-		throw new InterpretRuntimeException("interpretDeclsChain() not implemented");
+		interpret(node.getDecl());
+		interpret(node.getDecls());
 	}
 
 	/** Interprets an empty declaration list */
 	protected void interpretDeclsNil(ASTDeclsNil node) {
-		throw new InterpretRuntimeException("interpretDeclsNil() not implemented");
-	}
-
-	/** Interprets an identifier as a standalone statement */
-	protected void interpretIdent(ASTIdent node) {
-		throw new InterpretRuntimeException("interpretIdent() not implemented");
-	}
-
-	/** Interprets a chain of expressions in a statement context */
-	protected void interpretExprsChain(ASTExprsChain node) {
-		throw new InterpretRuntimeException("interpretExprsChain() not implemented");
-	}
-
-	/** Interprets an empty expression chain */
-	protected void interpretExprsNil(ASTExprsNil node) {
-		throw new InterpretRuntimeException("interpretExprsNil() not implemented");
+		return;// do nothing
 	}
 
 	/** Interprets an assignement operation */
@@ -207,7 +194,7 @@ public class MiniJajaInterpreter {
 
 		Object newValue = switch (node.getOp()) {
 			case EQ -> value;
-			case ADD -> MiniJajaInterpreterUtils.addValues(ref.currentValue(), value);
+			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, ref.currentValue(), value);
 		};
 
 		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
@@ -232,7 +219,7 @@ public class MiniJajaInterpreter {
 		var ref = MiniJajaInterpreterUtils.resolveLValue(memory, node.getLValue(), this);
 
 		Object newValue = switch (node.getOp()) {
-			case INC -> MiniJajaInterpreterUtils.addValues(ref.currentValue(), 1);
+			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, ref.currentValue(), 1);
 		};
 
 		MiniJajaInterpreterUtils.updateValMemory(memory, ref, newValue);
@@ -240,7 +227,22 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a method call used as an instruction */
 	protected void interpretMethodCallInstr(ASTMethodCallInstr node) {
-		throw new InterpretRuntimeException("interpretMethodCallInstr() not implemented");
+		String methodName = (String) eval(node.getIdent());
+		ASTExprs exprs = node.getExprs();
+
+		ArrayList<Type> argumentTypes = MiniJajaInterpreterUtils.collectExprTypes(exprs, this);
+
+		String methodKey = memory.getMethKey(methodName, argumentTypes);
+		ASTMethod method = (ASTMethod) memory.getVal(methodKey);
+
+		MiniJajaInterpreterUtils.bindParameters(memory, method.getParams(), node.getExprs(), this);
+		try {
+			interpret(method.getVars());
+			interpret(method.getInstrs());
+		} finally {
+			MiniJajaInterpreterUtils.unbindParameters(memory, method.getParams());
+			free(method.getVars());
+		}
 	}
 
 	/** Interprets a return statement */
@@ -265,12 +267,15 @@ public class MiniJajaInterpreter {
 
 		if (value instanceof ASTLValue lvalue) {
 			Object write = eval(lvalue);
-			InterpreterLogger.getInstance().log(write + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
+			InterpreterLogger.getInstance().log(write + (isLn ? "\n" : ""),
+					InterpreterLogger.MessageLevel.WRITE);
 		} else if (value instanceof ASTStringLiteral stringLiteral) {
 			String str = (String) eval(stringLiteral);
-			InterpreterLogger.getInstance().log(str + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
+			InterpreterLogger.getInstance().log(str + (isLn ? "\n" : ""),
+					InterpreterLogger.MessageLevel.WRITE);
 		} else {
-			throw new InterpretRuntimeException("Invalid value type to write: " + value.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"Invalid value type to write: " + value.getClass().getSimpleName());
 		}
 	}
 
@@ -285,83 +290,132 @@ public class MiniJajaInterpreter {
 		return; // do nothing
 	}
 
-	/** Interprets a parameter list chain */
-	protected void interpretParamsChain(ASTParamsChain node) {
-		throw new InterpretRuntimeException("interpretParamsChain() not implemented");
-	}
-
-	/** Interprets an empty parameter list */
-	protected void interpretParamsNil(ASTParamsNil node) {
-		throw new InterpretRuntimeException("interpretParamsNil() not implemented");
-	}
-
 	/** Interprets a array variable declaration */
 	protected void interpretVarArray(ASTVarArray node) {
-		throw new InterpretRuntimeException("interpretVarArray() not implemented");
+		String ident = node.getIdent().getName();
+		Object value = eval(node.getExpr());
+		Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+		if (value instanceof Integer) {
+			if ((int) value > 0) {
+				memory.declArray(ident, (int) value, type);
+			} else {
+				throw new InterpretRuntimeException(
+						"Size must evaluate to an integer value greater than 0");
+			}
+		} else {
+			throw new InterpretRuntimeException("Size must evaluate to an integer value");
+		}
 	}
 
 	/** Interprets a constant variable declaration */
 	protected void interpretVarConst(ASTVarConst node) {
-		throw new InterpretRuntimeException("interpretVarConst() not implemented");
+		String ident = node.getIdent().getName();
+		var vexp = node.getVExpr();
+		Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth((ASTTypeMeth) node.getType());
+		if (vexp == null) {
+			throw new InterpretRuntimeException("Constant value cannot be null");
+		} else {
+			Object value = eval(vexp.getExpr());
+			if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
+				memory.declCst(ident, value, type);
+			} else {
+				throw new InterpretRuntimeException(
+						"Variable type does not match the type of the assigned value");
+			}
+		}
 	}
 
 	/** Interprets a simple variable declaration */
 	protected void interpretVarSimple(ASTVarSimple node) {
-		throw new InterpretRuntimeException("interpretVarSimple() not implemented");
+		String ident = node.getIdent().getName();
+		var vexp = node.getVExpr();
+		Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+		if (vexp == null) {
+			memory.declVar(ident, null, type);
+		} else {
+			Object value = eval(vexp.getExpr());
+			if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
+				memory.declVar(ident, value, type);
+			} else {
+				throw new InterpretRuntimeException(
+						"Variable type does not match the type of the assigned value");
+			}
+		}
 	}
 
 	/** Interprets a chain of variable declarations */
 	protected void interpretVarsChain(ASTVarsChain node) {
-		throw new InterpretRuntimeException("interpretVarsChain() not implemented");
+		interpret(node.getVar());
+		interpret(node.getVars());
 	}
 
 	/** Interprets an empty variable declaration list */
 	protected void interpretVarsNil(ASTVarsNil node) {
-		throw new InterpretRuntimeException("interpretVarsNil() not implemented");
+		return; // do nothing
 	}
 
 	/** Evaluates an array element access expression */
 	protected Object evalArrayAccess(ASTArrayAccess node) {
-		throw new EvalRuntimeException("evalArrayAccess() not implemented");
+		return memory.getValArray((String) eval(node.getIdent()), (Integer) eval(node.getExpr()));
 	}
 
 	/** Evaluates a binary operation */
 	protected Object evalBinaryOp(ASTBinaryOp node) {
-		throw new EvalRuntimeException("evalBinaryOp() not implemented");
+		return MiniJajaInterpreterUtils.binaryOperation(node.getOp(), eval(node.getLeft()),
+				eval(node.getRight()));
 	}
 
 	/** Evaluates a boolean literal */
 	protected Object evalBoolLiteral(ASTBoolLiteral node) {
-		throw new EvalRuntimeException("evalBoolLiteral() not implemented");
+		return node.getValue();
 	}
 
 	/** Evaluates an identifier expression */
 	protected Object evalIdent(ASTIdent node) {
-		throw new EvalRuntimeException("evalIdent() not implemented");
+		return node.getName();
 	}
 
 	/** Evaluates an integer literal */
 	protected Object evalIntLiteral(ASTIntLiteral node) {
-		throw new EvalRuntimeException("evalIntLiteral() not implemented");
+		return node.getValue();
 	}
 
 	/** Evaluates a length expression on arrays */
 	protected Object evalLength(ASTLength node) {
-		throw new EvalRuntimeException("evalLength() not implemented");
+		return memory.getLengthArray((String) eval(node.getIdent()));
 	}
 
 	/** Evaluates a method call used as an expression */
 	protected Object evalMethodCall(ASTMethodCallExpr node) {
-		throw new EvalRuntimeException("evalMethodCall() not implemented");
+		interpret(new ASTMethodCallInstr(node.getIdent(), node.getExprs(), node.getLine(), node.getColumn()));
+
+		return memory.getVal(ASTClass.getClassVar().getName());
 	}
 
 	/** Evaluates a string literal */
 	protected Object evalStringLiteral(ASTStringLiteral node) {
-		throw new EvalRuntimeException("evalStringLiteral() not implemented");
+		return node.getValue();
 	}
 
 	/** Evaluates a unary operation */
 	protected Object evalUnaryOp(ASTUnaryOp node) {
-		throw new EvalRuntimeException("evalUnaryOp() not implemented");
+		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
+	}
+
+	/** Free a variable for memory */
+	protected void freeVarsChain(ASTVarsChain node) {
+		free(node.getVar());
+		free(node.getVars());
+	}
+
+	/** Free an empty variable */
+	protected void freeVarsNil(ASTVarsNil node) {
+		return; // Do nothing
+	}
+
+	/** Free an variable */
+	protected void freeVar(ASTVar node) {
+		String name = (String) eval(node.getIdent());
+		memory.removeDecl(name);
 	}
 }
