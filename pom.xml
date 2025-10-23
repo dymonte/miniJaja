@@ -43,6 +43,7 @@
     <module>memory</module>
     <module>interpreter</module>
     <module>cli</module>
+    <module>integration-tests</module>
   </modules>
   <distributionManagement>
     <repository>
@@ -97,6 +98,18 @@
             <phase>verify</phase>
             <goals>
               <goal>report-aggregate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
           </execution>
         </executions>
