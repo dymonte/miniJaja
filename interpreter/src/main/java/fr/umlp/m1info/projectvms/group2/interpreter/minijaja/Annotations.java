@@ -8,17 +8,17 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @interface InterpretFunction {
-	Class<?> value(); // The AST node type this method handles
+	Class<?> value();
 }
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @interface EvalFunction {
-	Class<?> value(); // The AST node type this method evaluates
+	Class<?> value();
 }
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @interface FreeFunction {
-	Class<?> value(); // The AST node type this method frees
+	Class<?> value();
 }
