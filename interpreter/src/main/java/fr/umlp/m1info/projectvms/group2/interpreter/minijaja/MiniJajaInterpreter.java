@@ -2,7 +2,6 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 
-import java.awt.List;
 import java.util.ArrayList;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
@@ -59,12 +58,6 @@ public class MiniJajaInterpreter {
 			interpretDeclsChain(astDeclsChain);
 		} else if (node instanceof ASTDeclsNil astDeclsNil) {
 			interpretDeclsNil(astDeclsNil);
-		} else if (node instanceof ASTIdent astIdent) {
-			interpretIdent(astIdent);
-		} else if (node instanceof ASTExprsChain astExprsChain) {
-			interpretExprsChain(astExprsChain);
-		} else if (node instanceof ASTExprsNil astExprsNil) {
-			interpretExprsNil(astExprsNil);
 		} else if (node instanceof ASTAssignmentOp astAssignment) {
 			interpretAssignment(astAssignment);
 		} else if (node instanceof ASTIf astIf) {
@@ -189,21 +182,6 @@ public class MiniJajaInterpreter {
 		return;// do nothing
 	}
 
-	/** Interprets an identifier as a standalone statement */
-	protected void interpretIdent(ASTIdent node) {
-		throw new InterpretRuntimeException("interpretIdent() not implemented");
-	}
-
-	/** Interprets a chain of expressions in a statement context */
-	protected void interpretExprsChain(ASTExprsChain node) {
-		throw new InterpretRuntimeException("interpretExprsChain() not implemented");
-	}
-
-	/** Interprets an empty expression chain */
-	protected void interpretExprsNil(ASTExprsNil node) {
-		throw new InterpretRuntimeException("interpretExprsNil() not implemented");
-	}
-
 	/** Interprets an assignement operation */
 	protected void interpretAssignment(ASTAssignmentOp node) {
 		var ref = MiniJajaInterpreterUtils.resolveLValue(memory, node.getLValue(), this);
@@ -315,58 +293,58 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a array variable declaration */
 	protected void interpretVarArray(ASTVarArray node) {
-        String ident = node.getIdent().getName();
-        Object value = eval(node.getExpr());
-        Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
-        if (value instanceof Integer) {
-            if ((int) value > 0) {
-                memory.declArray(ident, (int) value, type);
-            } else {
-                throw new InterpretRuntimeException("Size must evaluate to an integer value greater than 0");
-            }
-        } else {
-            throw new InterpretRuntimeException("Size must evaluate to an integer value");
-        }
+		String ident = node.getIdent().getName();
+		Object value = eval(node.getExpr());
+		Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+		if (value instanceof Integer) {
+			if ((int) value > 0) {
+				memory.declArray(ident, (int) value, type);
+			} else {
+				throw new InterpretRuntimeException("Size must evaluate to an integer value greater than 0");
+			}
+		} else {
+			throw new InterpretRuntimeException("Size must evaluate to an integer value");
+		}
 	}
 
 	/** Interprets a constant variable declaration */
 	protected void interpretVarConst(ASTVarConst node) {
-        String ident = node.getIdent().getName();
-        var vexp = node.getVExpr();
-        Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth((ASTTypeMeth) node.getType());
-        if (vexp == null) {
-            throw new InterpretRuntimeException("Constant value cannot be null");
-        } else {
-            Object value = eval(vexp.getExpr());
-            if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
-                memory.declCst(ident, value, type);
-            } else {
-                throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
-            }
-        }
+		String ident = node.getIdent().getName();
+		var vexp = node.getVExpr();
+		Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth((ASTTypeMeth) node.getType());
+		if (vexp == null) {
+			throw new InterpretRuntimeException("Constant value cannot be null");
+		} else {
+			Object value = eval(vexp.getExpr());
+			if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
+				memory.declCst(ident, value, type);
+			} else {
+				throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
+			}
+		}
 	}
 
 	/** Interprets a simple variable declaration */
 	protected void interpretVarSimple(ASTVarSimple node) {
-        String ident = node.getIdent().getName();
-        var vexp = node.getVExpr();
-        Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
-        if (vexp == null) {
-            memory.declVar(ident, null, type);
-        } else {
-            Object value = eval(vexp.getExpr());
-            if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
-                memory.declVar(ident, value, type);
-            } else {
-                throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
-            }
-        }
+		String ident = node.getIdent().getName();
+		var vexp = node.getVExpr();
+		Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
+		if (vexp == null) {
+			memory.declVar(ident, null, type);
+		} else {
+			Object value = eval(vexp.getExpr());
+			if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
+				memory.declVar(ident, value, type);
+			} else {
+				throw new InterpretRuntimeException("Variable type does not match the type of the assigned value");
+			}
+		}
 	}
 
 	/** Interprets a chain of variable declarations */
 	protected void interpretVarsChain(ASTVarsChain node) {
 		interpret(node.getVar());
-        interpret(node.getVars());
+		interpret(node.getVars());
 	}
 
 	/** Interprets an empty variable declaration list */
@@ -402,7 +380,7 @@ public class MiniJajaInterpreter {
 
 	/** Evaluates a length expression on arrays */
 	protected Object evalLength(ASTLength node) {
-		throw new EvalRuntimeException("evalLength() not implemented");
+		return memory.getLengthArray((String) eval(node.getIdent()));
 	}
 
 	/** Evaluates a method call used as an expression */
