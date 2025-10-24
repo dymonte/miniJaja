@@ -236,17 +236,28 @@ public class AppController implements StatefulController {
         }
     }
 
+    /**
+     * Opens help window
+     */
     @FXML
     private void openHelpPopup() {
-        /**     * Opens help window     */
         final Stage popup = new Stage();
         popup.initModality(Modality.APPLICATION_MODAL);
         popup.initOwner(primaryStage);
+        popup.setMinHeight(500);
+        popup.setMinWidth(700);
         popup.setTitle("Help");
         WebView webView = new WebView();
-        webView.getEngine().loadContent("<html><body><h1>Help</h1></body></html>");
-        popup.setScene(new Scene(webView));
-        popup.show();
+        File file = new File("src/main/resources/fr/umlp/m1info/projectvms/group2/help_content.html");
+        try {
+            webView.getEngine().load(file.toURI().toURL().toString());
+            popup.setScene(new Scene(webView));
+            popup.show();
+        } catch (IOException e) {
+            //throw new RuntimeException(e);
+            System.out.println(file.getAbsolutePath());
+
+        }
     }
 
     /**
