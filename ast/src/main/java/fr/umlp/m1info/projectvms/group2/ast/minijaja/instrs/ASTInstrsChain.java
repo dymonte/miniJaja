@@ -29,6 +29,24 @@ public class ASTInstrsChain extends ASTInstrs {
 	}
 
 	/**
+	 * Returns the first instruction in this chain
+	 *
+	 * @return the ASTInstr representing the first instruction
+	 */
+	public ASTInstr getInstr() {
+		return chain.getLeft();
+	}
+
+	/**
+	 * Returns the rest of the instructions in this chain
+	 *
+	 * @return ASTInstrs representing the remaining instructions
+	 */
+	public ASTInstrs getInstrs() {
+		return chain.getRight();
+	}
+
+	/**
 	 * Returns a string representation of the instructions in MiniJaja syntax
 	 *
 	 * @return formatted string of this AST node

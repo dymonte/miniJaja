@@ -32,6 +32,29 @@ public class ASTWrite extends ASTInstr {
 	}
 
 	/**
+	 * Returns the value being printed, which is either a variable or a string
+	 * literal
+	 *
+	 * @return the ASTLValue if printing a variable or ASTStringLiteral if printing
+	 *         a literal
+	 */
+	public Object getValue() {
+		if (lvalue == null) {
+			return literal;
+		}
+		return lvalue;
+	}
+
+	/**
+	 * Returns whether this instruction appends a newline
+	 *
+	 * @return true if writeln, false if write
+	 */
+	public boolean getIsLn() {
+		return isLn;
+	}
+
+	/**
 	 * Constructs a write instruction printing a variable
 	 *
 	 * @param lvalue the variable reference to write

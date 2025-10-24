@@ -33,6 +33,33 @@ public class ASTVarArray extends ASTVar {
 	}
 
 	/**
+	 * Returns the tpye of the array elements
+	 *
+	 * @return the ASTTypeMeth representing the element type
+	 */
+	public ASTTypeMeth getType() {
+		return type;
+	}
+
+	/**
+	 * Returns the identifier of the variable
+	 *
+	 * @return the ASTIdent of the array variable
+	 */
+	public ASTIdent getIdent() {
+		return ident;
+	}
+
+	/**
+	 * Returns the expression representing the size of the array
+	 *
+	 * @return the ASTExpr representing the array size
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
 	 * Returns a string representation of the array variable declaration in MiniJaja
 	 * syntax
 	 *

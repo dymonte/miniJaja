@@ -50,7 +50,8 @@ public class SymTable {
 	 *         symbol
 	 * @throws IllegalArgumentException is thrown when parameter size <= 0
 	 */
-	public Optional<SymNode> add(String ident, ObjectKind kind, Type type, int size) throws IllegalArgumentException {
+	public Optional<SymNode> add(String ident, ObjectKind kind, Type type, int size)
+			throws IllegalArgumentException {
 		int id = hash(ident);
 		Optional<SymNode> n = search(ident);
 		if (n.isPresent()) {
@@ -122,6 +123,7 @@ public class SymTable {
 			if (current == symbol) {
 				return true;
 			}
+			current = current.getNextSymbol();
 		}
 		return false;
 	}
@@ -135,7 +137,7 @@ public class SymTable {
 	 * @return true if the instance was removed, false otherwise
 	 */
 	public boolean remove(InstNode instance) {
-		if (instance == null || instance.getSymbol() == null) {
+		if (instance == null) {
 			return false;
 		}
 
@@ -148,7 +150,6 @@ public class SymTable {
 		if (!isRemoved || symbol.getFirstInstance() != null) {
 			return isRemoved;
 		}
-
 		// delete symbol node if no instances remains
 		int id = hash(symbol.getIdent());
 		SymNode current = table[id];

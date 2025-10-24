@@ -25,6 +25,15 @@ public class ASTReturn extends ASTInstr {
 	}
 
 	/**
+	 * Returns the expression whose value is returned
+	 *
+	 * @return the ASTExpr representing the return value
+	 */
+	public ASTExpr getExpr() {
+		return expr;
+	}
+
+	/**
 	 * Returns a string representation of the return instruction
 	 *
 	 * @return a formatted string

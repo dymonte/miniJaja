@@ -108,7 +108,7 @@
             <VBox fx:id="fileTree" fillWidth="true">
             </VBox>
         </ScrollPane>
-          <fx:include fx:id="codeSection" source="CodeSection.fxml" />
+        <fx:include fx:id="codeSection" source="CodeSection.fxml" />
         <AnchorPane prefHeight="551.0" prefWidth="177.0">
           <children>
             <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Debug" textAlignment="CENTER" textFill="$x2" wrapText="false">
@@ -121,6 +121,7 @@
             </Label>
           </children>
         </AnchorPane>
+        <fx:include fx:id="memorySection" source="MemorySection.fxml" />
       </items>
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">

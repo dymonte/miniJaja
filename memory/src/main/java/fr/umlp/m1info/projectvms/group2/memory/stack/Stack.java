@@ -1,7 +1,8 @@
 package fr.umlp.m1info.projectvms.group2.memory.stack;
 
 import fr.umlp.m1info.projectvms.group2.exception.StackOverflowException;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.*;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 
 /**
  * Stack
@@ -70,5 +71,14 @@ public class Stack {
 		InstNode newHead = head.getNextInStack();
 		head.swap();
 		head = newHead;
+	}
+
+	/**
+	 * Gets the head of the stack
+	 * 
+	 * @return the head of the stack
+	 */
+	public InstNode getHead() {
+		return head;
 	}
 }

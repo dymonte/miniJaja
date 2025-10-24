@@ -153,4 +153,91 @@ public class SymTableTest {
 	public void removeNullTest() {
 		Assert.assertFalse(symTable.remove(null));
 	}
+
+	@Test
+	public void removeWithMultipleSymbolsSameHash() {
+		Optional<SymNode> s1 = symTable.add("ab", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s2 = symTable.add("ba", ObjectKind.VAR, Type.INT);
+		Assert.assertTrue(s1.isPresent());
+		Assert.assertTrue(s2.isPresent());
+		new InstNode(0, s2.get(), null);
+		Assert.assertTrue(symTable.remove(s2.get().getFirstInstance()));
+	}
+
+	@Test
+	public void memInfoTest() {
+		Type sorte = Type.INT;
+		ObjectKind kind = ObjectKind.VAR;
+		Assert.assertThrows(IllegalArgumentException.class, () -> new MemInfo(sorte, kind, -1));
+		MemInfo memInfo = new MemInfo(sorte, kind);
+		Assert.assertEquals(sorte, memInfo.getSorte());
+		Assert.assertEquals(kind, memInfo.getKind());
+		Assert.assertEquals(1, memInfo.getSize());
+
+		Assert.assertFalse(memInfo.equals(false));
+		Assert.assertEquals(memInfo.hashCode(), memInfo.hashCode());
+	}
+
+	@Test
+	public void removeSymTableTest() {
+		SymTable symTable = new SymTable(10);
+
+		symTable.add("a", ObjectKind.VAR, Type.INT);
+		symTable.add("b", ObjectKind.VAR, Type.INT);
+		symTable.add("c", ObjectKind.VAR, Type.INT);
+
+		SymNode symNode = symTable.search("a").get();
+		InstNode instNode = new InstNode(1, symNode, null);
+		symNode.addInstance(instNode);
+
+		Assert.assertFalse(symTable.remove(null));
+		Assert.assertNotNull(symTable.search("a"));
+		Assert.assertNotNull(symTable.search("b"));
+		Assert.assertNotNull(symTable.search("c"));
+	}
+
+	@Test
+	public void symNodeTest() {
+		SymNode a = new SymNode("a", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+		SymNode b = new SymNode("b", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+		SymNode c = new SymNode("c", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+
+		a.addSymbol(b);
+		a.addSymbol(c);
+		// a -> b -> c
+		Assert.assertEquals(b, a.getNextSymbol());
+		Assert.assertEquals(c, b.getNextSymbol());
+		Assert.assertEquals(null, c.getNextSymbol());
+
+		Assert.assertThrows(NullPointerException.class, () -> a.addSymbol(null));
+
+		Assert.assertFalse(a.removeInstance(null));
+
+		InstNode inst1 = new InstNode(1, a, null);
+		InstNode inst2 = new InstNode(2, a, null);
+		a.addInstance(inst1);
+		a.addInstance(inst2);
+
+		Assert.assertTrue(a.removeInstance(inst1));
+		Assert.assertEquals(inst2, a.getFirstInstance());
+	}
+
+	@Test
+	public void instNodeTest() {
+		Assert.assertThrows(NullPointerException.class, () -> new InstNode(1, null, null));
+		SymNode a = new SymNode("a", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+
+		InstNode stack = new InstNode("stack", a, null);
+		InstNode inst1 = new InstNode(1, a, stack);
+		InstNode inst2 = new InstNode(2, a, stack);
+		InstNode inst3 = new InstNode(3, a, stack);
+
+		inst1.setNextInstance(inst2);
+		inst2.setNextInstance(inst3);
+		// inst1 -> inst2 -> inst3
+
+		Assert.assertFalse(inst1.removeInstance(null));
+		Assert.assertFalse(stack.removeInstance(inst1));
+		Assert.assertTrue(inst1.removeInstance(inst3));
+	}
 }

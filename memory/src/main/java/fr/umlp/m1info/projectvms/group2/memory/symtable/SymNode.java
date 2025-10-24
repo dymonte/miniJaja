@@ -14,7 +14,7 @@ public class SymNode {
 	 * Constructs a symbol node
 	 *
 	 * @param ident the symbol identifier
-	 * @param info the symbol informations
+	 * @param info  the symbol informations
 	 */
 	public SymNode(String ident, MemInfo info) {
 		this.ident = ident;
@@ -29,8 +29,11 @@ public class SymNode {
 	 * @param symNode the symbol to add at the end of the list
 	 */
 	public void addSymbol(SymNode symNode) {
-		if (symNode.nextSymbol != null) {
-			symNode.addSymbol(nextSymbol);
+		if (symNode == null) {
+			throw new NullPointerException("SymNode cannot be null");
+		}
+		if (nextSymbol != null) {
+			nextSymbol.addSymbol(symNode);
 		} else {
 			nextSymbol = symNode;
 		}
@@ -73,6 +76,15 @@ public class SymNode {
 	 */
 	public InstNode getFirstInstance() {
 		return firstInstance;
+	}
+
+	/**
+	 * Changes the type of the symbol.
+	 * 
+	 * @param type the new symbol's type
+	 */
+	public void setType(Type type) {
+		info = new MemInfo(type, info.getKind(), info.getSize());
 	}
 
 	/**

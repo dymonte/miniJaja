@@ -28,6 +28,14 @@ public class ASTVarsChain extends ASTVars {
 		chain = new Chain<>(v, vars);
 	}
 
+	public ASTVar getVar() {
+		return chain.getLeft();
+	}
+
+	public ASTVars getVars() {
+		return chain.getRight();
+	}
+
 	/**
 	 * Returns a string representation of the variable declarations in MiniJaja
 	 * syntax

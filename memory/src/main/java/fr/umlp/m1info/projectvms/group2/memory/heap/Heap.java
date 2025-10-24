@@ -145,7 +145,8 @@ public class Heap {
 	 * Increments the reference count of the block at the given address
 	 * 
 	 * @param address The address of the block to increment the reference count
-	 * @throws HeapInvalidAddressException If the address is invalid (negative or not allocated)
+	 * @throws HeapInvalidAddressException If the address is invalid (negative or
+	 *                                     not allocated)
 	 */
 	public void incRef(int address) throws HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
@@ -158,7 +159,8 @@ public class Heap {
 	 * Decrements the reference count of the block at the given address
 	 * 
 	 * @param address The address of the block to decrement the reference count
-	 * @throws HeapInvalidAddressException If the address is invalid (negative or not allocated)
+	 * @throws HeapInvalidAddressException If the address is invalid (negative or
+	 *                                     not allocated)
 	 */
 	public void decRef(int address) throws HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
@@ -175,7 +177,8 @@ public class Heap {
 	 * Frees a block of memory at the given address
 	 * 
 	 * @param address The address of the block to free
-	 * @throws HeapInvalidAddressException If the address is invalid (negative or not allocated)
+	 * @throws HeapInvalidAddressException If the address is invalid (negative or
+	 *                                     not allocated)
 	 */
 	private void free(int address) throws HeapInvalidAddressException {
 		if (address < 0 || address >= localTable.size() || localTable.get(address) == null) {
@@ -205,7 +208,8 @@ public class Heap {
 	private void mergeBlocks(int blockIndex) {
 		while (blockIndex < blocks.length - 1) {
 			boolean hasMerged = mergeLevel(blockIndex);
-			if (!hasMerged) break;
+			if (!hasMerged)
+				break;
 			blockIndex++;
 		}
 	}
@@ -277,11 +281,14 @@ public class Heap {
 	 * @param address The address to search
 	 * @param index   The index of the value to search
 	 * @return The value found at the given address and index
-	 * @throws HeapOutOfBoundsException    If the address is out of bounds (index too big)
-	 * @throws HeapInvalidAddressException If the address is invalid (negative or not allocated)
+	 * @throws HeapOutOfBoundsException    If the address is out of bounds (index
+	 *                                     too big)
+	 * @throws HeapInvalidAddressException If the address is invalid (negative or
+	 *                                     not allocated)
 	 * @throws IllegalArgumentException    If the type is not supported
 	 */
-	public <T> T search(int address, int index) throws HeapOutOfBoundsException, HeapInvalidAddressException, IllegalArgumentException {
+	public <T> T search(int address, int index)
+			throws HeapOutOfBoundsException, HeapInvalidAddressException, IllegalArgumentException {
 		if (address < 0 || address >= localTable.size()) {
 			throw new HeapInvalidAddressException(address);
 		}
@@ -316,10 +323,13 @@ public class Heap {
 	 * @param address The address to set the value at
 	 * @param index   The index of the value to set
 	 * @param value   The value to set
-	 * @throws HeapInvalidAddressException If the address is invalid (negative or not allocated)
-	 * @throws IllegalArgumentException    If the type is not supported or if the value type does not match the symbol type
+	 * @throws HeapInvalidAddressException If the address is invalid (negative or
+	 *                                     not allocated)
+	 * @throws IllegalArgumentException    If the type is not supported or if the
+	 *                                     value type does not match the symbol type
 	 */
-	public <T> void setValue(int address, int index, T value) throws HeapInvalidAddressException, IllegalArgumentException {
+	public <T> void setValue(int address, int index, T value)
+			throws HeapInvalidAddressException, IllegalArgumentException {
 		if (address < 0 || address >= localTable.size()) {
 			throw new HeapInvalidAddressException(address);
 		}
@@ -351,4 +361,28 @@ public class Heap {
 			default -> throw new IllegalArgumentException("Unsupported type: " + symbol.getType());
 		}
 	}
+
+	/**
+	 * @return A string representation of the heap
+	 */
+	@Override
+	public String toString() {
+		StringBuilder string = new StringBuilder();
+		ByteBuffer byteBuffer = heap.asReadOnlyBuffer();
+
+		int address = 0;
+		while (byteBuffer.hasRemaining()) {
+			string.append(String.format("0x%04X: ", address));
+
+			for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
+				string.append(String.format("%02X ", byteBuffer.get()));
+				address++;
+			}
+
+			string.append("\n");
+		}
+
+		return string.toString();
+	}
+
 }

@@ -42,6 +42,7 @@
     <module>gui</module>
     <module>memory</module>
     <module>interpreter</module>
+    <module>cli</module>
   </modules>
   <distributionManagement>
     <repository>
@@ -55,24 +56,51 @@
   </distributionManagement>
   <build>
     <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.5.0</version>
-            <configuration>
-                <doctitle>Projet AVM groupe2 API docs</doctitle>
-                <windowtitle>Projet AVM groupe2 API docs</windowtitle>
-                <useStandardDocletOptions>true</useStandardDocletOptions>
-                <source>17</source>
-                <encoding>UTF-8</encoding>
-                <failOnError>false</failOnError>
-                <quiet>true</quiet>
-                <show>protected</show>
-                <additionalJOptions>
-                    <additionalJOption>-Xdoclint:none</additionalJOption>
-                </additionalJOptions>
-            </configuration>
-        </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <doctitle>Projet AVM groupe2 API docs</doctitle>
+          <windowtitle>Projet AVM groupe2 API docs</windowtitle>
+          <useStandardDocletOptions>true</useStandardDocletOptions>
+          <source>17</source>
+          <encoding>UTF-8</encoding>
+          <failOnError>false</failOnError>
+          <quiet>true</quiet>
+          <show>protected</show>
+          <additionalJOptions>
+            <additionalJOption>-Xdoclint:none</additionalJOption>
+          </additionalJOptions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report-aggregate</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report-aggregate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -80,12 +108,7 @@
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <version>3.9.0.2155</version>
-          </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.7</version>
-          </plugin>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
