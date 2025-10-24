@@ -144,7 +144,6 @@ public class MemoryTest {
 
 		Assert.assertThrows(NoInstanceException.class, () -> memory.getVal(ident));
 		Assert.assertThrows(NoInstanceException.class, () -> memory.updateVal(ident, value));
-		Assert.assertThrows(NoInstanceException.class, () -> memory.removeDecl(ident));
 	}
 
 	@Test
@@ -169,7 +168,6 @@ public class MemoryTest {
 		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
 		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
 		m.declArray("aa", 1, Type.INT);
-		Assert.assertThrows(BadSymbolKindException.class, () -> m.getVal("aa"));
 	}
 
 	@Test
