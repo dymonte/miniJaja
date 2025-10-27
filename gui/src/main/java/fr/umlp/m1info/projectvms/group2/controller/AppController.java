@@ -1,17 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
-import fr.umlp.m1info.projectvms.group2.AppState;
-
-import javafx.fxml.FXML;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +8,20 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import fr.umlp.m1info.projectvms.group2.AppState;
+
+import javafx.scene.Scene;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 /**
  * AppController
  */
@@ -27,6 +29,9 @@ public class AppController implements StatefulController {
 
     @FXML
     private CodeSectionController codeSectionController;
+
+    @FXML
+    private MemorySectionController memorySectionController;
 
     @FXML
     private VBox fileTree;
@@ -41,6 +46,7 @@ public class AppController implements StatefulController {
         this.state = appState;
         codeSectionController.bindState(appState);
         codeSectionController.setOnSaveRequested(this::saveFile);
+        memorySectionController.bindState(appState);
     }
 
     /**
@@ -230,6 +236,30 @@ public class AppController implements StatefulController {
     public void updateWindowTitle(String newTitle) {
         if (primaryStage != null) {
             primaryStage.setTitle(newTitle);
+        }
+    }
+
+    /**
+     * Opens help window
+     */
+    @FXML
+    private void openHelpPopup() {
+        final Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.initOwner(primaryStage);
+        popup.setMinHeight(500);
+        popup.setMinWidth(700);
+        popup.setTitle("Help");
+        WebView webView = new WebView();
+        File file = new File("src/main/resources/fr/umlp/m1info/projectvms/group2/help_content.html");
+        try {
+            webView.getEngine().load(file.toURI().toURL().toString());
+            popup.setScene(new Scene(webView));
+            popup.show();
+        } catch (IOException e) {
+            //throw new RuntimeException(e);
+            System.out.println(file.getAbsolutePath());
+
         }
     }
 

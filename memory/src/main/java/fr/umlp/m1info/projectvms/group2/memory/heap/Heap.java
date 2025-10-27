@@ -361,4 +361,28 @@ public class Heap {
 			default -> throw new IllegalArgumentException("Unsupported type: " + symbol.getType());
 		}
 	}
+
+	/**
+	 * @return A string representation of the heap
+	 */
+	@Override
+	public String toString() {
+		StringBuilder string = new StringBuilder();
+		ByteBuffer byteBuffer = heap.asReadOnlyBuffer();
+
+		int address = 0;
+		while (byteBuffer.hasRemaining()) {
+			string.append(String.format("0x%04X: ", address));
+
+			for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
+				string.append(String.format("%02X ", byteBuffer.get()));
+				address++;
+			}
+
+			string.append("\n");
+		}
+
+		return string.toString();
+	}
+
 }
