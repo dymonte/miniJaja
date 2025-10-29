@@ -63,4 +63,6 @@ public class MemorySectionController implements StatefulController {
             memoryHeapTextArea.setScrollTop(0);
         });
     }
+
+
 }
