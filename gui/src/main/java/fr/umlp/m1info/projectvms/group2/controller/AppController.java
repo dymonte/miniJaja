@@ -10,6 +10,14 @@ import java.util.stream.Stream;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
 
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreter;
+import fr.umlp.m1info.projectvms.group2.memory.Memory;
+import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
+import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import javafx.scene.Scene;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -39,6 +47,8 @@ public class AppController implements StatefulController {
     private Stage primaryStage;
 
     private AppState state;
+
+    private Thread miniJajaInterpreterThread;
 
     @Override
     public void bindState(AppState appState) {
@@ -261,6 +271,51 @@ public class AppController implements StatefulController {
             System.out.println(file.getAbsolutePath());
 
         }
+    }
+
+    /**
+     * Runs the current file in a seperate thread
+     */
+    public void runCurrentFile() {
+        saveFile();
+
+        initMemory();
+        memorySectionController.bindState(state);
+
+        MiniJajaInterpreter interpreter = new MiniJajaInterpreter(state.getMemory());
+        miniJajaInterpreterThread = new Thread(() -> {
+            try {
+                ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
+                interpreter.interpret(programRoot);
+            } catch (InterpretRuntimeException e) {
+                System.err.println("InterpretRuntimeException: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Error while parsing code");
+            }
+        });
+
+        miniJajaInterpreterThread.start();
+    }
+
+    /**
+     * Stops the interpretation
+     */
+    public void stopInterpretation() {
+        if(miniJajaInterpreterThread.isAlive()) {
+            miniJajaInterpreterThread.interrupt();
+        } else {
+            System.err.println("Error the interpretation is not running");
+        }
+    }
+
+    /**
+     * Initializes the memory
+     */
+    private void initMemory() {
+        SymTable symTable = new SymTable(256);
+        Stack stack = new Stack(1024);
+        Heap heap = new Heap(1024);
+        state.setMemory(new Memory(symTable, stack, heap));
     }
 
     /**

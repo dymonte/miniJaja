@@ -45,4 +45,11 @@ public class AppState {
     public Memory getMemory() {
         return memory;
     }
+
+    /**
+     * @param memory the memory
+     */
+    public void setMemory(Memory memory) {
+        this.memory = memory;
+    }
 }

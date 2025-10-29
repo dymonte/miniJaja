@@ -94,9 +94,10 @@
             <MenuItem mnemonicParsing="false" text="miniJaja language" />
           </items>
         </Menu>
-            <Menu mnemonicParsing="false" text="Run">
+            <Menu mnemonicParsing="false" text="Execution">
               <items>
-                <MenuItem mnemonicParsing="false" text="Run current file" />
+                <MenuItem mnemonicParsing="false" text="Start" onAction="#runCurrentFile"/>
+                <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation"/>
               </items>
             </Menu>
       </menus>
