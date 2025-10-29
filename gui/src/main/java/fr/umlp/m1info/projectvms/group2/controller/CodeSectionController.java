@@ -1,5 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.controller;
-
+import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -12,12 +13,27 @@ import fr.umlp.m1info.projectvms.group2.AppState;
 
 import javafx.fxml.FXML;
 
+import javafx.scene.control.TextArea;
+
 public class CodeSectionController implements StatefulController {
+
+    @FXML
+    private TextArea executionTextArea;
 
     @FXML
     private CodeArea codeArea;
 
     private Runnable onSaveRequested;
+
+    @FXML
+    public void initialize() {
+        InterpreterLogger.getInstance().addListener((message, level) ->
+                Platform.runLater(() ->
+                        executionTextArea.appendText("[" + level + "] " + message + "\n")
+                )
+        );
+    }
+
 
     @Override
     public void bindState(AppState appState) {
@@ -54,3 +70,4 @@ public class CodeSectionController implements StatefulController {
         this.onSaveRequested = callback;
     }
 }
+

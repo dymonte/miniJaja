@@ -44,6 +44,12 @@
       <artifactId>memory</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+      <dependency>
+          <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+          <artifactId>interpreter</artifactId>
+          <version>1.0-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
   <build>
   <plugins>
