@@ -57,4 +57,54 @@ public class CLIEndToEndIT {
         assertEquals(0, out.exitCode());
         assertEquals("Hello, World!\n", out.output());
     }
+
+    @Test
+    public void testWhile() throws IOException, InterruptedException {
+        ProgramOutput out = executeProgram(new String[] { "execute:mjj", codeSamplesPath + "while_test.mjj" });
+        assertEquals(0, out.exitCode());
+        assertEquals("5\n", out.output());
+    }
+    @Test
+    public void testVariableCreation() throws IOException, InterruptedException {
+        ProgramOutput out = executeProgram(new String[] { "execute:mjj", codeSamplesPath + "variables_test.mjj" });
+        assertEquals(0, out.exitCode());
+        assertEquals("10\n20\n", out.output());
+    }
+
+ @Test
+ public void testEndToEndConditions() throws IOException, InterruptedException {
+     ProgramOutput out = executeProgram(new String[] {
+             "execute:mjj",
+             codeSamplesPath + "conditions_test.mjj"
+     });
+     assertEquals(0, out.exitCode());
+     assertEquals("10\n", out.output());
+ }
+
+    @Ignore
+    @Test
+    public void testMethodCall() throws IOException, InterruptedException {
+        ProgramOutput out = executeProgram(new String[] { "execute:mjj", codeSamplesPath + "methods_test.mjj" });
+        System.out.println("DEBUG OUTPUT >>>" + out.output() + "<<<");
+        assertEquals(0, out.exitCode());
+        assertEquals("12\n", out.output());
+    }
+
+    @Ignore
+    @Test
+    public void testEndToEndIO() throws IOException, InterruptedException {
+        ProgramOutput out = executeProgram(new String[] {
+                "execute:mjj",
+                codeSamplesPath + "io_test.mjj"
+        });
+        System.out.println("DEBUG OUTPUT >>>" + out.output() + "<<<");
+
+        assertEquals(0, out.exitCode());
+        assertEquals("Result:\n 5\n + \n10 \n= \n15\n", out.output());
+    }
+
+
+
+
+
 }

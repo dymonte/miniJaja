@@ -1,0 +1,12 @@
+class while_test {
+    main {
+        int i;
+        int max;
+        max=5;
+        i = 1;
+        while (max > i) {
+            i ++;
+        };
+        write(i);
+    }
+}
