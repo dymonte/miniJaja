@@ -6,9 +6,7 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="fr.umlp.m1info.projectvms.group2.controller.MemorySectionController"
-            prefHeight="550.0" prefWidth="150.0"
-            minWidth="150.0" maxWidth="150.0">
+            fx:controller="fr.umlp.m1info.projectvms.group2.controller.MemorySectionController">
 
   <children>
     <Label alignment="CENTER"
@@ -22,16 +20,12 @@
 
     <VBox spacing="5.0" AnchorPane.topAnchor="50" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
       <TextArea fx:id="memoryStackTextArea"
-              prefWidth="150.0"
-              prefHeight="245.0"
               editable="false"
               wrapText="false"
               VBox.vgrow="ALWAYS"
       />
 
       <TextArea fx:id="memoryHeapTextArea"
-              prefWidth="150.0"
-              prefHeight="245.0"
               editable="false"
               wrapText="false"
               VBox.vgrow="ALWAYS"
