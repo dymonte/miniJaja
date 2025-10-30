@@ -53,7 +53,7 @@ public class Memory {
 	}
 
 	/**
-	 * Add a new constant declaration to the program memory.
+	 * Add a new constant declaration with it's value to the program memory.
 	 * 
 	 * @param ident the constant identifier
 	 * @param value the constant initial value
@@ -67,11 +67,25 @@ public class Memory {
 	}
 
 	/**
+	 * Add a new constant declaration to the program memory.
+	 * 
+	 * @param ident the constant identifier
+	 * @param sorte the constant type
+	 */
+	public void declCst(String ident, Type sorte) {
+		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VCONST, sorte);
+		if (symbol.isPresent()) {
+			stack.push(null, symbol.get());
+		}
+
+	}
+
+	/**
 	 * Add a new array declaration to the program memory.
 	 * 
 	 * @param ident the array identifier
 	 * @param size  the array size
-	 * @param sorte the array type TODO: maybe add here type checking
+	 * @param sorte the array type
 	 */
 	public void declArray(String ident, int size, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.ARRAY, sorte, size);
@@ -170,8 +184,12 @@ public class Memory {
 			heap.incRef((int) val);
 		}
 
-		if (kind != ObjectKind.VAR && kind != ObjectKind.ARRAY) {
+		if (kind != ObjectKind.VAR && kind != ObjectKind.ARRAY && kind != ObjectKind.VCONST) {
 			throw new BadSymbolKindException(ident, kind);
+		}
+
+		if (kind == ObjectKind.VCONST) {
+			symbol.setKind(ObjectKind.CONST);
 		}
 
 		InstNode instance = symbol.getFirstInstance();
@@ -203,6 +221,10 @@ public class Memory {
 		}
 
 		SymNode symbol = symbolOpt.get();
+
+		if (symbol.getInfo().getKind() == ObjectKind.VCONST) {
+			throw new NoInstanceException(ident);
+		}
 
 		InstNode instance = symbol.getFirstInstance();
 		if (instance == null) {
@@ -347,6 +369,13 @@ public class Memory {
 	 */
 	public void push(Object val, SymNode symbol) {
 		stack.push(val, symbol);
+	}
+
+	/**
+	 * Swaps the element on top of the memory stack with the element below it.
+	 */
+	public void swap() {
+		stack.swap();
 	}
 
 	/**
