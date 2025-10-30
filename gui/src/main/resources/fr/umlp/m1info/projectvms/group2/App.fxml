@@ -104,11 +104,7 @@
     </MenuBar>
     <SplitPane dividerPositions="0.15, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
-
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
-            <VBox fx:id="fileTree" fillWidth="true">
-            </VBox>
-        </ScrollPane>
+        <fx:include fx:id="fileTreeSection" source="FileTreeSection.fxml" />
         <fx:include fx:id="codeSection" source="CodeSection.fxml" />
         <AnchorPane prefHeight="551.0" prefWidth="177.0">
           <children>
