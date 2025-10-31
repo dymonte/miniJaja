@@ -1,14 +1,13 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
+import fr.umlp.m1info.projectvms.group2.PopUp;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
@@ -48,8 +47,7 @@ public class FileTreeSectionController {
 
 	public void openDir(File directory) {
 		if (directory == null || !directory.exists() || !directory.isDirectory()) {
-			// TODO: logger/popup
-			System.out.println("INVALID DIRECTORY");
+			PopUp.error("Open directory", "Invalid directory", "");
 			return;
 		}
 
@@ -82,8 +80,7 @@ public class FileTreeSectionController {
 
 	public void openFile(File file) {
 		if (file == null || !file.exists()) {
-			// TODO: logger/popup
-			System.out.println("INVALID FILE");
+			PopUp.error("Open file", "Invalid file", "");
 			return;
 		}
 		File parentDir = file.getParentFile();

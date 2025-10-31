@@ -2,11 +2,14 @@ package fr.umlp.m1info.projectvms.group2.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
+
+import fr.umlp.m1info.projectvms.group2.PopUp;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
@@ -17,6 +20,7 @@ import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import javafx.scene.Scene;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -92,7 +96,7 @@ public class AppController implements StatefulController {
 			}
 			updateWindowTitle(file.getName());
 		} catch (IOException e) {
-			System.err.println("Error while opening file " + file.toPath());
+			PopUp.error("File Error", "Opening File", "Error while opening file " + file.toPath());
 		}
 
 	}
@@ -118,12 +122,10 @@ public class AppController implements StatefulController {
 			if (created && state.getOpenedFile().isPresent()) {
 				openFile(file);
 			} else {
-				// TODO: use a logger instead
-				System.out.println(file.getAbsolutePath() + " already exists.");
+				PopUp.info("File Info", "Creating file", "File : " + file.getName() + " already exists");
 			}
 		} catch (IOException e) {
-			// TODO: popup
-			System.out.println("Error while creating new file " + file.getAbsolutePath());
+			PopUp.error("File Error", "Creating file", "Error while creating new file " + file.getAbsolutePath());
 		}
 
 		if (state.getOpenedFile().isPresent())
@@ -180,7 +182,6 @@ public class AppController implements StatefulController {
 		File file;
 		Optional<File> openedFile = state.getOpenedFile();
 		if (openedFile.isEmpty()) {
-			System.out.println("No file opened");
 			file = createFile();
 			openFile(file);
 		} else {
@@ -188,7 +189,7 @@ public class AppController implements StatefulController {
 		}
 
 		if (file == null) {
-			System.err.println("Error while trying to save file : file is null.");
+			PopUp.error("File Error", "Cannot save file", "Not file found");
 			return;
 		}
 
@@ -197,9 +198,8 @@ public class AppController implements StatefulController {
 					file.toPath(),
 					state.codeProperty().get(),
 					StandardCharsets.UTF_8);
-			System.out.println("File saved successfully");
 		} catch (IOException e) {
-			System.err.println("Error saving file: " + e.getMessage());
+			PopUp.error("File Error", "Cannot save file", e.getMessage());
 		}
 	}
 
@@ -237,15 +237,15 @@ public class AppController implements StatefulController {
 		popup.setMinWidth(700);
 		popup.setTitle("Help");
 		WebView webView = new WebView();
-		File file = new File("src/main/resources/fr/umlp/m1info/projectvms/group2/help_content.html");
 		try {
+			File file = new File(getClass().getResource("help_content.html").toURI());
 			webView.getEngine().load(file.toURI().toURL().toString());
 			popup.setScene(new Scene(webView));
 			popup.show();
 		} catch (IOException e) {
-			// throw new RuntimeException(e);
-			System.out.println(file.getAbsolutePath());
-
+			PopUp.error("Help page", "Cannot open help page", "Error while opening help page");
+		} catch (URISyntaxException e) {
+			PopUp.error("Help page", "Cannot open help page", "Error while opening help page");
 		}
 	}
 
@@ -253,8 +253,6 @@ public class AppController implements StatefulController {
 	 * Runs the current file in a seperate thread
 	 */
 	public void runCurrentFile() {
-		saveFile();
-
 		initMemory();
 		memorySectionController.bindState(state);
 
@@ -265,9 +263,13 @@ public class AppController implements StatefulController {
 				ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
 				interpreter.interpret(programRoot);
 			} catch (InterpretRuntimeException e) {
-				System.err.println("InterpretRuntimeException: " + e.getMessage());
+				Platform.runLater(() -> {
+					PopUp.error("MiniJaja Interpreter Error", e.getMessage(), "");
+				});
 			} catch (Exception e) {
-				System.err.println("Error while parsing code");
+				Platform.runLater(() -> {
+					PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", "");
+				});
 			}
 		});
 
@@ -278,13 +280,11 @@ public class AppController implements StatefulController {
 	 * Stops the interpretation
 	 */
 	public void stopInterpretation() {
-		if (miniJajaInterpreterThread == null) {
-			return;
-		}
-		if (miniJajaInterpreterThread.isAlive()) {
+		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
 			miniJajaInterpreterThread.interrupt();
 		} else {
-			System.err.println("Error the interpretation is not running");
+			PopUp.info("MiniJaja Interpreter", "Interpretation is not running", "Start the interpretation");
+			return;
 		}
 	}
 
@@ -300,7 +300,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Sets the primary stage for this controller
-	 * 
+	 *
 	 * @param stage the primary stage
 	 */
 	public void setPrimaryStage(Stage stage) {
