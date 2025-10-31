@@ -54,28 +54,29 @@ public class FileTreeSectionController {
 		TreeItem<File> rootNode = createNode(directory);
 		rootNode.setExpanded(true);
 
-		if (treeView == null) {
-			treeView = new TreeView<>(rootNode);
-			treeView.setShowRoot(true);
-			treeView.setCellFactory(param -> new FileTreeCellImpl());
-			treeView.setMaxWidth(Double.MAX_VALUE);
-			VBox.setVgrow(treeView, javafx.scene.layout.Priority.ALWAYS);
-			treeView.setOnMouseClicked(event -> {
-				if (event.getClickCount() == 1) {
-					TreeItem<File> selected = treeView.getSelectionModel().getSelectedItem();
-					if (selected != null && selected.getValue() != null) {
-						File file = selected.getValue();
-						if (file.isFile() && onFileOpen != null) {
-							onFileOpen.accept(file);
-						}
+		if (treeView != null) {
+			treeView.setRoot(rootNode);
+			return;
+		}
+
+		treeView = new TreeView<>(rootNode);
+		treeView.setShowRoot(true);
+		treeView.setCellFactory(param -> new FileTreeCellImpl());
+		treeView.setMaxWidth(Double.MAX_VALUE);
+		VBox.setVgrow(treeView, javafx.scene.layout.Priority.ALWAYS);
+		treeView.setOnMouseClicked(event -> {
+			if (event.getClickCount() == 1) {
+				TreeItem<File> selected = treeView.getSelectionModel().getSelectedItem();
+				if (selected != null && selected.getValue() != null) {
+					File file = selected.getValue();
+					if (file.isFile() && onFileOpen != null) {
+						onFileOpen.accept(file);
 					}
 				}
-			});
-			treeView.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
-			fileTreeContainer.getChildren().add(treeView);
-		} else {
-			treeView.setRoot(rootNode);
-		}
+			}
+		});
+		treeView.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
+		fileTreeContainer.getChildren().add(treeView);
 	}
 
 	public void openFile(File file) {
@@ -115,16 +116,18 @@ public class FileTreeSectionController {
 
 			private ObservableList<TreeItem<File>> buildChildren(TreeItem<File> TreeItem) {
 				File f = TreeItem.getValue();
-				if (f != null & f.isDirectory()) {
-					File[] files = f.listFiles(file -> !file.isHidden() && !file.getName().startsWith("."));
-					if (files != null && files.length > 0) {
-						Arrays.sort(files, Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
-						ObservableList<TreeItem<File>> children = FXCollections.observableArrayList();
-						for (File childFile : files) {
-							children.add(createNode(childFile));
-						}
-						return children;
+				if (f == null || !f.isDirectory()) {
+					return FXCollections.emptyObservableList();
+				}
+
+				File[] files = f.listFiles(file -> !file.isHidden() && !file.getName().startsWith("."));
+				if (files != null && files.length > 0) {
+					Arrays.sort(files, Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
+					ObservableList<TreeItem<File>> children = FXCollections.observableArrayList();
+					for (File childFile : files) {
+						children.add(createNode(childFile));
 					}
+					return children;
 				}
 				return FXCollections.emptyObservableList();
 			}
