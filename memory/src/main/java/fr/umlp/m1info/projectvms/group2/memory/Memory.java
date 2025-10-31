@@ -362,13 +362,13 @@ public class Memory {
 	}
 
 	/**
-	 * Pushes a new value and symbol onto the stack
+	 * Pushes a new value on top of the stack
 	 * 
-	 * @param val    the value to push
-	 * @param symbol the symbol to push
+	 * @param value the value to add on top of the stack
 	 */
-	public void push(Object val, SymNode symbol) {
-		stack.push(val, symbol);
+	public void push(Object value) {
+		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, ObjectKind.CONST));
+		stack.push(value, symbol);
 	}
 
 	/**
@@ -376,6 +376,16 @@ public class Memory {
 	 */
 	public void swap() {
 		stack.swap();
+	}
+
+	/**
+	 * Removes the element on top of the stack and returns it.
+	 *
+	 * @return the deleted element
+	 */
+	public Object pop() {
+		InstNode popped = stack.pop();
+		return popped != null ? popped.getValue() : null;
 	}
 
 	/**

@@ -297,4 +297,15 @@ public class MemoryTest {
 
 		Assert.assertEquals("< a, 2, VAR, INT >", quad2.toString());
 	}
+
+	@Test
+	public void testJaJaCodeStack() {
+		m.push(4);
+		m.push(3);
+		Assert.assertEquals(3, m.getHead().getVal());
+		m.swap();
+		Assert.assertEquals(4, m.pop());
+		Assert.assertEquals(3, m.pop());
+		Assert.assertEquals(null, m.pop());
+	}
 }
