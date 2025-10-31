@@ -42,7 +42,7 @@ public class FileTreeSectionController {
 	public void initialize() {
 		fileTreeScroll.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
 		// Initialize with user home by default
-		openDir(new File(System.getProperty("user.home")));
+		openDir(new File(System.getProperty("user.dir")));
 	}
 
 	public void openDir(File directory) {
