@@ -147,7 +147,6 @@ public class Memory {
 			throw new SymbolNotFoundException(ident);
 		}
 		InstNode instance = symbolOpt.get().getFirstInstance();
-		System.out.println(new Quad(instance));
 		if (instance == null) {
 			throw new NoInstanceException(ident);
 		}

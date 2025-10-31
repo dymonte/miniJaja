@@ -1,34 +1,19 @@
 .button {
-    -fx-font: 16px "Serif";
+	-fx-font: 16px "Serif";
 }
+
 .lineno-rect {
-    -fx-fill: #f0f0f0;
-    -fx-stroke: #d0d0d0;
+	-fx-fill: #f0f0f0;
+	-fx-stroke: #d0d0d0;
 }
+
 .code-area {
-    -fx-font-family: 'Monospaced', monospace;
-    -fx-font-size: 14px;
+	-fx-font-family: 'Monospaced', monospace;
+	-fx-font-size: 14px;
 }
 
-#memorySection {
-    -fx-font-family: "Segoe UI", "Arial", sans-serif;
-    -fx-font-size: 14px;
-    -fx-background-color: #dfefff;
-    -fx-text-fill: black;
-    -fx-padding: 3;
-}
-
-#memoryStackTextArea, #memoryHeapTextArea {
-    -fx-control-inner-background: #edf6ff;
-    -fx-text-fill: black;
-    -fx-border-color: black;
-    -fx-border-width: 2;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-background-insets: 0;
-
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-highlight-fill: transparent;
-    -fx-effect: none;
+#headerLabel {
+	-fx-font-weight: bold;
+	-fx-font-size: 11px;
+	-fx-padding: 4 10;
 }

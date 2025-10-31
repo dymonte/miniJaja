@@ -49,7 +49,11 @@ public class MiniJajaInterpreter {
 			throw new InterpretRuntimeException("node cannot be null");
 		}
 
-		Method m = findAnnotatedMethod(InterpretFunction.class, node.getClass());
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterpretRuntimeException("Execution interrupted");
+        }
+
+        Method m = findAnnotatedMethod(InterpretFunction.class, node.getClass());
 		if (m == null) {
 			throw new InterpretRuntimeException("No @InterpretFunction found for " + node.getClass().getSimpleName());
 		}
