@@ -1,7 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
-import fr.umlp.m1info.projectvms.group2.AppState;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -20,8 +18,15 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class FileTreeSectionController {
+
 	@FXML
 	private VBox fileTreeContainer;
+
+	@FXML
+	private ScrollPane fileTreeScroll;
+
+	@FXML
+	private Label headerLabel;
 
 	private TreeView<File> treeView;
 
@@ -36,6 +41,8 @@ public class FileTreeSectionController {
 
 	@FXML
 	public void initialize() {
+		headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 10;");
+		fileTreeScroll.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
 		// Initialize with user home by default
 		openDir(new File(System.getProperty("user.home")));
 	}
@@ -53,8 +60,9 @@ public class FileTreeSectionController {
 		if (treeView == null) {
 			treeView = new TreeView<>(rootNode);
 			treeView.setShowRoot(true);
-			treeView.setEditable(true);
 			treeView.setCellFactory(param -> new FileTreeCellImpl());
+			treeView.setMaxWidth(Double.MAX_VALUE);
+			VBox.setVgrow(treeView, javafx.scene.layout.Priority.ALWAYS);
 			treeView.setOnMouseClicked(event -> {
 				if (event.getClickCount() == 1) {
 					TreeItem<File> selected = treeView.getSelectionModel().getSelectedItem();
@@ -66,6 +74,7 @@ public class FileTreeSectionController {
 					}
 				}
 			});
+			treeView.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
 			fileTreeContainer.getChildren().add(treeView);
 		} else {
 			treeView.setRoot(rootNode);
@@ -150,97 +159,34 @@ public class FileTreeSectionController {
 	}
 
 	private final class FileTreeCellImpl extends TreeCell<File> {
+
 		private TextField textField;
-		private final ContextMenu contextMenu = new ContextMenu();
 
 		public FileTreeCellImpl() {
-			MenuItem newFolder = new MenuItem("New Folder");
-			newFolder.setOnAction(e -> {
-				TreeItem<File> parent = getTreeItem();
-				if (parent != null && parent.getValue().isDirectory()) {
-					File newDir = new File(parent.getValue(), "New Folder");
-					if (newDir.mkdir()) {
-						parent.getChildren().add(new TreeItem<>(newDir, new ImageView(folderIcon)));
-						parent.setExpanded(true);
-					}
-				}
-			});
-
-			MenuItem deleteItem = new MenuItem("Delete");
-			deleteItem.setOnAction(e -> {
-				TreeItem<File> selected = getTreeItem();
-				if (selected != null && selected.getParent() != null) {
-					File f = selected.getValue();
-					if (f.delete()) {
-						selected.getParent().getChildren().remove(selected);
-					}
-				}
-			});
 		}
 
 		@Override
-		public void startEdit() {
-			super.startEdit();
-			if (textField == null)
-				createTextField();
-			setText(null);
-			setGraphic(textField);
-			textField.selectAll();
-		}
-
-		@Override
-		public void cancelEdit() {
-			super.cancelEdit();
-			setText(getItemDisplayName());
-			setGraphic(getTreeItem().getGraphic());
-		}
-
-		@Override
-		public void updateItem(File item, boolean empty) {
+		protected void updateItem(File item, boolean empty) {
 			super.updateItem(item, empty);
+
 			if (empty || item == null) {
 				setText(null);
 				setGraphic(null);
+				setContextMenu(null);
 			} else {
 				if (isEditing()) {
-					if (textField != null) {
+					if (textField != null)
 						textField.setText(getItemDisplayName());
-					}
-					setText(null);
 					setGraphic(textField);
+					setText(null);
 				} else {
 					setText(getItemDisplayName());
 					ImageView icon = new ImageView(item.isDirectory() ? folderIcon : fileIcon);
 					icon.setFitHeight(16);
 					icon.setFitWidth(16);
 					setGraphic(icon);
-					if (item.isDirectory()) {
-						setContextMenu(contextMenu);
-					} else {
-						setContextMenu(null);
-					}
 				}
 			}
-		}
-
-		private void createTextField() {
-			textField = new TextField(getItemDisplayName());
-			textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-				@Override
-				public void handle(KeyEvent t) {
-					if (t.getCode() == KeyCode.ENTER) {
-						File oldFile = getItem();
-						File newFile = new File(oldFile.getParent(), textField.getText());
-						if (oldFile.renameTo(newFile)) {
-							commitEdit(newFile);
-						} else {
-							cancelEdit();
-						}
-					} else if (t.getCode() == KeyCode.ESCAPE) {
-						cancelEdit();
-					}
-				}
-			});
 		}
 
 		private String getItemDisplayName() {
