@@ -85,7 +85,7 @@ public class CLITest {
 
     @Test
     public void testEmptyFile() {
-        CLI.main(new String[] { "execute:mjj", "--set-heap-size", "512",
+        CLI.main(new String[] { "execute:mjj", "--set-heap-size", "512", "--debug",
                 "./src/test/resources/empty_file.mjj" });
         Assert.assertTrue(errContent.toString()
                 .contains("Error"));
