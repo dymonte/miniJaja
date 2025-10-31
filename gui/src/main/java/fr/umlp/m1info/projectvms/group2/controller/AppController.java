@@ -203,6 +203,33 @@ public class AppController implements StatefulController {
 		}
 	}
 
+	@FXML
+	private void saveFileAs() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save As");
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MiniJaja Files", "*.mjj"));
+
+		state.getOpenedFile().ifPresent(file -> fileChooser.setInitialFileName(file.getName()));
+
+		File newFile = fileChooser.showSaveDialog(null);
+		if (newFile == null) {
+			return;
+		}
+
+		String fileName = newFile.getName();
+		if (!fileName.toLowerCase().endsWith(".mjj")) {
+			newFile = new File(newFile.getParentFile(), fileName + ".mjj");
+		}
+
+		try {
+			Files.writeString(newFile.toPath(), state.codeProperty().get(), StandardCharsets.UTF_8);
+			state.setOpenedFile(newFile);
+			openFile(newFile);
+		} catch (IOException e) {
+			PopUp.error("Save Error", "Cannot save file", e.getMessage());
+		}
+	}
+
 	/**
 	 * Closes the current file
 	 * Called by the button

@@ -86,6 +86,7 @@ public class FileTreeSectionController {
 		File parentDir = file.getParentFile();
 		openDir(parentDir);
 		selectFileInTree(file);
+		onFileOpen.accept(file);
 	}
 
 	private TreeItem<File> createNode(final File f) {
