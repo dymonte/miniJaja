@@ -316,6 +316,13 @@ public class AppController implements StatefulController {
 	}
 
 	/**
+	 * Clear console
+	 */
+	public void clearConsole() {
+		consoleSectionController.clearAllTabs();
+	}
+
+	/**
 	 * Initializes the memory
 	 */
 	private void initMemory() {

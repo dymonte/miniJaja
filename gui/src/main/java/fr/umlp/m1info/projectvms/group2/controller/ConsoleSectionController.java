@@ -48,6 +48,13 @@ public class ConsoleSectionController {
 		});
 	}
 
+	@FXML
+	public void clearAllTabs() {
+		outputArea.clear();
+		debugArea.clear();
+		errorArea.clear();
+	}
+
 	public void appendToOutput(String msg) {
 		outputArea.appendText(msg);
 	}
