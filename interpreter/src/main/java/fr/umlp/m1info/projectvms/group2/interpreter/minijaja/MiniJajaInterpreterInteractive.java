@@ -86,7 +86,6 @@ public class MiniJajaInterpreterInteractive extends MiniJajaInterpreter {
 
 	@Override
 	public void interpret(ASTNode node) {
-		System.out.println("AH");
 		waitForNext(node);
 		super.interpret(node);
 	}
