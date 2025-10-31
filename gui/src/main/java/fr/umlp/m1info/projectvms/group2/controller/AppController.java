@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
 
@@ -36,6 +34,9 @@ public class AppController implements StatefulController {
 
 	@FXML
 	private CodeSectionController codeSectionController;
+
+	@FXML
+	private ConsoleSectionController consoleSectionController;
 
 	@FXML
 	private MemorySectionController memorySectionController;
