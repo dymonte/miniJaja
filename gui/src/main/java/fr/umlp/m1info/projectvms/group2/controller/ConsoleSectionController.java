@@ -21,9 +21,6 @@ public class ConsoleSectionController {
 	private Tab errorTab;
 
 	@FXML
-	private TextArea terminalArea;
-
-	@FXML
 	private TextArea outputArea;
 
 	@FXML
@@ -51,13 +48,8 @@ public class ConsoleSectionController {
 		});
 	}
 
-	// Optionally expose append methods if other controllers need them
-	public void appendToTerminal(String msg) {
-		terminalArea.appendText(msg + "\n");
-	}
-
 	public void appendToOutput(String msg) {
-		outputArea.appendText(msg + "\n");
+		outputArea.appendText(msg);
 	}
 
 	public void appendToDebug(String msg) {
