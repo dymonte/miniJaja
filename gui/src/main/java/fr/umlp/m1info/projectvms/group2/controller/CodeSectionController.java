@@ -54,6 +54,46 @@ public class CodeSectionController implements StatefulController {
 		});
 	}
 
+	@FXML
+	public void undo() {
+		codeArea.undo();
+	}
+
+	@FXML
+	public void redo() {
+		codeArea.redo();
+	}
+
+	@FXML
+	public void cut() {
+		codeArea.cut();
+	}
+
+	@FXML
+	public void copy() {
+		codeArea.copy();
+	}
+
+	@FXML
+	public void paste() {
+		codeArea.paste();
+	}
+
+	@FXML
+	public void delete() {
+		codeArea.replaceSelection("");
+	}
+
+	@FXML
+	public void selectAll() {
+		codeArea.selectAll();
+	}
+
+	@FXML
+	public void unSelectAll() {
+		codeArea.deselect();
+	}
+
 	public void setOnSaveRequested(Runnable callback) {
 		this.onSaveRequested = callback;
 	}

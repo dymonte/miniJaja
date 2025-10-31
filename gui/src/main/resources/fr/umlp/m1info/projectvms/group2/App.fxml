@@ -68,19 +68,19 @@
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
-
+				
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
+            <MenuItem mnemonicParsing="false" text="Undo" onAction="#undoCode" />
+            <MenuItem mnemonicParsing="false" text="Redo" onAction="#redoCode" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Cut" />
-            <MenuItem mnemonicParsing="false" text="Copy" />
-            <MenuItem mnemonicParsing="false" text="Paste" />
-            <MenuItem mnemonicParsing="false" text="Delete" />
+            <MenuItem mnemonicParsing="false" text="Cut" onAction="#cutCode" />
+            <MenuItem mnemonicParsing="false" text="Copy" onAction="#copyCode" />
+            <MenuItem mnemonicParsing="false" text="Paste" onAction="#pasteCode" />
+            <MenuItem mnemonicParsing="false" text="Delete" onAction="#deleteCode" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Select All" />
-            <MenuItem mnemonicParsing="false" text="Unselect All" />
+            <MenuItem mnemonicParsing="false" text="Select All" onAction="#selectAllCode" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" onAction="#unSelectAllCode" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Window">

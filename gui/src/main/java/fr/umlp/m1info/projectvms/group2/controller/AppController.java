@@ -306,4 +306,36 @@ public class AppController implements StatefulController {
 	public void setPrimaryStage(Stage stage) {
 		this.primaryStage = stage;
 	}
+
+	public void undoCode() {
+		codeSectionController.undo();
+	}
+
+	public void redoCode() {
+		codeSectionController.redo();
+	}
+
+	public void cutCode() {
+		codeSectionController.cut();
+	}
+
+	public void copyCode() {
+		codeSectionController.copy();
+	}
+
+	public void pasteCode() {
+		codeSectionController.paste();
+	}
+
+	public void deleteCode() {
+		codeSectionController.delete();
+	}
+
+	public void selectAllCode() {
+		codeSectionController.selectAll();
+	}
+
+	public void unSelectAllCode() {
+		codeSectionController.unSelectAll();
+	}
 }
