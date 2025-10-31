@@ -80,12 +80,6 @@
             <MenuItem mnemonicParsing="false" text="Unselect All" onAction="#unSelectAllCode" />
           </items>
         </Menu>
-            <Menu mnemonicParsing="false" text="Window">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Show file tree" />
-                  <MenuItem mnemonicParsing="false" text="Show Debugger" />
-              </items>
-            </Menu>
         <Menu mnemonicParsing="false" text="Help" onAction="#openHelpPopup">
           <items>
             <MenuItem mnemonicParsing="false" text="miniJaja language" />
