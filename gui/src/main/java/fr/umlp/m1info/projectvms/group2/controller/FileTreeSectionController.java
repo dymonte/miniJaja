@@ -41,7 +41,6 @@ public class FileTreeSectionController {
 
 	@FXML
 	public void initialize() {
-		headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 10;");
 		fileTreeScroll.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
 		// Initialize with user home by default
 		openDir(new File(System.getProperty("user.home")));
