@@ -47,12 +47,13 @@ public class PopUp {
 	/**
 	 * Show a warning dialog
 	 */
-	public static void confirm(String title, String header, String content) {
-		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+	public static boolean confirm(String title, String message) {
+		final boolean[] result = { false };
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
 		alert.setTitle(title);
-		alert.setHeaderText(header);
-		alert.setContentText(content);
-		alert.showAndWait();
+		alert.setHeaderText(null);
+		alert.showAndWait().ifPresent(button -> result[0] = button == ButtonType.YES);
+		return result[0];
 	}
 
 	/**

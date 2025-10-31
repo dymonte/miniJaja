@@ -365,4 +365,13 @@ public class AppController implements StatefulController {
 	public void unSelectAllCode() {
 		codeSectionController.unSelectAll();
 	}
+
+	@FXML
+	private void quitApp() {
+		boolean confirmed = PopUp.confirm("Quit Application", "Are you sure you want to quit?");
+		if (confirmed) {
+			Platform.exit();
+			System.exit(0);
+		}
+	}
 }

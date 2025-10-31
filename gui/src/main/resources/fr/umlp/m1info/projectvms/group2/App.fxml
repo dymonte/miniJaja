@@ -60,11 +60,9 @@
             <MenuItem mnemonicParsing="false" text="Close" onAction="#closeCurrentFile"/>
             <MenuItem mnemonicParsing="false" text="Save" onAction="#saveFile" accelerator="Shortcut+S" />
             <MenuItem mnemonicParsing="false" text="Save As…" onAction="#saveFileAs"/>
-            <MenuItem mnemonicParsing="false" text="Revert" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
+            <MenuItem mnemonicParsing="false" text="Quit" onAction="#quitApp"/>
           </items>
         </Menu>
 				
