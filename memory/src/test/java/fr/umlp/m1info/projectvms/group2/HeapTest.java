@@ -5,6 +5,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddressException;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemoryException;
@@ -233,5 +236,16 @@ public class HeapTest {
 	public void testSetValueException2() {
 		heap.allocate(1, Type.BOOL);
 		Assert.assertThrows(IllegalArgumentException.class, () -> heap.setValue(0, 0, 1));
+	}
+
+	@Test
+	public void testHeapToString() {
+		Heap heap = new Heap(4);
+		ByteArrayOutputStream content = new ByteArrayOutputStream();
+		PrintStream originalOut = System.out;
+		System.setOut(new PrintStream(content));
+		System.out.println(heap.toString());
+		Assert.assertTrue(content.toString().contains("0x0000: 00 00 00 00"));
+		System.setOut(originalOut);
 	}
 }
