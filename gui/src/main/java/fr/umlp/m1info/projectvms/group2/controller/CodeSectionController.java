@@ -19,10 +19,6 @@ public class CodeSectionController implements StatefulController {
 
 	private Runnable onSaveRequested;
 
-	@FXML
-	public void initialize() {
-	}
-
 	@Override
 	public void bindState(AppState appState) {
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));

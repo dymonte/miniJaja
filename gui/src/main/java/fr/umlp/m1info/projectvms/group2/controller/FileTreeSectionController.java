@@ -61,7 +61,8 @@ public class FileTreeSectionController {
 
 		treeView = new TreeView<>(rootNode);
 		treeView.setShowRoot(true);
-		treeView.setCellFactory(param -> new FileTreeCellImpl());
+		FileTreeCellImpl impl = new FileTreeCellImpl();
+		treeView.setCellFactory(param -> impl);
 		treeView.setMaxWidth(Double.MAX_VALUE);
 		VBox.setVgrow(treeView, javafx.scene.layout.Priority.ALWAYS);
 		treeView.setOnMouseClicked(event -> {
@@ -114,8 +115,8 @@ public class FileTreeSectionController {
 				return isLeaf;
 			}
 
-			private ObservableList<TreeItem<File>> buildChildren(TreeItem<File> TreeItem) {
-				File f = TreeItem.getValue();
+			private ObservableList<TreeItem<File>> buildChildren(TreeItem<File> treeItem) {
+				File f = treeItem.getValue();
 				if (f == null || !f.isDirectory()) {
 					return FXCollections.emptyObservableList();
 				}
@@ -162,7 +163,7 @@ public class FileTreeSectionController {
 
 		private TextField textField;
 
-		public FileTreeCellImpl() {
+		private FileTreeCellImpl() {
 		}
 
 		@Override
@@ -191,7 +192,7 @@ public class FileTreeSectionController {
 
 		private String getItemDisplayName() {
 			File f = getItem();
-			return f == null ? "" : f.getName().isEmpty() ? f.getAbsolutePath() : f.getName();
+			return f == null ? "" : f.getName();
 		}
 	}
 }

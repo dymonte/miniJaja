@@ -269,9 +269,7 @@ public class AppController implements StatefulController {
 			webView.getEngine().load(file.toURI().toURL().toString());
 			popup.setScene(new Scene(webView));
 			popup.show();
-		} catch (IOException e) {
-			PopUp.error("Help page", "Cannot open help page", "Error while opening help page");
-		} catch (URISyntaxException e) {
+		} catch (IOException | URISyntaxException e) {
 			PopUp.error("Help page", "Cannot open help page", "Error while opening help page");
 		}
 	}
@@ -290,13 +288,9 @@ public class AppController implements StatefulController {
 				ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
 				interpreter.interpret(programRoot);
 			} catch (InterpretRuntimeException e) {
-				Platform.runLater(() -> {
-					PopUp.error("MiniJaja Interpreter Error", e.getMessage(), "");
-				});
+				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", e.getMessage(), ""));
 			} catch (Exception e) {
-				Platform.runLater(() -> {
-					PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", "");
-				});
+				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", ""));
 			}
 		});
 
@@ -311,7 +305,6 @@ public class AppController implements StatefulController {
 			miniJajaInterpreterThread.interrupt();
 		} else {
 			PopUp.info("MiniJaja Interpreter", "Interpretation is not running", "Start the interpretation");
-			return;
 		}
 	}
 

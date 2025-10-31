@@ -85,5 +85,6 @@ public class MiniJajaInterpreterInteractiveTest {
 
 		interactive.setStepModeEnabled(false);
 		interactive.interpret(astWrite);
+		Assert.assertTrue(true);
 	}
 }

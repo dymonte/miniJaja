@@ -39,15 +39,6 @@ public class ASTVarConst extends ASTVar {
 	}
 
 	/**
-	 * Returns the identifier of the constant variable
-	 *
-	 * @return the ASTIdent representing the variable name
-	 */
-	public ASTIdent getIdent() {
-		return ident;
-	}
-
-	/**
 	 * Returns the initialization expression of the constant variable
 	 *
 	 * @return the ASTVExpr representing the initialization, may be null

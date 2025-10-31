@@ -1,8 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.UnaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
@@ -21,6 +18,7 @@ import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import java.util.function.IntBinaryOperator;
@@ -76,7 +74,7 @@ public class MiniJajaInterpreterUtils {
 		return types;
 	}
 
-	public static ArrayList<Type> collectParamTypes(ASTParams params) {
+	public static List<Type> collectParamTypes(ASTParams params) {
 		ArrayList<Type> types = new ArrayList<>();
 		ASTParams currentParams = params;
 

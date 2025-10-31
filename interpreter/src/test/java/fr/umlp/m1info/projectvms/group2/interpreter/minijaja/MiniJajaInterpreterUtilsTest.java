@@ -18,6 +18,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 
@@ -90,7 +91,7 @@ public class MiniJajaInterpreterUtilsTest {
 				new ASTParamsNil(0, 0), 0, 0);
 		ASTParamsChain params = new ASTParamsChain(new ASTParam(new ASTIntType(0, 0), new ASTIdent("b", 0, 0), 0, 0),
 				paramsSub, 0, 0);
-		ArrayList<Type> exprTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
+		List<Type> exprTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
 		Assert.assertEquals(2, exprTypes.size());
 		Assert.assertEquals(Type.INT, exprTypes.get(0));
 		Assert.assertEquals(Type.INT, exprTypes.get(1));

@@ -28,7 +28,7 @@ public class CLIOptions {
     private int symTableSize = 256;
     private int heapSize = 1024;
     private int stackDepth = 1024;
-    private boolean debug = false;
+    private boolean isDebugging = false;
     private String filePath;
     private String command;
 
@@ -128,15 +128,15 @@ public class CLIOptions {
      * @return true is the output shows every debug messages, false otherwise.
      */
     public boolean getDebug() {
-        return debug;
+        return isDebugging;
     }
 
     /**
      * Sets the output mode to debug (show every logger messages)
      *
-     * @param debug a boolean (true for activating debug mode, false to deactivate)
+     * @param isDebugging a boolean (true for activating debug mode, false to deactivate)
      */
-    public void setDebug(boolean debug) {
-        this.debug = debug;
+    public void setDebug(boolean isDebugging) {
+        this.isDebugging = isDebugging;
     }
 }
