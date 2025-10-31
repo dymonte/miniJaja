@@ -232,6 +232,10 @@ public class MiniJajaInterpreter {
 
 		String methodKey = memory.getMethKey(methodName, argumentTypes);
 		ASTMethod method = (ASTMethod) memory.getVal(methodKey);
+		String classVarName = ASTClass.getClassVar().getName();
+		Type oldClassType = memory.getType(classVarName);
+		memory.updateType(classVarName,
+				MiniJajaInterpreterUtils.getTypeFromTypeMeth(method.getType()));
 
 		MiniJajaInterpreterUtils.bindParameters(memory, method.getParams(), node.getExprs(), this);
 		try {
@@ -240,6 +244,7 @@ public class MiniJajaInterpreter {
 		} finally {
 			MiniJajaInterpreterUtils.unbindParameters(memory, method.getParams());
 			free(method.getVars());
+			memory.updateType(classVarName, oldClassType);
 		}
 	}
 
