@@ -88,6 +88,15 @@ public class SymNode {
 	}
 
 	/**
+	 * Changes the symbol's kind.
+	 *
+	 * @param kind the new symbol's kind
+	 */
+	public void setKind(ObjectKind kind) {
+		info = new MemInfo(info.getSorte(), kind, info.getSize());
+	}
+
+	/**
 	 * removes an instance node from the instance linked list.
 	 *
 	 * @param instNode the instance node to remove.
