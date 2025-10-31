@@ -387,6 +387,8 @@ public class MiniJajaInterpreterTest {
 
 	@Test
 	public void testInterpretMethodCallInstrInt() {
+		new ASTClass(new ASTIdent("A", 0, 0), new ASTDeclsNil(0, 0),
+				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
 		int[] i = { 0, 0 };
 		ASTVoidType type = new ASTVoidType(0, 0);
 		ASTIdent ident = new ASTIdent("fct", 0, 0);
@@ -408,6 +410,7 @@ public class MiniJajaInterpreterTest {
 
 		ASTMethod method = new ASTMethod(type, ident, params, vars, instrs, 0, 0);
 
+		memory.declVar("A", 0, Type.INT);
 		memory.declMeth(ident.getName(), method, List.of(Type.INT), Type.VOID);
 
 		ASTMethodCallInstr methodCall = new ASTMethodCallInstr(ident, exprs, 0, 0);
@@ -419,6 +422,8 @@ public class MiniJajaInterpreterTest {
 
 	@Test
 	public void testInterpretMethodCallInstrBool() {
+		new ASTClass(new ASTIdent("A", 0, 0), new ASTDeclsNil(0, 0),
+				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
 		int[] i = { 0, 0 };
 		ASTVoidType type = new ASTVoidType(0, 0);
 		ASTIdent ident = new ASTIdent("fct", 0, 0);
@@ -440,6 +445,7 @@ public class MiniJajaInterpreterTest {
 
 		ASTMethod method = new ASTMethod(type, ident, params, vars, instrs, 0, 0);
 
+		memory.declVar("A", 0, Type.INT);
 		memory.declMeth(ident.getName(), method, List.of(Type.BOOL), Type.VOID);
 
 		ASTMethodCallInstr methodCall = new ASTMethodCallInstr(ident, exprs, 0, 0);
