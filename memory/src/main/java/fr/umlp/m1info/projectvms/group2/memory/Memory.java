@@ -9,11 +9,11 @@ import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 
 /**
  * Memory
@@ -53,7 +53,7 @@ public class Memory {
 	}
 
 	/**
-	 * Add a new constant declaration to the program memory.
+	 * Add a new constant declaration with it's value to the program memory.
 	 * 
 	 * @param ident the constant identifier
 	 * @param value the constant initial value
@@ -67,11 +67,25 @@ public class Memory {
 	}
 
 	/**
+	 * Add a new constant declaration to the program memory.
+	 * 
+	 * @param ident the constant identifier
+	 * @param sorte the constant type
+	 */
+	public void declCst(String ident, Type sorte) {
+		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VCONST, sorte);
+		if (symbol.isPresent()) {
+			stack.push(null, symbol.get());
+		}
+
+	}
+
+	/**
 	 * Add a new array declaration to the program memory.
 	 * 
 	 * @param ident the array identifier
 	 * @param size  the array size
-	 * @param sorte the array type TODO: maybe add here type checking
+	 * @param sorte the array type
 	 */
 	public void declArray(String ident, int size, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.ARRAY, sorte, size);
@@ -132,12 +146,13 @@ public class Memory {
 		if (symbolOpt.isEmpty()) {
 			throw new SymbolNotFoundException(ident);
 		}
-
 		InstNode instance = symbolOpt.get().getFirstInstance();
 		if (instance == null) {
 			throw new NoInstanceException(ident);
 		}
-
+		if (symbolOpt.get().getInfo().getKind() == ObjectKind.ARRAY) {
+			heap.decRef((int) instance.getValue());
+		}
 		symTable.remove(instance);
 	}
 
@@ -164,8 +179,16 @@ public class Memory {
 		SymNode symbol = symbolOpt.get();
 		ObjectKind kind = symbol.getInfo().getKind();
 
-		if (kind != ObjectKind.VAR) {
+		if (kind == ObjectKind.ARRAY) {
+			heap.incRef((int) val);
+		}
+
+		if (kind != ObjectKind.VAR && kind != ObjectKind.ARRAY && kind != ObjectKind.VCONST) {
 			throw new BadSymbolKindException(ident, kind);
+		}
+
+		if (kind == ObjectKind.VCONST) {
+			symbol.setKind(ObjectKind.CONST);
 		}
 
 		InstNode instance = symbol.getFirstInstance();
@@ -197,10 +220,9 @@ public class Memory {
 		}
 
 		SymNode symbol = symbolOpt.get();
-		ObjectKind kind = symbol.getInfo().getKind();
 
-		if (kind == ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, kind);
+		if (symbol.getInfo().getKind() == ObjectKind.VCONST) {
+			throw new NoInstanceException(ident);
 		}
 
 		InstNode instance = symbol.getFirstInstance();
@@ -339,13 +361,30 @@ public class Memory {
 	}
 
 	/**
-	 * Pushes a new value and symbol onto the stack
+	 * Pushes a new value on top of the stack
 	 * 
-	 * @param val    the value to push
-	 * @param symbol the symbol to push
+	 * @param value the value to add on top of the stack
 	 */
-	public void push(Object val, SymNode symbol) {
-		stack.push(val, symbol);
+	public void push(Object value) {
+		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, ObjectKind.CONST));
+		stack.push(value, symbol);
+	}
+
+	/**
+	 * Swaps the element on top of the memory stack with the element below it.
+	 */
+	public void swap() {
+		stack.swap();
+	}
+
+	/**
+	 * Removes the element on top of the stack and returns it.
+	 *
+	 * @return the deleted element
+	 */
+	public Object pop() {
+		InstNode popped = stack.pop();
+		return popped != null ? popped.getValue() : null;
 	}
 
 	/**
@@ -364,6 +403,13 @@ public class Memory {
 		}
 
 		symbolOpt.get().setType(sorte);
+	}
+
+	/**
+	 * @return a string representation of the heap
+	 */
+	public String getHeap() {
+		return heap.toString();
 	}
 
 }

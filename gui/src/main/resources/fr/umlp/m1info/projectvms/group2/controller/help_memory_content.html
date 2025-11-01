@@ -1,0 +1,299 @@
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>MiniJaja - Memory & Execution Concepts</title>
+	<style>
+		body {
+			font-family: "Segoe UI", Arial, sans-serif;
+			background-color: #f7f7f7;
+			color: #222;
+			line-height: 1.6;
+			margin: 2em;
+		}
+
+		h1,
+		h2,
+		h3 {
+			color: #2a2a2a;
+		}
+
+		.codeBlock {
+			font-family: monospace;
+			background-color: #454545;
+			color: #fff;
+			border-radius: 6px;
+			white-space: pre-wrap;
+			display: block;
+			padding: 0 2em;
+			margin: 1em 0;
+			overflow-x: auto;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 1em;
+		}
+
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 0.6em;
+			text-align: left;
+		}
+
+		th {
+			background-color: #eaeaea;
+		}
+
+		.section {
+			margin-bottom: 2em;
+		}
+
+		.note {
+			background-color: #eaf3ff;
+			border-left: 4px solid #4a90e2;
+			padding: 1em;
+			border-radius: 6px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>MiniJaja - Memory & Execution Concepts</h1>
+
+	<p>
+		This document explains how <strong>MiniJaja</strong> manages memory during program execution — focusing on the
+		<strong>execution stack</strong>, <strong>symbol table</strong>, and <strong>heap with garbage collection</strong>.
+	</p>
+
+	<div class="section">
+		<h2>1. Example Program</h2>
+		<div class="codeBlock">
+			<code>
+class C {
+  int x = 0;
+  bool b = true;
+  int t[4];
+
+  int fct(int max) {
+    int y = 5;
+    while (max > 0) {
+      y += max;
+      max = max - 1;
+    };
+    return y;
+  };
+
+  void result(int z) {
+    write("x = ");
+    writeln(x);
+  };
+
+  main {
+    if (b) {
+      x = fct(x);
+    } else {
+      x = 0;
+    };
+    result(x);
+  }
+}
+			</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>2. Execution Stack</h2>
+		<p>
+			The <strong>execution stack</strong> is a memory area used to store temporary information created during program
+			execution.
+		</p>
+		<table>
+			<tr>
+				<th>Role</th>
+				<td>Stores local variables, parameters, and return information for functions.</td>
+			</tr>
+			<tr>
+				<th>Scope</th>
+				<td>Each time a method is called, a new “stack frame” is created.</td>
+			</tr>
+			<tr>
+				<th>Lifetime</th>
+				<td>Variables are automatically destroyed when the method finishes.</td>
+			</tr>
+		</table>
+
+		<h3>Example:</h3>
+		<div class="codeBlock">
+			<code>
+x = 0;
+b = true;
+→ main() starts
+→ fct(x) is called → new stack frame created
+  y = 5
+  max = 0
+→ returns y
+→ frame destroyed
+			</code>
+		</div>
+
+		<p class="note">
+			Think of the stack as a pile of sheets. Each function call adds a new sheet containing its variables and results.
+			When the function ends, that sheet is removed.
+		</p>
+	</div>
+
+	<div class="section">
+		<h2>3. Symbol Table</h2>
+		<p>
+			The <strong>symbol table</strong> (or data dictionary) acts like a dictionary that connects variable names to
+			their information:
+		</p>
+		<ul>
+			<li>Identifier name (e.g., <code>x</code>, <code>b</code>)</li>
+			<li>Type (<code>int</code>, <code>bool</code>, etc.)</li>
+			<li>Kind (<code>variable</code>, <code>constant</code>, <code>method</code>)</li>
+			<li>Memory address (where it’s stored)</li>
+		</ul>
+
+		<table>
+			<tr>
+				<th>Identifier</th>
+				<th>Type</th>
+				<th>Category</th>
+				<th>Address</th>
+			</tr>
+			<tr>
+				<td>x</td>
+				<td>int</td>
+				<td>variable</td>
+				<td>0x001</td>
+			</tr>
+			<tr>
+				<td>b</td>
+				<td>bool</td>
+				<td>variable</td>
+				<td>0x002</td>
+			</tr>
+			<tr>
+				<td>t</td>
+				<td>int[4]</td>
+				<td>array</td>
+				<td>0x003</td>
+			</tr>
+			<tr>
+				<td>fct</td>
+				<td>method</td>
+				<td>function</td>
+				<td>0x010</td>
+			</tr>
+		</table>
+
+		<p>
+			This table allows the interpreter to find variable information and manage their scope efficiently.
+		</p>
+	</div>
+
+	<div class="section">
+		<h2>4. Heap Memory</h2>
+		<p>
+			The <strong>heap</strong> is a memory zone used to store data that can grow dynamically,
+			such as arrays or objects created during execution.
+		</p>
+		<p>
+			In our example, the array <code>int t[4]</code> is allocated in the heap. The stack only holds a reference
+			(address) to it.
+		</p>
+
+		<div class="codeBlock">
+			<code>
+Stack:
+├─ x = 0
+├─ b = true
+└─ t → (address 0x200)
+
+Heap:
+[0x200] = [0, 0, 0, 0] ← content of array t[4]
+			</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>5. Garbage Collector</h2>
+		<p>
+			The <strong>garbage collector</strong> automatically manages memory in the heap by freeing blocks that are no
+			longer used.
+		</p>
+
+		<h3>Steps:</h3>
+		<ol>
+			<li>Find objects that are no longer referenced by the program.</li>
+			<li>Release (or “collect”) their memory.</li>
+			<li>Optionally reorganize memory (merge adjacent free blocks).</li>
+		</ol>
+
+		<p>Common strategies:</p>
+		<ul>
+			<li><strong>Simple release:</strong> the memory block is freed but not reused efficiently.</li>
+			<li><strong>Coalescing:</strong> adjacent free blocks are merged into one larger block.</li>
+			<li><strong>Reconstruction:</strong> memory is reorganized to optimize space usage.</li>
+		</ul>
+
+		<div class="note">
+			Without garbage collection, unused objects would accumulate and eventually cause the program to run out of memory.
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>6. Stack vs Heap Comparison</h2>
+		<table>
+			<tr>
+				<th>Aspect</th>
+				<th>Stack</th>
+				<th>Heap</th>
+			</tr>
+			<tr>
+				<td>Purpose</td>
+				<td>Stores local variables and function calls</td>
+				<td>Stores dynamic data (arrays, objects)</td>
+			</tr>
+			<tr>
+				<td>Managed by</td>
+				<td>Automatically by program execution</td>
+				<td>Garbage Collector</td>
+			</tr>
+			<tr>
+				<td>Lifetime</td>
+				<td>Until the function ends</td>
+				<td>Until the object is no longer referenced</td>
+			</tr>
+			<tr>
+				<td>Access speed</td>
+				<td>Very fast</td>
+				<td>Fast</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="section">
+		<h2>7. Execution Flow Summary</h2>
+		<div class="codeBlock">
+			<code>
+1. Class C is loaded
+2. Variables (x, b, t) are initialized
+3. main() executes
+4. if (b) → true → call fct(x)
+  → new stack frame: (max=0, y=5)
+  → while (max>0) skipped
+  → return 5
+5. x = 5
+6. result(x) → prints "x = 5"
+			</code>
+		</div>
+	</div>
+</body>
+
+</html>

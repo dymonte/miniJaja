@@ -42,15 +42,6 @@ public class ASTVarArray extends ASTVar {
 	}
 
 	/**
-	 * Returns the identifier of the variable
-	 *
-	 * @return the ASTIdent of the array variable
-	 */
-	public ASTIdent getIdent() {
-		return ident;
-	}
-
-	/**
 	 * Returns the expression representing the size of the array
 	 *
 	 * @return the ASTExpr representing the array size

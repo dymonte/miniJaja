@@ -1,11 +1,19 @@
 .button {
-    -fx-font: 16px "Serif";
+	-fx-font: 16px "Serif";
 }
+
 .lineno-rect {
-    -fx-fill: #f0f0f0;
-    -fx-stroke: #d0d0d0;
+	-fx-fill: #f0f0f0;
+	-fx-stroke: #d0d0d0;
 }
+
 .code-area {
-    -fx-font-family: 'Monospaced', monospace;
-    -fx-font-size: 14px
+	-fx-font-family: 'Monospaced', monospace;
+	-fx-font-size: 14px;
+}
+
+#headerLabel {
+	-fx-font-weight: bold;
+	-fx-font-size: 11px;
+	-fx-padding: 4 10;
 }

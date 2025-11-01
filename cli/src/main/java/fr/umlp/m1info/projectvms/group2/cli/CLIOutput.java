@@ -33,7 +33,7 @@ public class CLIOutput implements InterpreterListener, ParserListener {
 
     @SuppressWarnings("java:S106")
     public static void write(String message) {
-        System.out.println(message);
+        System.out.print(message);
     }
 
     @SuppressWarnings("java:S106")

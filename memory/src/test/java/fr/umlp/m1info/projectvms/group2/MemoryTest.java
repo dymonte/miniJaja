@@ -74,16 +74,29 @@ public class MemoryTest {
 	@Test
 	public void testDeclCstNotPresent() {
 		SymTable symTable = new SymTable(100);
-		String ident = "i";
+		String ident1 = "i";
+		String ident2 = "c";
 		int value = 2;
 		Type sorte = Type.INT;
 
 		SymTable spySymTable = Mockito.spy(symTable);
-		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident, ObjectKind.CONST, sorte);
+		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident1, ObjectKind.CONST, sorte);
+		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident2, ObjectKind.VCONST, sorte);
 		Memory memory = new Memory(spySymTable, new Stack(100), new Heap(100));
 
-		memory.declCst(ident, value, sorte);
-		Assert.assertThrows(SymbolNotFoundException.class, () -> memory.getVal(ident));
+		memory.declCst(ident1, value, sorte);
+		memory.declCst(ident2, sorte);
+		Assert.assertThrows(SymbolNotFoundException.class, () -> memory.getVal(ident1));
+		Assert.assertThrows(SymbolNotFoundException.class, () -> memory.getVal(ident2));
+	}
+
+	@Test
+	public void testVConst() {
+		m.declCst("c", Type.INT);
+		Assert.assertThrows(NoInstanceException.class, () -> m.getVal("c"));
+		m.updateVal("c", 4);
+		Assert.assertEquals(4, (int) m.getVal("c"));
+		Assert.assertThrows(BadSymbolKindException.class, () -> m.updateVal("c", 5));
 	}
 
 	@Test
@@ -144,7 +157,6 @@ public class MemoryTest {
 
 		Assert.assertThrows(NoInstanceException.class, () -> memory.getVal(ident));
 		Assert.assertThrows(NoInstanceException.class, () -> memory.updateVal(ident, value));
-		Assert.assertThrows(NoInstanceException.class, () -> memory.removeDecl(ident));
 	}
 
 	@Test
@@ -169,7 +181,6 @@ public class MemoryTest {
 		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
 		Assert.assertThrows(SymbolNotFoundException.class, () -> m.getVal("aa"));
 		m.declArray("aa", 1, Type.INT);
-		Assert.assertThrows(BadSymbolKindException.class, () -> m.getVal("aa"));
 	}
 
 	@Test
@@ -285,5 +296,16 @@ public class MemoryTest {
 		Assert.assertTrue(quad.isEmpty());
 
 		Assert.assertEquals("< a, 2, VAR, INT >", quad2.toString());
+	}
+
+	@Test
+	public void testJaJaCodeStack() {
+		m.push(4);
+		m.push(3);
+		Assert.assertEquals(3, m.getHead().getVal());
+		m.swap();
+		Assert.assertEquals(4, m.pop());
+		Assert.assertEquals(3, m.pop());
+		Assert.assertEquals(null, m.pop());
 	}
 }

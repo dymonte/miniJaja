@@ -40,15 +40,6 @@ public class ASTVarSimple extends ASTVar {
 	}
 
 	/**
-	 * Returns the identifier of the variable
-	 *
-	 * @return the ASTIdent representing the variable name
-	 */
-	public ASTIdent getIdent() {
-		return ident;
-	}
-
-	/**
 	 * Returns the initialization expression of the variable
 	 *
 	 * @return the ASTVExpr representing the initialization, may be null

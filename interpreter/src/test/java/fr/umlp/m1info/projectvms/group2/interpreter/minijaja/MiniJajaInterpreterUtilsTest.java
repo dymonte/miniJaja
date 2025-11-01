@@ -7,7 +7,7 @@ import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
@@ -16,6 +16,9 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTIntType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 
@@ -80,5 +83,17 @@ public class MiniJajaInterpreterUtilsTest {
 		Assert.assertThrows(NullPointerException.class, () -> MiniJajaInterpreterUtils.unaryOperation(UnaryOp.NEG, null));
 		Assert.assertEquals(-1, MiniJajaInterpreterUtils.unaryOperation(UnaryOp.NEG, 1));
 		Assert.assertFalse((Boolean) MiniJajaInterpreterUtils.unaryOperation(UnaryOp.NOT, true));
+	}
+
+	@Test
+	public void collectExprTypesTest() {
+		ASTParams paramsSub = new ASTParamsChain(new ASTParam(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), 0, 0),
+				new ASTParamsNil(0, 0), 0, 0);
+		ASTParamsChain params = new ASTParamsChain(new ASTParam(new ASTIntType(0, 0), new ASTIdent("b", 0, 0), 0, 0),
+				paramsSub, 0, 0);
+		List<Type> exprTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
+		Assert.assertEquals(2, exprTypes.size());
+		Assert.assertEquals(Type.INT, exprTypes.get(0));
+		Assert.assertEquals(Type.INT, exprTypes.get(1));
 	}
 }

@@ -13,8 +13,8 @@ import javafx.fxml.FXMLLoader;
  */
 public class App extends Application {
 
-	public static int DEFAULT_SCREEN_WIDTH = 900;
-	public static int DEFAULT_SCREEN_HEIGHT = 600;
+	private static final int DEFAULT_SCREEN_WIDTH = 900;
+	private static final int DEFAULT_SCREEN_HEIGHT = 600;
 
 	@Override
 	public void start(Stage stage) throws Exception {

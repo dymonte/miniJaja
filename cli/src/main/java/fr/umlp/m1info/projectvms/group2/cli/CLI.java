@@ -23,6 +23,9 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
  */
 public class CLI {
 
+    private CLI() {
+    }
+
     /**
      * Executes the MiniJaJa code from the file specified in the options.
      *
