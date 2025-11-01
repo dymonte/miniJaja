@@ -1,0 +1,13 @@
+class methods_test {
+    int add(int x, int y) {
+        int z;
+        z = x + y;
+        return z;
+    };
+
+    main {
+        int result;
+        result = add(5,7);
+        write(result);
+    }
+}
