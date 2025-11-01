@@ -3,21 +3,48 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.groupe2.projetVMs</groupId>
-    <artifactId>projet-VMs</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+    <artifactId>project-vms</artifactId>
+    <version>0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.groupe2.projetVMs</groupId>
+  <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>antlr</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <name>antlr</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>4.13.1</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+      <artifactId>ast</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-maven-plugin</artifactId>
+        <version>4.13.1</version>
+        <executions>
+          <execution>
+            <id>antlr</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>antlr4</goal>
+            </goals>
+            <configuration>
+              <visitor>true</visitor>
+              <sourceDirectory>src/main/antlr4</sourceDirectory>
+              <outputDirectory>${project.build.directory}/generated-sources/antlr4</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

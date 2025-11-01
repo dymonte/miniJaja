@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import org.fxmisc.richtext.CodeArea?>
+
+<VBox xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.umlp.m1info.projectvms.group2.controller.CodeSectionController">
+  <CodeArea fx:id="codeArea" styleClass="code-area" wrapText="true" VBox.vgrow="ALWAYS" />
+</VBox>

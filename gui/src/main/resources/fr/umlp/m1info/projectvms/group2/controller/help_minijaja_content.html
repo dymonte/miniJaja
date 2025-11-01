@@ -1,0 +1,296 @@
+<!-- class C {
+  int x = 0;
+  bool b = true;
+  int t[4];
+
+  int fct(int max) {
+    int y = 5;
+    while (max>0) {
+      y += max;
+      max = max - 1;
+    };
+    return y;
+  };
+
+  void result(int z) {
+    write("x = ");
+    writeln(x);
+  };
+
+  main {
+    if (b) {
+      x = fct(x);
+    }
+    else {
+      x = 0;
+    };
+    result(x);
+  }
+} -->
+
+
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>MiniJaja Documentation</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #f7f7f7;
+      color: #222;
+      line-height: 1.6;
+      margin: 2em;
+    }
+
+    h1, h2, h3 {
+      color: #2a2a2a;
+    }
+
+    .codeBlock {
+      font-family: monospace;
+      background-color: #454545;
+      color: #fff;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      display: block;
+      padding: 0 2em;
+      margin: 1em 0;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.6em;
+      text-align: left;
+    }
+
+    th {
+      background-color: #eaeaea;
+    }
+
+    .section {
+      margin-bottom: 2em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>📘 MiniJaja Language Documentation</h1>
+
+  <p>
+    MiniJaja is a lightweight, educational programming language that supports object-oriented and procedural concepts.
+    It includes classes, variables, methods, loops, and conditional statements.
+  </p>
+
+  <div class="section">
+    <h2>1. Class Declaration</h2>
+    <p>
+      A <strong>class</strong> defines a structure that contains variables (fields), methods, and a special
+      <code>main</code> block that represents the entry point of the program.
+    </p>
+    <div class="codeBlock">
+<code>
+class C {
+  int x = 0;
+
+  int f(int x) {
+    return x + 1;
+  }
+
+  main {
+    x = f(x);
+  }
+}
+</code>
+    </div>
+    <p>
+      Syntax:
+      <br><code>class &lt;ClassName&gt; { [&lt;declarations&gt;] [&lt;methods&gt;] main { &lt;statements&gt; } }</code>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>2. Variable Declarations</h2>
+    <p>
+      Variables can be declared inside a class or a method. Each variable has a type, a name, and may have an initial value.
+    </p>
+    <ul>
+      <li><code>int</code> — integer numbers</li>
+      <li><code>bool</code> — boolean values (<code>true</code> or <code>false</code>)</li>
+      <li>Arrays — for example: <code>int t[4];</code></li>
+    </ul>
+    <div class="codeBlock">
+<code>
+int x = 0;
+bool b = true;
+int t[4];
+</code>
+    </div>
+    <p>
+      Variables declared at the class level are shared across methods (fields), while those inside methods are local.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>3. Method Declarations</h2>
+    <p>
+      A <strong>method</strong> defines a block of code that can take parameters, perform computations, and optionally return a value.
+    </p>
+    <p>Structure:</p>
+    <div class="codeBlock">
+<code>
+&lt;return_type&gt; &lt;method_name&gt;([&lt;parameters&gt;]) {
+    &lt;local declarations&gt;
+    &lt;statements&gt;
+    [return &lt;expression&gt;;]
+}
+</code>
+    </div>
+
+    <h3>Example:</h3>
+    <div class="codeBlock">
+<code>
+int fct1(int max) {
+  int y = 5;
+  while (max > 0) {
+    y += max;
+    max = max - 1;
+  };
+  return y;
+}
+
+void fct2(int x) {
+  write("x = ");
+  writeln(x);
+}
+</code>
+    </div>
+
+    <p>
+      This function computes the sum of all integers from <code>max</code> down to 1, starting with <code>y = 5</code>.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>4. Control Structures</h2>
+
+    <h3>If-Else Statement</h3>
+    <div class="codeBlock">
+<code>
+if (b) {
+  x = fct(x);
+}
+else {
+  x = 0;
+};
+</code>
+    </div>
+    <p>
+      The condition <code>b</code> is evaluated. If it is <code>true</code>, <code>fct(x)</code> is called.
+      Otherwise, <code>x</code> is set to 0.
+    </p>
+
+    <h3>While Loop</h3>
+    <div class="codeBlock">
+<code>
+while (max > 0) {
+  y += max;
+  max = max - 1;
+};
+</code>
+    </div>
+    <p>
+      The loop executes repeatedly as long as <code>max > 0</code> is true.
+      Each iteration adds <code>max</code> to <code>y</code> and decrements <code>max</code>.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>5. The <code>main</code> Block</h2>
+    <p>
+      The <strong>main block</strong> is the entry point of the program. When the class is executed, the code inside
+      <code>main</code> runs automatically.
+    </p>
+    <div class="codeBlock">
+<code>
+main {
+  if (b) {
+    x = fct(x);
+  }
+  else {
+    x = 0;
+  };
+  write(x);
+}
+</code>
+    </div>
+    <p>
+      In this example:
+      <ul>
+        <li>The program checks the boolean variable <code>b</code>.</li>
+        <li>If <code>b</code> is <code>true</code>, it assigns <code>x = fct(x)</code>.</li>
+        <li>Otherwise, <code>x</code> is set to 0.</li>
+        <li>Finally, it calls <code>result(x)</code> to display the result.</li>
+      </ul>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>6. Assignation</h2>
+    <div class="codeBlock">
+<code>
+x = 5;
+x += 5; <p  style="color: #848484; display: inline;">// x = x + 5</p></code> 
+<!-- TODO : others ? (+=, -=, *=, /=, %=) -->
+    </div>
+    <p>
+      Assigns a value to a variable.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>7. Operators</h2>
+    <table style="display: inline-block;">
+      <tr><th>Operator</th><th>Description</th></tr>
+      <tr><td><code>+</code></td><td>Addition</td></tr>
+      <tr><td><code>-</code></td><td>Subtraction</td></tr>
+      <tr><td><code>*</code></td><td>Multiplication</td></tr>
+      <tr><td><code>/</code></td><td>Division</td></tr>
+      <tr><td><code>%</code></td><td>Modulo</td></tr>
+      <tr><td><code>==</code></td><td>Equality</td></tr>
+      <tr><td><code>!=</code></td><td>Inequality</td></tr>
+      <tr><td><code>&gt;</code></td><td>Greater than</td></tr>
+      <tr><td><code>&lt;</code></td><td>Less than</td></tr>
+      <tr><td><code>&gt;=</code></td><td>Greater than or equal to</td></tr>
+      </table>
+  </div>
+
+  <div class="section">
+    <h2>8. Keyword Summary</h2>
+    <table style="display: inline-block;">
+      <tr><th>Keyword</th><th>Description</th></tr>
+      <tr><td><code>class</code></td><td>Defines a new class</td></tr>
+      <tr><td><code>int</code></td><td>Declares an integer variable or return type</td></tr>
+      <tr><td><code>bool</code></td><td>Declares a boolean variable or return type</td></tr>
+      <tr><td><code>void</code></td><td>Declares a method with no return value</td></tr>
+      <tr><td><code>if</code>, <code>else</code></td><td>Conditional branching</td></tr>
+      <tr><td><code>while</code></td><td>Looping structure</td></tr>
+      <tr><td><code>return</code></td><td>Returns a value from a method</td></tr>
+      <tr><td><code>main</code></td><td>Program entry point</td></tr>
+      <tr><td><code>write</code>, <code>writeln</code></td><td>Output functions</td></tr>
+      <tr><td><code>length</code></td><td>Returns the length of an array</td></tr>
+    </table>
+  </div>
+
+</body>
+
+</html>

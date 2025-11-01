@@ -1,0 +1,136 @@
+image: maven:3-openjdk-17
+
+stages:
+  - build
+  - test
+  - deploy
+  - release
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  RUNNER: "avm_groupe2"
+  SONAR_PROJECT_KEY: "AVM-GROUPE-2-2025"
+  SONAR_PROJECT_NAME: "AVM-Groupe-2"
+
+cache:
+  paths:
+    - $CI_PROJECT_DIR/.m2/repository
+  key: "$CI_BUILD_REF_NAME"
+
+.setup:
+  script:
+    - chmod +x ./settings.sh
+    - ./settings.sh
+
+build:
+  stage: build
+  tags:
+    - $RUNNER
+  before_script:
+    !reference [.setup, script]
+  script:
+    - mvn clean compile
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'
+
+build-report:
+  stage: build
+  tags:
+    - $RUNNER
+  before_script:
+    - microdnf update -y
+    - microdnf install make -y
+    - microdnf install texlive-base -y
+  script:
+    - cd report
+    - make
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'report'
+  artifacts:
+    when: on_success
+    paths:
+      - "report/report.pdf"
+    expire_in: 30 days
+
+build-doc:
+  stage: build
+  tags:
+    - $RUNNER
+  before_script:
+    !reference [.setup, script]
+  script:
+    - mvn javadoc:aggregate
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'
+  artifacts:
+    when: on_success
+    paths:
+      - "./target/site/apidocs"
+    expire_in: 30 days
+
+verify:
+  stage: test
+  tags:
+    - $RUNNER
+  needs:
+    - build
+  before_script:
+    !reference [.setup, script]
+  script:
+    - mvn jacoco:prepare-agent verify jacoco:report sonar:sonar
+      -Dsonar.projectKey=$SONAR_PROJECT_KEY
+      -Dsonar.projectName=$SONAR_PROJECT_NAME
+      -Dsonar.host.url=$SONAR_HOST_URL
+      -Dsonar.token=$SONAR_TOKEN
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'
+
+deploy:
+  stage: deploy
+  tags:
+    - $RUNNER
+  before_script:
+    !reference [.setup, script]
+  script:
+    - mvn deploy -DskipTests
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == 'main'
+#
+#release:prepare:
+#  stage: release
+#  tags:
+#    - $RUNNER
+#  before_script:
+#    !reference [.setup, script]
+#  script:
+#    - git reset --hard
+#    - git clean -fd
+#    - mvn --batch-mode release:prepare
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == 'main'
+#
+#release:perform:
+#  stage: release
+#  needs:
+#    - release:prepare
+#  tags:
+#    - $RUNNER
+#  before_script:
+#    !reference [.setup, script]
+#  script:
+#    - git reset --hard
+#    - git clean -fd
+#    - mvn --batch-mode release:perform
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == 'main'
+#

@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.groupe2.projetVMs</groupId>
-  <artifactId>projet-VMs</artifactId>
+  <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+  <artifactId>project-vms</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>projet-VMs</name>
+  <version>0.1-SNAPSHOT</version>
+  <name>project-vms</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <sonar.coverage.jacoco.xmlReportPaths>
+      ${project.basedir}/target/site/jacoco/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
   </properties>
+  <scm>
+    <developerConnection>
+      scm:git:https://disc.univ-fcomte.fr/cr700-gitlab/projet-amv-2025/groupe-2.git
+    </developerConnection>
+    <tag>HEAD</tag>
+  </scm>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.13</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.12.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -23,5 +40,94 @@
     <module>antlr</module>
     <module>ast</module>
     <module>gui</module>
+    <module>memory</module>
+    <module>interpreter</module>
+    <module>cli</module>
+    <module>integration-tests</module>
   </modules>
+  <distributionManagement>
+    <repository>
+      <id>nexus-deptinfo</id>
+      <url>https://disc.univ-fcomte.fr/cr700-nexus/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-deptinfo-snapshots</id>
+      <url>https://disc.univ-fcomte.fr/cr700-nexus/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <doctitle>Projet AVM groupe2 API docs</doctitle>
+          <windowtitle>Projet AVM groupe2 API docs</windowtitle>
+          <useStandardDocletOptions>true</useStandardDocletOptions>
+          <source>17</source>
+          <encoding>UTF-8</encoding>
+          <failOnError>false</failOnError>
+          <quiet>true</quiet>
+          <show>protected</show>
+          <additionalJOptions>
+            <additionalJOption>-Xdoclint:none</additionalJOption>
+          </additionalJOptions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report-aggregate</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report-aggregate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>3.9.0.2155</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>3.1.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
