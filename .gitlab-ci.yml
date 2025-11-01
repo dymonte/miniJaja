@@ -95,8 +95,6 @@ deploy:
   stage: deploy
   tags:
     - $RUNNER
-  needs:
-    - verify
   before_script:
     !reference [.setup, script]
   script:
