@@ -112,7 +112,7 @@ release:prepare:
   before_script:
     !reference [.setup, script]
   script:
-    - mvn release:prepare
+    - mvn --batch-mode release:prepare
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
 
@@ -125,7 +125,7 @@ release:perform:
   before_script:
     !reference [.setup, script]
   script:
-    - mvn release:perform
+    - mvn --batch-mode release:perform
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
 

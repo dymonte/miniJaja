@@ -5,11 +5,11 @@
   <parent>
     <groupId>fr.umlp.m1info.projectvms.group2</groupId>
     <artifactId>project-vms</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
   <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>gui</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <name>gui</name>
   <url>http://maven.apache.org</url>
   <dependencies>
@@ -42,12 +42,12 @@
     <dependency>
       <groupId>fr.umlp.m1info.projectvms.group2</groupId>
       <artifactId>memory</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
       <dependency>
           <groupId>fr.umlp.m1info.projectvms.group2</groupId>
           <artifactId>interpreter</artifactId>
-          <version>1.0-SNAPSHOT</version>
+          <version>0.1-SNAPSHOT</version>
       </dependency>
   </dependencies>
   <build>
