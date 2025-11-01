@@ -34,6 +34,7 @@ build:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'
 
 build-report:
   stage: build
@@ -66,6 +67,7 @@ build-doc:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'
   artifacts:
     when: on_success
     paths:
@@ -90,6 +92,7 @@ verify:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'
 
 deploy:
   stage: deploy
@@ -110,6 +113,8 @@ release:prepare:
   before_script:
     !reference [.setup, script]
   script:
+    - git reset --hard
+    - git clean -fd
     - mvn --batch-mode release:prepare
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
@@ -123,6 +128,8 @@ release:perform:
   before_script:
     !reference [.setup, script]
   script:
+    - git reset --hard
+    - git clean -fd
     - mvn --batch-mode release:perform
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
