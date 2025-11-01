@@ -73,7 +73,8 @@ NUMBER:   DIGIT+;
 fragment LETTER:   [a-zA-Z];
 
 IDENT:    (LETTER|'_')(LETTER|NUMBER|'_')*;
-STRING: '"' (~["\\\r\n] | '\\' .)* '"';
+fragment CHARS: (~["\\\r\n] | '\\' .)*;
+STRING: '"' CHARS '"' { String text = getText(); setText(text.substring(1, text.length() -1)); };
 
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
