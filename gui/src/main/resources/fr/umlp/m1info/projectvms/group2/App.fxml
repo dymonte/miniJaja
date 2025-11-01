@@ -80,9 +80,10 @@
             <MenuItem mnemonicParsing="false" text="Unselect All" onAction="#unSelectAllCode" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help" onAction="#openHelpPopup">
+        <Menu mnemonicParsing="false" text="Help">
           <items>
-            <MenuItem mnemonicParsing="false" text="miniJaja language" />
+            <MenuItem mnemonicParsing="false" text="MiniJaja language" onAction="#openHelpMiniJaja"/>
+            <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Execution">

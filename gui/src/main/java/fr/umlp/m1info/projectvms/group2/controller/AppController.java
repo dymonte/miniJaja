@@ -3,6 +3,7 @@ package fr.umlp.m1info.projectvms.group2.controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import fr.umlp.m1info.projectvms.group2.AppState;
 
 import fr.umlp.m1info.projectvms.group2.PopUp;
+import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
@@ -19,13 +21,10 @@ import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
-import javafx.scene.Scene;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -253,24 +252,34 @@ public class AppController implements StatefulController {
 	}
 
 	/**
-	 * Opens help window
+	 * Opens help minijaja language window
 	 */
 	@FXML
-	private void openHelpPopup() {
-		final Stage popup = new Stage();
-		popup.initModality(Modality.APPLICATION_MODAL);
-		popup.initOwner(primaryStage);
-		popup.setMinHeight(500);
-		popup.setMinWidth(700);
-		popup.setTitle("Help");
-		WebView webView = new WebView();
+	private void openHelpMiniJaja() {
+		openHelpFile("help_minijaja_content.html");
+	}
+
+	/**
+	 * Opens help memory window
+	 */
+	@FXML
+	private void openHelpMemory() {
+		openHelpFile("help_memory_content.html");
+	}
+
+	private void openHelpFile(String resourceName) {
 		try {
-			File file = new File(getClass().getResource("help_content.html").toURI());
-			webView.getEngine().load(file.toURI().toURL().toString());
-			popup.setScene(new Scene(webView));
-			popup.show();
-		} catch (IOException | URISyntaxException e) {
-			PopUp.error("Help page", "Cannot open help page", "Error while opening help page");
+			URL resource = getClass().getResource(resourceName);
+			if (resource == null) {
+				PopUp.error("Help page", "Missing resource", "Cannot find " + resourceName);
+				return;
+			}
+
+			File file = new File(resource.toURI());
+			HelpPopUp.openHelpPopup(primaryStage, file);
+
+		} catch (Exception e) {
+			PopUp.error("Help page", "Cannot open help page", e.getMessage());
 		}
 	}
 
