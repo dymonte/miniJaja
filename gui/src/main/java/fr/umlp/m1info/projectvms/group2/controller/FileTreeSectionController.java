@@ -61,8 +61,7 @@ public class FileTreeSectionController {
 
 		treeView = new TreeView<>(rootNode);
 		treeView.setShowRoot(true);
-		FileTreeCellImpl impl = new FileTreeCellImpl();
-		treeView.setCellFactory(param -> impl);
+		treeView.setCellFactory(param -> new FileTreeCellImpl());
 		treeView.setMaxWidth(Double.MAX_VALUE);
 		VBox.setVgrow(treeView, javafx.scene.layout.Priority.ALWAYS);
 		treeView.setOnMouseClicked(event -> {
@@ -163,7 +162,7 @@ public class FileTreeSectionController {
 
 		private TextField textField;
 
-		private FileTreeCellImpl() {
+		public FileTreeCellImpl() {
 		}
 
 		@Override
