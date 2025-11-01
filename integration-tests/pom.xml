@@ -4,12 +4,12 @@
   <parent>
     <artifactId>project-vms</artifactId>
     <groupId>fr.umlp.m1info.projectvms.group2</groupId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
 
   <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>integration-tests</artifactId>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
 
   <name>integration-tests</name>
   <!-- FIXME change it to the project's website -->
@@ -24,17 +24,17 @@
     <dependency>
       <groupId>fr.umlp.m1info.projectvms.group2</groupId>
       <artifactId>interpreter</artifactId>
-      <version>0.1</version>
+      <version>0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>fr.umlp.m1info.projectvms.group2</groupId>
       <artifactId>cli</artifactId>
-      <version>0.1</version>
+      <version>0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>fr.umlp.m1info.projectvms.group2</groupId>
       <artifactId>ast</artifactId>
-      <version>0.1</version>
+      <version>0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
