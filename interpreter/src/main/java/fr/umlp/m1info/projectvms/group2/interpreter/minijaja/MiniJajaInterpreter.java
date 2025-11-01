@@ -49,11 +49,11 @@ public class MiniJajaInterpreter {
 			throw new InterpretRuntimeException("node cannot be null");
 		}
 
-        if (Thread.currentThread().isInterrupted()) {
-            throw new InterpretRuntimeException("Execution interrupted");
-        }
+		if (Thread.currentThread().isInterrupted()) {
+			throw new InterpretRuntimeException("Execution interrupted");
+		}
 
-        Method m = findAnnotatedMethod(InterpretFunction.class, node.getClass());
+		Method m = findAnnotatedMethod(InterpretFunction.class, node.getClass());
 		if (m == null) {
 			throw new InterpretRuntimeException("No @InterpretFunction found for " + node.getClass().getSimpleName());
 		}
@@ -176,12 +176,11 @@ public class MiniJajaInterpreter {
 	/** Interprets an assignement operation */
 	@InterpretFunction(ASTAssignmentOp.class)
 	protected void interpretAssignment(ASTAssignmentOp node) {
-		Object currentValue = eval(node.getLValue());
 		Object exprValue = eval(node.getExpr());
 
 		Object newValue = switch (node.getOp()) {
 			case EQ -> exprValue;
-			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, currentValue, exprValue);
+			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), exprValue);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {
@@ -211,10 +210,9 @@ public class MiniJajaInterpreter {
 	/** Interprets an increment operation */
 	@InterpretFunction(ASTIncrementOp.class)
 	protected void interpretIncrement(ASTIncrementOp node) {
-		Object currentValue = eval(node.getLValue());
 
 		Object newValue = switch (node.getOp()) {
-			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, currentValue, 1);
+			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), 1);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {
@@ -315,7 +313,7 @@ public class MiniJajaInterpreter {
 		var vexp = node.getVExpr();
 		Type type = MiniJajaInterpreterUtils.getTypeFromTypeMeth((ASTTypeMeth) node.getType());
 		if (vexp == null) {
-			throw new InterpretRuntimeException("Constant value cannot be null");
+			memory.declCst(ident, type);
 		} else {
 			Object value = eval(vexp.getExpr());
 			if (type == MiniJajaInterpreterUtils.getTypeFromObject(value)) {
