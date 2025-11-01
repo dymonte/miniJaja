@@ -1,7 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import java.util.ArrayList;
-
+import java.util.List;
 import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
@@ -122,7 +122,6 @@ public class MiniJajaInterpreter {
 					try {
 						Class<?> handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
 						if (handledType.isAssignableFrom(nodeClass)) {
-							method.setAccessible(true);
 							return method;
 						}
 					} catch (Exception ignored) {
@@ -154,7 +153,7 @@ public class MiniJajaInterpreter {
 	protected void interpretMethod(ASTMethod node) {
 		String ident = node.getIdent().getName();
 		ASTParams params = node.getParams();
-		ArrayList<Type> paramsTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
+		List<Type> paramsTypes = MiniJajaInterpreterUtils.collectParamTypes(params);
 		Type returnType = MiniJajaInterpreterUtils.getTypeFromTypeMeth(node.getType());
 
 		memory.declMeth(ident, node, paramsTypes, returnType);
@@ -170,7 +169,7 @@ public class MiniJajaInterpreter {
 	/** Interprets an empty declaration list */
 	@InterpretFunction(ASTDeclsNil.class)
 	protected void interpretDeclsNil(ASTDeclsNil node) {
-		return;// do nothing
+		// do nothing
 	}
 
 	/** Interprets an assignement operation */
@@ -196,8 +195,8 @@ public class MiniJajaInterpreter {
 	@InterpretFunction(ASTIf.class)
 	protected void interpretIf(ASTIf node) {
 		Object value = eval(node.getExpr());
-		if (value instanceof Boolean) {
-			if ((Boolean) value) {
+		if (value instanceof Boolean bool) {
+			if (bool) {
 				interpret(node.getIfInstrs());
 			} else {
 				interpret(node.getElseInstrs());
@@ -285,7 +284,7 @@ public class MiniJajaInterpreter {
 	/** Interprets an empty instruction list */
 	@InterpretFunction(ASTInstrsNil.class)
 	protected void interpretInstrsNil(ASTInstrsNil node) {
-		return; // do nothing
+		// do nothing
 	}
 
 	/** Interprets a array variable declaration */
@@ -354,7 +353,7 @@ public class MiniJajaInterpreter {
 	/** Interprets an empty variable declaration list */
 	@InterpretFunction(ASTVarsNil.class)
 	protected void interpretVarsNil(ASTVarsNil node) {
-		return; // do nothing
+		// do nothing
 	}
 
 	/** Evaluates an array element access expression */
@@ -424,7 +423,7 @@ public class MiniJajaInterpreter {
 	/** Free an empty variable */
 	@FreeFunction(ASTVarsNil.class)
 	protected void freeVarsNil(ASTVarsNil node) {
-		return; // Do nothing
+		// do nothing
 	}
 
 	/** Free an variable */

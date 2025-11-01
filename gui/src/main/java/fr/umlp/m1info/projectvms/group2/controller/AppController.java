@@ -297,13 +297,9 @@ public class AppController implements StatefulController {
 				ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
 				interpreter.interpret(programRoot);
 			} catch (InterpretRuntimeException e) {
-				Platform.runLater(() -> {
-					PopUp.error("MiniJaja Interpreter Error", e.getMessage(), "");
-				});
+				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", e.getMessage(), ""));
 			} catch (Exception e) {
-				Platform.runLater(() -> {
-					PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", "");
-				});
+				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", ""));
 			}
 		});
 
@@ -318,7 +314,6 @@ public class AppController implements StatefulController {
 			miniJajaInterpreterThread.interrupt();
 		} else {
 			PopUp.info("MiniJaja Interpreter", "Interpretation is not running", "Start the interpretation");
-			return;
 		}
 	}
 

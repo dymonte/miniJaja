@@ -114,8 +114,8 @@ public class FileTreeSectionController {
 				return isLeaf;
 			}
 
-			private ObservableList<TreeItem<File>> buildChildren(TreeItem<File> TreeItem) {
-				File f = TreeItem.getValue();
+			private ObservableList<TreeItem<File>> buildChildren(TreeItem<File> treeItem) {
+				File f = treeItem.getValue();
 				if (f == null || !f.isDirectory()) {
 					return FXCollections.emptyObservableList();
 				}
@@ -191,7 +191,7 @@ public class FileTreeSectionController {
 
 		private String getItemDisplayName() {
 			File f = getItem();
-			return f == null ? "" : f.getName().isEmpty() ? f.getAbsolutePath() : f.getName();
+			return f == null ? "" : f.getName();
 		}
 	}
 }

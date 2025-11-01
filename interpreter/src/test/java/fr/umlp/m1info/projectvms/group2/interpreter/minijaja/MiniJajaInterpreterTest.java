@@ -54,8 +54,9 @@ public class MiniJajaInterpreterTest {
 
 	@Test
 	public void testInterpretNotExist() {
+		ASTBoolLiteral bool = new ASTBoolLiteral(true, 0, 0);
 		Assert.assertThrows(InterpretRuntimeException.class,
-				() -> interpreter.interpret(new ASTBoolLiteral(true, 0, 0)));
+				() -> interpreter.interpret(bool));
 	}
 
 	@Test
@@ -659,10 +660,10 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(5).when(spyInterpreter).eval(a);
 		Mockito.doReturn(3).when(spyInterpreter).eval(b);
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
-
+		ASTBinaryOp binary = new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0);
 		Assert.assertEquals(true, spyInterpreter.eval(new ASTBinaryOp(a, b, BinaryOp.GT, 0, 0)));
 		Assert.assertThrows(InterpretRuntimeException.class,
-				() -> spyInterpreter.eval(new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0)));
+				() -> spyInterpreter.eval(binary));
 	}
 
 	@Test
@@ -676,9 +677,10 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(5).when(spyInterpreter).eval(b);
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
 
+		ASTBinaryOp binary = new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0);
 		Assert.assertEquals(true, spyInterpreter.eval(new ASTBinaryOp(a, b, BinaryOp.LT, 0, 0)));
 		Assert.assertThrows(InterpretRuntimeException.class,
-				() -> spyInterpreter.eval(new ASTBinaryOp(a, boolVal, BinaryOp.LT, 0, 0)));
+				() -> spyInterpreter.eval(binary));
 	}
 
 	@Test
@@ -969,7 +971,8 @@ public class MiniJajaInterpreterTest {
 
 	@Test
 	public void TestExceptionFree() {
+		ASTVarSimple simple = new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0);
 		Assert.assertThrows(InterpretRuntimeException.class,
-				() -> interpreter.free(new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0)));
+				() -> interpreter.free(simple));
 	}
 }
