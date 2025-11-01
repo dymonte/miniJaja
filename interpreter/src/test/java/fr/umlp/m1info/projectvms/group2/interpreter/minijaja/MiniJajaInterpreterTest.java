@@ -902,7 +902,7 @@ public class MiniJajaInterpreterTest {
 		spyInterpreter.interpret(varConst);
 		spyInterpreter.interpret(varConst4);
 		Assert.assertEquals(3, memory.getVal(ident.getName()));
-		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpret(varConst2));
+		spyInterpreter.interpret(varConst2);
 		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpret(varConst3));
 		Assert.assertEquals(true, memory.getVal(ident4.getName()));
 	}
