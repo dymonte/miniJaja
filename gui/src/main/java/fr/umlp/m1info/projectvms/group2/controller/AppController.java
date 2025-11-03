@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
@@ -291,10 +292,15 @@ public class AppController implements StatefulController {
 		memorySectionController.bindState(state);
 
 		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
-		interpreter.setStepModeEnabled(false);
+		List<Integer> breakpoints = codeSectionController
+				.getBreakpoints().stream().toList();
+		interpreter.setStepModeEnabled(!breakpoints.isEmpty());
 		miniJajaInterpreterThread = new Thread(() -> {
 			try {
 				ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
+				if (!breakpoints.isEmpty()) {
+					interpreter.setBreakpoints(breakpoints);
+				}
 				interpreter.interpret(programRoot);
 			} catch (InterpretRuntimeException e) {
 				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", e.getMessage(), ""));

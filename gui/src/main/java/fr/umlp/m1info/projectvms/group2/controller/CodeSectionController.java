@@ -4,6 +4,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.IntFunction;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -19,9 +26,12 @@ public class CodeSectionController implements StatefulController {
 
 	private Runnable onSaveRequested;
 
+	private final Set<Integer> breakpoints = new HashSet<>();
+
 	@Override
 	public void bindState(AppState appState) {
-		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+		IntFunction<javafx.scene.Node> numberFactory = lineNumberFactory();
+		codeArea.setParagraphGraphicFactory(numberFactory);
 		codeArea.getStyleClass().add("code-area");
 
 		// link appState.codeProperty and codeArea.textProperty
@@ -48,6 +58,35 @@ public class CodeSectionController implements StatefulController {
 				e.consume();
 			}
 		});
+	}
+
+	private IntFunction<javafx.scene.Node> lineNumberFactory() {
+		IntFunction<javafx.scene.Node> baseFactory = LineNumberFactory.get(codeArea);
+
+		return line -> {
+			javafx.scene.Node lineNumber = baseFactory.apply(line);
+
+			Circle marker = new Circle(4);
+			marker.setFill(breakpoints.contains(line) ? Color.RED : Color.TRANSPARENT);
+			marker.setOnMouseClicked(e -> toggleBreakpoint(line));
+
+			HBox box = new HBox(5, marker, lineNumber);
+			box.setOnMouseClicked(e -> toggleBreakpoint(line));
+			return box;
+		};
+	}
+
+	private void toggleBreakpoint(int line) {
+		if (breakpoints.contains(line)) {
+			breakpoints.remove(line);
+		} else {
+			breakpoints.add(line);
+		}
+		codeArea.setParagraphGraphicFactory(lineNumberFactory());
+	}
+
+	public Set<Integer> getBreakpoints() {
+		return breakpoints;
 	}
 
 	@FXML
