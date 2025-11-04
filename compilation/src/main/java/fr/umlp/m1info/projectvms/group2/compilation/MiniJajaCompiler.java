@@ -1,5 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.compilation;
 
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
@@ -11,11 +12,22 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
 
+import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
+
 /**
  * The compiler class is responsible for traversing and compiling an Abstract
  * Syntax Tree (AST) representing a MiniJaja program
  */
 public class MiniJajaCompiler {
+
+	private PrintStream out;
+
+	public MiniJajaCompiler(PrintStream out) {
+		if (out == null) {
+			throw new CompilationRuntimeException("Output cannot be null");
+		}
+		this.out = out;
+	}
 
 	/**
 	 * Compiles an AST node
