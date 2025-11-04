@@ -1,8 +1,15 @@
 package fr.umlp.m1info.projectvms.group2.ast.jajacode.value;
 
+/**
+ * Class representing a string value
+ */
 public class ValString extends Val {
     private final String value;
 
+    /**
+     * @param lineId the line number of the value
+     * @param value the string value
+     */
     public ValString(int lineId, String value) {
         super(lineId);
         this.value = value;
