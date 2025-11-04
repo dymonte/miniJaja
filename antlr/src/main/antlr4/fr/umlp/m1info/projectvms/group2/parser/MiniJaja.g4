@@ -59,7 +59,7 @@ ident1:   ident             #Identificator
         | ident '[' exp ']' #ArrayAccess //ident ('[' exp ']')*; //to handle array access in
         ;
 typemeth: 'void' #VoidType
-        | type   #TypeMeth
+        | type   #TypeMethod
         ;
 type:     'int'      #IntType
         | 'boolean' #BoolType
