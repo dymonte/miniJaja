@@ -1,25 +1,36 @@
 package fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper;
 
 public enum JajaCodeUnaryOper {
-    NEG("neg"),
-    NOT("not");
+	NEG("neg"),
+	NOT("not");
 
-    private final String instruction;
+	private final String instruction;
 
-    /**
-     * Constructs a new JajaCodeUnaryOper with its associated Jajacode instruction
-     *
-     * @param instruction the textual symbol of the operator
-     */
-    JajaCodeUnaryOper(String instruction) {
-        this.instruction = instruction;
-    }
+	/**
+	 * Constructs a new JajaCodeUnaryOper with its associated Jajacode instruction
+	 *
+	 * @param instruction the textual symbol of the operator
+	 */
+	JajaCodeUnaryOper(String instruction) {
+		this.instruction = instruction;
+	}
 
-    /**
-     * @return the instruction associated with this operator
-     */
-    @Override
-    public String toString() {
-        return instruction;
-    }
+	/**
+	 * @return the instruction associated with this operator
+	 */
+	@Override
+	public String toString() {
+		return instruction;
+	}
+
+	/**
+	 *
+	 */
+	public static JajaCodeUnaryOper fromSymbol(String instruction) {
+		return switch (instruction) {
+			case "neg" -> NEG;
+			case "not" -> NOT;
+			default -> throw new IllegalArgumentException("Unknow operator: " + instruction);
+		};
+	}
 }
