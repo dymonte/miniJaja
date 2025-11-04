@@ -357,7 +357,7 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 * <p>
 	 * The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * </p>Write
 	 */
 	@Override
 	public ASTWrite visitWrite(MiniJajaParser.WriteContext ctx) {
