@@ -292,15 +292,17 @@ public class AppController implements StatefulController {
 		memorySectionController.bindState(state);
 
 		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
-		List<Integer> breakpoints = codeSectionController
-				.getBreakpoints().stream().toList();
-		interpreter.setStepModeEnabled(!breakpoints.isEmpty());
+		interpreter.setStepModeEnabled(false);
+
+		List<Integer> breakpoints = codeSectionController.getBreakpoints().stream().toList();
+
 		miniJajaInterpreterThread = new Thread(() -> {
 			try {
 				ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
-				if (!breakpoints.isEmpty()) {
-					interpreter.setBreakpoints(breakpoints);
-				}
+
+				// Set breakpoints in the interpretation
+				interpreter.setBreakpoints(breakpoints);
+
 				interpreter.interpret(programRoot);
 			} catch (InterpretRuntimeException e) {
 				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", e.getMessage(), ""));

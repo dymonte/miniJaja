@@ -67,11 +67,11 @@ public class CodeSectionController implements StatefulController {
 			javafx.scene.Node lineNumber = baseFactory.apply(line);
 
 			Circle marker = new Circle(4);
-			marker.setFill(breakpoints.contains(line) ? Color.RED : Color.TRANSPARENT);
-			marker.setOnMouseClicked(e -> toggleBreakpoint(line));
+			marker.setFill(breakpoints.contains(line + 1) ? Color.RED : Color.TRANSPARENT);
+			marker.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
 
 			HBox box = new HBox(5, marker, lineNumber);
-			box.setOnMouseClicked(e -> toggleBreakpoint(line));
+			box.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
 			return box;
 		};
 	}
