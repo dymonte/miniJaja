@@ -3,7 +3,7 @@ package fr.umlp.m1info.projectvms.group2.ast.jajacode.value;
 /**
  * Class representing an address value
  */
-public class ValAddress extends Val{
+public final class ValAddress extends Val{
     private final int address;
 
     /**
@@ -27,6 +27,6 @@ public class ValAddress extends Val{
      */
     @Override
     public String toString() {
-        return Integer.toString(address);
+        return "jcnbre(" + address + ")";
     }
 }

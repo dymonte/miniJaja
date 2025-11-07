@@ -30,7 +30,10 @@ public enum JajaCodeBinaryOper {
 	}
 
 	/**
+	 * Returns the JajaCodeBinaryOper associated with the given symbol
 	 *
+	 * @param instruction the textual symbol of the operator
+	 * @return the JajaCodeBinaryOper associated with the given symbol
 	 */
 	public static JajaCodeBinaryOper fromSymbol(String instruction) {
 		return switch (instruction) {

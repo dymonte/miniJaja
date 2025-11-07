@@ -3,7 +3,7 @@ package fr.umlp.m1info.projectvms.group2.ast.jajacode.value;
 /**
  * Class representing a boolean value
  */
-public class ValBool extends Val{
+public final class ValBool extends Val{
     private final boolean value;
 
     /**
@@ -20,5 +20,13 @@ public class ValBool extends Val{
      */
     public boolean getValue() {
         return value;
+    }
+
+    /**
+     * @return the string representation of the value
+     */
+    @Override
+    public String toString() {
+        return (value ? "jcvrai" : "jcfaux");
     }
 }

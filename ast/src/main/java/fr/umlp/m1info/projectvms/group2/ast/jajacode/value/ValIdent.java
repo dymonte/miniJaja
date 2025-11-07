@@ -3,7 +3,7 @@ package fr.umlp.m1info.projectvms.group2.ast.jajacode.value;
 /**
  * Class representing an identifier value
  */
-public class ValIdent extends Val{
+public final class ValIdent extends Val{
     private final String ident;
 
     /**
@@ -27,6 +27,6 @@ public class ValIdent extends Val{
      */
     @Override
     public String toString() {
-        return ident;
+        return "jcident(" + ident + ")";
     }
 }

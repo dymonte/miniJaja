@@ -13,7 +13,7 @@ public class InstrNewArray extends Instr {
 
 	/**
 	 * Instruction for creating a new array
-	 * 
+	 *
 	 * @param lineId the line number of the instruction
 	 * @param ident  the identifier of the array
 	 * @param type   the type of values held by the array
@@ -27,7 +27,7 @@ public class InstrNewArray extends Instr {
 	/**
 	 * @return the identifier of the array
 	 */
-	public ValIdent getIdent() {
+	public ValIdent getValIdent() {
 		return ident;
 	}
 
@@ -43,7 +43,7 @@ public class InstrNewArray extends Instr {
 	 */
 	@Override
 	public String toString() {
-		return "newarray(" + ident + ", " + type + ")";
+		return super.toString() + "newarray(" + ident + ", " + type + ")";
 	}
 
 }

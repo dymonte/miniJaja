@@ -6,23 +6,23 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValAddress;
  * Class representing a goto instruction
  */
 public class InstrGoto extends Instr{
-    private final ValAddress address;
+    private final ValAddress valAddress;
 
     /**
      * Instruction for unconditionally jumping to a label
      * @param lineId the line number of the instruction
-     * @param address the address to jump to
+     * @param valAddress the address to jump to
      */
-    public InstrGoto(int lineId, ValAddress address) {
+    public InstrGoto(int lineId, ValAddress valAddress) {
         super(lineId);
-        this.address = address;
+        this.valAddress = valAddress;
     }
 
     /**
      * @return the address to jump to
      */
-    public ValAddress getAddress() {
-        return address;
+    public ValAddress getValAddress() {
+        return valAddress;
     }
 
     /**
@@ -30,6 +30,6 @@ public class InstrGoto extends Instr{
      */
     @Override
     public String toString() {
-        return super.toString() + "goto " + address;
+        return super.toString() + "goto(" + valAddress + ")";
     }
 }

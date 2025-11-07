@@ -18,6 +18,6 @@ public class InstrStop extends Instr{
      */
     @Override
     public String toString() {
-        return super.toString() + "stop";
+        return super.toString() + "jcstop";
     }
 }

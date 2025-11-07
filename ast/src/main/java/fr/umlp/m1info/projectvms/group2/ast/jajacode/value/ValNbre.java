@@ -3,7 +3,7 @@ package fr.umlp.m1info.projectvms.group2.ast.jajacode.value;
 /**
  * Class representing a number value
  */
-public class ValNbre extends Val{
+public final class ValNbre extends Val{
     private final int value;
 
     /**
@@ -24,6 +24,6 @@ public class ValNbre extends Val{
 
     @Override
     public String toString() {
-        return Integer.toString(value);
+        return "jcnbre(" + value + ")";
     }
 }

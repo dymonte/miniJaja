@@ -6,22 +6,22 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
  * Class representing an array increment instruction
  */
 public class InstrAInc extends Instr{
-    private final ValIdent ident;
+    private final ValIdent valIdent;
 
     /**
      * @param lineId the line number of the instruction
-     * @param ident the identifier of the array
+     * @param valIdent the identifier of the array
      */
-    public InstrAInc(int lineId, ValIdent ident) {
+    public InstrAInc(int lineId, ValIdent valIdent) {
         super(lineId);
-        this.ident = ident;
+        this.valIdent = valIdent;
     }
 
     /**
      * @return the identifier of the array
      */
-    public ValIdent getIdent() {
-        return ident;
+    public ValIdent getValIdent() {
+        return valIdent;
     }
 
     /**
@@ -29,6 +29,6 @@ public class InstrAInc extends Instr{
      */
     @Override
     public String toString() {
-        return super.toString() + "ainc " + ident;
+        return super.toString() + "ainc(" + valIdent + ")";
     }
 }

@@ -6,23 +6,23 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
  * Class representing a load instruction
  */
 public class InstrLoad extends Instr{
-    private final ValIdent ident;
+    private final ValIdent valIdent;
 
     /**
      * Instruction for loading a variable
      * @param lineId the line number of the instruction
-     * @param ident the identifier of the variable
+     * @param valIdent the valIdentifier of the variable
      */
-    public InstrLoad(int lineId, ValIdent ident) {
+    public InstrLoad(int lineId, ValIdent valIdent) {
         super(lineId);
-        this.ident = ident;
+        this.valIdent = valIdent;
     }
 
     /**
-     * @return the identifier of the variable
+     * @return the valIdentifier of the variable
      */
-    public ValIdent getIdent() {
-        return ident;
+    public ValIdent getValIdent() {
+        return valIdent;
     }
 
     /**
@@ -30,6 +30,6 @@ public class InstrLoad extends Instr{
      */
     @Override
     public String toString() {
-        return super.toString() + "load " + ident;
+        return super.toString() + "load(" + valIdent + ")";
     }
 }

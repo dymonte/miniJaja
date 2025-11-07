@@ -14,5 +14,14 @@ public abstract class Instr extends JajaCodeNode {
     public Instr(int lineId) {
         super(lineId);
     }
+
+    /**
+     * Returns the string representation of the instruction
+     * @return the string representation of the instruction
+     */
+    @Override
+    public String toString() {
+        return super.lineId + " : ";
+    }
 }
 

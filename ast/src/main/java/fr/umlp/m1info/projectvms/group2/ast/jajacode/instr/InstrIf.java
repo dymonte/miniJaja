@@ -6,23 +6,23 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValAddress;
  * Class representing an if instruction
  */
 public class InstrIf extends Instr{
-    private final ValAddress address;
+    private final ValAddress valAddress;
 
     /**
      * Instruction for conditional jumping to a label
      * @param lineId the line number of the instruction
-     * @param address the address to jump to
+     * @param valAddress the address to jump to
      */
-    public InstrIf(int lineId, ValAddress address) {
+    public InstrIf(int lineId, ValAddress valAddress) {
         super(lineId);
-        this.address = address;
+        this.valAddress = valAddress;
     }
 
     /**
      * @return the address to jump to
      */
-    public ValAddress getAddress() {
-        return address;
+    public ValAddress getValAddress() {
+        return valAddress;
     }
 
     /**
@@ -30,6 +30,6 @@ public class InstrIf extends Instr{
      */
     @Override
     public String toString() {
-        return super.toString() + "if " + address;
+        return super.toString() + "if(" + valAddress + ")";
     }
 }

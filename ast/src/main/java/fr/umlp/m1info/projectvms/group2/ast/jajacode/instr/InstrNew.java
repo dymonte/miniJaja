@@ -9,7 +9,7 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
  * Class representing a new instruction
  */
 public class InstrNew extends Instr {
-	private final ValIdent ident;
+	private final ValIdent valIdent;
 	private final VarType type;
 	private final VarKind kind;
 	private final Val val;
@@ -18,30 +18,30 @@ public class InstrNew extends Instr {
 	 * Instruction for declaring a variable or a method
 	 * 
 	 * @param lineId the line number of the instruction
-	 * @param ident  the identifier of the element
+	 * @param valIdent  the valIdentifier of the element
 	 * @param kind   the kind of the element
 	 * @param type   the type of the element
 	 * @param val    the initial value of the element
 	 */
-	public InstrNew(int lineId, ValIdent ident, VarKind kind, VarType type, Val val) {
+	public InstrNew(int lineId, ValIdent valIdent, VarKind kind, VarType type, Val val) {
 		super(lineId);
-		this.ident = ident;
+		this.valIdent = valIdent;
 		this.type = type;
 		this.kind = kind;
 		this.val = val;
 	}
 
 	/**
-	 * @return the identifier of the element
+	 * @return the valIdentifier of the element
 	 */
-	public ValIdent getIdent() {
-		return ident;
+	public ValIdent getValIdent() {
+		return valIdent;
 	}
 
 	/**
 	 * @return the initial value of the element
 	 */
-	public Val getVal() {
+	public Val getValVal() {
 		return val;
 	}
 
@@ -64,6 +64,6 @@ public class InstrNew extends Instr {
 	 */
 	@Override
 	public String toString() {
-		return "new(" + kind + ", " + ident + ", " + type + ", " + val + ")";
+		return super.toString() + "new(" + kind + ", " + valIdent + ", " + type + ", " + val + ")";
 	}
 }

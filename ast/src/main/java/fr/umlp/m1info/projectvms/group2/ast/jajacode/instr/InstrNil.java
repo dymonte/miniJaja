@@ -14,6 +14,6 @@ public class InstrNil extends Instr {
      */
     @Override
     public String toString() {
-        return super.toString() + "nil";
+        return super.toString() + "jcnil";
     }
 }

@@ -21,7 +21,7 @@ public class InstrPush extends Instr{
     /**
      * @return the value to push
      */
-    public Val getVal() {
+    public Val getValVal() {
         return val;
     }
 
@@ -30,6 +30,6 @@ public class InstrPush extends Instr{
      */
     @Override
     public String toString() {
-        return super.toString() + "push " + val;
+        return super.toString() + "push(" + val + ")";
     }
 }

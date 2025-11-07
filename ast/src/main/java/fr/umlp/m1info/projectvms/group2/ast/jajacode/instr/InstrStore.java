@@ -6,23 +6,23 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
  * Class representing a store instruction
  */
 public class InstrStore extends Instr{
-    private final ValIdent ident;
+    private final ValIdent valIdent;
 
     /**
      * Instruction for storing a value in a variable
      * @param lineId the line number of the instruction
-     * @param ident the identifier of the variable
+     * @param valIdent the valIdentifier of the variable
      */
-    public InstrStore(int lineId, ValIdent ident) {
+    public InstrStore(int lineId, ValIdent valIdent) {
         super(lineId);
-        this.ident = ident;
+        this.valIdent = valIdent;
     }
 
     /**
-     * @return the identifier to store
+     * @return the valIdentifier to store
      */
-    public ValIdent getIdent() {
-        return ident;
+    public ValIdent getValIdent() {
+        return valIdent;
     }
 
     /**
@@ -30,6 +30,6 @@ public class InstrStore extends Instr{
      */
     @Override
     public String toString() {
-        return super.toString() + "store " + ident;
+        return super.toString() + "store(" + valIdent + ")";
     }
 }

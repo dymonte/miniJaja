@@ -24,7 +24,10 @@ public enum JajaCodeUnaryOper {
 	}
 
 	/**
-	 *
+     * Returns the JajaCodeUnaryOper associated with the given symbol
+     *
+     * @param instruction the textual symbol of the operator
+     * @return the JajaCodeUnaryOper associated with the given symbol
 	 */
 	public static JajaCodeUnaryOper fromSymbol(String instruction) {
 		return switch (instruction) {

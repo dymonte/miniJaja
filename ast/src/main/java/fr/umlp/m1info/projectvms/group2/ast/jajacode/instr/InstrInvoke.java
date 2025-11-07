@@ -31,6 +31,6 @@ public class InstrInvoke extends Instr {
      */
     @Override
     public String toString() {
-        return super.toString() + "invoke " + valIdent;
+        return super.toString() + "invoke(" + valIdent + ")";
     }
 }
