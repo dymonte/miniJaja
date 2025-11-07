@@ -8,8 +8,8 @@ grammar JajaCode;
 // PARSER
 //=================================================
 prog
-    : instr '\n' prog
-    | 
+    : instr (NEWLINE instr)* NEWLINE? EOF
+    |
     ;
 
 instr
@@ -68,10 +68,14 @@ kind
     : 'var' | 'cst' | 'arr'
     ;
 
+fragment CHARS: (~["\\\r\n] | '\\' .)*;
+STRING: '"' CHARS '"' { String text = getText(); setText(text.substring(1, text.length() -1)); };
+
 //======================================
 // LEXER
 //======================================
 IDENTIFIER : [a-zA-Z_][a-zA-Z0-9]* ;
 NUMBER     : [0-9]+ ;
-WS         : [ \t\r]+ -> skip;
+NEWLINE    : '\r'? '\n';
+WS         : [ \t]+ -> skip;
 COMMENT    : '//' ~[\r\n]* -> skip;

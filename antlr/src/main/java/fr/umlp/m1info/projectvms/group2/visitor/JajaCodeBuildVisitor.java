@@ -30,8 +30,9 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	 */
 	@Override
 	public JajaCodeNode visitProg(JajaCodeParser.ProgContext ctx) {
-		visit(ctx.instr());
-		visit(ctx.prog());
+		for (JajaCodeParser.InstrContext instr : ctx.instr()) {
+			visit(instr);
+		}
 		return null;
 	}
 
@@ -358,7 +359,7 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	 */
 	@Override
 	public JajaCodeNode visitUnary(JajaCodeParser.UnaryContext ctx) {
-		return visit(ctx);
+		return visit(ctx.oper1());
 	}
 
 	/**
@@ -371,7 +372,7 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	 */
 	@Override
 	public JajaCodeNode visitBinary(JajaCodeParser.BinaryContext ctx) {
-		return visit(ctx);
+		return visit(ctx.oper2());
 	}
 
 	/**
