@@ -4,6 +4,6 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.mockito.Mockito;
 
-public class JajaCpdeInterpreterTest {
+public class JajaCodeInterpreterTest {
 
 }
