@@ -1,5 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -19,9 +21,11 @@ public class CodeSectionController implements StatefulController {
 
 	private Runnable onSaveRequested;
 
+    private int highlightedLine;
+
 	@Override
 	public void bindState(AppState appState) {
-		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        applyLineNumberFactory();
 		codeArea.getStyleClass().add("code-area");
 
 		// link appState.codeProperty and codeArea.textProperty
@@ -93,4 +97,22 @@ public class CodeSectionController implements StatefulController {
 	public void setOnSaveRequested(Runnable callback) {
 		this.onSaveRequested = callback;
 	}
+
+    public void highlightLine(int lineNumber) {
+        highlightedLine = lineNumber;
+        applyLineNumberFactory();
+    }
+
+    @FXML
+    private void applyLineNumberFactory() {
+        codeArea.setParagraphGraphicFactory(line -> {
+            Node original = LineNumberFactory.get(codeArea).apply(line);
+
+            if (line + 1 == highlightedLine && original instanceof Label label) {
+                label.setStyle(label.getStyle() + "; -fx-text-fill: red;");
+            }
+
+            return original;
+        });
+    }
 }

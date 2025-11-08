@@ -15,6 +15,7 @@ public class MiniJajaInterpreterInteractive extends MiniJajaInterpreter {
 	private volatile boolean waiting;
 	private volatile boolean stepModeEnabled;
 	private final Set<Integer> breakpoints;
+    private int currentLine;
 
 	public MiniJajaInterpreterInteractive(Memory memory) {
 		super(memory);
@@ -54,6 +55,10 @@ public class MiniJajaInterpreterInteractive extends MiniJajaInterpreter {
 		}
 	}
 
+    public int getCurrentLine() {
+        return currentLine;
+    }
+
 	private void waitForNext(ASTNode node) {
 		if (node == null) {
 			return;
@@ -72,6 +77,7 @@ public class MiniJajaInterpreterInteractive extends MiniJajaInterpreter {
 
 			InterpreterLogger.getInstance().log("[PAUSED] Line " + node.getLine() + ": " + node.getClass().getSimpleName(),
 					InterpreterLogger.MessageLevel.DEBUG);
+            currentLine = node.getLine();
 
 			while (waiting) {
 				try {

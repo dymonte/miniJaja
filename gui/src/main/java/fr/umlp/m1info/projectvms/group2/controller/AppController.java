@@ -22,10 +22,15 @@ import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * AppController
@@ -317,7 +322,108 @@ public class AppController implements StatefulController {
 		}
 	}
 
-	/**
+    /**
+     * Runs the current file in a seperate thread in step by step mode.
+     */
+    public void runCurrentFileStep() {
+        initMemory();
+        memorySectionController.bindState(state);
+
+        MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
+        Stage popupStage = new Stage();
+        miniJajaInterpreterThread = new Thread(() -> {
+            try {
+                ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
+                showStepPopup(popupStage, interpreter);
+                Platform.runLater(() -> codeSectionController.highlightLine(programRoot.getLine()));
+                interpreter.interpret(programRoot);
+                Platform.runLater(popupStage::close);
+            } catch (InterpretRuntimeException e) {
+                Platform.runLater(() -> {
+                    popupStage.close();
+                    PopUp.error("MiniJaja Interpreter Error", e.getMessage(), "");
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    popupStage.close();
+                    PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", e.toString());
+                });
+            }
+        });
+
+        miniJajaInterpreterThread.start();
+    }
+
+    /**
+     * Shows step by step popup
+     * @param popupStage the Stage for the popUp
+     * @param interpreter the interpreter to be attached
+     */
+    private void showStepPopup(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
+        Platform.runLater(() -> {
+            popupStage.initOwner(primaryStage);
+            popupStage.setAlwaysOnTop(true);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            // Create Buttons
+            setStepPopupBtns(popupStage, interpreter);
+
+            // Position Popup
+            setStepPopupPos(popupStage);
+
+
+            popupStage.show();
+        });
+    }
+
+    /**
+     * Set up step by step popup position
+     * @param popupStage the step by step popup to add the buttons to
+     * @param interpreter the interpreter for the buttons to interact with
+     */
+    private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
+        Button btnNext = new Button("Next");
+        Button btnStop = new Button("Stop");
+        HBox root = new HBox(10, btnStop, btnNext);
+
+        btnNext.setOnAction(event -> {
+            interpreter.nextStep();
+            memorySectionController.bindState(state);
+            codeSectionController.highlightLine(interpreter.getCurrentLine());
+        });
+        btnStop.setOnAction(event -> stopInterpretation());
+
+        root.setStyle("-fx-padding: 20;");
+        popupStage.setScene(new Scene(root, 150, 50));
+    }
+
+    /**
+     * Set up step by step popup position
+     * @param popupStage the step by step popup to position
+     */
+    private void setStepPopupPos(Stage popupStage) {
+        double x = primaryStage.getX() + primaryStage.getWidth() / 2 - 75;
+        double y = primaryStage.getY() + 25;
+        popupStage.setX(x);
+        popupStage.setY(y);
+
+        ChangeListener<Number> xListener = (obs, oldVal, newVal) -> {
+            popupStage.setX(newVal.doubleValue() + primaryStage.getWidth() / 2 - 75);
+        };
+        ChangeListener<Number> yListener = (obs, oldVal, newVal) -> {
+            popupStage.setY(newVal.doubleValue() + 25);
+        };
+        primaryStage.xProperty().addListener(xListener);
+        primaryStage.yProperty().addListener(yListener);
+
+        popupStage.setOnHidden(e -> {
+            primaryStage.xProperty().removeListener(xListener);
+            primaryStage.yProperty().removeListener(yListener);
+            codeSectionController.highlightLine(0);
+        });
+    }
+
+    /**
 	 * Clear console
 	 */
 	public void clearConsole() {

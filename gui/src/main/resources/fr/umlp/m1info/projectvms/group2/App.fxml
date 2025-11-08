@@ -88,7 +88,12 @@
         </Menu>
             <Menu mnemonicParsing="false" text="Execution">
               <items>
-                <MenuItem mnemonicParsing="false" text="Start" onAction="#runCurrentFile"/>
+                <Menu mnemonicParsing="false" text="Start">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Run" onAction="#runCurrentFile"/>
+                    <MenuItem mnemonicParsing="false" text="Run step by step" onAction="#runCurrentFileStep"/>
+                  </items>
+                </Menu>
                 <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation"/>
                 <MenuItem mnemonicParsing="false" text="Clear Console" onAction="#clearConsole"/>
               </items>
