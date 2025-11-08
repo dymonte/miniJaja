@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.logger;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -105,6 +106,43 @@ public class ParserLogger {
 		}
 		for (ParserListener listener : listeners) {
 			listener.receiveMessage(message, level);
+		}
+	}
+
+	/**
+	 * TODO:
+	 */
+	public void info(String message) {
+		log(message, MessageLevel.INFO);
+	}
+
+	/**
+	 * TODO:
+	 */
+	public void debug(String message) {
+		log(message, MessageLevel.DEBUG);
+	}
+
+	/**
+	 * TODO:
+	 */
+	public void warning(String message) {
+		log(message, MessageLevel.WARNING);
+	}
+
+	/**
+	 * TODO:
+	 */
+	public void error(String message) {
+		log(message, MessageLevel.ERROR);
+	}
+
+	/**
+	 * TODO:
+	 */
+	public void error(List<String> message) {
+		for (String err : message) {
+			log(err, MessageLevel.ERROR);
 		}
 	}
 }

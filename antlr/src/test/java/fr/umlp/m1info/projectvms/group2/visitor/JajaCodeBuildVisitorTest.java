@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.visitor;
 
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
+import fr.umlp.m1info.projectvms.group2.exception.SyntaxException;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.*;
@@ -10,6 +11,7 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.*;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -250,5 +252,21 @@ public class JajaCodeBuildVisitorTest {
 		List<Instr> list = parsing("add");
 		Assert.assertEquals(1, list.size());
 		Assert.assertEquals(InstrOperBinary.class, list.get(0).getClass());
+	}
+
+	@Test
+	public void testIdentToPush() {
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.jajaCodeParseString("push(ident)"));
+	}
+
+	@Test
+	public void testInvalidFile() {
+		Assert.assertThrows(IOException.class, () -> ParserUtils.jajaCodeParseFile("notExistFile"));
+	}
+
+	@Test
+	public void testEmptyFile() {
+		Assert.assertThrows(SyntaxException.class,
+				() -> ParserUtils.jajaCodeParseFile("./src/test/resources/samples/jajacodeIssue.txt"));
 	}
 }
