@@ -15,6 +15,8 @@ public class InstrLength extends Instr{
      */
     public InstrLength(int lineId, ValIdent valIdent) {
         super(lineId);
+        if (valIdent == null)
+            throw new NullPointerException("valIdent cannot be null");
         this.valIdent = valIdent;
     }
 

@@ -12,6 +12,8 @@ public final class ValIdent extends Val{
      */
     public ValIdent(int lineId, String id) {
         super(lineId);
+        if (id == null)
+            throw new NullPointerException("id cannot be null");
         this.ident = id;
     }
 

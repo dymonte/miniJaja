@@ -8,6 +8,8 @@ public class VarType extends JajaCodeNode {
 
 	public VarType(int lineId, Type type) {
 		super(lineId);
+        if (type == null)
+            throw new NullPointerException("type cannot be null");
 		this.type = type;
 	}
 

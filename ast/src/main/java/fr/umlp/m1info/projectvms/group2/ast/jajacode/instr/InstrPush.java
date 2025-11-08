@@ -15,6 +15,8 @@ public class InstrPush extends Instr{
      */
     public InstrPush(int lineId, Val val) {
         super(lineId);
+        if (val == null)
+            throw new NullPointerException("val cannot be null");
         this.val = val;
     }
 

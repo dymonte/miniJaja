@@ -15,6 +15,8 @@ public class InstrGoto extends Instr{
      */
     public InstrGoto(int lineId, ValAddress valAddress) {
         super(lineId);
+        if (valAddress == null)
+            throw new NullPointerException("valAddress cannot be null");
         this.valAddress = valAddress;
     }
 

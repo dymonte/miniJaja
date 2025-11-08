@@ -52,6 +52,7 @@ public class JajaCodeNodeGetterTest {
         Assert.assertEquals(100, val.getAddress());
     }
 
+
     @Test
     public void testValGettersIdent() {
         int lineId = 1;

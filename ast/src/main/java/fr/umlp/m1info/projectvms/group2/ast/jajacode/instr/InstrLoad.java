@@ -15,6 +15,8 @@ public class InstrLoad extends Instr{
      */
     public InstrLoad(int lineId, ValIdent valIdent) {
         super(lineId);
+        if (valIdent == null)
+            throw new NullPointerException("valIdent cannot be null");
         this.valIdent = valIdent;
     }
 

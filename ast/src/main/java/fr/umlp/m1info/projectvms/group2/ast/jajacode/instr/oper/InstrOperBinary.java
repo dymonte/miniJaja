@@ -13,6 +13,8 @@ public class InstrOperBinary extends Instr {
      */
     public InstrOperBinary(int lineId, JajaCodeBinaryOper oper) {
         super(lineId);
+        if (oper == null)
+            throw new NullPointerException("oper cannot be null");
         this.oper = oper;
     }
 

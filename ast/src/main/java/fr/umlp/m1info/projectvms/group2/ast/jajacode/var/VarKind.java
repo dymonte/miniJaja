@@ -8,6 +8,8 @@ public class VarKind extends JajaCodeNode {
 
 	public VarKind(int lineId, Kind kind) {
 		super(lineId);
+        if (kind == null)
+            throw new NullPointerException("kind cannot be null");
 		this.kind = kind;
 	}
 

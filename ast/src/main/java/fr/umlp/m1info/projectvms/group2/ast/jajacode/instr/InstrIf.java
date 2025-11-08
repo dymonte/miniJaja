@@ -15,6 +15,8 @@ public class InstrIf extends Instr{
      */
     public InstrIf(int lineId, ValAddress valAddress) {
         super(lineId);
+        if (valAddress == null)
+            throw new NullPointerException("valAddress cannot be null");
         this.valAddress = valAddress;
     }
 

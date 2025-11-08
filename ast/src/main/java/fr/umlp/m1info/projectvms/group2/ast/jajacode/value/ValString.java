@@ -12,6 +12,8 @@ public final class ValString extends Val {
      */
     public ValString(int lineId, String value) {
         super(lineId);
+        if (value == null)
+            throw new NullPointerException("value cannot be null");
         this.value = value;
     }
 

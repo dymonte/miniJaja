@@ -15,7 +15,8 @@ public class InstrInvoke extends Instr {
      */
     public InstrInvoke(int lineId, ValIdent valIdent) {
         super(lineId);
-        if(valIdent == null) throw new NullPointerException("valIdent cannot be null");
+        if(valIdent == null)
+            throw new NullPointerException("valIdent cannot be null");
         this.valIdent = valIdent;
     }
 

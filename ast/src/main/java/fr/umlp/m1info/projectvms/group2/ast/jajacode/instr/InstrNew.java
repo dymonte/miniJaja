@@ -25,6 +25,14 @@ public class InstrNew extends Instr {
 	 */
 	public InstrNew(int lineId, ValIdent valIdent, VarKind kind, VarType type, Val val) {
 		super(lineId);
+        if (valIdent == null)
+            throw new NullPointerException("valIdent cannot be null");
+        if (kind == null)
+            throw new NullPointerException("kind cannot be null");
+        if (type == null)
+            throw new NullPointerException("type cannot be null");
+        if (val == null)
+            throw new NullPointerException("val cannot be null");
 		this.valIdent = valIdent;
 		this.type = type;
 		this.kind = kind;

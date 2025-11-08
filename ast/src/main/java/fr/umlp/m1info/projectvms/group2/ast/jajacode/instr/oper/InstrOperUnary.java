@@ -13,6 +13,8 @@ public class InstrOperUnary extends Instr {
      */
     public InstrOperUnary(int lineId, JajaCodeUnaryOper oper) {
         super(lineId);
+        if (oper == null)
+            throw new NullPointerException("oper cannot be null");
         this.oper = oper;
     }
 

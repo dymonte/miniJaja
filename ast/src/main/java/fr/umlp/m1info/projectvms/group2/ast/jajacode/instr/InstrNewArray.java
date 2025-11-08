@@ -8,19 +8,23 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarType;
  * Class representing a new array instruction
  */
 public class InstrNewArray extends Instr {
-	private final ValIdent ident;
+	private final ValIdent valIdent;
 	private final VarType type;
 
 	/**
 	 * Instruction for creating a new array
 	 *
 	 * @param lineId the line number of the instruction
-	 * @param ident  the identifier of the array
+	 * @param valIdent  the identifier of the array
 	 * @param type   the type of values held by the array
 	 */
-	public InstrNewArray(int lineId, ValIdent ident, VarType type) {
+	public InstrNewArray(int lineId, ValIdent valIdent, VarType type) {
 		super(lineId);
-		this.ident = ident;
+        if (valIdent == null)
+            throw new NullPointerException("valIdent cannot be null");
+        if (type == null)
+            throw new NullPointerException("type cannot be null");
+		this.valIdent = valIdent;
 		this.type = type;
 	}
 
@@ -28,7 +32,7 @@ public class InstrNewArray extends Instr {
 	 * @return the identifier of the array
 	 */
 	public ValIdent getValIdent() {
-		return ident;
+		return valIdent;
 	}
 
 	/**
@@ -43,7 +47,7 @@ public class InstrNewArray extends Instr {
 	 */
 	@Override
 	public String toString() {
-		return super.toString() + "newarray(" + ident + ", " + type + ")";
+		return super.toString() + "newarray(" + valIdent + ", " + type + ")";
 	}
 
 }
