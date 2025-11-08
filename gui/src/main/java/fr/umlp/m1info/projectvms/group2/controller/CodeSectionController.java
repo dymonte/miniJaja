@@ -6,6 +6,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -22,6 +28,8 @@ public class CodeSectionController implements StatefulController {
 	private Runnable onSaveRequested;
 
     private int highlightedLine;
+
+	private final Set<Integer> breakpoints = new HashSet<>();
 
 	@Override
 	public void bindState(AppState appState) {
@@ -53,6 +61,19 @@ public class CodeSectionController implements StatefulController {
 			}
 		});
 	}
+
+    private void toggleBreakpoint(int line) {
+        if (breakpoints.contains(line)) {
+            breakpoints.remove(line);
+        } else {
+            breakpoints.add(line);
+        }
+        applyLineNumberFactory();
+    }
+
+    public Set<Integer> getBreakpoints() {
+        return breakpoints;
+    }
 
 	@FXML
 	public void undo() {
@@ -106,13 +127,20 @@ public class CodeSectionController implements StatefulController {
     @FXML
     private void applyLineNumberFactory() {
         codeArea.setParagraphGraphicFactory(line -> {
-            Node original = LineNumberFactory.get(codeArea).apply(line);
+            Node lineNumber = LineNumberFactory.get(codeArea).apply(line);
 
-            if (line + 1 == highlightedLine && original instanceof Label label) {
+            if (line + 1 == highlightedLine && lineNumber instanceof Label label) {
                 label.setStyle(label.getStyle() + "; -fx-text-fill: red;");
             }
 
-            return original;
+            Circle marker = new Circle(4);
+            marker.setFill(breakpoints.contains(line + 1) ? Color.RED : Color.TRANSPARENT);
+            marker.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
+
+            HBox box = new HBox(5, marker, lineNumber);
+            box.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
+
+            return box;
         });
     }
 }
