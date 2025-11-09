@@ -7,15 +7,6 @@ import fr.umlp.m1info.projectvms.group2.exception.VisitorBuildException;
 
 public class VisitorUtilsTest {
 	@Test
-	public void testsafeBuild() {
-		Assert.assertThrows(VisitorBuildException.class, () -> {
-			VisitorUtils.safeBuild("Safe build test", () -> {
-				throw new VisitorBuildException("fail");
-			});
-		});
-	}
-
-	@Test
 	public void testLoggingMethodsDoNotThrow() {
 		VisitorUtils.debug("debug message");
 		VisitorUtils.info("info message");

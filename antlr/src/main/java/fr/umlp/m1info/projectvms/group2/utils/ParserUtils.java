@@ -37,9 +37,10 @@ public class ParserUtils {
 	 *
 	 * @param inputStr the Minijaja source code as a string
 	 * @return the root ASTNode of the parsed AST
-	 * @throws SyntaxException if syntax errors are detected
+	 * @throws SyntaxException      if syntax errors are detected
+	 * @throws NullPointerException if building the ast have issue
 	 */
-	public static ASTNode parseString(String inputStr) throws SyntaxException {
+	public static ASTNode parseString(String inputStr) throws SyntaxException, NullPointerException {
 		logger.debug("Starting miniJaja parsing from string");
 
 		CharStream input = CharStreams.fromString(inputStr);
@@ -48,6 +49,9 @@ public class ParserUtils {
 		} catch (SyntaxException syntaxEx) {
 			logger.error(syntaxEx.getErrors());
 			throw syntaxEx;
+		} catch (NullPointerException nullEx) {
+			logger.error(nullEx.getMessage());
+			throw nullEx;
 		}
 	}
 
@@ -56,12 +60,12 @@ public class ParserUtils {
 	 *
 	 * @param fileName the path to the Minijaja source file
 	 * @return the root ASTNode of the parsed AST
-	 * @throws SyntaxException if syntax errors are detected
-	 * @throws IOException     if reading the file fails
-	 *
+	 * @throws SyntaxException      if syntax errors are detected
+	 * @throws IOException          if reading the file fails
+	 * @throws NullPointerException if building the ast have issue
 	 */
 
-	public static ASTNode parseFile(String fileName) throws SyntaxException, IOException {
+	public static ASTNode parseFile(String fileName) throws SyntaxException, IOException, NullPointerException {
 		logger.debug("Starting miniJaja parsing for file: " + fileName);
 
 		try {
@@ -73,6 +77,9 @@ public class ParserUtils {
 		} catch (SyntaxException syntaxEx) {
 			logger.error(syntaxEx.getErrors());
 			throw syntaxEx;
+		} catch (NullPointerException nullEx) {
+			logger.error(nullEx.getMessage());
+			throw nullEx;
 		}
 	}
 
@@ -123,9 +130,10 @@ public class ParserUtils {
 	 *
 	 * @param input the CharStream containing Minijaja source
 	 * @return the AST root node
-	 * @throws SyntaxException if syntax errors are detected
+	 * @throws SyntaxException      if syntax errors are detected
+	 * @throws NullPointerException if building the ast have issue
 	 */
-	private static ASTNode parseMiniJaja(CharStream input) throws SyntaxException {
+	private static ASTNode parseMiniJaja(CharStream input) throws SyntaxException, NullPointerException {
 		logger.debug("Creating miniJaja lexer and parser");
 
 		MiniJajaLexer lexer = new MiniJajaLexer(input);
@@ -143,9 +151,10 @@ public class ParserUtils {
 
 		ThrowingErrorListener.INSTANCE.throwIfErrors();
 		MiniJajaBuildVisitor builder = new MiniJajaBuildVisitor();
+		ASTNode node = builder.visit(tree);
 
 		logger.info("MiniJaja parsing completed successfully");
-		return builder.visit(tree);
+		return node;
 	}
 
 	/**
