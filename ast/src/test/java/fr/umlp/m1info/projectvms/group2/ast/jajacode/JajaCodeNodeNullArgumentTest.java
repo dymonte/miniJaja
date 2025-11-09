@@ -5,7 +5,6 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperBinary;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperUnary;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValAddress;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValString;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarKind;
@@ -13,7 +12,7 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarType;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class JajaCodeNodeNullArgument {
+public class JajaCodeNodeNullArgumentTest {
     //Utils
     @Test
     public void testKindNull() {

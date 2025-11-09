@@ -1,10 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.ast.jajacode;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperBinary;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperUnary;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeBinaryOper;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeUnaryOper;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.*;
@@ -19,6 +16,20 @@ public class JajaCodeNodeGetterTest {
         int lineId = 1;
         JajaCodeNode node = new InstrNil(lineId);
         Assert.assertEquals(lineId, node.getLineId());
+    }
+
+    @Test
+    public void testVarKindGetter() {
+        int lineId = 1;
+        VarKind varKind = new VarKind(lineId, Kind.VAR);
+        Assert.assertEquals(Kind.VAR, varKind.getKind());
+    }
+
+    @Test
+    public void testVarTypeGetter() {
+        int lineId = 1;
+        VarType varType = new VarType(lineId, Type.INT);
+        Assert.assertEquals(Type.INT, varType.getType());
     }
 
     @Test
@@ -75,11 +86,23 @@ public class JajaCodeNodeGetterTest {
         InstrOperBinary instr4 = new InstrOperBinary(lineId++, JajaCodeBinaryOper.fromSymbol("div"));
         Assert.assertEquals(JajaCodeBinaryOper.DIV, instr4.getOper());
 
-        InstrOperBinary instr5 = new InstrOperBinary(lineId++, JajaCodeBinaryOper.fromSymbol("and"));
-        Assert.assertEquals(JajaCodeBinaryOper.AND, instr5.getOper());
+        InstrOperBinary instr5 = new InstrOperBinary(lineId++, JajaCodeBinaryOper.fromSymbol("cmp"));
+        Assert.assertEquals(JajaCodeBinaryOper.CMP, instr5.getOper());
 
-        InstrOperBinary instr6 = new InstrOperBinary(lineId, JajaCodeBinaryOper.fromSymbol("or"));
-        Assert.assertEquals(JajaCodeBinaryOper.OR, instr6.getOper());
+        InstrOperBinary instr6 = new InstrOperBinary(lineId++, JajaCodeBinaryOper.fromSymbol("sup"));
+        Assert.assertEquals(JajaCodeBinaryOper.SUP, instr6.getOper());
+
+        InstrOperBinary instr7 = new InstrOperBinary(lineId++, JajaCodeBinaryOper.fromSymbol("and"));
+        Assert.assertEquals(JajaCodeBinaryOper.AND, instr7.getOper());
+
+        InstrOperBinary instr8 = new InstrOperBinary(lineId, JajaCodeBinaryOper.fromSymbol("or"));
+        Assert.assertEquals(JajaCodeBinaryOper.OR, instr8.getOper());
+
+
+        IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () ->
+                new InstrOperBinary(1, JajaCodeBinaryOper.fromSymbol("unknown")));
+
+        Assert.assertEquals("Unknow operator: unknown", exception.getMessage());
     }
 
     @Test
@@ -90,6 +113,11 @@ public class JajaCodeNodeGetterTest {
 
         InstrOperUnary instr2 = new InstrOperUnary(lineId, JajaCodeUnaryOper.fromSymbol("neg"));
         Assert.assertEquals(JajaCodeUnaryOper.NEG, instr2.getOper());
+
+        IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () ->
+                new InstrOperUnary(1, JajaCodeUnaryOper.fromSymbol("unknown")));
+
+        Assert.assertEquals("Unknow operator: unknown", exception.getMessage());
     }
 
     @Test
@@ -190,6 +218,14 @@ public class JajaCodeNodeGetterTest {
 
         Assert.assertSame(valIdent, instr.getValIdent());
         Assert.assertSame(type, instr.getType());
+    }
+
+    @Test
+    public void testInstrGettersPush() {
+        int lineId = 1;
+        ValNbre valNbre = new ValNbre(lineId, 10);
+        InstrPush instr = new InstrPush(lineId, valNbre);
+        Assert.assertSame(valNbre, instr.getValVal());
     }
 
     @Test
