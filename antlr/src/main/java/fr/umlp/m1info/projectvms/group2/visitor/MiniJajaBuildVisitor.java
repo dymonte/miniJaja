@@ -27,12 +27,11 @@ import fr.umlp.m1info.projectvms.group2.parser.MiniJajaParser;
 public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 
 	/**
-	 * Visits a class declaration in the MiniJaja parse tree and builds its AST
-	 * representation
+	 * Builds the AST for a MiniJaja program
 	 *
-	 * @param ctx the parse tree context corresponding to a MiniJaja class
-	 * @return an ASTClass node containing the class name, its declarations, the
-	 *         main method, and the source position
+	 * @param ctx the program context from the parser
+	 * @return an ASTClass node representing the class, including its declarations
+	 *         and main method
 	 */
 	@Override
 	public ASTClass visitProg(MiniJajaParser.ProgContext ctx) {
@@ -48,12 +47,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * Visits an identifier in the MiniJaja parse tree and builds its AST
-	 * representation
+	 * Visits an identifier in the parse tree.
 	 *
-	 * @param ctx the parse tree context corresponding to a MiniJaja identifier
-	 * @return an ASTIdent node containing the identifier name and its source
-	 *         position
+	 * @param ctx the identifier context
+	 * @return an ASTIdent node representing the identifier
 	 */
 	@Override
 	public ASTIdent visitIdent(MiniJajaParser.IdentContext ctx) {
@@ -62,12 +59,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a sequence of declarations.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the declarations context
+	 * @return an ASTDecls node representing a list of declarations
 	 */
 	@Override
 	public ASTDecls visitDecls(MiniJajaParser.DeclsContext ctx) {
@@ -81,12 +76,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the variable declaration context
+	 * @return an ASTVar node representing the declared variable
 	 */
 	@Override
 	public ASTVar visitVarDecl(MiniJajaParser.VarDeclContext ctx) {
@@ -94,12 +87,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method declaration context
+	 * @return an ASTMethod node representing the method
 	 */
 	@Override
 	public ASTMethod visitMethodDecl(MiniJajaParser.MethodDeclContext ctx) {
@@ -107,12 +98,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of variables.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the variables context
+	 * @return an ASTVars node representing a chain of variables
 	 */
 	@Override
 	public ASTVars visitVars(MiniJajaParser.VarsContext ctx) {
@@ -126,12 +115,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a simple variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the simple variable declaration context
+	 * @return an ASTVarSimple node representing the variable
 	 */
 	@Override
 	public ASTVarSimple visitVarDeclSimple(MiniJajaParser.VarDeclSimpleContext ctx) {
@@ -143,12 +130,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an array variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the array variable declaration context
+	 * @return an ASTVarArray node representing the variable
 	 */
 	@Override
 	public ASTVarArray visitVarDeclArray(MiniJajaParser.VarDeclArrayContext ctx) {
@@ -160,12 +145,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a final variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the final variable declaration context
+	 * @return an ASTVarConst node representing the constant
 	 */
 	@Override
 	public ASTVarConst visitVarDeclFinal(MiniJajaParser.VarDeclFinalContext ctx) {
@@ -177,12 +160,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an optional expression for a variable initialization.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the optional expression context
+	 * @return an ASTVExpr node, or null if no expression is present
 	 */
 	@Override
 	public ASTVExpr visitVexp(MiniJajaParser.VexpContext ctx) {
@@ -195,12 +176,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method definition.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method context
+	 * @return an ASTMethod node representing the method
 	 */
 	@Override
 	public ASTMethod visitMethod(MiniJajaParser.MethodContext ctx) {
@@ -215,12 +194,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits the main method of a MiniJaja program.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the main method context
+	 * @return an ASTMainMethod node representing the main method
 	 */
 	@Override
 	public ASTMainMethod visitMethmain(MiniJajaParser.MethmainContext ctx) {
@@ -231,12 +208,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of method parameters.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the parameters context
+	 * @return an ASTParams node representing a chain of parameters
 	 */
 	@Override
 	public ASTParams visitParams(MiniJajaParser.ParamsContext ctx) {
@@ -251,12 +226,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a single method parameter.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the parameter context
+	 * @return an ASTParam node representing the parameter
 	 */
 	@Override
 	public ASTParam visitParam(MiniJajaParser.ParamContext ctx) {
@@ -267,12 +240,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of instructions.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the instructions context
+	 * @return an ASTInstrs node representing a chain of instructions
 	 */
 	@Override
 	public ASTInstrs visitInstrs(MiniJajaParser.InstrsContext ctx) {
@@ -287,12 +258,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an assignment operation.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the assignment context
+	 * @return an ASTAssignmentOp node representing the assignment
 	 */
 	@Override
 	public ASTAssignmentOp visitAssignment(MiniJajaParser.AssignmentContext ctx) {
@@ -305,12 +274,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an increment operation.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the increment context
+	 * @return an ASTIncrementOp node representing the increment
 	 */
 	@Override
 	public ASTIncrementOp visitIncrement(MiniJajaParser.IncrementContext ctx) {
@@ -321,12 +288,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method call used as an instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the call context
+	 * @return an ASTMethodCallInstr node representing the call
 	 */
 	@Override
 	public ASTMethodCallInstr visitCallI(MiniJajaParser.CallIContext ctx) {
@@ -337,12 +302,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a return instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the return context
+	 * @return an ASTReturn node representing the return statement
 	 */
 	@Override
 	public ASTReturn visitReturn(MiniJajaParser.ReturnContext ctx) {
@@ -352,12 +315,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a write instruction (without newline).
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the write context
+	 * @return an ASTWrite node representing the write operation
 	 */
 	@Override
 	public ASTWrite visitWrite(MiniJajaParser.WriteContext ctx) {
@@ -374,12 +335,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a writeln instruction (with newline).
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the writeln context
+	 * @return an ASTWrite node representing the writeln operation
 	 */
 	@Override
 	public ASTWrite visitWriteln(MiniJajaParser.WritelnContext ctx) {
@@ -396,12 +355,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an if statement.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the if context
+	 * @return an ASTIf node representing the conditional
 	 */
 	@Override
 	public ASTIf visitIf(MiniJajaParser.IfContext ctx) {
@@ -414,12 +371,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a while loop.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the while context
+	 * @return an ASTWhile node representing the loop
 	 */
 	@Override
 	public ASTWhile visitWhile(MiniJajaParser.WhileContext ctx) {
@@ -430,12 +385,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of expressions.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the list expression context
+	 * @return an ASTExprs node representing the chain of expressions
 	 */
 	@Override
 	public ASTExprs visitListexp(MiniJajaParser.ListexpContext ctx) {
@@ -449,12 +402,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a logical NOT expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the NOT expression context
+	 * @return an ASTUnaryOp node representing the NOT operation
 	 */
 	@Override
 	public ASTUnaryOp visitNotExp(MiniJajaParser.NotExpContext ctx) {
@@ -464,12 +415,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a logical expression (AND, OR).
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the logical expression context
+	 * @return an ASTBinaryOp node representing the logical operation
 	 */
 	@Override
 	public ASTBinaryOp visitLogicExp(MiniJajaParser.LogicExpContext ctx) {
@@ -481,12 +430,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a single exp1 expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the single expression context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitSingleExp1(MiniJajaParser.SingleExp1Context ctx) {
@@ -494,12 +441,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an exp2-only expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the exp2-only context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitExp2Only(MiniJajaParser.Exp2OnlyContext ctx) {
@@ -507,12 +452,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a comparison expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the comparison expression context
+	 * @return an ASTBinaryOp node representing the comparison
 	 */
 	@Override
 	public ASTBinaryOp visitCompExp(MiniJajaParser.CompExpContext ctx) {
@@ -524,12 +467,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a negation expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the negation expression context
+	 * @return an ASTUnaryOp node representing the negation
 	 */
 	@Override
 	public ASTUnaryOp visitNegExp(MiniJajaParser.NegExpContext ctx) {
@@ -539,12 +480,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an addition or subtraction expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the add/subtract expression context
+	 * @return an ASTBinaryOp node representing the addition or subtraction
 	 */
 	@Override
 	public ASTBinaryOp visitAddSubExp(MiniJajaParser.AddSubExpContext ctx) {
@@ -556,12 +495,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a term-only expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the term-only context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitTermOnly(MiniJajaParser.TermOnlyContext ctx) {
@@ -569,12 +506,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a multiplication/division expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the multiplication/division expression context
+	 * @return an ASTBinaryOp node representing the multiplication/division
 	 */
 	@Override
 	public ASTBinaryOp visitMulDivExp(MiniJajaParser.MulDivExpContext ctx) {
@@ -586,12 +521,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a fact-only expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the fact-only context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitFactOnly(MiniJajaParser.FactOnlyContext ctx) {
@@ -599,12 +532,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a variable reference expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the variable reference context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitVarRef(MiniJajaParser.VarRefContext ctx) {
@@ -612,12 +543,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method call expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method call context
+	 * @return an ASTMethodCallExpr node representing the call
 	 */
 	@Override
 	public ASTMethodCallExpr visitMethodCall(MiniJajaParser.MethodCallContext ctx) {
@@ -628,12 +557,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a length expression on an array.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the length context
+	 * @return an ASTLength node representing the length operation
 	 */
 	@Override
 	public ASTLength visitLength(MiniJajaParser.LengthContext ctx) {
@@ -643,12 +570,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a boolean literal.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the boolean context
+	 * @return an ASTBoolLiteral node representing the boolean value
 	 */
 	@Override
 	public ASTBoolLiteral visitBool(MiniJajaParser.BoolContext ctx) {
@@ -658,12 +583,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an integer literal.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the integer context
+	 * @return an ASTIntLiteral node representing the integer value
 	 */
 	@Override
 	public ASTIntLiteral visitInt(MiniJajaParser.IntContext ctx) {
@@ -673,12 +596,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a parenthesized expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the parenthesis expression context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitParenExp(MiniJajaParser.ParenExpContext ctx) {
@@ -686,12 +607,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an identificator reference.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the identificator context
+	 * @return an ASTIdent node representing the identifier
 	 */
 	@Override
 	public ASTIdent visitIdentificator(MiniJajaParser.IdentificatorContext ctx) {
@@ -699,12 +618,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an array access expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the array access context
+	 * @return an ASTArrayAccess node representing the array access
 	 */
 	@Override
 	public ASTArrayAccess visitArrayAccess(MiniJajaParser.ArrayAccessContext ctx) {
@@ -715,12 +632,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a void type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the void type context
+	 * @return an ASTVoidType node representing void
 	 */
 	@Override
 	public ASTVoidType visitVoidType(MiniJajaParser.VoidTypeContext ctx) {
@@ -729,12 +644,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method type context
+	 * @return the corresponding ASTNode representing the return type
 	 */
 	@Override
 	public ASTNode visitTypeMethod(MiniJajaParser.TypeMethodContext ctx) {
@@ -742,12 +655,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an integer type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the integer type context
+	 * @return an ASTIntType node representing int
 	 */
 	@Override
 	public ASTIntType visitIntType(MiniJajaParser.IntTypeContext ctx) {
@@ -756,12 +667,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a boolean type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the boolean type context
+	 * @return an ASTBoolType node representing boolean
 	 */
 	@Override
 	public ASTBoolType visitBoolType(MiniJajaParser.BoolTypeContext ctx) {
