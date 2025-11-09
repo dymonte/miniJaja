@@ -37,6 +37,7 @@ public class ParserUtils {
 	 *
 	 * @param inputStr the Minijaja source code as a string
 	 * @return the root ASTNode of the parsed AST
+	 * @throws SyntaxException if syntax errors are detected
 	 */
 	public static ASTNode parseString(String inputStr) throws SyntaxException {
 		logger.debug("Starting miniJaja parsing from string");

@@ -12,21 +12,30 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.*;
 
+/**
+ * The JajaCodeBuildVisitor is responsible for visiting the parse tree of a
+ * JajaCode program and constructing its cerresponding Abstract Syntax Tree
+ * (AST) representation
+ */
 public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 
 	private final List<Instr> instructions = new ArrayList<>();
 
+	/**
+	 * Returns the list of collected Instr instructions in the order they were
+	 * visited in the parse tree
+	 *
+	 * @return the list of JajaCode instructions
+	 */
 	public List<Instr> getInstructions() {
 		return instructions;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits the program.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the program context
+	 * @return a JajaCodeNode representing the program
 	 */
 	@Override
 	public JajaCodeNode visitProg(JajaCodeParser.ProgContext ctx) {
@@ -37,12 +46,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an initialization instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the init context
+	 * @return a JajaCodeNode for the init instruction
 	 */
 	@Override
 	public JajaCodeNode visitInit(JajaCodeParser.InitContext ctx) {
@@ -51,12 +58,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a swap instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the swap context
+	 * @return a JajaCodeNode for the swap instruction
 	 */
 	@Override
 	public JajaCodeNode visitSwap(JajaCodeParser.SwapContext ctx) {
@@ -65,12 +70,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a "new" object instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the new context
+	 * @return a JajaCodeNode for the new instruction
 	 */
 	@Override
 	public JajaCodeNode visitNew(JajaCodeParser.NewContext ctx) {
@@ -84,12 +87,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a "new array" instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the new array context
+	 * @return a JajaCodeNode for the new array instruction
 	 */
 	@Override
 	public JajaCodeNode visitNewArray(JajaCodeParser.NewArrayContext ctx) {
@@ -99,12 +100,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method invoke instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the invoke context
+	 * @return a JajaCodeNode for the invoke instruction
 	 */
 	@Override
 	public JajaCodeNode visitInvoke(JajaCodeParser.InvokeContext ctx) {
@@ -113,12 +112,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a length instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the length context
+	 * @return a JajaCodeNode for the length instruction
 	 */
 	@Override
 	public JajaCodeNode visitLength(JajaCodeParser.LengthContext ctx) {
@@ -127,12 +124,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a return instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the return context
+	 * @return a JajaCodeNode for the return instruction
 	 */
 	@Override
 	public JajaCodeNode visitReturn(JajaCodeParser.ReturnContext ctx) {
@@ -141,12 +136,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a write instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the write context
+	 * @return a JajaCodeNode for the write instruction
 	 */
 	@Override
 	public JajaCodeNode visitWrite(JajaCodeParser.WriteContext ctx) {
@@ -155,12 +148,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a writeln instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the writeln context
+	 * @return a JajaCodeNode for the writeln instruction
 	 */
 	@Override
 	public JajaCodeNode visitWriteLn(JajaCodeParser.WriteLnContext ctx) {
@@ -169,12 +160,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a push instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the push context
+	 * @return a JajaCodeNode for the push instruction
 	 */
 	@Override
 	public JajaCodeNode visitPush(JajaCodeParser.PushContext ctx) {
@@ -183,12 +172,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a pop instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the pop context
+	 * @return a JajaCodeNode for the pop instruction
 	 */
 	@Override
 	public JajaCodeNode visitPop(JajaCodeParser.PopContext ctx) {
@@ -197,12 +184,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a load instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the load context
+	 * @return a JajaCodeNode for the load instruction
 	 */
 	@Override
 	public JajaCodeNode visitLoad(JajaCodeParser.LoadContext ctx) {
@@ -211,12 +196,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an aload instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the aload context
+	 * @return a JajaCodeNode for the aload instruction
 	 */
 	@Override
 	public JajaCodeNode visitALoad(JajaCodeParser.ALoadContext ctx) {
@@ -225,12 +208,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a store instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the store context
+	 * @return a JajaCodeNode for the store instruction
 	 */
 	@Override
 	public JajaCodeNode visitStore(JajaCodeParser.StoreContext ctx) {
@@ -239,12 +220,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an astore instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the astore context
+	 * @return a JajaCodeNode for the astore instruction
 	 */
 	@Override
 	public JajaCodeNode visitAStore(JajaCodeParser.AStoreContext ctx) {
@@ -253,12 +232,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an if instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the if context
+	 * @return a JajaCodeNode for the if instruction
 	 */
 	@Override
 	public JajaCodeNode visitIf(JajaCodeParser.IfContext ctx) {
@@ -267,12 +244,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a goto instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the goto context
+	 * @return a JajaCodeNode for the goto instruction
 	 */
 	@Override
 	public JajaCodeNode visitGoto(JajaCodeParser.GotoContext ctx) {
@@ -281,12 +256,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an increment instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the increment context
+	 * @return a JajaCodeNode for the increment instruction
 	 */
 	@Override
 	public JajaCodeNode visitInc(JajaCodeParser.IncContext ctx) {
@@ -295,12 +268,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an array increment instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the ainc context
+	 * @return a JajaCodeNode for the array increment instruction
 	 */
 	@Override
 	public JajaCodeNode visitAInc(JajaCodeParser.AIncContext ctx) {
@@ -309,12 +280,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an operator context.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the operator context
+	 * @return a JajaCodeNode for the operator
 	 */
 	@Override
 	public JajaCodeNode visitOperator(JajaCodeParser.OperatorContext ctx) {
@@ -322,12 +291,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a nop instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the nop context
+	 * @return a JajaCodeNode for the nop instruction
 	 */
 	@Override
 	public JajaCodeNode visitNop(JajaCodeParser.NopContext ctx) {
@@ -336,12 +303,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a stop instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the stop context
+	 * @return a JajaCodeNode for the stop instruction
 	 */
 	@Override
 	public JajaCodeNode visitJcStop(JajaCodeParser.JcStopContext ctx) {
@@ -350,12 +315,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a unary operator.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the unary context
+	 * @return a JajaCodeNode for the unary operator
 	 */
 	@Override
 	public JajaCodeNode visitUnary(JajaCodeParser.UnaryContext ctx) {
@@ -363,12 +326,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a binary operator.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the binary context
+	 * @return a JajaCodeNode for the binary operator
 	 */
 	@Override
 	public JajaCodeNode visitBinary(JajaCodeParser.BinaryContext ctx) {
@@ -376,12 +337,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a unary operation.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the oper1 context
+	 * @return a JajaCodeNode for the unary operation
 	 */
 	@Override
 	public JajaCodeNode visitOper1(JajaCodeParser.Oper1Context ctx) {
@@ -390,12 +349,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a binary operation.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the oper2 context
+	 * @return a JajaCodeNode for the binary operation
 	 */
 	@Override
 	public JajaCodeNode visitOper2(JajaCodeParser.Oper2Context ctx) {
@@ -404,12 +361,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an identifier.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the ident context
+	 * @return a ValIdent node representing the identifier
 	 */
 	@Override
 	public JajaCodeNode visitIdent(JajaCodeParser.IdentContext ctx) {
@@ -417,12 +372,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an integer value.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the int value context
+	 * @return a ValNbre node representing the integer
 	 */
 	@Override
 	public JajaCodeNode visitIntValue(JajaCodeParser.IntValueContext ctx) {
@@ -430,12 +383,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a boolean value.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the boolean value context
+	 * @return a ValBool node representing the boolean
 	 */
 	@Override
 	public JajaCodeNode visitBoolValue(JajaCodeParser.BoolValueContext ctx) {
@@ -443,12 +394,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a string value.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the string value context
+	 * @return a ValString node representing the string
 	 */
 	@Override
 	public JajaCodeNode visitStringValue(JajaCodeParser.StringValueContext ctx) {
@@ -456,12 +405,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a void value.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the void value context
+	 * @return a ValNbre node representing void (0)
 	 */
 	@Override
 	public JajaCodeNode visitVoidValue(JajaCodeParser.VoidValueContext ctx) {
@@ -469,12 +416,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an address value.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the address context
+	 * @return a ValAddress node representing the address
 	 */
 	@Override
 	public JajaCodeNode visitAddress(JajaCodeParser.AddressContext ctx) {
@@ -482,12 +427,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a type.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the type context
+	 * @return a VarType node representing the type
 	 */
 	@Override
 	public JajaCodeNode visitType(JajaCodeParser.TypeContext ctx) {
@@ -495,12 +438,10 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a kind.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the kind context
+	 * @return a VarKind node representing the kind
 	 */
 	@Override
 	public JajaCodeNode visitKind(JajaCodeParser.KindContext ctx) {
