@@ -11,8 +11,6 @@ import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 
-import fr.umlp.m1info.projectvms.group2.utils.ReflectionUtils;
-
 public class JajaCodeInterpreter {
 	Memory memory;
 
@@ -34,7 +32,7 @@ public class JajaCodeInterpreter {
 			throw new InterpretRuntimeException("node cannot be null");
 		}
 
-		Method m = ReflectionUtils.findAnnotatedMethod(this.getClass(), JajaCodeInterpretFunction.class, node.getClass());
+		Method m = findAnnotatedMethod(JajaCodeInterpretFunction.class, node.getClass());
 		if (m == null) {
 			throw new InterpretRuntimeException("No @JajaCodeInterpretFunction found for " + node.getClass().getSimpleName());
 		}
@@ -57,7 +55,7 @@ public class JajaCodeInterpreter {
 			throw new InterpretRuntimeException("node cannot be null");
 		}
 
-		Method m = ReflectionUtils.findAnnotatedMethod(this.getClass(), JajaCodeEvalFunction.class, node.getClass());
+		Method m = findAnnotatedMethod(JajaCodeEvalFunction.class, node.getClass());
 		if (m == null) {
 			throw new InterpretRuntimeException("No @JajaCodeInterpretFunction found for " + node.getClass().getSimpleName());
 		}
@@ -67,6 +65,27 @@ public class JajaCodeInterpreter {
 		} catch (Exception e) {
 			throw new InterpretRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
 		}
+	}
+
+	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
+			Class<?> nodeClass) {
+		Class<?> cls = this.getClass();
+		while (cls != null) {
+			for (Method method : cls.getDeclaredMethods()) {
+				var annotation = method.getAnnotation(annotationClass);
+				if (annotation != null) {
+					try {
+						Class<?> handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
+						if (handledType.isAssignableFrom(nodeClass)) {
+							return method;
+						}
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			cls = cls.getSuperclass();
+		}
+		return null;
 	}
 
 	@JajaCodeInterpretFunction(InstrInit.class)
