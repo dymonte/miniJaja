@@ -259,10 +259,8 @@ public class MiniJajaInterpreter {
 	/** Interprets a while loop */
 	@InterpretFunction(ASTWhile.class)
 	protected void interpretWhile(ASTWhile node) {
-		Boolean value = (Boolean) eval(node.getExpr());
-		if (Boolean.TRUE.equals(value)) {
+		while ((Boolean) eval(node.getExpr())) {
 			interpret(node.getInstrs());
-			interpret(node);
 		}
 	}
 
