@@ -309,8 +309,7 @@ public class AppController implements StatefulController {
 	}
 
 	private void runMiniJajaInterpretation(Boolean stepMode) {
-		// TODO: redo an interpretation
-		if (miniJajaInterpreterThread != null) {
+		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
 			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
 					"Stop interpretation and after you can run it");
 			return;
