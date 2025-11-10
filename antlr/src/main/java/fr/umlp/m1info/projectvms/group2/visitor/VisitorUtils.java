@@ -2,12 +2,6 @@ package fr.umlp.m1info.projectvms.group2.visitor;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.List;
-
-import java.util.function.Function;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
-
 /**
  * Utility class for working with the MiniJaja parse tree when building the AST
  *
