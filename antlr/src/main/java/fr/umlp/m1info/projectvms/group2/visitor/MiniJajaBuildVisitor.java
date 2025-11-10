@@ -1,5 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.visitor;
 
+import java.util.List;
+
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
@@ -60,11 +62,21 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTDecls visitDecls(MiniJajaParser.DeclsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.DeclContext, ASTDecl, ASTDecls>build(
-				ctx.decl(),
-				declCtx -> (ASTDecl) visit(declCtx),
-				(head, tail) -> new ASTDeclsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTDeclsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		List<MiniJajaParser.DeclContext> decls = ctx.decl();
+
+		if (decls.isEmpty()) {
+			return new ASTDeclsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = decls.size();
+		ASTDecls result = new ASTDeclsNil(VisitorUtils.line(decls.get(size - 1)), VisitorUtils.column(decls.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.DeclContext declCtx = decls.get(i);
+			ASTDecl head = (ASTDecl) visit(declCtx);
+			result = new ASTDeclsChain(head, result, VisitorUtils.line(declCtx), VisitorUtils.column(declCtx));
+		}
+		return result;
 	}
 
 	/**
@@ -97,11 +109,21 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTVars visitVars(MiniJajaParser.VarsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.VarContext, ASTVar, ASTVars>build(
-				ctx.var(),
-				varCtx -> (ASTVar) visit(varCtx),
-				(head, tail) -> new ASTVarsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTVarsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		List<MiniJajaParser.VarContext> vars = ctx.var();
+
+		if (vars.isEmpty()) {
+			return new ASTVarsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = vars.size();
+		ASTVars result = new ASTVarsNil(VisitorUtils.line(vars.get(size - 1)), VisitorUtils.column(vars.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.VarContext varCtx = vars.get(i);
+			ASTVar head = (ASTVar) visit(varCtx);
+			result = new ASTVarsChain(head, result, VisitorUtils.line(varCtx), VisitorUtils.column(varCtx));
+		}
+		return result;
 	}
 
 	/**
@@ -199,11 +221,22 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTParams visitParams(MiniJajaParser.ParamsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.ParamContext, ASTParam, ASTParams>build(
-				ctx.param(),
-				paramCtx -> (ASTParam) visit(paramCtx),
-				(head, tail) -> new ASTParamsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTParamsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		List<MiniJajaParser.ParamContext> params = ctx.param();
+
+		if (params.isEmpty()) {
+			return new ASTParamsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = params.size();
+		ASTParams result = new ASTParamsNil(VisitorUtils.line(params.get(size - 1)),
+				VisitorUtils.column(params.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.ParamContext paramCtx = params.get(i);
+			ASTParam head = (ASTParam) visit(paramCtx);
+			result = new ASTParamsChain(head, result, VisitorUtils.line(paramCtx), VisitorUtils.column(paramCtx));
+		}
+		return result;
 	}
 
 	/**
@@ -225,13 +258,25 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 * @param ctx the instructions context
 	 * @return an ASTInstrs node representing a chain of instructions
 	 */
+
 	@Override
 	public ASTInstrs visitInstrs(MiniJajaParser.InstrsContext ctx) {
-		return VisitorUtils.<MiniJajaParser.InstrContext, ASTInstr, ASTInstrs>build(
-				ctx.instr(),
-				instrCtx -> (ASTInstr) visit(instrCtx),
-				(head, tail) -> new ASTInstrsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		List<MiniJajaParser.InstrContext> instrContexts = ctx.instr();
+
+		if (instrContexts.isEmpty()) {
+			return new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = instrContexts.size();
+		ASTInstrs result = new ASTInstrsNil(VisitorUtils.line(instrContexts.get(size - 1)),
+				VisitorUtils.column(instrContexts.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.InstrContext instrCtx = instrContexts.get(i);
+			ASTInstr head = (ASTInstr) visit(instrCtx);
+			result = new ASTInstrsChain(head, result, VisitorUtils.line(instrCtx), VisitorUtils.column(instrCtx));
+		}
+		return result;
 	}
 
 	/**
@@ -356,13 +401,25 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 * @param ctx the list expression context
 	 * @return an ASTExprs node representing the chain of expressions
 	 */
+
 	@Override
 	public ASTExprs visitListexp(MiniJajaParser.ListexpContext ctx) {
-		return VisitorUtils.<MiniJajaParser.ExpContext, ASTExpr, ASTExprs>build(
-				ctx.exp(),
-				exprCtx -> (ASTExpr) visit(exprCtx),
-				(head, tail) -> new ASTExprsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-				() -> new ASTExprsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		List<MiniJajaParser.ExpContext> expContexts = ctx.exp();
+
+		if (expContexts.isEmpty()) {
+			return new ASTExprsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = expContexts.size();
+		ASTExprs result = new ASTExprsNil(VisitorUtils.line(expContexts.get(size - 1)),
+				VisitorUtils.column(expContexts.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.ExpContext expCtx = expContexts.get(i);
+			ASTExpr head = (ASTExpr) visit(expCtx);
+			result = new ASTExprsChain(head, result, VisitorUtils.line(expCtx), VisitorUtils.column(expCtx));
+		}
+		return result;
 	}
 
 	/**

@@ -32,26 +32,4 @@ public class VisitorUtils {
 	public static int column(ParserRuleContext ctx) {
 		return ctx.start.getCharPositionInLine();
 	}
-
-	/**
-	 * Generic method to build a left-recursive AST list chain (Cons/Nil pattern)
-	 *
-	 * @param <C>            The ANTLR context type
-	 * @param <E>            The AST node type
-	 * @param <L>            The List node type
-	 * @param contexts       The list of parse rule contexts
-	 * @param elementBuilder A function that converts a context into an ASTNode
-	 * @param chainFactory   A function that wraps (head, tail) into a chain node
-	 * @param nilSupplier    A supplier that returns the Nil node
-	 * @return The root AST list node
-	 */
-	public static <C, E, L> L build(List<C> contexts, Function<C, E> elementBuilder,
-			BiFunction<E, L, L> chainFactory, Supplier<L> nilSupplier) {
-		L result = nilSupplier.get();
-		for (int i = contexts.size() - 1; i >= 0; i--) {
-			E element = elementBuilder.apply(contexts.get(i));
-			result = chainFactory.apply(element, result);
-		}
-		return result;
-	}
 }
