@@ -29,6 +29,14 @@ public class MiniJajaInterpreterInteractive extends MiniJajaInterpreter {
 		this.stepModeEnabled = enabled;
 	}
 
+    public void skipBreakpoint() {
+        synchronized (lock) {
+            waiting = false;
+            lock.notifyAll();
+            breakpoints.remove(currentLine);
+        }
+    }
+
 	public void nextStep() {
 		synchronized (lock) {
 			waiting = false;
@@ -71,9 +79,6 @@ public class MiniJajaInterpreterInteractive extends MiniJajaInterpreter {
 
 		if (!stepModeEnabled && !hitBreakpoint)
 			return;
-
-        if (hitBreakpoint)
-            breakpoints.remove(node.getLine());
 
 		synchronized (lock) {
 			waiting = true;

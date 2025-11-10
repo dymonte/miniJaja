@@ -332,12 +332,14 @@ public class AppController implements StatefulController {
 					ASTNode programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
 
 					if (stepMode || !breakpoints.isEmpty()) {
-						showStepPopup(popupStage, interpreter);
+						showStepPopup(popupStage, interpreter, !breakpoints.isEmpty());
 						Platform.runLater(() -> codeSectionController.highlightLine(programRoot.getLine()));
 					}
 
 					interpreter.setBreakpoints(breakpoints);
 					interpreter.interpret(programRoot);
+
+                    Platform.runLater(() -> codeSectionController.highlightLine(programRoot.getLine()));
 				} catch (InterpreterInterruptedException e) {
 					// Do nothing
 				} catch (Exception e) {
@@ -380,18 +382,19 @@ public class AppController implements StatefulController {
 	 *
 	 * @param popupStage  the Stage for the popUp
 	 * @param interpreter the interpreter to be attached
+	 * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
-	private void showStepPopup(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
+	private void showStepPopup(Stage popupStage, MiniJajaInterpreterInteractive interpreter, boolean hasBreakpoints) {
 		Platform.runLater(() -> {
 			popupStage.initOwner(primaryStage);
 			popupStage.setAlwaysOnTop(true);
 			popupStage.initStyle(StageStyle.UNDECORATED);
 
 			// Create Buttons
-			setStepPopupBtns(popupStage, interpreter);
+			setStepPopupBtns(popupStage, interpreter, hasBreakpoints);
 
 			// Position Popup
-			setStepPopupPos(popupStage);
+			setStepPopupPos(popupStage, hasBreakpoints);
 
 			popupStage.show();
 		});
@@ -402,11 +405,26 @@ public class AppController implements StatefulController {
 	 *
 	 * @param popupStage  the step by step popup to add the buttons to
 	 * @param interpreter the interpreter for the buttons to interact with
+     * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
-	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
+	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter, boolean hasBreakpoints) {
 		Button btnNext = new Button("Next");
+
 		Button btnStop = new Button("Stop");
-		HBox root = new HBox(10, btnStop, btnNext);
+		HBox root;
+
+        if (hasBreakpoints) {
+            Button btnSkipBreakpoint = new Button("Skip breakpoint");
+            root = new HBox(10, btnStop, btnNext, btnSkipBreakpoint);
+
+            btnSkipBreakpoint.setOnAction(event -> {
+                interpreter.skipBreakpoint();
+                memorySectionController.bindState(state);
+                codeSectionController.highlightLine(interpreter.getCurrentLine());
+            });
+        } else {
+             root = new HBox(10, btnStop, btnNext);
+        }
 
 		btnNext.setOnAction(event -> {
 			interpreter.nextStep();
@@ -416,16 +434,17 @@ public class AppController implements StatefulController {
 		btnStop.setOnAction(event -> stopInterpretation());
 
 		root.setStyle("-fx-padding: 20;");
-		popupStage.setScene(new Scene(root, 150, 50));
+		popupStage.setScene(new Scene(root, 150 + (hasBreakpoints ? 150 : 0), 50));
 	}
 
 	/**
 	 * Set up step by step popup position
 	 *
 	 * @param popupStage the step by step popup to position
+     * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
-	private void setStepPopupPos(Stage popupStage) {
-		double x = primaryStage.getX() + primaryStage.getWidth() / 2 - 75;
+	private void setStepPopupPos(Stage popupStage, boolean hasBreakpoints) {
+		double x = primaryStage.getX() + primaryStage.getWidth() / 2 - 75 - (hasBreakpoints ? 27.5 : 0);
 		double y = primaryStage.getY() + 25;
 		popupStage.setX(x);
 		popupStage.setY(y);
