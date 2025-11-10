@@ -56,6 +56,8 @@ public class AppController implements StatefulController {
 
 	private Thread miniJajaInterpreterThread;
 
+    private MiniJajaInterpreterInteractive interpreter;
+
 	@Override
 	public void bindState(AppState appState) {
 		// set App state to all controllers
@@ -289,14 +291,16 @@ public class AppController implements StatefulController {
 		}
 	}
 
-	/**
-	 * Runs the current file in a seperate thread
-	 */
-	public void runCurrentFile() {
+
+    /**
+     * Runs the current file in a seperate thread in step mode
+     */
+    @FXML
+	private void runCurrentFile() {
 		initMemory();
 		memorySectionController.bindState(state);
 
-		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
+		interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
 		interpreter.setStepModeEnabled(false);
 
 		List<Integer> breakpoints = codeSectionController.getBreakpoints().stream().toList();
@@ -319,10 +323,13 @@ public class AppController implements StatefulController {
 		miniJajaInterpreterThread.start();
 	}
 
+
+
 	/**
 	 * Stops the interpretation
 	 */
-	public void stopInterpretation() {
+    @FXML
+	private void stopInterpretation() {
 		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
 			miniJajaInterpreterThread.interrupt();
 		} else {
@@ -333,11 +340,12 @@ public class AppController implements StatefulController {
     /**
      * Runs the current file in a seperate thread in step by step mode.
      */
-    public void runCurrentFileStep() {
+    @FXML
+    private void runCurrentFileStep() {
         initMemory();
         memorySectionController.bindState(state);
 
-        MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
+        interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
         Stage popupStage = new Stage();
         miniJajaInterpreterThread = new Thread(() -> {
             try {
@@ -430,11 +438,21 @@ public class AppController implements StatefulController {
             codeSectionController.highlightLine(0);
         });
     }
+    @FXML
+    private void resumeInterpretation() {
+        if (interpreter != null) {
+            interpreter.nextStep();
+        } else {
+            PopUp.info("Interpreter", "No program is currently paused", "Run the program first.");
+        }
+    }
+
 
     /**
 	 * Clear console
 	 */
-	public void clearConsole() {
+    @FXML
+	private void clearConsole() {
 		consoleSectionController.clearAllTabs();
 	}
 
@@ -457,35 +475,43 @@ public class AppController implements StatefulController {
 		this.primaryStage = stage;
 	}
 
-	public void undoCode() {
+    @FXML
+	private void undoCode() {
 		codeSectionController.undo();
 	}
 
-	public void redoCode() {
+    @FXML
+	private void redoCode() {
 		codeSectionController.redo();
 	}
 
-	public void cutCode() {
+	@FXML
+    private void cutCode() {
 		codeSectionController.cut();
 	}
 
-	public void copyCode() {
+    @FXML
+    private void copyCode() {
 		codeSectionController.copy();
 	}
 
-	public void pasteCode() {
+    @FXML
+    private void pasteCode() {
 		codeSectionController.paste();
 	}
 
-	public void deleteCode() {
+    @FXML
+	private void deleteCode() {
 		codeSectionController.delete();
 	}
 
-	public void selectAllCode() {
+    @FXML
+    private void selectAllCode() {
 		codeSectionController.selectAll();
 	}
 
-	public void unSelectAllCode() {
+	@FXML
+    private void unSelectAllCode() {
 		codeSectionController.unSelectAll();
 	}
 

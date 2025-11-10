@@ -72,6 +72,9 @@ public class MiniJajaInterpreterInteractive extends MiniJajaInterpreter {
 		if (!stepModeEnabled && !hitBreakpoint)
 			return;
 
+        if (hitBreakpoint)
+            breakpoints.remove(node.getLine());
+
 		synchronized (lock) {
 			waiting = true;
 
