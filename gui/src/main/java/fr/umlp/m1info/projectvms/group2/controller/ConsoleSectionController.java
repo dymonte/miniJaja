@@ -6,6 +6,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
+import javafx.application.Platform;
+
 public class ConsoleSectionController {
 
 	@FXML
@@ -56,15 +58,15 @@ public class ConsoleSectionController {
 	}
 
 	public void appendToOutput(String msg) {
-		outputArea.appendText(msg);
+		Platform.runLater(() -> outputArea.appendText(msg));
 	}
 
 	public void appendToDebug(String msg) {
-		debugArea.appendText(msg + "\n");
+		Platform.runLater(() -> debugArea.appendText(msg + "\n"));
 	}
 
 	public void appendToError(String msg) {
-		errorArea.appendText(msg + "\n");
-		tabPane.getSelectionModel().select(errorTab);
+		Platform.runLater(() -> errorArea.appendText(msg + "\n"));
+		Platform.runLater(() -> tabPane.getSelectionModel().select(errorTab));
 	}
 }

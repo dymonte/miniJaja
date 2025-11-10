@@ -95,7 +95,6 @@
                   </items>
                 </Menu>
                 <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation"/>
-                  <MenuItem mnemonicParsing="false" text="Resume" onAction="#resumeInterpretation"/>
                 <MenuItem mnemonicParsing="false" text="Clear Console" onAction="#clearConsole"/>
               </items>
             </Menu>

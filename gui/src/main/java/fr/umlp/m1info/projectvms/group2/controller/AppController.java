@@ -2,10 +2,10 @@ package fr.umlp.m1info.projectvms.group2.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
@@ -24,9 +24,12 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -55,8 +58,6 @@ public class AppController implements StatefulController {
 	private AppState state;
 
 	private Thread miniJajaInterpreterThread;
-
-    private MiniJajaInterpreterInteractive interpreter;
 
 	@Override
 	public void bindState(AppState appState) {
@@ -291,167 +292,165 @@ public class AppController implements StatefulController {
 		}
 	}
 
-
-    /**
-     * Runs the current file in a seperate thread in step mode
-     */
-    @FXML
+	/**
+	 * Runs the current file in a seperate thread
+	 */
+	@FXML
 	private void runCurrentFile() {
+		runMiniJajaInterpretation(false);
+	}
+
+	/**
+	 * Runs the current file in a seperate thread in step by step mode.
+	 */
+	@FXML
+	private void runCurrentFileStep() {
+		runMiniJajaInterpretation(true);
+	}
+
+	private void runMiniJajaInterpretation(Boolean stepMode) {
+		// TODO: redo an interpretation
+		if (miniJajaInterpreterThread != null) {
+			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
+					"Stop interpretation and after you can run it");
+			return;
+		}
+
 		initMemory();
 		memorySectionController.bindState(state);
 
-		interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
-		interpreter.setStepModeEnabled(false);
+		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
+		interpreter.setStepModeEnabled(stepMode);
 
-		List<Integer> breakpoints = codeSectionController.getBreakpoints().stream().toList();
+		List<Integer> breakpoints = new ArrayList<>(codeSectionController.getBreakpoints());
 
-		miniJajaInterpreterThread = new Thread(() -> {
-			try {
-				ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
+		Stage popupStage = new Stage();
 
-				// Set breakpoints in the interpretation
-				interpreter.setBreakpoints(breakpoints);
+		Task<Void> task = new Task<>() {
+			@Override
+			protected Void call() {
+				try {
+					ASTNode programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
 
-				interpreter.interpret(programRoot);
-			} catch (InterpretRuntimeException e) {
-				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", e.getMessage(), ""));
-			} catch (Exception e) {
-				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", ""));
+					if (stepMode || !breakpoints.isEmpty()) {
+						showStepPopup(popupStage, interpreter);
+						Platform.runLater(() -> codeSectionController.highlightLine(programRoot.getLine()));
+					}
+
+					interpreter.setBreakpoints(breakpoints);
+					interpreter.interpret(programRoot);
+				} catch (InterpreterInterruptedException e) {
+					// Do nothing
+				} catch (Exception e) {
+					handleInterpretationError(popupStage, e.getMessage());
+				} finally {
+					if (stepMode || !breakpoints.isEmpty()) {
+						Platform.runLater(popupStage::close);
+					}
+				}
+				return null;
 			}
-		});
+		};
 
+		miniJajaInterpreterThread = new Thread(task);
 		miniJajaInterpreterThread.start();
 	}
 
-
+	private void handleInterpretationError(Stage popupStage, String message) {
+		Platform.runLater(() -> {
+			popupStage.close();
+			PopUp.error("MiniJaja Interpreter Error", message, "");
+		});
+	}
 
 	/**
 	 * Stops the interpretation
 	 */
-    @FXML
+	@FXML
 	private void stopInterpretation() {
 		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
 			miniJajaInterpreterThread.interrupt();
+			miniJajaInterpreterThread = null;
 		} else {
 			PopUp.info("MiniJaja Interpreter", "Interpretation is not running", "Start the interpretation");
 		}
 	}
 
-    /**
-     * Runs the current file in a seperate thread in step by step mode.
-     */
-    @FXML
-    private void runCurrentFileStep() {
-        initMemory();
-        memorySectionController.bindState(state);
+	/**
+	 * Shows step by step popup
+	 *
+	 * @param popupStage  the Stage for the popUp
+	 * @param interpreter the interpreter to be attached
+	 */
+	private void showStepPopup(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
+		Platform.runLater(() -> {
+			popupStage.initOwner(primaryStage);
+			popupStage.setAlwaysOnTop(true);
+			popupStage.initStyle(StageStyle.UNDECORATED);
 
-        interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
-        Stage popupStage = new Stage();
-        miniJajaInterpreterThread = new Thread(() -> {
-            try {
-                ASTNode programRoot = ParserUtils.parseString(state.codeProperty().get());
-                showStepPopup(popupStage, interpreter);
-                Platform.runLater(() -> codeSectionController.highlightLine(programRoot.getLine()));
-                interpreter.interpret(programRoot);
-                Platform.runLater(popupStage::close);
-            } catch (InterpretRuntimeException e) {
-                Platform.runLater(() -> {
-                    popupStage.close();
-                    PopUp.error("MiniJaja Interpreter Error", e.getMessage(), "");
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    popupStage.close();
-                    PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", e.toString());
-                });
-            }
-        });
+			// Create Buttons
+			setStepPopupBtns(popupStage, interpreter);
 
-        miniJajaInterpreterThread.start();
-    }
+			// Position Popup
+			setStepPopupPos(popupStage);
 
-    /**
-     * Shows step by step popup
-     * @param popupStage the Stage for the popUp
-     * @param interpreter the interpreter to be attached
-     */
-    private void showStepPopup(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
-        Platform.runLater(() -> {
-            popupStage.initOwner(primaryStage);
-            popupStage.setAlwaysOnTop(true);
-            popupStage.initStyle(StageStyle.UNDECORATED);
+			popupStage.show();
+		});
+	}
 
-            // Create Buttons
-            setStepPopupBtns(popupStage, interpreter);
+	/**
+	 * Set up step by step popup position
+	 *
+	 * @param popupStage  the step by step popup to add the buttons to
+	 * @param interpreter the interpreter for the buttons to interact with
+	 */
+	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
+		Button btnNext = new Button("Next");
+		Button btnStop = new Button("Stop");
+		HBox root = new HBox(10, btnStop, btnNext);
 
-            // Position Popup
-            setStepPopupPos(popupStage);
+		btnNext.setOnAction(event -> {
+			interpreter.nextStep();
+			memorySectionController.bindState(state);
+			codeSectionController.highlightLine(interpreter.getCurrentLine());
+		});
+		btnStop.setOnAction(event -> stopInterpretation());
 
+		root.setStyle("-fx-padding: 20;");
+		popupStage.setScene(new Scene(root, 150, 50));
+	}
 
-            popupStage.show();
-        });
-    }
+	/**
+	 * Set up step by step popup position
+	 *
+	 * @param popupStage the step by step popup to position
+	 */
+	private void setStepPopupPos(Stage popupStage) {
+		double x = primaryStage.getX() + primaryStage.getWidth() / 2 - 75;
+		double y = primaryStage.getY() + 25;
+		popupStage.setX(x);
+		popupStage.setY(y);
 
-    /**
-     * Set up step by step popup position
-     * @param popupStage the step by step popup to add the buttons to
-     * @param interpreter the interpreter for the buttons to interact with
-     */
-    private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter) {
-        Button btnNext = new Button("Next");
-        Button btnStop = new Button("Stop");
-        HBox root = new HBox(10, btnStop, btnNext);
+		ChangeListener<Number> xListener = (obs, oldVal, newVal) -> {
+			popupStage.setX(newVal.doubleValue() + primaryStage.getWidth() / 2 - 75);
+		};
+		ChangeListener<Number> yListener = (obs, oldVal, newVal) -> {
+			popupStage.setY(newVal.doubleValue() + 25);
+		};
+		primaryStage.xProperty().addListener(xListener);
+		primaryStage.yProperty().addListener(yListener);
 
-        btnNext.setOnAction(event -> {
-            interpreter.nextStep();
-            memorySectionController.bindState(state);
-            codeSectionController.highlightLine(interpreter.getCurrentLine());
-        });
-        btnStop.setOnAction(event -> stopInterpretation());
+		popupStage.setOnHidden(e -> {
+			primaryStage.xProperty().removeListener(xListener);
+			primaryStage.yProperty().removeListener(yListener);
+			codeSectionController.highlightLine(0);
+		});
+	}
 
-        root.setStyle("-fx-padding: 20;");
-        popupStage.setScene(new Scene(root, 150, 50));
-    }
-
-    /**
-     * Set up step by step popup position
-     * @param popupStage the step by step popup to position
-     */
-    private void setStepPopupPos(Stage popupStage) {
-        double x = primaryStage.getX() + primaryStage.getWidth() / 2 - 75;
-        double y = primaryStage.getY() + 25;
-        popupStage.setX(x);
-        popupStage.setY(y);
-
-        ChangeListener<Number> xListener = (obs, oldVal, newVal) -> {
-            popupStage.setX(newVal.doubleValue() + primaryStage.getWidth() / 2 - 75);
-        };
-        ChangeListener<Number> yListener = (obs, oldVal, newVal) -> {
-            popupStage.setY(newVal.doubleValue() + 25);
-        };
-        primaryStage.xProperty().addListener(xListener);
-        primaryStage.yProperty().addListener(yListener);
-
-        popupStage.setOnHidden(e -> {
-            primaryStage.xProperty().removeListener(xListener);
-            primaryStage.yProperty().removeListener(yListener);
-            codeSectionController.highlightLine(0);
-        });
-    }
-    @FXML
-    private void resumeInterpretation() {
-        if (interpreter != null) {
-            interpreter.nextStep();
-        } else {
-            PopUp.info("Interpreter", "No program is currently paused", "Run the program first.");
-        }
-    }
-
-
-    /**
+	/**
 	 * Clear console
 	 */
-    @FXML
+	@FXML
 	private void clearConsole() {
 		consoleSectionController.clearAllTabs();
 	}
@@ -471,47 +470,66 @@ public class AppController implements StatefulController {
 	 *
 	 * @param stage the primary stage
 	 */
+
 	public void setPrimaryStage(Stage stage) {
 		this.primaryStage = stage;
+
+		Platform.runLater(() -> {
+			Scene scene = primaryStage.getScene();
+			if (scene != null) {
+				addCtrlCHandler(scene);
+			}
+		});
 	}
 
-    @FXML
+	private void addCtrlCHandler(Scene scene) {
+		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+			if (event.isControlDown() && event.getCode() == KeyCode.C) {
+				if (miniJajaInterpreterThread != null) {
+					stopInterpretation();
+					event.consume();
+				}
+			}
+		});
+	}
+
+	@FXML
 	private void undoCode() {
 		codeSectionController.undo();
 	}
 
-    @FXML
+	@FXML
 	private void redoCode() {
 		codeSectionController.redo();
 	}
 
 	@FXML
-    private void cutCode() {
+	private void cutCode() {
 		codeSectionController.cut();
 	}
 
-    @FXML
-    private void copyCode() {
+	@FXML
+	private void copyCode() {
 		codeSectionController.copy();
 	}
 
-    @FXML
-    private void pasteCode() {
+	@FXML
+	private void pasteCode() {
 		codeSectionController.paste();
 	}
 
-    @FXML
+	@FXML
 	private void deleteCode() {
 		codeSectionController.delete();
 	}
 
-    @FXML
-    private void selectAllCode() {
+	@FXML
+	private void selectAllCode() {
 		codeSectionController.selectAll();
 	}
 
 	@FXML
-    private void unSelectAllCode() {
+	private void unSelectAllCode() {
 		codeSectionController.unSelectAll();
 	}
 
