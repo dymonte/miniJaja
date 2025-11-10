@@ -88,9 +88,10 @@ public class ParserUtils {
 	 *
 	 * @param inputStr the JajaCode source code as a string
 	 * @return the list of all instructions of the parsed instrs
-	 * @throws SyntaxException if syntax errors are detected
+	 * @throws SyntaxException      if syntax errors are detected
+	 * @throws NullPointerException if building instruction have an error
 	 */
-	public static List<Instr> jajaCodeParseString(String inputStr) throws SyntaxException {
+	public static List<Instr> jajaCodeParseString(String inputStr) throws SyntaxException, NullPointerException {
 		logger.debug("Starting jajaCode parsing from string");
 
 		CharStream input = CharStreams.fromString(inputStr);
@@ -99,6 +100,9 @@ public class ParserUtils {
 		} catch (SyntaxException syntaxEx) {
 			logger.error(syntaxEx.getErrors());
 			throw syntaxEx;
+		} catch (NullPointerException nullEx) {
+			logger.error(nullEx.getMessage());
+			throw nullEx;
 		}
 	}
 
@@ -107,10 +111,12 @@ public class ParserUtils {
 	 *
 	 * @param fileName the path to the JajaCode source file
 	 * @return the list of all instructions of the parsed instrs
-	 * @throws SyntaxException if syntax errors are detected
-	 * @throws IOException     if reading the file fails
+	 * @throws SyntaxException      if syntax errors are detected
+	 * @throws IOException          if reading the file fails
+	 * @throws NullPointerException if building instruction have an error
 	 */
-	public static List<Instr> jajaCodeParseFile(String fileName) throws SyntaxException, IOException {
+	public static List<Instr> jajaCodeParseFile(String fileName)
+			throws SyntaxException, IOException, NullPointerException {
 		logger.debug("Starting jajaCode parsing for file: " + fileName);
 
 		try {
@@ -122,6 +128,9 @@ public class ParserUtils {
 		} catch (SyntaxException syntaxEx) {
 			logger.error(syntaxEx.getErrors());
 			throw syntaxEx;
+		} catch (NullPointerException nullEx) {
+			logger.error(nullEx.getMessage());
+			throw nullEx;
 		}
 	}
 
