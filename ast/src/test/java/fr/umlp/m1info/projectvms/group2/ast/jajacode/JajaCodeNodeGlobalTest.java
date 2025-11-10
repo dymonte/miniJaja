@@ -14,7 +14,7 @@ public class JajaCodeNodeGlobalTest {
             new InstrNil(-1);
         });
 
-        Assert.assertEquals("Line id must be positive", e.getMessage());
+        Assert.assertEquals("Line id must be greater than 0", e.getMessage());
     }
 
     @Test
