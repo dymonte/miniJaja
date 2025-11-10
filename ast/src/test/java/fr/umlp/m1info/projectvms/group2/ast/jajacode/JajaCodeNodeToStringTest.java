@@ -161,15 +161,15 @@ public class JajaCodeNodeToStringTest {
                 new ValIdent(lineId, "a"),
                 new VarKind(lineId, Kind.VAR),
                 new VarType(lineId, Type.INT),
-                new ValNbre(lineId, 10));
+                new ValAddress(lineId, 10));
         Assert.assertEquals("1 : new(var, jcident(a), int, jcnbre(10))", instr.toString());
 
         InstrNew instr2 = new InstrNew(1,
                 new ValIdent(lineId, "b"),
                 new VarKind(lineId, Kind.VAR),
                 new VarType(lineId, Type.BOOL),
-                new ValBool(lineId, false));
-        Assert.assertEquals("1 : new(var, jcident(b), bool, jcfaux)", instr2.toString());
+                new ValAddress(lineId, 1));
+        Assert.assertEquals("1 : new(var, jcident(b), bool, jcnbre(1))", instr2.toString());
     }
 
     @Test

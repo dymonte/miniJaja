@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
+import fr.umlp.m1info.projectvms.group2.exception.EmptyStackException;
 import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
+import fr.umlp.m1info.projectvms.group2.exception.StackInvalidAddressException;
 import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
@@ -361,33 +363,6 @@ public class Memory {
 	}
 
 	/**
-	 * Pushes a new value on top of the stack
-	 * 
-	 * @param value the value to add on top of the stack
-	 */
-	public void push(Object value) {
-		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, ObjectKind.CONST));
-		stack.push(value, symbol);
-	}
-
-	/**
-	 * Swaps the element on top of the memory stack with the element below it.
-	 */
-	public void swap() {
-		stack.swap();
-	}
-
-	/**
-	 * Removes the element on top of the stack and returns it.
-	 *
-	 * @return the deleted element
-	 */
-	public Object pop() {
-		InstNode popped = stack.pop();
-		return popped != null ? popped.getValue() : null;
-	}
-
-	/**
 	 * Sets the type of the symbol of indentifier ident
 	 * 
 	 * @param ident the symbol identifier
@@ -412,4 +387,82 @@ public class Memory {
 		return heap.toString();
 	}
 
+	/* JajaCode related methods */
+
+	/**
+	 * Pushes a new value on top of the stack
+	 * 
+	 * @param value the value to add on top of the stack
+	 */
+	public void push(Object value) {
+		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, ObjectKind.CONST));
+		stack.push(value, symbol);
+	}
+
+	/**
+	 * Swaps the element on top of the memory stack with the element below it.
+	 */
+	public void swap() {
+		stack.swap();
+	}
+
+	/**
+	 * Removes the element on top of the stack and returns it.
+	 *
+	 * @return the deleted element
+	 */
+	public Object pop() {
+		InstNode popped = stack.pop();
+		if (popped == null) {
+			throw new EmptyStackException();
+		}
+		return popped != null ? popped.getValue() : null;
+	}
+
+	/**
+	 * Modifies the sorte, identifier and kind of the stack's at address adress
+	 * (address 0 begin the stack's head, address 1 being the second element etc...)
+	 *
+	 * @param identifier the new Identifier of the stack's head
+	 * @param kind       the new object kind of the stack's head
+	 * @param sorte      the new type of the stack's head
+	 * @param address    the element's address on the stack
+	 * @throws IllegalArgumentException     when address < 0
+	 * @throws StackInvalidAddressException when address is exceding stack's depth
+	 *
+	 */
+	public void identVal(String identifier, ObjectKind kind, Type sorte, int address) {
+		if (address < 0) {
+			throw new IllegalArgumentException("address should be >= 0.");
+		}
+
+		Optional<SymNode> symbolOpt = symTable.add(identifier, kind, sorte);
+		if (symbolOpt.isEmpty()) {
+			return;
+		}
+		SymNode symbol = symbolOpt.get();
+
+		if (address == 0) {
+			InstNode head = stack.pop();
+			symTable.remove(head);
+			stack.push(head.getValue(), symbol);
+			return;
+		}
+
+		InstNode bef = null;
+		InstNode cur = stack.getHead();
+		while (address > 0 && cur != null) {
+			bef = cur;
+			cur = cur.getNextInStack();
+			address--;
+		}
+
+		if (address > 0 || cur == null) {
+			throw new StackInvalidAddressException(address);
+		}
+
+		symTable.remove(cur);
+		InstNode newInstance = new InstNode(cur.getValue(), symbol, cur.getNextInStack());
+		bef.setNextInStack(newInstance);
+	}
 }

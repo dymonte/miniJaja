@@ -11,6 +11,7 @@ import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
+import fr.umlp.m1info.projectvms.group2.exception.EmptyStackException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.Quad;
 
@@ -306,6 +307,6 @@ public class MemoryTest {
 		m.swap();
 		Assert.assertEquals(4, m.pop());
 		Assert.assertEquals(3, m.pop());
-		Assert.assertEquals(null, m.pop());
+		Assert.assertThrows(EmptyStackException.class, () -> m.pop());
 	}
 }

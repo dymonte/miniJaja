@@ -78,7 +78,7 @@ public class JajaCodeBuildVisitorTest {
 		Assert.assertEquals("tab", ((InstrNew) list.get(0)).getValIdent().getIdent());
 		Assert.assertEquals(Kind.VAR, ((InstrNew) list.get(0)).getKind().getKind());
 		Assert.assertEquals(Type.INT, ((InstrNew) list.get(0)).getType().getType());
-		Assert.assertEquals(3, ((ValAddress) ((InstrNew) list.get(0)).getValVal()).getAddress());
+		Assert.assertEquals(3, ((InstrNew) list.get(0)).getValAddress().getAddress());
 	}
 
 	@Test

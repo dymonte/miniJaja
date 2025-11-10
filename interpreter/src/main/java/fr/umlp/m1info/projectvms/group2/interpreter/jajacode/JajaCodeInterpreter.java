@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.JajaCodeNode;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
@@ -8,8 +9,11 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.*;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
 public class JajaCodeInterpreter {
 	Memory memory;
@@ -34,13 +38,15 @@ public class JajaCodeInterpreter {
 
 		Method m = findAnnotatedMethod(JajaCodeInterpretFunction.class, node.getClass());
 		if (m == null) {
-			throw new InterpretRuntimeException("No @JajaCodeInterpretFunction found for " + node.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"No @JajaCodeInterpretFunction found for " + node.getClass().getSimpleName());
 		}
 
 		try {
 			m.invoke(this, node);
 		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"Error interpreting node " + node.getClass().getSimpleName());
 		}
 	}
 
@@ -57,13 +63,15 @@ public class JajaCodeInterpreter {
 
 		Method m = findAnnotatedMethod(JajaCodeEvalFunction.class, node.getClass());
 		if (m == null) {
-			throw new InterpretRuntimeException("No @JajaCodeInterpretFunction found for " + node.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"No @JajaCodeInterpretFunction found for " + node.getClass().getSimpleName());
 		}
 
 		try {
 			m.invoke(this, node);
 		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
+			throw new InterpretRuntimeException(
+					"Error interpreting node " + node.getClass().getSimpleName());
 		}
 	}
 
@@ -75,7 +83,8 @@ public class JajaCodeInterpreter {
 				var annotation = method.getAnnotation(annotationClass);
 				if (annotation != null) {
 					try {
-						Class<?> handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
+						Class<?> handledType = (Class<?>) annotationClass.getMethod("value")
+								.invoke(annotation);
 						if (handledType.isAssignableFrom(nodeClass)) {
 							return method;
 						}
@@ -90,32 +99,70 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrInit.class)
 	protected void interpretInit(InstrInit node) {
-		throw new InterpretRuntimeException("Not implemented yet");
+		// since memory is already initialized in the constructor, does nothing
+		return;
 	}
 
 	@JajaCodeInterpretFunction(InstrStop.class)
 	protected void interpretStop(InstrStop node) {
-		throw new InterpretRuntimeException("Not implemented yet");
+		Thread.currentThread().interrupt();
 	}
 
 	@JajaCodeInterpretFunction(InstrNop.class)
 	protected void interpretNop(InstrNop node) {
-		throw new InterpretRuntimeException("Not implemented yet");
+		// Do nothing
+		return;
 	}
 
 	@JajaCodeInterpretFunction(InstrSwap.class)
 	protected void interpretSwap(InstrSwap node) {
-		throw new InterpretRuntimeException("Not implemented yet");
+		memory.swap();
 	}
 
 	@JajaCodeInterpretFunction(InstrNew.class)
 	protected void interpretNew(InstrNew node) {
-		throw new InterpretRuntimeException("Not implemented yet");
+		if (node.getType() == null || node.getKind() == null) {
+			return;
+		}
+
+		Type type = switch (node.getType().getType()) {
+			case INT -> Type.INT;
+			case BOOL -> Type.BOOL;
+		};
+
+		String identifier = node.getValIdent().getIdent();
+
+		switch (node.getKind().getKind()) {
+			case VAR: {
+				memory.identVal(identifier, ObjectKind.VAR, type,
+						node.getValAddress().getAddress());
+				break;
+			}
+			case CONST: {
+				memory.declCst(identifier, memory.pop(), type);
+				break;
+			}
+			case METH: {
+				memory.declMeth(identifier, memory.pop(), Collections.emptyList(), type);
+				break;
+			}
+			default:
+				throw new BadSymbolKindException(identifier, ObjectKind.ARRAY);
+		}
+
 	}
 
 	@JajaCodeInterpretFunction(InstrNewArray.class)
 	protected void interpretNewArray(InstrNewArray node) {
-		throw new InterpretRuntimeException("Not implemented yet");
+		if (node.getType() == null) {
+			return;
+		}
+		Type type = switch (node.getType().getType()) {
+			case INT -> Type.INT;
+			case BOOL -> Type.BOOL;
+		};
+
+		memory.declArray(node.getValIdent().getIdent(), (int) memory.pop(), type);
 	}
 
 	@JajaCodeInterpretFunction(InstrInvoke.class)

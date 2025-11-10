@@ -198,14 +198,14 @@ public class JajaCodeNodeGetterTest {
         ValIdent valIdent = new ValIdent(lineId, "a");
         VarKind kind = new VarKind(lineId, Kind.VAR);
         VarType type = new VarType(lineId, Type.INT);
-        ValNbre valNbre = new ValNbre(lineId, 10);
+        ValAddress valAddress = new ValAddress(lineId, 10);
 
-        InstrNew instr = new InstrNew(lineId, valIdent, kind, type, valNbre);
+        InstrNew instr = new InstrNew(lineId, valIdent, kind, type, valAddress);
 
         Assert.assertSame(valIdent, instr.getValIdent());
         Assert.assertSame(kind, instr.getKind());
         Assert.assertSame(type, instr.getType());
-        Assert.assertSame(valNbre, instr.getValVal());
+        Assert.assertSame(valAddress, instr.getValAddress());
     }
 
     @Test
