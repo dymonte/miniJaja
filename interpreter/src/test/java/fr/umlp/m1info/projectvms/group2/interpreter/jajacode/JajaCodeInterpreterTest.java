@@ -1,20 +1,25 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperBinary;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperUnary;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeBinaryOper;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeUnaryOper;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValAddress;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValBool;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValNbre;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarKind;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarType;
+import fr.umlp.m1info.projectvms.group2.exception.EmptyStackException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
+import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
@@ -24,6 +29,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class JajaCodeInterpreterTest {
 	JajaCodeInterpreter interpreter;
@@ -39,8 +47,8 @@ public class JajaCodeInterpreterTest {
 		InstrInit init = new InstrInit(1);
 		InstrStop stop = new InstrStop(2);
 		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(init, stop));
-		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
-		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		JajaCodeInterpreter spyInterpreter = spy(interpreter);
+		doNothing().when(spyInterpreter).interpret(stop);
 		spyInterpreter.interpret(init);
 	}
 
@@ -63,7 +71,7 @@ public class JajaCodeInterpreterTest {
 		} catch (InterruptedException e) {
 			Assert.fail("Test thread should not be interrupted");
 		}
-		Assert.assertTrue(wasInterrupted.get());
+		assertTrue(wasInterrupted.get());
 	}
 
 	@Test
@@ -80,11 +88,11 @@ public class JajaCodeInterpreterTest {
 		InstrSwap swap = new InstrSwap(1);
 		InstrStop stop = new InstrStop(2);
 		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(swap, stop));
-		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
-		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		JajaCodeInterpreter spyInterpreter = spy(interpreter);
+		doNothing().when(spyInterpreter).interpret(stop);
 		spyInterpreter.interpret(swap);
-		Assert.assertEquals(1, memory.pop());
-		Assert.assertEquals(2, memory.pop());
+		assertEquals(1, memory.pop());
+		assertEquals(2, memory.pop());
 	}
 
 	@Test
@@ -97,10 +105,10 @@ public class JajaCodeInterpreterTest {
 
 		InstrStop stop = new InstrStop(2);
 		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew, stop));
-		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
-		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		JajaCodeInterpreter spyInterpreter = spy(interpreter);
+		doNothing().when(spyInterpreter).interpret(stop);
 		spyInterpreter.interpret(instrNew);
-		Assert.assertEquals(Type.INT, memory.getType("x"));
+		assertEquals(Type.INT, memory.getType("x"));
 	}
 
 	@Test
@@ -111,11 +119,11 @@ public class JajaCodeInterpreterTest {
 				new VarType(1, fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type.INT), new ValAddress(1, 1));
 		InstrStop stop = new InstrStop(2);
 		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew, stop));
-		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
-		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		JajaCodeInterpreter spyInterpreter = spy(interpreter);
+		doNothing().when(spyInterpreter).interpret(stop);
 		spyInterpreter.interpret(instrNew);
-		Assert.assertEquals(5, memory.getVal("c"));
-		Assert.assertEquals(Type.INT, memory.getType("c"));
+		assertEquals(5, memory.getVal("c"));
+		assertEquals(Type.INT, memory.getType("c"));
 	}
 
 	@Test
@@ -126,10 +134,10 @@ public class JajaCodeInterpreterTest {
 				new VarType(1, fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type.INT), new ValAddress(1, 1));
 		InstrStop stop = new InstrStop(2);
 		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew, stop));
-		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
-		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		JajaCodeInterpreter spyInterpreter = spy(interpreter);
+		doNothing().when(spyInterpreter).interpret(stop);
 		spyInterpreter.interpret(instrNew);
-		Assert.assertEquals(10, memory.getVal("1f"));
+		assertEquals(10, memory.getVal("1f"));
 	}
 
 	@Test
@@ -139,10 +147,182 @@ public class JajaCodeInterpreterTest {
 				new VarType(1, fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type.INT));
 		InstrStop stop = new InstrStop(2);
 		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNewArray, stop));
-		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
-		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		JajaCodeInterpreter spyInterpreter = spy(interpreter);
+		doNothing().when(spyInterpreter).interpret(stop);
 		spyInterpreter.interpret(instrNewArray);
-		Assert.assertEquals(Type.INT, memory.getType("t"));
+		assertEquals(Type.INT, memory.getType("t"));
 	}
+
+    @Test
+    public void testInterpretPush() {
+        ValNbre val = new ValNbre(1, 42);
+        InstrPush pushNode = new InstrPush(1, val);
+        interpreter = new JajaCodeInterpreter(memory, List.of());
+
+        interpreter.interpretPush(pushNode);
+
+        assertEquals(42, memory.pop());
+    }
+    @Test
+    public void testInterpretPop() {
+        memory.push(100);
+        InstrPop pop = new InstrPop(1);
+        InstrStop stop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(pop, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+
+        spy.interpret(pop);
+        try {
+            memory.pop();
+            fail("pop() should have thrown EmptyStackException");
+        } catch (EmptyStackException ignored) { /* OK */ }
+    }
+
+
+
+
+
+    @Test
+    public void testInterpretIf_True() {
+        memory.push(true);
+        InstrIf instrIf = new InstrIf(1, new ValAddress(1, 3));
+        InstrNop nop = new InstrNop(2);
+        InstrStop stop = new InstrStop(3);
+
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrIf, nop, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+
+        spy.interpret(instrIf);
+
+        verify(spy).interpret(stop);
+        verify(spy, never()).interpret(nop);
+    }
+    @Test
+    public void testInterpretIf_False() {
+        memory.push(false);
+        InstrIf instrIf = new InstrIf(1, new ValAddress(1, 3));
+        InstrNop nop = new InstrNop(2);
+        InstrStop stop = new InstrStop(3);
+
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrIf, nop, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+        doNothing().when(spy).interpret(nop);
+
+        spy.interpret(instrIf);
+
+        verify(spy).interpret(nop);
+        verify(spy, never()).interpret(stop);
+    }
+    @Test
+    public void testInterpretOperBinary_Add() {
+        memory.push(3);
+        memory.push(4);
+        InstrOperBinary add = new InstrOperBinary(1, JajaCodeBinaryOper.ADD);
+        InstrStop stop = new InstrStop(2);
+
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(add, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+
+        spy.interpret(add);
+        assertEquals(7, memory.pop());
+    }
+
+    @Test
+    public void testInterpretOperBinary_Sub() {
+        memory.push(10);
+        memory.push(3);
+        InstrOperBinary sub = new InstrOperBinary(1, JajaCodeBinaryOper.SUB);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(sub));
+        interpreter.interpret(sub);
+        assertEquals(7, memory.pop());
+    }
+
+    @Test
+    public void testInterpretOperBinary_Mul() {
+        memory.push(5);
+        memory.push(6);
+        InstrOperBinary mul = new InstrOperBinary(1, JajaCodeBinaryOper.MUL);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(mul));
+        interpreter.interpret(mul);
+        assertEquals(30, memory.pop());
+    }
+
+    @Test
+    public void testInterpretOperBinary_DivByZero() {
+        memory.push(10);
+        memory.push(0);
+        InstrOperBinary div = new InstrOperBinary(1, JajaCodeBinaryOper.DIV);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(div));
+
+        try {
+            interpreter.interpret(div);
+            fail("Division by zero should throw InterpretRuntimeException");
+        } catch (InterpretRuntimeException ignored) { /* OK */ }
+    }
+
+    @Test
+    public void testInterpretOperBinary_Cmp_Equal() {
+        memory.push(5);
+        memory.push(5);
+        InstrOperBinary cmp = new InstrOperBinary(1, JajaCodeBinaryOper.CMP);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(cmp));
+        interpreter.interpret(cmp);
+        assertEquals(0, memory.pop());
+    }
+    
+
+
+    @Test
+    public void testInterpretOperUnary_Neg() {
+        memory.push(5);
+        InstrOperUnary neg = new InstrOperUnary(1, JajaCodeUnaryOper.NEG);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(neg));
+        interpreter.interpret(neg);
+        assertEquals(-5, memory.pop());
+    }
+
+    @Test
+    public void testInterpretOperUnary_Not() {
+        memory.push(false);
+        InstrOperUnary not = new InstrOperUnary(1, JajaCodeUnaryOper.NOT);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(not));
+        interpreter.interpret(not);
+        assertEquals(true, memory.pop());
+    }
+
+
+    @Test
+    public void testInterpretInc() {
+        memory.push(10);
+        memory.identVal("x", ObjectKind.VAR, Type.INT, 0);
+        memory.push(3);
+        InstrInc inc = new InstrInc(1, new ValIdent(1, "x"));
+        InstrStop stop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(inc, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+        spy.interpret(inc);
+        assertEquals(13, memory.getVal("x"));
+    }
+
+
+    @Test
+    public void testInterpretAInc() {
+        memory.declArray("arr", 3, Type.INT);
+        memory.updateValArray("arr", 1, 20);
+        memory.push(1);   // index
+        memory.push(5);   // incrément
+        InstrAInc ainc = new InstrAInc(1, new ValIdent(1, "arr"));
+        InstrStop stop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(ainc, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+        spy.interpret(ainc);
+        assertEquals(25, memory.getValArray("arr", 1));
+    }
 
 }
