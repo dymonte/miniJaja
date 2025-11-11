@@ -27,13 +27,13 @@ public class CodeSectionController implements StatefulController {
 
 	private Runnable onSaveRequested;
 
-    private int highlightedLine;
+	private int highlightedLine;
 
 	private final Set<Integer> breakpoints = new HashSet<>();
 
 	@Override
 	public void bindState(AppState appState) {
-        applyLineNumberFactory();
+		applyLineNumberFactory();
 		codeArea.getStyleClass().add("code-area");
 
 		// link appState.codeProperty and codeArea.textProperty
@@ -62,18 +62,23 @@ public class CodeSectionController implements StatefulController {
 		});
 	}
 
-    private void toggleBreakpoint(int line) {
-        if (breakpoints.contains(line)) {
-            breakpoints.remove(line);
-        } else {
-            breakpoints.add(line);
-        }
-        applyLineNumberFactory();
-    }
+	private void toggleBreakpoint(int line) {
+		if (breakpoints.contains(line)) {
+			breakpoints.remove(line);
+		} else {
+			breakpoints.add(line);
+		}
+		applyLineNumberFactory();
+	}
 
-    public Set<Integer> getBreakpoints() {
-        return breakpoints;
-    }
+	public Set<Integer> getBreakpoints() {
+		return breakpoints;
+	}
+
+	public void removeBreakpoint(int line) {
+		breakpoints.remove(line);
+		applyLineNumberFactory();
+	}
 
 	@FXML
 	public void undo() {
@@ -119,28 +124,28 @@ public class CodeSectionController implements StatefulController {
 		this.onSaveRequested = callback;
 	}
 
-    public void highlightLine(int lineNumber) {
-        highlightedLine = lineNumber;
-        applyLineNumberFactory();
-    }
+	public void highlightLine(int lineNumber) {
+		highlightedLine = lineNumber;
+		applyLineNumberFactory();
+	}
 
-    @FXML
-    private void applyLineNumberFactory() {
-        codeArea.setParagraphGraphicFactory(line -> {
-            Node lineNumber = LineNumberFactory.get(codeArea).apply(line);
+	@FXML
+	private void applyLineNumberFactory() {
+		codeArea.setParagraphGraphicFactory(line -> {
+			Node lineNumber = LineNumberFactory.get(codeArea).apply(line);
 
-            if (line + 1 == highlightedLine && lineNumber instanceof Label label) {
-                label.setStyle(label.getStyle() + "; -fx-text-fill: red;");
-            }
+			if (line + 1 == highlightedLine && lineNumber instanceof Label label) {
+				label.setStyle(label.getStyle() + "; -fx-text-fill: red;");
+			}
 
-            Circle marker = new Circle(4);
-            marker.setFill(breakpoints.contains(line + 1) ? Color.RED : Color.TRANSPARENT);
-            marker.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
+			Circle marker = new Circle(4);
+			marker.setFill(breakpoints.contains(line + 1) ? Color.RED : Color.TRANSPARENT);
+			marker.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
 
-            HBox box = new HBox(5, marker, lineNumber);
-            box.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
+			HBox box = new HBox(5, marker, lineNumber);
+			box.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
 
-            return box;
-        });
-    }
+			return box;
+		});
+	}
 }

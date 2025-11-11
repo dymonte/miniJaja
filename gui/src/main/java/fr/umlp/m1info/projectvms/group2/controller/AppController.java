@@ -320,6 +320,18 @@ public class AppController implements StatefulController {
 
 		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
 		interpreter.setStepModeEnabled(stepMode);
+		interpreter.addListener(new MiniJajaInterpreterInteractive.Listener() {
+			@Override
+			public void onPaused(ASTNode node, int line) {
+				Platform.runLater(() -> codeSectionController.highlightLine(line));
+				memorySectionController.bindState(state);
+			}
+
+			@Override
+			public void onBreakpointRemoved(int line) {
+				codeSectionController.removeBreakpoint(line);
+			}
+		});
 
 		List<Integer> breakpoints = new ArrayList<>(codeSectionController.getBreakpoints());
 
@@ -333,13 +345,10 @@ public class AppController implements StatefulController {
 
 					if (stepMode || !breakpoints.isEmpty()) {
 						showStepPopup(popupStage, interpreter, !breakpoints.isEmpty());
-						Platform.runLater(() -> codeSectionController.highlightLine(programRoot.getLine()));
 					}
 
 					interpreter.setBreakpoints(breakpoints);
 					interpreter.interpret(programRoot);
-
-                    Platform.runLater(() -> codeSectionController.highlightLine(programRoot.getLine()));
 				} catch (InterpreterInterruptedException e) {
 					// Do nothing
 				} catch (Exception e) {
@@ -347,6 +356,7 @@ public class AppController implements StatefulController {
 				} finally {
 					if (stepMode || !breakpoints.isEmpty()) {
 						Platform.runLater(popupStage::close);
+						Platform.runLater(() -> codeSectionController.highlightLine(-1));
 					}
 				}
 				return null;
@@ -380,8 +390,8 @@ public class AppController implements StatefulController {
 	/**
 	 * Shows step by step popup
 	 *
-	 * @param popupStage  the Stage for the popUp
-	 * @param interpreter the interpreter to be attached
+	 * @param popupStage     the Stage for the popUp
+	 * @param interpreter    the interpreter to be attached
 	 * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
 	private void showStepPopup(Stage popupStage, MiniJajaInterpreterInteractive interpreter, boolean hasBreakpoints) {
@@ -403,9 +413,9 @@ public class AppController implements StatefulController {
 	/**
 	 * Set up step by step popup position
 	 *
-	 * @param popupStage  the step by step popup to add the buttons to
-	 * @param interpreter the interpreter for the buttons to interact with
-     * @param hasBreakpoints whether the interpreter has breakpoints
+	 * @param popupStage     the step by step popup to add the buttons to
+	 * @param interpreter    the interpreter for the buttons to interact with
+	 * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
 	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter, boolean hasBreakpoints) {
 		Button btnNext = new Button("Next");
@@ -413,23 +423,19 @@ public class AppController implements StatefulController {
 		Button btnStop = new Button("Stop");
 		HBox root;
 
-        if (hasBreakpoints) {
-            Button btnSkipBreakpoint = new Button("Skip breakpoint");
-            root = new HBox(10, btnStop, btnNext, btnSkipBreakpoint);
+		if (hasBreakpoints) {
+			Button btnSkipBreakpoint = new Button("Skip breakpoint");
+			root = new HBox(10, btnStop, btnNext, btnSkipBreakpoint);
 
-            btnSkipBreakpoint.setOnAction(event -> {
-                interpreter.skipBreakpoint();
-                memorySectionController.bindState(state);
-                codeSectionController.highlightLine(interpreter.getCurrentLine());
-            });
-        } else {
-             root = new HBox(10, btnStop, btnNext);
-        }
+			btnSkipBreakpoint.setOnAction(event -> {
+				interpreter.skipBreakpoint();
+			});
+		} else {
+			root = new HBox(10, btnStop, btnNext);
+		}
 
 		btnNext.setOnAction(event -> {
 			interpreter.nextStep();
-			memorySectionController.bindState(state);
-			codeSectionController.highlightLine(interpreter.getCurrentLine());
 		});
 		btnStop.setOnAction(event -> stopInterpretation());
 
@@ -440,8 +446,8 @@ public class AppController implements StatefulController {
 	/**
 	 * Set up step by step popup position
 	 *
-	 * @param popupStage the step by step popup to position
-     * @param hasBreakpoints whether the interpreter has breakpoints
+	 * @param popupStage     the step by step popup to position
+	 * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
 	private void setStepPopupPos(Stage popupStage, boolean hasBreakpoints) {
 		double x = primaryStage.getX() + primaryStage.getWidth() / 2 - 75 - (hasBreakpoints ? 27.5 : 0);
@@ -461,7 +467,6 @@ public class AppController implements StatefulController {
 		popupStage.setOnHidden(e -> {
 			primaryStage.xProperty().removeListener(xListener);
 			primaryStage.yProperty().removeListener(yListener);
-			codeSectionController.highlightLine(0);
 		});
 	}
 
