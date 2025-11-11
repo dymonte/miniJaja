@@ -358,6 +358,7 @@ public class AppController implements StatefulController {
 						Platform.runLater(popupStage::close);
 						Platform.runLater(() -> codeSectionController.highlightLine(-1));
 					}
+					memorySectionController.bindState(state);
 				}
 				return null;
 			}
