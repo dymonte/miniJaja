@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.List;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.JajaCodeNode;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
@@ -17,12 +18,28 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 
 public class JajaCodeInterpreter {
 	Memory memory;
+	List<Instr> instrs;
 
-	public JajaCodeInterpreter(Memory memory) {
-		if (memory == null) {
-			throw new NullPointerException("memory cannot be null");
+	public JajaCodeInterpreter(Memory memory, List<Instr> instrs) {
+		if (memory == null || instrs == null) {
+			throw new NullPointerException("Arguments cannot be null");
 		}
 		this.memory = memory;
+		this.instrs = instrs;
+	}
+
+	private Instr getInstr(int line) throws InterpretRuntimeException {
+		if (0 >= line || line >= instrs.size()) {
+			throw new InterpretRuntimeException("Instruction not found in the line: " + line);
+		}
+		return instrs.get(line - 1);
+	}
+
+	private Instr getNextInstr(Instr instr) {
+		if (instr == null) {
+			throw new InterpretRuntimeException("Instruction cannot be null");
+		}
+		return getInstr(instr.getLineId() + 1);
 	}
 
 	/**
@@ -149,7 +166,6 @@ public class JajaCodeInterpreter {
 			default:
 				throw new BadSymbolKindException(identifier, ObjectKind.ARRAY);
 		}
-
 	}
 
 	@JajaCodeInterpretFunction(InstrNewArray.class)
