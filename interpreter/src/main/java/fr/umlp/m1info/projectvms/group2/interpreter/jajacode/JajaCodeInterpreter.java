@@ -29,7 +29,7 @@ public class JajaCodeInterpreter {
 	}
 
 	private Instr getInstr(int line) throws InterpretRuntimeException {
-		if (0 >= line || line >= instrs.size()) {
+		if (line <= 0 || line > instrs.size()) {
 			throw new InterpretRuntimeException("Instruction not found in the line: " + line);
 		}
 		return instrs.get(line - 1);
@@ -134,6 +134,7 @@ public class JajaCodeInterpreter {
 	@JajaCodeInterpretFunction(InstrSwap.class)
 	protected void interpretSwap(InstrSwap node) {
 		memory.swap();
+		interpret(getNextInstr(node));
 	}
 
 	@JajaCodeInterpretFunction(InstrNew.class)
@@ -166,6 +167,7 @@ public class JajaCodeInterpreter {
 			default:
 				throw new BadSymbolKindException(identifier, ObjectKind.ARRAY);
 		}
+		interpret(getNextInstr(node));
 	}
 
 	@JajaCodeInterpretFunction(InstrNewArray.class)
@@ -179,6 +181,7 @@ public class JajaCodeInterpreter {
 		};
 
 		memory.declArray(node.getValIdent().getIdent(), (int) memory.pop(), type);
+		interpret(getNextInstr(node));
 	}
 
 	@JajaCodeInterpretFunction(InstrInvoke.class)

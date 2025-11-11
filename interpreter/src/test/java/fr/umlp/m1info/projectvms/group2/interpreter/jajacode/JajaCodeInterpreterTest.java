@@ -21,6 +21,7 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 
@@ -36,8 +37,11 @@ public class JajaCodeInterpreterTest {
 	@Test
 	public void testInterpretInit() {
 		InstrInit init = new InstrInit(1);
-		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(init));
-		interpreter.interpret(init);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(init, stop));
+		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		spyInterpreter.interpret(init);
 	}
 
 	@Test
@@ -74,8 +78,11 @@ public class JajaCodeInterpreterTest {
 		memory.push(1);
 		memory.push(2);
 		InstrSwap swap = new InstrSwap(1);
-		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(swap));
-		interpreter.interpret(swap);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(swap, stop));
+		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		spyInterpreter.interpret(swap);
 		Assert.assertEquals(1, memory.pop());
 		Assert.assertEquals(2, memory.pop());
 	}
@@ -87,8 +94,12 @@ public class JajaCodeInterpreterTest {
 		InstrNew instrNew = new InstrNew(1, new ValIdent(1, "x"),
 				new VarKind(1, Kind.VAR),
 				new VarType(1, fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type.INT), new ValAddress(1, 1));
-		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew));
-		interpreter.interpret(instrNew);
+
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew, stop));
+		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		spyInterpreter.interpret(instrNew);
 		Assert.assertEquals(Type.INT, memory.getType("x"));
 	}
 
@@ -98,8 +109,11 @@ public class JajaCodeInterpreterTest {
 		InstrNew instrNew = new InstrNew(1, new ValIdent(1, "c"),
 				new VarKind(1, Kind.CONST),
 				new VarType(1, fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type.INT), new ValAddress(1, 1));
-		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew));
-		interpreter.interpret(instrNew);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew, stop));
+		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		spyInterpreter.interpret(instrNew);
 		Assert.assertEquals(5, memory.getVal("c"));
 		Assert.assertEquals(Type.INT, memory.getType("c"));
 	}
@@ -110,8 +124,11 @@ public class JajaCodeInterpreterTest {
 		InstrNew instrNew = new InstrNew(1, new ValIdent(1, "f"),
 				new VarKind(1, Kind.METH),
 				new VarType(1, fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type.INT), new ValAddress(1, 1));
-		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew));
-		interpreter.interpret(instrNew);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNew, stop));
+		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		spyInterpreter.interpret(instrNew);
 		Assert.assertEquals(10, memory.getVal("1f"));
 	}
 
@@ -120,8 +137,11 @@ public class JajaCodeInterpreterTest {
 		memory.push(5);
 		InstrNewArray instrNewArray = new InstrNewArray(1, new ValIdent(1, "t"),
 				new VarType(1, fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type.INT));
-		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNewArray));
-		interpreter.interpret(instrNewArray);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrNewArray, stop));
+		JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doNothing().when(spyInterpreter).interpret(stop);
+		spyInterpreter.interpret(instrNewArray);
 		Assert.assertEquals(Type.INT, memory.getType("t"));
 	}
 
