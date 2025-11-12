@@ -270,7 +270,7 @@ public class MiniJajaInterpreterTest {
 		ASTWrite mockWrite = Mockito.mock(ASTWrite.class);
 
 		Mockito.when(mockWrite.getValue()).thenReturn(mockNode);
-		Assert.assertThrows(InterpretRuntimeException.class, () -> interpreter.interpret(mockWrite));
+		Assert.assertThrows(EvalRuntimeException.class, () -> interpreter.interpret(mockWrite));
 	}
 
 	@Test

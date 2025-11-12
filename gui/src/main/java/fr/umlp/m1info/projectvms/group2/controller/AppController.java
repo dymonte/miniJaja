@@ -299,7 +299,7 @@ public class AppController implements StatefulController {
 			} catch (InterpretRuntimeException e) {
 				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", e.getMessage(), ""));
 			} catch (Exception e) {
-				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", ""));
+				Platform.runLater(() -> PopUp.error("MiniJaja Interpreter Error", "Error while parsing code", e.getMessage()));
 			}
 		});
 
