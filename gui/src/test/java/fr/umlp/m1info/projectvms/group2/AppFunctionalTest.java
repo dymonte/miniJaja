@@ -24,7 +24,7 @@ public class AppFunctionalTest {
         new App().start(stage);
     }
 
-    // @Test
+    @Test
     void testWriteAndRunProgram(FxRobot robot) {
         robot.clickOn("#codeArea");
 
@@ -48,7 +48,7 @@ public class AppFunctionalTest {
         });
     }
 
-    // @Test
+    @Test
     void testComments(FxRobot robot) {
         robot.clickOn("#codeArea");
 
@@ -73,7 +73,7 @@ public class AppFunctionalTest {
         });
     }
 
-    // @Test
+    @Test
     void testErrorSyntax(FxRobot robot) {
         robot.clickOn("#codeArea");
 
@@ -92,11 +92,11 @@ public class AppFunctionalTest {
 
         verifyThat(".alert", isVisible());
         verifyThat(".dialog-pane .label", (Label label) ->
-            label.getText().contains("Error while parsing code")
+            label.getText().contains("AST build error in Decls")
         );
     }
 
-    // @Test
+    @Test
     void testErrorUndeclaredVariable(FxRobot robot) {
         robot.clickOn("#codeArea");
         robot.write("class Test {\n");
@@ -153,7 +153,7 @@ public class AppFunctionalTest {
         });
     }
 
-    // @Test
+    @Test
     void testClearConsole(FxRobot robot) {
         robot.clickOn("#codeArea");
 
