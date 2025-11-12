@@ -51,11 +51,11 @@
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
-        <Menu mnemonicParsing="false" text="File">
+        <Menu mnemonicParsing="false" text="File" fx:id="menuFile">
           <items>
             <MenuItem mnemonicParsing="false" text="New" onAction="#createFile"/>
             <MenuItem mnemonicParsing="false" text="Open File" onAction="#openFile"/>
-            <MenuItem mnemonicParsing="false" text="Open Folder" onAction="#openFolder"/>
+            <MenuItem mnemonicParsing="false" text="Open Folder" onAction="#openFolder" fx:id="menuOpenFolder"/>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Close" onAction="#closeCurrentFile"/>
             <MenuItem mnemonicParsing="false" text="Save" onAction="#saveFile" accelerator="Shortcut+S" />
@@ -86,16 +86,16 @@
             <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
           </items>
         </Menu>
-            <Menu mnemonicParsing="false" text="Execution">
+            <Menu mnemonicParsing="false" text="Execution" fx:id="menuExecution">
               <items>
                 <Menu mnemonicParsing="false" text="Start">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Run" onAction="#runCurrentFile"/>
+                    <MenuItem mnemonicParsing="false" text="Run" onAction="#runCurrentFile" fx:id="menuStart"/>
                     <MenuItem mnemonicParsing="false" text="Run step by step" onAction="#runCurrentFileStep"/>
                   </items>
                 </Menu>
-                <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation"/>
-                <MenuItem mnemonicParsing="false" text="Clear Console" onAction="#clearConsole"/>
+                <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation" fx:id="menuStop"/>
+                <MenuItem mnemonicParsing="false" text="Clear Console" onAction="#clearConsole" fx:id="menuClearConsole"/>
               </items>
             </Menu>
       </menus>
