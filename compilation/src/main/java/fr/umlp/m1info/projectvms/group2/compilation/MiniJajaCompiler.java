@@ -59,7 +59,7 @@ public class MiniJajaCompiler {
 	 *
 	 * @param node the AST node to free
 	 * @return number of freed instructions
-	 * @throws FreeCompilationRuntimeException if the node is unsupported or null
+	 * @throws RuntimeException if the node is unsupported or null
 	 */
 	public Integer free(ASTNode node) {
 		if (node == null) {
@@ -106,8 +106,20 @@ public class MiniJajaCompiler {
 	/** Compiles a class declaration. */
 	@CompilationFunction(ASTClass.class)
 	protected Integer compileClass(ASTClass node) {
-		throw new RuntimeException("Not implemented");
-	}
+        int count = 0;
+        out.println("init");
+        count++;
+        int ndss = compile(node.getDecls());
+        count += ndss;
+        int nmma = compile(node.getMainMethod());
+        count += nmma;
+        int nrdss = free(node.getDecls());
+        count += nrdss;
+        out.println("pop");
+        out.println("jcstop");
+        count += 2;
+        return count;
+    }
 
 	/** Compiles the main method of a program. */
 	@CompilationFunction(ASTMainMethod.class)
