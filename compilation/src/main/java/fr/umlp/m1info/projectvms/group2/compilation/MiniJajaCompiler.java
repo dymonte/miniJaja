@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
@@ -13,6 +15,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
 
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 
 /**
  * The compiler class is responsible for traversing and compiling an Abstract
@@ -239,44 +242,87 @@ public class MiniJajaCompiler {
 	/** Compiles a binary operation expression. */
 	@CompilationFunction(ASTBinaryOp.class)
 	protected Integer compileBinaryOp(ASTBinaryOp node) {
-		throw new RuntimeException("Not implemented");
+		int nbInstr = compile(node.getLeft());
+        nbInstr += compile(node.getRight());
+        switch (node.getOp().toString()) {
+            case "+" -> out.println("add");
+            case "-" -> out.println("sub");
+            case "*" -> out.println("mul");
+            case "/" -> out.println("div");
+            case "&&" -> out.println("and");
+            case "||" -> out.println("or");
+            case "==" -> out.println("cmp");
+            case ">" -> out.println("sup");
+            default -> throw new CompilationRuntimeException("Operation not supported");
+        }
+        return nbInstr + 1;
 	}
 
 	/** Compiles a unary operation expression. */
 	@CompilationFunction(ASTUnaryOp.class)
 	protected Integer compileUnaryOp(ASTUnaryOp node) {
-		throw new RuntimeException("Not implemented");
+        int nbInstr = compile(node.getExpr());
+        switch (node.getOp().toString()) {
+            case "-" -> out.println("neg");
+            case "!" -> out.println("not");
+            default -> throw new CompilationRuntimeException("Operation not supported");
+        }
+        return nbInstr + 1;
 	}
 
 	/** Compiles an array element access expression. */
 	@CompilationFunction(ASTArrayAccess.class)
 	protected Integer compileArrayAccess(ASTArrayAccess node) {
-		throw new RuntimeException("Not implemented");
+		int nbInstr = compile(node.getExpr());
+        out.println("aload(" + node.getIdent().getName() + ")");
+        return nbInstr + 1;
 	}
 
 	/** Compiles a boolean literal. */
 	@CompilationFunction(ASTBoolLiteral.class)
 	protected Integer compileBoolLiteral(ASTBoolLiteral node) {
-		throw new RuntimeException("Not implemented");
+        if(node.getValue()) {
+            out.println("push(true)");
+        } else {
+            out.println("push(false)");
+        }
+		return 1;
 	}
 
 	/** Compiles an integer literal. */
 	@CompilationFunction(ASTIntLiteral.class)
 	protected Integer compileIntLiteral(ASTIntLiteral node) {
-		throw new RuntimeException("Not implemented");
+        out.println("push(" + node.getValue() + ")");
+		return 1;
 	}
 
 	/** Compiles a string literal. */
 	@CompilationFunction(ASTStringLiteral.class)
 	protected Integer compileStringLiteral(ASTStringLiteral node) {
-		throw new RuntimeException("Not implemented");
+		out.println("push(" + node.getValue() + ")");
+        return 1;
 	}
 
 	/** Compiles an identifier (variable) reference. */
 	@CompilationFunction(ASTIdent.class)
 	protected Integer compileIdent(ASTIdent node) {
-		throw new RuntimeException("Not implemented");
+		out.println("load(" + node.getName() + ")");
+        return 1;
 	}
+
+    /** Compiles a chain of expressions. */
+    @CompilationFunction(ASTExprsChain.class)
+    protected Integer compileExprsChain(ASTExprsChain node) {
+        int nbInstr = compile(node.getExpr());
+        nbInstr += compile(node.getExprs());
+        return nbInstr;
+    }
+
+    /** Compiles an empty expression list. */
+    @CompilationFunction(ASTExprsNil.class)
+    protected Integer compileExprsNil(ASTExprsNil node) {
+        return 0;
+    }
 
 	/** Compiles a length expression on arrays. */
 	@CompilationFunction(ASTLength.class)
