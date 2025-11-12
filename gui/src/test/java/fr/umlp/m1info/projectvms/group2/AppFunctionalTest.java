@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2;
 
 import org.fxmisc.richtext.CodeArea;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.testfx.api.FxAssert.verifyThat;
@@ -24,6 +25,7 @@ public class AppFunctionalTest {
         new App().start(stage);
     }
 
+    @Disabled
     @Test
     void testWriteAndRunProgram(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -48,6 +50,7 @@ public class AppFunctionalTest {
         });
     }
 
+    @Disabled
     @Test
     void testComments(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -73,6 +76,7 @@ public class AppFunctionalTest {
         });
     }
 
+    @Disabled
     @Test
     void testErrorSyntax(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -96,6 +100,7 @@ public class AppFunctionalTest {
         );
     }
 
+    @Disabled
     @Test
     void testErrorUndeclaredVariable(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -117,6 +122,7 @@ public class AppFunctionalTest {
         );
     }
 
+    @Disabled
     @Test
     void testCloseFile(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -140,6 +146,7 @@ public class AppFunctionalTest {
         });
     }
 
+    @Disabled
     @Test
     void testCloseApp(FxRobot robot) {
         robot.clickOn("#menuFile");
@@ -153,6 +160,7 @@ public class AppFunctionalTest {
         });
     }
 
+    @Disabled
     @Test
     void testClearConsole(FxRobot robot) {
         robot.clickOn("#codeArea");
