@@ -341,7 +341,12 @@ public class AppController implements StatefulController {
 			@Override
 			protected Void call() {
 				try {
-					ASTNode programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
+					ASTNode programRoot;
+					if (state.getOpenedFile().isEmpty()) {
+						programRoot = ParserUtils.parseString(state.codeProperty().get());
+					} else {
+						programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
+					}
 
 					if (stepMode || !breakpoints.isEmpty()) {
 						showStepPopup(popupStage, interpreter, !breakpoints.isEmpty());
