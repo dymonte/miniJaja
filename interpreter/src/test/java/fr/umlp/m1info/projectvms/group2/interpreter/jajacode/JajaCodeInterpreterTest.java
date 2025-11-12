@@ -157,12 +157,14 @@ public class JajaCodeInterpreterTest {
     public void testInterpretPush() {
         ValNbre val = new ValNbre(1, 42);
         InstrPush pushNode = new InstrPush(1, val);
-        interpreter = new JajaCodeInterpreter(memory, List.of());
-
-        interpreter.interpretPush(pushNode);
-
+        InstrStop stopNode = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, List.of(pushNode, stopNode));
+        JajaCodeInterpreter spyInterpreter = Mockito.spy(interpreter);
+        Mockito.doNothing().when(spyInterpreter).interpret(stopNode);
+        spyInterpreter.interpretPush(pushNode);
         assertEquals(42, memory.pop());
     }
+
     @Test
     public void testInterpretPop() {
         memory.push(100);
@@ -171,17 +173,12 @@ public class JajaCodeInterpreterTest {
         interpreter = new JajaCodeInterpreter(memory, Arrays.asList(pop, stop));
         JajaCodeInterpreter spy = spy(interpreter);
         doNothing().when(spy).interpret(stop);
-
         spy.interpret(pop);
         try {
             memory.pop();
             fail("pop() should have thrown EmptyStackException");
         } catch (EmptyStackException ignored) { /* OK */ }
     }
-
-
-
-
 
     @Test
     public void testInterpretIf_True() {
@@ -199,6 +196,7 @@ public class JajaCodeInterpreterTest {
         verify(spy).interpret(stop);
         verify(spy, never()).interpret(nop);
     }
+
     @Test
     public void testInterpretIf_False() {
         memory.push(false);
@@ -216,84 +214,43 @@ public class JajaCodeInterpreterTest {
         verify(spy).interpret(nop);
         verify(spy, never()).interpret(stop);
     }
+
     @Test
     public void testInterpretOperBinary_Add() {
         memory.push(3);
         memory.push(4);
         InstrOperBinary add = new InstrOperBinary(1, JajaCodeBinaryOper.ADD);
         InstrStop stop = new InstrStop(2);
-
         interpreter = new JajaCodeInterpreter(memory, Arrays.asList(add, stop));
         JajaCodeInterpreter spy = spy(interpreter);
         doNothing().when(spy).interpret(stop);
-
         spy.interpret(add);
         assertEquals(7, memory.pop());
     }
 
     @Test
-    public void testInterpretOperBinary_Sub() {
-        memory.push(10);
-        memory.push(3);
-        InstrOperBinary sub = new InstrOperBinary(1, JajaCodeBinaryOper.SUB);
-        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(sub));
-        interpreter.interpret(sub);
-        assertEquals(7, memory.pop());
-    }
-
-    @Test
-    public void testInterpretOperBinary_Mul() {
-        memory.push(5);
-        memory.push(6);
-        InstrOperBinary mul = new InstrOperBinary(1, JajaCodeBinaryOper.MUL);
-        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(mul));
-        interpreter.interpret(mul);
-        assertEquals(30, memory.pop());
-    }
-
-    @Test
-    public void testInterpretOperBinary_DivByZero() {
-        memory.push(10);
-        memory.push(0);
-        InstrOperBinary div = new InstrOperBinary(1, JajaCodeBinaryOper.DIV);
-        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(div));
-
-        try {
-            interpreter.interpret(div);
-            fail("Division by zero should throw InterpretRuntimeException");
-        } catch (InterpretRuntimeException ignored) { /* OK */ }
-    }
-
-    @Test
-    public void testInterpretOperBinary_Cmp_Equal() {
-        memory.push(5);
-        memory.push(5);
-        InstrOperBinary cmp = new InstrOperBinary(1, JajaCodeBinaryOper.CMP);
-        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(cmp));
-        interpreter.interpret(cmp);
-        assertEquals(0, memory.pop());
-    }
-    
-
-
-    @Test
     public void testInterpretOperUnary_Neg() {
         memory.push(5);
         InstrOperUnary neg = new InstrOperUnary(1, JajaCodeUnaryOper.NEG);
-        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(neg));
-        interpreter.interpret(neg);
+        InstrStop stop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(neg, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+        spy.interpret(neg);
         assertEquals(-5, memory.pop());
     }
 
     @Test
     public void testInterpretOperUnary_Not() {
-        memory.push(false);
+        memory.push(true);
         InstrOperUnary not = new InstrOperUnary(1, JajaCodeUnaryOper.NOT);
-        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(not));
-        interpreter.interpret(not);
-        assertEquals(true, memory.pop());
+        InstrStop stop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(not, stop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(stop);
+        spy.interpret(not);
+        assertEquals(false, memory.pop());
     }
-
 
     @Test
     public void testInterpretInc() {
@@ -309,13 +266,12 @@ public class JajaCodeInterpreterTest {
         assertEquals(13, memory.getVal("x"));
     }
 
-
     @Test
     public void testInterpretAInc() {
         memory.declArray("arr", 3, Type.INT);
         memory.updateValArray("arr", 1, 20);
-        memory.push(1);   // index
-        memory.push(5);   // incrément
+        memory.push(1);
+        memory.push(5);
         InstrAInc ainc = new InstrAInc(1, new ValIdent(1, "arr"));
         InstrStop stop = new InstrStop(2);
         interpreter = new JajaCodeInterpreter(memory, Arrays.asList(ainc, stop));

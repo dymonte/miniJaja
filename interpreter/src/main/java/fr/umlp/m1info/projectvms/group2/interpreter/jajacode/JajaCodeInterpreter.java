@@ -229,7 +229,7 @@ public class JajaCodeInterpreter {
         Val valNode = node.getValVal();
         Object value = eval(valNode);
         memory.push(value);
-
+        interpret(getNextInstr(node));
     }
 
     @JajaCodeInterpretFunction(InstrPop.class)
@@ -238,7 +238,7 @@ public class JajaCodeInterpreter {
             throw new InterpretRuntimeException("Memory not initialized");
         }
         memory.pop();
-
+        interpret(getNextInstr(node));
     }
 
 
@@ -290,7 +290,7 @@ public class JajaCodeInterpreter {
         }
 
         memory.push(result);
-
+        interpret(getNextInstr(node));
     }
 
     @JajaCodeInterpretFunction(InstrOperUnary.class)
@@ -314,6 +314,7 @@ public class JajaCodeInterpreter {
         }
 
         memory.push(result);
+        interpret(getNextInstr(node));
     }
 
     @JajaCodeInterpretFunction(InstrInc.class)
@@ -334,7 +335,7 @@ public class JajaCodeInterpreter {
         int newVal = (int) currentVal + (int) v;
 
         memory.updateVal(varName, newVal);
-
+        interpret(getNextInstr(node));
     }
 
     @JajaCodeInterpretFunction(InstrAInc.class)
@@ -369,7 +370,7 @@ public class JajaCodeInterpreter {
         } catch (Exception e) {
             throw new InterpretRuntimeException("Error updating array " + arrayName + " at index " + index);
         }
-
+        interpret(getNextInstr(node));
     }
 
 
