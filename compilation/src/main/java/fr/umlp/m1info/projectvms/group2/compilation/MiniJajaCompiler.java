@@ -124,14 +124,21 @@ public class MiniJajaCompiler {
 	/** Compiles the main method of a program. */
 	@CompilationFunction(ASTMainMethod.class)
 	protected Integer compileMainMethod(ASTMainMethod node) {
-		throw new RuntimeException("Not implemented");
-	}
+        int count = 0;
+        int ndvs = compile(node.getVars());
+        count += ndvs;
+        int niss = compile(node.getInstrs());
+        count += niss;
+        out.println("push(0)");
+        count++;
+        int nrdvs = free(node.getVars());
+        count += nrdvs;
+        return count;
+    }
 
 	/** Compiles a method declaration. */
 	@CompilationFunction(ASTMethod.class)
-	protected Integer compileMethod(ASTMethod node) {
-		throw new RuntimeException("Not implemented");
-	}
+	protected Integer compileMethod(ASTMethod node) {throw new RuntimeException("Not implemented");}
 
 	/** Compiles a chain of declarations. */
 	@CompilationFunction(ASTDeclsChain.class)
