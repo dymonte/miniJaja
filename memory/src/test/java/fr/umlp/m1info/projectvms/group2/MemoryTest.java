@@ -10,6 +10,7 @@ import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
+import fr.umlp.m1info.projectvms.group2.exception.StackInvalidAddressException;
 import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
 import fr.umlp.m1info.projectvms.group2.exception.EmptyStackException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
@@ -138,7 +139,12 @@ public class MemoryTest {
 		m.declVar("i", 1, Type.INT);
 		m.removeDecl("i");
 		m.removeDecl("i");
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.removeDecl("i"));
 		Assert.assertThrows(SymbolNotFoundException.class, () -> m.removeDecl("ii"));
+
+		m.declArray("arr", 5, Type.INT);
+		m.removeDecl("arr");
+		Assert.assertThrows(SymbolNotFoundException.class, () -> m.removeDecl("arr"));
 	}
 
 	@Test
@@ -158,6 +164,7 @@ public class MemoryTest {
 
 		Assert.assertThrows(NoInstanceException.class, () -> memory.getVal(ident));
 		Assert.assertThrows(NoInstanceException.class, () -> memory.updateVal(ident, value));
+		Assert.assertThrows(NoInstanceException.class, () -> memory.removeDecl(ident));
 	}
 
 	@Test
@@ -308,5 +315,39 @@ public class MemoryTest {
 		Assert.assertEquals(4, m.pop());
 		Assert.assertEquals(3, m.pop());
 		Assert.assertThrows(EmptyStackException.class, () -> m.pop());
+	}
+
+	@Test
+	public void testIdentVal() {
+		m.push(4);
+		m.identVal("i", ObjectKind.VAR, Type.INT, 0);
+		Quad q = m.getHead();
+		Assert.assertEquals(q.getIdent(), "i");
+		Assert.assertEquals(q.getKind(), ObjectKind.VAR);
+		Assert.assertEquals(q.getSorte(), Type.INT);
+		m.push(5);
+		m.push(6);
+		m.push(7);
+		m.identVal("f", ObjectKind.METH, Type.VOID, 2);
+		q = m.getHead().next().next();
+		Assert.assertEquals(q.getIdent(), "f");
+		Assert.assertEquals(q.getKind(), ObjectKind.METH);
+		Assert.assertEquals(q.getSorte(), Type.VOID);
+	}
+
+	@Test
+	public void testIdentValInvalidAddress() {
+		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", ObjectKind.VAR, Type.INT, -1));
+	}
+
+	@Test
+	public void testIdentValSymbolNotCreated() {
+		m.declVar("i", 0, Type.INT);
+		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", ObjectKind.METH, Type.VOID, 0));
+	}
+
+	@Test
+	public void testIdentValNotInStack() {
+		Assert.assertThrows(StackInvalidAddressException.class, () -> m.identVal("i", ObjectKind.METH, Type.VOID, 100));
 	}
 }

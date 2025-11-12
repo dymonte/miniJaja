@@ -156,6 +156,7 @@ public class Memory {
 			heap.decRef((int) instance.getValue());
 		}
 		symTable.remove(instance);
+		stack.remove(instance);
 	}
 
 	/**
@@ -427,7 +428,9 @@ public class Memory {
 	 * @param kind       the new object kind of the stack's head
 	 * @param sorte      the new type of the stack's head
 	 * @param address    the element's address on the stack
-	 * @throws IllegalArgumentException     when address < 0
+	 * @throws IllegalArgumentException     when address < 0 or identifier already
+	 *                                      used by an other symbol of different
+	 *                                      kind
 	 * @throws StackInvalidAddressException when address is exceding stack's depth
 	 *
 	 */
@@ -438,7 +441,7 @@ public class Memory {
 
 		Optional<SymNode> symbolOpt = symTable.add(identifier, kind, sorte);
 		if (symbolOpt.isEmpty()) {
-			return;
+			throw new IllegalArgumentException("Identifier already used for an other kind of symbol");
 		}
 		SymNode symbol = symbolOpt.get();
 
