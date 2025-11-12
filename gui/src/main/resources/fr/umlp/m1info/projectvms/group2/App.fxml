@@ -57,12 +57,12 @@
             <MenuItem mnemonicParsing="false" text="Open File" onAction="#openFile"/>
             <MenuItem mnemonicParsing="false" text="Open Folder" onAction="#openFolder" fx:id="menuOpenFolder"/>
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Close" onAction="#closeCurrentFile"/>
+            <MenuItem mnemonicParsing="false" text="Close" onAction="#closeCurrentFile" fx:id="menuCloseCurrentFile"/>
             <MenuItem mnemonicParsing="false" text="Save" onAction="#saveFile" accelerator="Shortcut+S" />
             <MenuItem mnemonicParsing="false" text="Save As…" onAction="#saveFileAs"/>
             <SeparatorMenuItem mnemonicParsing="false" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" onAction="#quitApp"/>
+            <MenuItem mnemonicParsing="false" text="Quit" onAction="#quitApp" fx:id="menuExitApp"/>
           </items>
         </Menu>
 				
