@@ -45,7 +45,7 @@ import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 public class MiniJajaCompiler {
 
 	private PrintStream out;
-
+    private int n;
 	public MiniJajaCompiler(PrintStream out) {
 		if (out == null) {
 			throw new CompilationRuntimeException("Output cannot be null");
@@ -142,6 +142,7 @@ public class MiniJajaCompiler {
         out.println("pop");
         out.println("jcstop");
         count += 2;
+        n += count;
         return count;
     }
 
@@ -157,12 +158,41 @@ public class MiniJajaCompiler {
         count++;
         int nrdvs = free(node.getVars());
         count += nrdvs;
+        n += count;
         return count;
     }
 
 	/** Compiles a method declaration. */
-	@CompilationFunction(ASTMethod.class)
-	protected Integer compileMethod(ASTMethod node) {throw new RuntimeException("Not implemented");}
+    @CompilationFunction(ASTMethod.class)
+    protected Integer compileMethod(ASTMethod node) {
+        int start = n;
+        int count = 0;
+        out.println("jcnil"); count++;
+        out.println("push(" + (start + 3) + ")"); count++;
+        out.println("new(" + node.getIdent().getName() + ", " + node.getType() + ", meth, 0)"); count++;
+        int nens = compile(node.getParams());
+        count += nens;
+        int ndvs = compile(node.getVars());
+        count += ndvs;
+        int niss = compile(node.getInstrs());
+        count += niss;
+        int nrdvs = free(node.getVars());
+        count += nrdvs;
+        boolean isRecursive = node.getInstrs().toString().contains(node.getIdent().getName());
+        int gotoAddr = start + count + (isRecursive ? 6 : 5);
+        out.println("goto(" + gotoAddr + ")");
+        count++;
+        boolean hasReturn = !node.getType().toString().equalsIgnoreCase("void");
+        if (hasReturn) {
+            out.println("push(0)");
+            count++;
+        }
+        out.println("swap"); count++;
+        out.println("return"); count++;
+
+        n += count;
+        return count;
+    }
 
 	/** Compiles a chain of declarations. */
 	@CompilationFunction(ASTDeclsChain.class)
