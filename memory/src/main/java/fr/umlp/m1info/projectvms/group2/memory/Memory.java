@@ -12,10 +12,10 @@ import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
 
 /**
  * Memory
@@ -48,7 +48,7 @@ public class Memory {
 	 * @param sorte the variable type
 	 */
 	public <T> void declVar(String ident, T value, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VAR, sorte);
+		Optional<SymNode> symbol = symTable.add(ident, Kind.VAR, sorte);
 		if (symbol.isPresent()) {
 			stack.push(value, symbol.get());
 		}
@@ -62,7 +62,7 @@ public class Memory {
 	 * @param sorte the constant type
 	 */
 	public <T> void declCst(String ident, T value, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.CONST, sorte);
+		Optional<SymNode> symbol = symTable.add(ident, Kind.CONST, sorte);
 		if (symbol.isPresent()) {
 			stack.push(value, symbol.get());
 		}
@@ -75,7 +75,7 @@ public class Memory {
 	 * @param sorte the constant type
 	 */
 	public void declCst(String ident, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VCONST, sorte);
+		Optional<SymNode> symbol = symTable.add(ident, Kind.VCONST, sorte);
 		if (symbol.isPresent()) {
 			stack.push(null, symbol.get());
 		}
@@ -90,7 +90,7 @@ public class Memory {
 	 * @param sorte the array type
 	 */
 	public void declArray(String ident, int size, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.ARRAY, sorte, size);
+		Optional<SymNode> symbol = symTable.add(ident, Kind.ARRAY, sorte, size);
 
 		if (symbol.isPresent()) {
 			int address = heap.allocate(size, sorte);
@@ -108,7 +108,7 @@ public class Memory {
 	 */
 	public void declMeth(String ident, Object meth, List<Type> paramsTypes, Type sorte) {
 		String identWithTypes = getMethKey(ident, paramsTypes);
-		Optional<SymNode> symbol = symTable.add(identWithTypes, ObjectKind.METH, sorte);
+		Optional<SymNode> symbol = symTable.add(identWithTypes, Kind.METH, sorte);
 		symbol.ifPresent(symNode -> stack.push(meth, symNode));
 	}
 
@@ -126,7 +126,7 @@ public class Memory {
 		ret.append(ident);
 
 		for (Type t : params) {
-			ret.append(t.toString().charAt(0));
+			ret.append(Character.toUpperCase(t.toString().charAt(0)));
 		}
 		return ret.toString();
 	}
@@ -152,7 +152,7 @@ public class Memory {
 		if (instance == null) {
 			throw new NoInstanceException(ident);
 		}
-		if (symbolOpt.get().getInfo().getKind() == ObjectKind.ARRAY) {
+		if (symbolOpt.get().getInfo().getKind() == Kind.ARRAY) {
 			heap.decRef((int) instance.getValue());
 		}
 		symTable.remove(instance);
@@ -180,18 +180,18 @@ public class Memory {
 		}
 
 		SymNode symbol = symbolOpt.get();
-		ObjectKind kind = symbol.getInfo().getKind();
+		Kind kind = symbol.getInfo().getKind();
 
-		if (kind == ObjectKind.ARRAY) {
+		if (kind == Kind.ARRAY) {
 			heap.incRef((int) val);
 		}
 
-		if (kind != ObjectKind.VAR && kind != ObjectKind.ARRAY && kind != ObjectKind.VCONST) {
+		if (kind != Kind.VAR && kind != Kind.ARRAY && kind != Kind.VCONST) {
 			throw new BadSymbolKindException(ident, kind);
 		}
 
-		if (kind == ObjectKind.VCONST) {
-			symbol.setKind(ObjectKind.CONST);
+		if (kind == Kind.VCONST) {
+			symbol.setKind(Kind.CONST);
 		}
 
 		InstNode instance = symbol.getFirstInstance();
@@ -224,7 +224,7 @@ public class Memory {
 
 		SymNode symbol = symbolOpt.get();
 
-		if (symbol.getInfo().getKind() == ObjectKind.VCONST) {
+		if (symbol.getInfo().getKind() == Kind.VCONST) {
 			throw new NoInstanceException(ident);
 		}
 
@@ -259,8 +259,8 @@ public class Memory {
 
 		SymNode symbol = symbolOpt.get();
 
-		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), ObjectKind.ARRAY);
+		if (symbol.getInfo().getKind() != Kind.ARRAY) {
+			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), Kind.ARRAY);
 		}
 
 		// Get first instance of the symbol
@@ -297,8 +297,8 @@ public class Memory {
 
 		SymNode symbol = symbolOpt.get();
 
-		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), ObjectKind.ARRAY);
+		if (symbol.getInfo().getKind() != Kind.ARRAY) {
+			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), Kind.ARRAY);
 		}
 
 		// Get first instance of the symbol
@@ -330,8 +330,8 @@ public class Memory {
 		SymNode symbol = symbolOpt.get();
 		MemInfo info = symbol.getInfo();
 
-		if (info.getKind() != ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, info.getKind(), ObjectKind.ARRAY);
+		if (info.getKind() != Kind.ARRAY) {
+			throw new BadSymbolKindException(ident, info.getKind(), Kind.ARRAY);
 		}
 		return info.getSize();
 	}
@@ -396,7 +396,7 @@ public class Memory {
 	 * @param value the value to add on top of the stack
 	 */
 	public void push(Object value) {
-		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, ObjectKind.CONST));
+		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, Kind.CONST));
 		stack.push(value, symbol);
 	}
 
@@ -434,7 +434,7 @@ public class Memory {
 	 * @throws StackInvalidAddressException when address is exceding stack's depth
 	 *
 	 */
-	public void identVal(String identifier, ObjectKind kind, Type sorte, int address) {
+	public void identVal(String identifier, Kind kind, Type sorte, int address) {
 		if (address < 0) {
 			throw new IllegalArgumentException("address should be >= 0.");
 		}

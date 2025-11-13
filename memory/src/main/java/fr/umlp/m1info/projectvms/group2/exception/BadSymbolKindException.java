@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.exception;
 
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
 
 /**
  * BadSymbolKindException
@@ -19,7 +19,7 @@ public class BadSymbolKindException extends RuntimeException {
 	 * @param expected   the expected kind
 	 * @param actual     the actual kind
 	 */
-	public BadSymbolKindException(String identifier, ObjectKind expected, ObjectKind actual) {
+	public BadSymbolKindException(String identifier, Kind expected, Kind actual) {
 		super(identifier + " type should be " + expected.name() + " but is actually " + actual.name() + ".");
 	}
 
@@ -29,7 +29,7 @@ public class BadSymbolKindException extends RuntimeException {
 	 * @param identifier the symbol identifier
 	 * @param actual     the actual kind
 	 */
-	public BadSymbolKindException(String identifier, ObjectKind actual) {
+	public BadSymbolKindException(String identifier, Kind actual) {
 		super(identifier + " type should not be " + actual.name() + ".");
 	}
 

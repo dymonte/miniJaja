@@ -1,5 +1,8 @@
 package fr.umlp.m1info.projectvms.group2.memory.symtable;
 
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
+
 /**
  * SymNode
  * A symbol node
@@ -92,7 +95,7 @@ public class SymNode {
 	 *
 	 * @param kind the new symbol's kind
 	 */
-	public void setKind(ObjectKind kind) {
+	public void setKind(Kind kind) {
 		info = new MemInfo(info.getSorte(), kind, info.getSize());
 	}
 

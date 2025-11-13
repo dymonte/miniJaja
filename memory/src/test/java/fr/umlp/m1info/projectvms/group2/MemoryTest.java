@@ -1,11 +1,9 @@
 package fr.umlp.m1info.projectvms.group2;
 
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
@@ -15,6 +13,8 @@ import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
 import fr.umlp.m1info.projectvms.group2.exception.EmptyStackException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.Quad;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 import java.util.Optional;
 
@@ -58,7 +58,7 @@ public class MemoryTest {
 		Type sorte = Type.INT;
 
 		SymTable spySymTable = Mockito.spy(symTable);
-		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident, ObjectKind.VAR, sorte);
+		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident, Kind.VAR, sorte);
 		Memory memory = new Memory(spySymTable, new Stack(100), new Heap(100));
 
 		memory.declVar(ident, value, sorte);
@@ -82,8 +82,8 @@ public class MemoryTest {
 		Type sorte = Type.INT;
 
 		SymTable spySymTable = Mockito.spy(symTable);
-		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident1, ObjectKind.CONST, sorte);
-		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident2, ObjectKind.VCONST, sorte);
+		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident1, Kind.CONST, sorte);
+		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident2, Kind.VCONST, sorte);
 		Memory memory = new Memory(spySymTable, new Stack(100), new Heap(100));
 
 		memory.declCst(ident1, value, sorte);
@@ -121,7 +121,7 @@ public class MemoryTest {
 		Type sorte = Type.INT;
 
 		SymTable spySymTable = Mockito.spy(symTable);
-		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident, ObjectKind.ARRAY, sorte, value);
+		Mockito.doReturn(Optional.empty()).when(spySymTable).add(ident, Kind.ARRAY, sorte, value);
 		Memory memory = new Memory(spySymTable, new Stack(100), new Heap(100));
 
 		memory.declArray(ident, value, sorte);
@@ -273,7 +273,7 @@ public class MemoryTest {
 
 	@Test
 	public void testQuad() {
-		SymNode symNode = new SymNode("a", new MemInfo(Type.INT, ObjectKind.VAR));
+		SymNode symNode = new SymNode("a", new MemInfo(Type.INT, Kind.VAR));
 
 		InstNode inst1 = new InstNode(1, symNode, null);
 		InstNode inst2 = new InstNode(2, symNode, inst1);
@@ -283,27 +283,27 @@ public class MemoryTest {
 		Assert.assertFalse(quad3.isEmpty());
 		Assert.assertEquals("a", quad3.getIdent());
 		Assert.assertEquals(3, quad3.getVal());
-		Assert.assertEquals(ObjectKind.VAR, quad3.getKind());
+		Assert.assertEquals(Kind.VAR, quad3.getKind());
 		Assert.assertEquals(Type.INT, quad3.getSorte());
 
 		Quad quad2 = quad3.next();
 		Assert.assertFalse(quad2.isEmpty());
 		Assert.assertEquals("a", quad2.getIdent());
 		Assert.assertEquals(2, quad2.getVal());
-		Assert.assertEquals(ObjectKind.VAR, quad2.getKind());
+		Assert.assertEquals(Kind.VAR, quad2.getKind());
 		Assert.assertEquals(Type.INT, quad2.getSorte());
 
 		Quad quad1 = quad2.next();
 		Assert.assertFalse(quad1.isEmpty());
 		Assert.assertEquals("a", quad1.getIdent());
 		Assert.assertEquals(1, quad1.getVal());
-		Assert.assertEquals(ObjectKind.VAR, quad1.getKind());
+		Assert.assertEquals(Kind.VAR, quad1.getKind());
 		Assert.assertEquals(Type.INT, quad1.getSorte());
 
 		Quad quad = new Quad(null);
 		Assert.assertTrue(quad.isEmpty());
 
-		Assert.assertEquals("< a, 2, VAR, INT >", quad2.toString());
+		Assert.assertEquals("< a, 2, var, int >", quad2.toString());
 	}
 
 	@Test
@@ -320,34 +320,34 @@ public class MemoryTest {
 	@Test
 	public void testIdentVal() {
 		m.push(4);
-		m.identVal("i", ObjectKind.VAR, Type.INT, 0);
+		m.identVal("i", Kind.VAR, Type.INT, 0);
 		Quad q = m.getHead();
 		Assert.assertEquals(q.getIdent(), "i");
-		Assert.assertEquals(q.getKind(), ObjectKind.VAR);
+		Assert.assertEquals(q.getKind(), Kind.VAR);
 		Assert.assertEquals(q.getSorte(), Type.INT);
 		m.push(5);
 		m.push(6);
 		m.push(7);
-		m.identVal("f", ObjectKind.METH, Type.VOID, 2);
+		m.identVal("f", Kind.METH, Type.VOID, 2);
 		q = m.getHead().next().next();
 		Assert.assertEquals(q.getIdent(), "f");
-		Assert.assertEquals(q.getKind(), ObjectKind.METH);
+		Assert.assertEquals(q.getKind(), Kind.METH);
 		Assert.assertEquals(q.getSorte(), Type.VOID);
 	}
 
 	@Test
 	public void testIdentValInvalidAddress() {
-		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", ObjectKind.VAR, Type.INT, -1));
+		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", Kind.VAR, Type.INT, -1));
 	}
 
 	@Test
 	public void testIdentValSymbolNotCreated() {
 		m.declVar("i", 0, Type.INT);
-		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", ObjectKind.METH, Type.VOID, 0));
+		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", Kind.METH, Type.VOID, 0));
 	}
 
 	@Test
 	public void testIdentValNotInStack() {
-		Assert.assertThrows(StackInvalidAddressException.class, () -> m.identVal("i", ObjectKind.METH, Type.VOID, 100));
+		Assert.assertThrows(StackInvalidAddressException.class, () -> m.identVal("i", Kind.METH, Type.VOID, 100));
 	}
 }
