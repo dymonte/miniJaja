@@ -417,7 +417,7 @@ public class Memory {
 		if (popped == null) {
 			throw new EmptyStackException();
 		}
-		return popped != null ? popped.getValue() : null;
+		return popped.getValue();
 	}
 
 	/**
@@ -432,7 +432,6 @@ public class Memory {
 	 *                                      used by an other symbol of different
 	 *                                      kind
 	 * @throws StackInvalidAddressException when address is exceding stack's depth
-	 *
 	 */
 	public void identVal(String identifier, Kind kind, Type sorte, int address) {
 		if (address < 0) {

@@ -1,7 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.InstrWrite;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.InstrInit;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
@@ -25,6 +24,7 @@ public class JajaCodeInterpreterInteractiveTest {
 	public void setUp() {
 		memory = new Memory(new SymTable(100), new Stack(100), new Heap(100));
 	}
+
 
 	@Test
 	public void testAll() {
@@ -87,10 +87,11 @@ public class JajaCodeInterpreterInteractiveTest {
 	@Ignore
 	public void testInterpret() {
 		InstrWrite instrWrite = new InstrWrite(1);
+        memory.push("a");
 
 		interactive = new JajaCodeInterpreterInteractive(memory, Arrays.asList(instrWrite));
 		interactive.setStepModeEnabled(false);
-		// interactive.interpret(astWrite);
+		interactive.interpret(instrWrite);
 		Assert.assertTrue(true);
 	}
 }

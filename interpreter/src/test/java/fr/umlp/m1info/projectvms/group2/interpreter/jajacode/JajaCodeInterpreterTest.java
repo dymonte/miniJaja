@@ -25,6 +25,7 @@ import fr.umlp.m1info.projectvms.group2.utils.Kind;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -282,4 +283,53 @@ public class JajaCodeInterpreterTest {
 		assertEquals(25, memory.getValArray("arr", 1));
 	}
 
+    @Test
+    public void testInterpretInvoke() {
+        memory.declMeth("f", 2, List.of(), Type.VOID);
+        System.out.println(memory.getVal("1f"));
+        InstrInvoke instrInvoke = new InstrInvoke(1, new ValIdent(1, "1f"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrInvoke, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrInvoke);
+
+        Assert.assertEquals(2, memory.pop());
+    }
+
+    @Test
+    public void testInterpretReturn() {
+        memory.push(2);
+        InstrReturn instrReturn = new InstrReturn(1);
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrReturn, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrReturn);
+        EmptyStackException e = Assert.assertThrows(EmptyStackException.class, () -> {
+            memory.pop();
+        });
+        Assert.assertEquals("Stack is empty.", e.getMessage());
+    }
+
+    @Test
+    public void testInterpretReturnWrongStack() {
+        memory.push("wrong value");
+        InstrReturn instrReturn = new InstrReturn(1);
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrReturn, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrReturn));
+    }
+
+    @Test
+    public void testInterpretReturnEmptyStack() {
+        InstrReturn instrReturn = new InstrReturn(1);
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrReturn, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrReturn));
+    }
 }

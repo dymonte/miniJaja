@@ -88,7 +88,7 @@ public class InterpreterLogger {
 	/**
 	 * Returns an unmodifiable view of the registered listeners
 	 *
-	 * @retun a set of registered listeners
+	 * @return a set of registered listeners
 	 */
 	public Set<InterpreterListener> getListeners() {
 		return Collections.unmodifiableSet(listeners);
