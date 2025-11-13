@@ -5,9 +5,9 @@ import fr.umlp.m1info.projectvms.group2.exception.SyntaxException;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.*;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.*;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 import org.junit.Test;
 

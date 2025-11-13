@@ -22,6 +22,11 @@
       <artifactId>ast</artifactId>
       <version>0.2-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+      <artifactId>utils</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

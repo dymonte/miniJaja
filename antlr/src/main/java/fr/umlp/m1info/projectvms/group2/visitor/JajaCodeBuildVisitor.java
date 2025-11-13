@@ -10,7 +10,8 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.*;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.*;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
 
 /**
  * The JajaCodeBuildVisitor is responsible for visiting the parse tree of a
