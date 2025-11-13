@@ -13,8 +13,8 @@ import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 public class JajaCodeInterpreter {
 	Memory memory;
@@ -143,16 +143,13 @@ public class JajaCodeInterpreter {
 			return;
 		}
 
-		Type type = switch (node.getType().getType()) {
-			case INT -> Type.INT;
-			case BOOL -> Type.BOOL;
-		};
-
 		String identifier = node.getValIdent().getIdent();
+
+		Type type = node.getType().getType();
 
 		switch (node.getKind().getKind()) {
 			case VAR: {
-				memory.identVal(identifier, ObjectKind.VAR, type,
+				memory.identVal(identifier, Kind.VAR, type,
 						node.getValAddress().getAddress());
 				break;
 			}
@@ -165,7 +162,7 @@ public class JajaCodeInterpreter {
 				break;
 			}
 			default:
-				throw new BadSymbolKindException(identifier, ObjectKind.ARRAY);
+				throw new BadSymbolKindException(identifier, Kind.ARRAY);
 		}
 		interpret(getNextInstr(node));
 	}
@@ -175,12 +172,8 @@ public class JajaCodeInterpreter {
 		if (node.getType() == null) {
 			return;
 		}
-		Type type = switch (node.getType().getType()) {
-			case INT -> Type.INT;
-			case BOOL -> Type.BOOL;
-		};
 
-		memory.declArray(node.getValIdent().getIdent(), (int) memory.pop(), type);
+		memory.declArray(node.getValIdent().getIdent(), (int) memory.pop(), node.getType().getType());
 		interpret(getNextInstr(node));
 	}
 
@@ -224,185 +217,180 @@ public class JajaCodeInterpreter {
 		throw new InterpretRuntimeException("Not implemented yet");
 	}
 
-    @JajaCodeInterpretFunction(InstrPush.class)
-    protected void interpretPush(InstrPush node) {
-        Val valNode = node.getValVal();
-        Object value = eval(valNode);
-        memory.push(value);
-        interpret(getNextInstr(node));
-    }
+	@JajaCodeInterpretFunction(InstrPush.class)
+	protected void interpretPush(InstrPush node) {
+		Val valNode = node.getValVal();
+		Object value = eval(valNode);
+		memory.push(value);
+		interpret(getNextInstr(node));
+	}
 
-    @JajaCodeInterpretFunction(InstrPop.class)
-    protected void interpretPop(InstrPop node) {
-        if (memory == null) {
-            throw new InterpretRuntimeException("Memory not initialized");
-        }
-        memory.pop();
-        interpret(getNextInstr(node));
-    }
+	@JajaCodeInterpretFunction(InstrPop.class)
+	protected void interpretPop(InstrPop node) {
+		if (memory == null) {
+			throw new InterpretRuntimeException("Memory not initialized");
+		}
+		memory.pop();
+		interpret(getNextInstr(node));
+	}
 
+	@JajaCodeInterpretFunction(InstrIf.class)
+	protected void interpretIf(InstrIf node) {
+		Object topValue = memory.pop();
+		if (!(topValue instanceof Boolean)) {
+			throw new InterpretRuntimeException(
+					"Top of stack must be a boolean for IF instruction.");
+		}
+		boolean condition = (Boolean) topValue;
+		int targetAddress = node.getValAddress().getAddress();
+		Instr nextInstr;
 
-    @JajaCodeInterpretFunction(InstrIf.class)
-    protected void interpretIf(InstrIf node) {
-        Object topValue = memory.pop();
-        if (!(topValue instanceof Boolean)) {
-            throw new InterpretRuntimeException(
-                    "Top of stack must be a boolean for IF instruction."
-            );
-        }
-        boolean condition = (Boolean) topValue;
-        int targetAddress = node.getValAddress().getAddress();
-        Instr nextInstr;
+		if (condition) {
+			nextInstr = getInstr(targetAddress);
+		} else {
+			nextInstr = getNextInstr(node);
+		}
+		interpret(nextInstr);
+	}
 
-            if (condition) {
-                nextInstr = getInstr(targetAddress);
-            } else {
-                nextInstr = getNextInstr(node);
-            }
-        interpret(nextInstr);
-    }
+	@JajaCodeInterpretFunction(InstrOperBinary.class)
+	protected void interpretOperBinary(InstrOperBinary node) {
+		Object v2 = memory.pop();
+		Object v1 = memory.pop();
 
-    @JajaCodeInterpretFunction(InstrOperBinary.class)
-    protected void interpretOperBinary(InstrOperBinary node) {
-        Object v2 = memory.pop();
-        Object v1 = memory.pop();
+		JajaCodeBinaryOper oper = node.getOper();
+		Object result;
 
-        JajaCodeBinaryOper oper = node.getOper();
-        Object result;
+		switch (oper) {
+			case ADD -> result = (int) v1 + (int) v2;
+			case SUB -> result = (int) v1 - (int) v2;
+			case MUL -> result = (int) v1 * (int) v2;
+			case DIV -> {
+				if ((int) v2 == 0)
+					throw new InterpretRuntimeException("Division by zero");
+				result = (int) v1 / (int) v2;
+			}
+			case CMP -> {
+				// Compare deux entiers : résultat négatif, 0 ou positif
+				result = Integer.compare((int) v1, (int) v2);
+			}
+			case SUP -> result = (int) v1 > (int) v2;
+			case AND -> result = (boolean) v1 && (boolean) v2;
+			case OR -> result = (boolean) v1 || (boolean) v2;
+			default -> throw new InterpretRuntimeException("Unknown binary operator: " + oper);
+		}
 
-        switch (oper) {
-            case ADD -> result = (int) v1 + (int) v2;
-            case SUB -> result = (int) v1 - (int) v2;
-            case MUL -> result = (int) v1 * (int) v2;
-            case DIV -> {
-                if ((int) v2 == 0)
-                    throw new InterpretRuntimeException("Division by zero");
-                result = (int) v1 / (int) v2;
-            }
-            case CMP -> {
-                // Compare deux entiers : résultat négatif, 0 ou positif
-                result = Integer.compare((int) v1, (int) v2);
-            }
-            case SUP -> result = (int) v1 > (int) v2;
-            case AND -> result = (boolean) v1 && (boolean) v2;
-            case OR  -> result = (boolean) v1 || (boolean) v2;
-            default -> throw new InterpretRuntimeException("Unknown binary operator: " + oper);
-        }
+		memory.push(result);
+		interpret(getNextInstr(node));
+	}
 
-        memory.push(result);
-        interpret(getNextInstr(node));
-    }
+	@JajaCodeInterpretFunction(InstrOperUnary.class)
+	protected void interpretOperUnary(InstrOperUnary node) {
+		Object v1 = memory.pop();
+		JajaCodeUnaryOper oper = node.getOper();
+		Object result;
 
-    @JajaCodeInterpretFunction(InstrOperUnary.class)
-    protected void interpretOperUnary(InstrOperUnary node) {
-        Object v1 = memory.pop();
-        JajaCodeUnaryOper oper = node.getOper();
-        Object result;
+		switch (oper) {
+			case NEG -> {
+				if (!(v1 instanceof Integer))
+					throw new InterpretRuntimeException("NEG requires an integer operand.");
+				result = -((int) v1);
+			}
+			case NOT -> {
+				if (!(v1 instanceof Boolean))
+					throw new InterpretRuntimeException("NOT requires a boolean operand.");
+				result = !((boolean) v1);
+			}
+			default -> throw new InterpretRuntimeException("Unknown unary operator: " + oper);
+		}
 
-        switch (oper) {
-            case NEG -> {
-                if (!(v1 instanceof Integer))
-                    throw new InterpretRuntimeException("NEG requires an integer operand.");
-                result = -((int) v1);
-            }
-            case NOT -> {
-                if (!(v1 instanceof Boolean))
-                    throw new InterpretRuntimeException("NOT requires a boolean operand.");
-                result = !((boolean) v1);
-            }
-            default -> throw new InterpretRuntimeException("Unknown unary operator: " + oper);
-        }
+		memory.push(result);
+		interpret(getNextInstr(node));
+	}
 
-        memory.push(result);
-        interpret(getNextInstr(node));
-    }
+	@JajaCodeInterpretFunction(InstrInc.class)
+	protected void interpretInc(InstrInc node) {
+		ValIdent valIdent = node.getValIdent();
+		String varName = valIdent.getIdent();
 
-    @JajaCodeInterpretFunction(InstrInc.class)
-    protected void interpretInc(InstrInc node) {
-        ValIdent valIdent = node.getValIdent();
-        String varName = valIdent.getIdent();
+		Object v = memory.pop();
 
+		Object currentVal = memory.getVal(varName);
 
-        Object v = memory.pop();
+		if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
+			throw new InterpretRuntimeException("Invalid types for inc operation on variable: " + varName);
+		}
 
+		int newVal = (int) currentVal + (int) v;
 
-        Object currentVal = memory.getVal(varName);
+		memory.updateVal(varName, newVal);
+		interpret(getNextInstr(node));
+	}
 
-        if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
-            throw new InterpretRuntimeException("Invalid types for inc operation on variable: " + varName);
-        }
+	@JajaCodeInterpretFunction(InstrAInc.class)
+	protected void interpretAInc(InstrAInc node) {
+		ValIdent valIdent = node.getValIdent();
+		String arrayName = valIdent.getIdent();
 
-        int newVal = (int) currentVal + (int) v;
+		Object v = memory.pop();
 
-        memory.updateVal(varName, newVal);
-        interpret(getNextInstr(node));
-    }
+		Object indObj = memory.pop();
 
-    @JajaCodeInterpretFunction(InstrAInc.class)
-    protected void interpretAInc(InstrAInc node) {
-        ValIdent valIdent = node.getValIdent();
-        String arrayName = valIdent.getIdent();
+		if (!(indObj instanceof Integer)) {
+			throw new InterpretRuntimeException("Array index must be an integer.");
+		}
+		int index = (int) indObj;
 
-        Object v = memory.pop();
+		Object currentVal;
+		try {
+			currentVal = memory.getValArray(arrayName, index);
+		} catch (Exception e) {
+			throw new InterpretRuntimeException("Error accessing array " + arrayName + " at index " + index);
+		}
 
-        Object indObj = memory.pop();
+		if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
+			throw new InterpretRuntimeException("Invalid types for ainc operation on array: " + arrayName);
+		}
 
-        if (!(indObj instanceof Integer)) {
-            throw new InterpretRuntimeException("Array index must be an integer.");
-        }
-        int index = (int) indObj;
+		int newVal = (int) currentVal + (int) v;
 
-        Object currentVal;
-        try {
-            currentVal = memory.getValArray(arrayName, index);
-        } catch (Exception e) {
-            throw new InterpretRuntimeException("Error accessing array " + arrayName + " at index " + index);
-        }
+		try {
+			memory.updateValArray(arrayName, index, newVal);
+		} catch (Exception e) {
+			throw new InterpretRuntimeException("Error updating array " + arrayName + " at index " + index);
+		}
+		interpret(getNextInstr(node));
+	}
 
-        if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
-            throw new InterpretRuntimeException("Invalid types for ainc operation on array: " + arrayName);
-        }
+	@JajaCodeEvalFunction(ValAddress.class)
+	protected Object evalAddress(ValAddress node) {
+		return node.getAddress();
+	}
 
-        int newVal = (int) currentVal + (int) v;
+	@JajaCodeEvalFunction(ValBool.class)
+	protected Object evalBool(ValBool node) {
+		return node.getValue();
+	}
 
-        try {
-            memory.updateValArray(arrayName, index, newVal);
-        } catch (Exception e) {
-            throw new InterpretRuntimeException("Error updating array " + arrayName + " at index " + index);
-        }
-        interpret(getNextInstr(node));
-    }
+	@JajaCodeEvalFunction(ValIdent.class)
+	protected Object evalIdent(ValIdent node) {
+		String ident = node.getIdent();
+		return memory.getVal(ident);
 
+	}
 
-    @JajaCodeEvalFunction(ValAddress.class)
-    protected Object evalAddress(ValAddress node) {
-        return node.getAddress();
-    }
+	@JajaCodeEvalFunction(ValNbre.class)
+	protected Object evalNbre(ValNbre node) {
+		return node.getValue();
+	}
 
-    @JajaCodeEvalFunction(ValBool.class)
-    protected Object evalBool(ValBool node) {
-        return node.getValue();
-    }
+	@JajaCodeEvalFunction(ValString.class)
+	protected Object evalString(ValString node) {
+		return node.getValue(); //
+	}
 
-    @JajaCodeEvalFunction(ValIdent.class)
-    protected Object evalIdent(ValIdent node) {
-        String ident = node.getIdent();
-        return memory.getVal(ident);
-
-    }
-
-    @JajaCodeEvalFunction(ValNbre.class)
-    protected Object evalNbre(ValNbre node) {
-        return node.getValue();
-    }
-
-    @JajaCodeEvalFunction(ValString.class)
-    protected Object evalString(ValString node) {
-        return node.getValue(); //
-    }
-
-    @JajaCodeEvalFunction(VarKind.class)
-    protected Object evalKind(VarKind node) {
-        throw new EvalRuntimeException("Not implemented yet");
-    }
+	@JajaCodeEvalFunction(VarKind.class)
+	protected Object evalKind(VarKind node) {
+		throw new EvalRuntimeException("Not implemented yet");
+	}
 }

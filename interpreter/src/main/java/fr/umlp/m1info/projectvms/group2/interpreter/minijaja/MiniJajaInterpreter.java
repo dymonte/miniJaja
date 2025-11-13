@@ -11,7 +11,7 @@ import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;

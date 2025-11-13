@@ -28,7 +28,7 @@ import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 public class MiniJajaInterpreterTest {
 	InterpreterLogger logger = InterpreterLogger.getInstance();

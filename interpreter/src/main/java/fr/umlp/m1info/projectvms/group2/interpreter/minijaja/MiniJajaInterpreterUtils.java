@@ -16,7 +16,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 import java.util.List;
 import java.util.ArrayList;
