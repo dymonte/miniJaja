@@ -181,19 +181,12 @@ public class JajaCodeNodeToStringTest {
 		Assert.assertEquals("1 : newarray(jcident(a), int)", instr.toString());
 	}
 
-	@Test
-	public void testInstrToStringNil() {
-		int lineId = 1;
-		InstrNil instr = new InstrNil(lineId);
-		Assert.assertEquals("1 : jcnil", instr.toString());
-	}
-
-	@Test
-	public void testInstrToStringNop() {
-		int lineId = 1;
-		InstrNop instr = new InstrNop(lineId);
-		Assert.assertEquals("1 : nop", instr.toString());
-	}
+    @Test
+    public void testInstrToStringNop() {
+        int lineId = 1;
+        InstrNop instr = new InstrNop(lineId);
+        Assert.assertEquals("1 : nop", instr.toString());
+    }
 
 	@Test
 	public void testInstrToStringPop() {

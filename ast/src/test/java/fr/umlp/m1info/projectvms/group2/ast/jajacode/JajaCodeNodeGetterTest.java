@@ -12,12 +12,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class JajaCodeNodeGetterTest {
-	@Test
-	public void testJajaCodeNodeGetterLineId() {
-		int lineId = 1;
-		JajaCodeNode node = new InstrNil(lineId);
-		Assert.assertEquals(lineId, node.getLineId());
-	}
+    @Test
+    public void testJajaCodeNodeGetterLineId() {
+        int lineId = 1;
+        JajaCodeNode node = new InstrNop(lineId);
+        Assert.assertEquals(lineId, node.getLineId());
+    }
 
 	@Test
 	public void testVarKindGetter() {
