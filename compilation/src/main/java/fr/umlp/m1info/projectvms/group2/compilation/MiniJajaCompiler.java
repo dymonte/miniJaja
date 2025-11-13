@@ -4,18 +4,39 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLength;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTMethodCallExpr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTUnaryOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTVExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
-
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTMethodCallInstr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarArray;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
-import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 
 /**
  * The compiler class is responsible for traversing and compiling an Abstract
@@ -158,31 +179,43 @@ public class MiniJajaCompiler {
 	/** Compiles a chain of variable declarations. */
 	@CompilationFunction(ASTVarsChain.class)
 	protected Integer compileVarsChain(ASTVarsChain node) {
-		throw new RuntimeException("Not implemented");
+		return compile(node.getVar()) + compile(node.getVars());
 	}
 
 	/** Compiles an empty variable declaration list. */
 	@CompilationFunction(ASTVarsNil.class)
 	protected Integer compileVarsNil(ASTVarsNil node) {
-		throw new RuntimeException("Not implemented");
+		return 0;
 	}
 
 	/** Compiles a simple variable declaration. */
 	@CompilationFunction(ASTVarSimple.class)
 	protected Integer compileVarSimple(ASTVarSimple node) {
-		throw new RuntimeException("Not implemented");
+		int vexpr = compile(node.getVExpr());
+		String i = node.getIdent().getName();
+		String t = node.getType().toString();
+		out.println("new(" + i + ", " + t + ", var, 0)");
+		return vexpr + 1;
 	}
 
 	/** Compiles an array variable declaration. */
 	@CompilationFunction(ASTVarArray.class)
 	protected Integer compileVarArray(ASTVarArray node) {
-		throw new RuntimeException("Not implemented");
+		int vexpr = compile(node.getExpr());
+		String i = node.getIdent().getName();
+		String t = node.getType().toString();
+		out.println("new(" + i + ", " + t + ", cst, 0)");
+		return vexpr + 1;
 	}
 
 	/** Compiles a constant variable declaration. */
 	@CompilationFunction(ASTVarConst.class)
 	protected Integer compileVarConst(ASTVarConst node) {
-		throw new RuntimeException("Not implemented");
+		int vexpr = compile(node.getVExpr());
+		String i = node.getIdent().getName();
+		String t = node.getType().toString();
+		out.println("newarray(" + i + ", " + t + ")");
+		return vexpr + 1;
 	}
 
 	/** Compiles an if-else statement. */
@@ -324,6 +357,12 @@ public class MiniJajaCompiler {
         return 0;
     }
 
+	/** Compiles an expression. */
+    @CompilationFunction(ASTVExpr.class)
+    protected Integer compileVExpr(ASTVExpr node) {
+        return compile(node.getExpr());
+    }
+
 	/** Compiles a length expression on arrays. */
 	@CompilationFunction(ASTLength.class)
 	protected Integer compileLength(ASTLength node) {
@@ -339,18 +378,19 @@ public class MiniJajaCompiler {
 	/** Frees a chain of variable declarations. */
 	@FreeCompilationFunction(ASTVarsChain.class)
 	protected Integer freeVarsChain(ASTVarsChain node) {
-		throw new RuntimeException("Not implemented");
+		return free(node.getVars()) + free(node.getVar());
 	}
 
 	/** Frees an empty variable declaration list. */
 	@FreeCompilationFunction(ASTVarsNil.class)
 	protected Integer freeVarsNil(ASTVarsNil node) {
-		throw new RuntimeException("Not implemented");
+		return 0;
 	}
 
 	/** Frees a single variable declaration. */
 	@FreeCompilationFunction(ASTVar.class)
 	protected Integer freeVar(ASTVar node) {
-		throw new RuntimeException("Not implemented");
+		out.println("pop");
+		return 1;
 	}
 }
