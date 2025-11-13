@@ -9,9 +9,9 @@ public class TypeTest {
 		Type type = Type.fromString("int");
 		Assert.assertEquals(Type.INT, type);
 		Assert.assertEquals("int", type.toString());
-		type = Type.fromString("bool");
+		type = Type.fromString("boolean");
 		Assert.assertEquals(Type.BOOL, type);
-		Assert.assertEquals("bool", type.toString());
+		Assert.assertEquals("boolean", type.toString());
 		type = Type.fromString("string");
 		Assert.assertEquals(Type.STRING, type);
 		Assert.assertEquals("string", type.toString());

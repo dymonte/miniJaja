@@ -169,7 +169,7 @@ public class JajaCodeNodeToStringTest {
 				new VarKind(lineId, Kind.VAR),
 				new VarType(lineId, Type.BOOL),
 				new ValAddress(lineId, 1));
-		Assert.assertEquals("1 : new(var, jcident(b), bool, jcnbre(1))", instr2.toString());
+		Assert.assertEquals("1 : new(var, jcident(b), boolean, jcnbre(1))", instr2.toString());
 	}
 
 	@Test

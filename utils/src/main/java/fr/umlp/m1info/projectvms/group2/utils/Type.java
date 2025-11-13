@@ -5,7 +5,7 @@ package fr.umlp.m1info.projectvms.group2.utils;
  */
 public enum Type {
 	INT("int"),
-	BOOL("bool"),
+	BOOL("boolean"),
 	STRING("string"),
 	VOID("void");
 
@@ -40,7 +40,7 @@ public enum Type {
 	public static Type fromString(String symbol) {
 		return switch (symbol) {
 			case "int" -> INT;
-			case "bool" -> BOOL;
+			case "boolean" -> BOOL;
 			case "string" -> STRING;
 			case "void" -> VOID;
 			default -> throw new IllegalArgumentException("Unknow operation: " + symbol);
