@@ -9,9 +9,6 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVars;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
@@ -37,9 +34,10 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.Assert;
+import org.mockito.Mockito;
 
 public class MiniJajaCompilerTest {
 	MiniJajaCompiler miniJajaCompiler;
@@ -102,8 +100,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(mainMethod);
 		Mockito.doReturn(0).when(spyCompiler).free(decls);
 		int nbInstr = spyCompiler.compile(classNode);
-		assertEquals(3, nbInstr);
-		assertEquals("init\npop\njcstop\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("init\npop\njcstop\n", sb.toString());
 	}
 
 	@Test
@@ -118,8 +116,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(compiler).compile(instrs);
 		Mockito.doReturn(0).when(compiler).free(vars);
 		int result = compiler.compileMainMethod(mainMethod);
-		assertEquals(1, result);
-		assertEquals("push(0)\n", sb.toString());
+		Assert.assertEquals(1, result);
+		Assert.assertEquals("push(0)\n", sb.toString());
 	}
 
 	@Test
@@ -143,8 +141,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(instrs);
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
-		assertEquals(7, nbInstr);
-		assertEquals("jcnil\npush(3)\nnew(m, int, meth, 0)\ngoto(5)\npush(0)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals(7, nbInstr);
+		Assert.assertEquals("jcnil\npush(3)\nnew(m, int, meth, 0)\ngoto(5)\npush(0)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
@@ -168,32 +166,32 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(instrs);
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
-		assertEquals(6, nbInstr);
-		assertEquals("jcnil\npush(3)\nnew(m, void, meth, 0)\ngoto(4)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals(6, nbInstr);
+		Assert.assertEquals("jcnil\npush(3)\nnew(m, void, meth, 0)\ngoto(4)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
 	public void testCompileIdent() {
 		ASTIdent ident = new ASTIdent("a", 0, 0);
 		int nbInstr = miniJajaCompiler.compile(ident);
-		assertEquals("load(a)\n", sb.toString());
-		assertEquals(1, nbInstr);
+		Assert.assertEquals("load(a)\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
 	}
 
 	@Test
 	public void testCompileStringLiteral() {
 		ASTStringLiteral stringLiteral = new ASTStringLiteral("text", 0, 0);
 		int nbInstr = miniJajaCompiler.compile(stringLiteral);
-		assertEquals("push(text)\n", sb.toString());
-		assertEquals(1, nbInstr);
+		Assert.assertEquals("push(text)\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
 	}
 
 	@Test
 	public void testCompileIntLiteral() {
 		ASTIntLiteral intLiteral = new ASTIntLiteral(3, 0, 0);
 		int nbInstr = miniJajaCompiler.compile(intLiteral);
-		assertEquals("push(3)\n", sb.toString());
-		assertEquals(1, nbInstr);
+		Assert.assertEquals("push(3)\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
 	}
 
 	@Test
@@ -202,12 +200,12 @@ public class MiniJajaCompilerTest {
 		ASTBoolLiteral falseBoolLiteral = new ASTBoolLiteral(false, 0, 0);
 		int nbInstr = miniJajaCompiler.compile(trueBoolLiteral);
 
-		assertEquals("push(true)\n", sb.toString());
-		assertEquals(1, nbInstr);
+		Assert.assertEquals("push(true)\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
 
 		nbInstr = miniJajaCompiler.compile(falseBoolLiteral);
-		assertEquals("push(true)\npush(false)\n", sb.toString());
-		assertEquals(1, nbInstr);
+		Assert.assertEquals("push(true)\npush(false)\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
 	}
 
 	@Test
@@ -220,8 +218,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(intLiteral);
 
 		int nbInstr = spyCompiler.compile(arrayAccess);
-		assertEquals(2, nbInstr);
-		assertEquals("aload(t)\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("aload(t)\n", sb.toString());
 	}
 
 	@Test
@@ -233,8 +231,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(intLiteral);
 
 		int nbInstr = spyCompiler.compile(unaryOp);
-		assertEquals(2, nbInstr);
-		assertEquals("neg\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("neg\n", sb.toString());
 	}
 
 	@Test
@@ -246,8 +244,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(intLiteral);
 
 		int nbInstr = spyCompiler.compile(unaryOp);
-		assertEquals(2, nbInstr);
-		assertEquals("not\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("not\n", sb.toString());
 	}
 
 	@Test
@@ -261,8 +259,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("add\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("add\n", sb.toString());
 	}
 
 	@Test
@@ -276,8 +274,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("sub\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("sub\n", sb.toString());
 	}
 
 	@Test
@@ -291,8 +289,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("mul\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("mul\n", sb.toString());
 	}
 
 	@Test
@@ -306,8 +304,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("div\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("div\n", sb.toString());
 	}
 
 	@Test
@@ -321,8 +319,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("and\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("and\n", sb.toString());
 	}
 
 	@Test
@@ -336,8 +334,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("or\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("or\n", sb.toString());
 	}
 
 	@Test
@@ -351,8 +349,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("cmp\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("cmp\n", sb.toString());
 	}
 
 	@Test
@@ -366,8 +364,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		assertEquals(3, nbInstr);
-		assertEquals("sup\n", sb.toString());
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("sup\n", sb.toString());
 	}
 
 	@Test
@@ -384,13 +382,13 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(1).when(spyCompiler).compile(Mockito.any(ASTIntLiteral.class));
 		int nbInstr = spyCompiler.compile(outerChain);
 
-		assertEquals(2, nbInstr);
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
 	public void testCompileExprsNil() {
 		int nbInstr = miniJajaCompiler.compile(new ASTExprsNil(0, 0));
-		assertEquals(0, nbInstr);
+		Assert.assertEquals(0, nbInstr);
 	}
 
 	@Test
@@ -410,7 +408,7 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(outerChain);
 
-		assertEquals(2, nbInstr);
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -418,7 +416,7 @@ public class MiniJajaCompilerTest {
 		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
 		ASTVarsNil varsNil = new ASTVarsNil(0, 0);
 		int nbInstr = spyCompiler.compile(varsNil);
-		assertEquals(0, nbInstr);
+		Assert.assertEquals(0, nbInstr);
 	}
 
 	@Test
@@ -438,8 +436,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(varSimple);
 
-		assertEquals("new(x, int, var, 0)\n", sb.toString());
-		assertEquals(2, nbInstr);
+		Assert.assertEquals("new(x, int, var, 0)\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -457,8 +455,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(varSimple);
 
-		assertEquals("push(0)\nnew(x, int, var, 0)\n", sb.toString());
-		assertEquals(2, nbInstr);
+		Assert.assertEquals("push(0)\nnew(x, int, var, 0)\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -478,8 +476,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(varArray);
 
-		assertEquals("newarray(arr, int)\n", sb.toString());
-		assertEquals(2, nbInstr);
+		Assert.assertEquals("newarray(arr, int)\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -499,8 +497,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(varConst);
 
-		assertEquals("new(C, int, cst, 0)\n", sb.toString());
-		assertEquals(2, nbInstr);
+		Assert.assertEquals("new(C, int, cst, 0)\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -518,8 +516,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(varConst);
 
-		assertEquals("push(0)\nnew(C, int, cst, 0)\n", sb.toString());
-		assertEquals(2, nbInstr);
+		Assert.assertEquals("push(0)\nnew(C, int, cst, 0)\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -539,22 +537,22 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.free(outerChain);
 
-		assertEquals(2, nbInstr);
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
 	public void testFreeVarsNil() {
 		ASTVarsNil varsNil = Mockito.mock(ASTVarsNil.class);
 		int nbInstr = miniJajaCompiler.free(varsNil);
-		assertEquals(0, nbInstr);
+		Assert.assertEquals(0, nbInstr);
 	}
 
 	@Test
 	public void testFreeVar() {
 		ASTVar var = Mockito.mock(ASTVar.class);
 		int nbInstr = miniJajaCompiler.free(var);
-		assertEquals("pop\n", sb.toString());
-		assertEquals(1, nbInstr);
+		Assert.assertEquals("pop\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
 	}
 
 	@Test
@@ -568,6 +566,6 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(vexpr);
 
-		assertEquals(1, nbInstr);
+		Assert.assertEquals(1, nbInstr);
 	}
 }
