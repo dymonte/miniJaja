@@ -1,8 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.ast.jajacode;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.InstrNop;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValAddress;
 
 import org.junit.Assert;

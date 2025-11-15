@@ -43,6 +43,16 @@ public class JajaCodeInterpreterTest {
 		memory = new Memory(new SymTable(100), new Stack(100), new Heap(100));
 	}
 
+    @Test
+    public void testInterpreterArgumentException() {
+        Assert.assertThrows(NullPointerException.class, () -> {
+            interpreter = new JajaCodeInterpreter(memory, null);
+        });
+        Assert.assertThrows(NullPointerException.class, () -> {
+            interpreter = new JajaCodeInterpreter(null, List.of());
+        });
+    }
+
 	@Test
 	public void testInterpretInit() {
 		InstrInit init = new InstrInit(1);
@@ -78,8 +88,11 @@ public class JajaCodeInterpreterTest {
 	@Test
 	public void testInterpretNop() {
 		InstrNop nop = new InstrNop(1);
-		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(nop));
-		interpreter.interpret(nop);
+        InstrStop stop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(nop, stop));
+        JajaCodeInterpreter spyInterpreter = spy(interpreter);
+        doNothing().when(spyInterpreter).interpret(stop);
+        spyInterpreter.interpret(nop);
 	}
 
 	@Test
@@ -313,6 +326,176 @@ public class JajaCodeInterpreterTest {
     }
 
     @Test
+    public void testInterpretReturnException() {
+        InstrReturn instrReturn = new InstrReturn(1);
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrReturn, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        assertThrows(InterpretRuntimeException.class, () -> {
+            spy.interpret(instrReturn);
+        });
+
+        memory.push("wrong value type");
+        assertThrows(InterpretRuntimeException.class, () -> {
+            spy.interpret(instrReturn);
+        });
+    }
+
+    @Test
+    public void testInterpretLoad() {
+        memory.declVar("x", 2, Type.INT);
+        InstrLoad instrLoad = new InstrLoad(1, new ValIdent(1, "x"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrLoad, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrLoad);
+        assertEquals(2, memory.pop());
+    }
+
+    @Test
+    public void testInterpretLoadException() {
+        InstrLoad instrLoad = new InstrLoad(1, new ValIdent(1, "x"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrLoad, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        assertThrows(InterpretRuntimeException.class, () -> {
+            spy.interpret(instrLoad);
+        });
+
+        assertThrows(EmptyStackException.class, () -> {
+            memory.pop();
+        });
+    }
+
+    @Test
+    public void testInterpretALoad() {
+        memory.declArray("arr", 3, Type.INT);
+        memory.updateValArray("arr", 1, 2);
+        assertEquals(2, memory.getValArray("arr", 1));
+        memory.push(1);
+        InstrALoad instrALoad = new InstrALoad(1, new ValIdent(1, "arr"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrALoad, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrALoad);
+        assertEquals(2, memory.pop());
+    }
+
+    @Test
+    public void testInterpretALoadException() {
+        InstrALoad instrALoad = new InstrALoad(1, new ValIdent(1, "arr"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrALoad, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+
+        // no value in memory
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrALoad));
+
+        memory.push("wrong value type"); // wrong value type
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrALoad));
+
+        memory.push(1); // good value but array not initialized
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrALoad));
+    }
+
+    @Test
+    public void testInterpretStore() {
+        memory.declVar("x", 2, Type.INT);
+        assertEquals(2, memory.getVal("x"));
+        memory.push(3);
+        InstrStore instrStore = new InstrStore(1, new ValIdent(1, "x"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrStore, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrStore);
+        assertEquals(3, memory.pop());
+
+        memory.declVar("b", true, Type.BOOL);
+        assertEquals(true, memory.getVal("b"));
+        memory.push(false);
+        instrStore = new InstrStore(1, new ValIdent(1, "b"));
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrStore, instrStop));
+        spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrStore);
+        assertEquals(false, memory.pop());
+    }
+
+    @Test
+    public void testInterpretStoreException() {
+        InstrStore instrStore = new InstrStore(1, new ValIdent(1, "x"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrStore, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+
+        // no value in memory
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrStore));
+
+        memory.push("wrong value type"); // wrong value type
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrStore));
+
+        memory.push(1); // good value but variable not initialized
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrStore));
+
+        memory.declVar("x", 2, Type.INT);
+        memory.push(true);
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrStore));
+
+        memory.declVar("b", true, Type.BOOL);
+        InstrStore instrStore1 = new InstrStore(1, new ValIdent(1, "b"));
+        memory.push(3);
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrStore1));
+    }
+
+    @Test
+    public void testInterpretAStore() {
+        memory.declArray("arr", 3, Type.INT);
+        memory.updateValArray("arr", 1, 2);
+        assertEquals(2, memory.getValArray("arr", 1));
+        memory.push(1); //ident
+        memory.push(3); //value
+        InstrAStore instrAStore = new InstrAStore(1, new ValIdent(1, "arr"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrAStore, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrAStore);
+        assertEquals(3, memory.getValArray("arr", 1));
+    }
+
+    @Test
+    public void testInterpretAStoreException() {
+        InstrAStore instrAStore = new InstrAStore(1, new ValIdent(1, "arr"));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrAStore, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+
+        // no value in memory
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrAStore));
+
+        memory.push("wrong value type"); // wrong value type
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrAStore));
+
+        memory.push("wrong value type"); // wrong value type
+        memory.push(1);
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrAStore));
+
+        memory.push(1); // good value but array not initialized
+        memory.push(3);
+        assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrAStore));
+    }
+
+
+
+    @Test
     public void testInterpretReturnWrongStack() {
         memory.push("wrong value");
         InstrReturn instrReturn = new InstrReturn(1);
@@ -331,5 +514,77 @@ public class JajaCodeInterpreterTest {
         JajaCodeInterpreter spy = spy(interpreter);
         doNothing().when(spy).interpret(instrStop);
         Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrReturn));
+    }
+
+    @Test
+    public void testInterpretGoto() {
+        InstrGoto instrGoto = new InstrGoto(1, new ValAddress(1, 2));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrGoto, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrGoto);
+    }
+
+    @Test
+    public void testInterpretGotoException() {
+        InstrGoto instrGoto = new InstrGoto(1, new ValAddress(1, 5));
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrGoto, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrGoto));
+    }
+
+    @Test
+    public void testInterpreterWrite() {
+        InstrWrite instrWrite = new InstrWrite(1);
+        InstrStop instrStop = new InstrStop(2);
+        memory.push("test");
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrWrite, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrWrite);
+        assertThrows(EmptyStackException.class, () -> memory.pop());
+    }
+
+    @Test
+    public void testInterpreterWriteException() {
+        InstrWrite instrWrite = new InstrWrite(1);
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrWrite, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        // empty stack
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrWrite));
+
+        memory.push(true); // wrong value type
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrWrite));
+    }
+
+    @Test
+    public void testInterpreterWriteLn() {
+        InstrWriteln instrWriteln = new InstrWriteln(1);
+        InstrStop instrStop = new InstrStop(2);
+        memory.push("test");
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrWriteln, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        spy.interpret(instrWriteln);
+        assertThrows(EmptyStackException.class, () -> memory.pop());
+    }
+
+    @Test
+    public void testInterpreterWriteLnException() {
+        InstrWriteln instrWriteln = new InstrWriteln(1);
+        InstrStop instrStop = new InstrStop(2);
+        interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrWriteln, instrStop));
+        JajaCodeInterpreter spy = spy(interpreter);
+        doNothing().when(spy).interpret(instrStop);
+        // empty stack
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrWriteln));
+
+        memory.push(true); // wrong value type
+        Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrWriteln));
     }
 }

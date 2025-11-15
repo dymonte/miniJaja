@@ -8,6 +8,7 @@ import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -87,7 +88,7 @@ public class JajaCodeInterpreterInteractiveTest {
 	@Ignore
 	public void testInterpret() {
 		InstrWrite instrWrite = new InstrWrite(1);
-        memory.push("a");
+        memory.push("a", Type.STRING);
 
 		interactive = new JajaCodeInterpreterInteractive(memory, Arrays.asList(instrWrite));
 		interactive.setStepModeEnabled(false);

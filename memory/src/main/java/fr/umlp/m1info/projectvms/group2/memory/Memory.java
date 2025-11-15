@@ -49,9 +49,7 @@ public class Memory {
 	 */
 	public <T> void declVar(String ident, T value, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, Kind.VAR, sorte);
-		if (symbol.isPresent()) {
-			stack.push(value, symbol.get());
-		}
+        symbol.ifPresent(symNode -> stack.push(value, symNode));
 	}
 
 	/**
@@ -63,9 +61,7 @@ public class Memory {
 	 */
 	public <T> void declCst(String ident, T value, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, Kind.CONST, sorte);
-		if (symbol.isPresent()) {
-			stack.push(value, symbol.get());
-		}
+        symbol.ifPresent(symNode -> stack.push(value, symNode));
 	}
 
 	/**
@@ -76,9 +72,7 @@ public class Memory {
 	 */
 	public void declCst(String ident, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, Kind.VCONST, sorte);
-		if (symbol.isPresent()) {
-			stack.push(null, symbol.get());
-		}
+        symbol.ifPresent(symNode -> stack.push(null, symNode));
 
 	}
 
@@ -340,7 +334,7 @@ public class Memory {
 	 * Gets the type of the symbol of indentifier ident
 	 * 
 	 * @param ident the symbol identifier
-	 * @returns the symbol's data type
+	 * @return the symbol's data type
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
 	 *                                 does not
 	 *                                 belong to this memory's symbol table
@@ -395,10 +389,22 @@ public class Memory {
 	 * 
 	 * @param value the value to add on top of the stack
 	 */
-	public void push(Object value) {
-		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, Kind.CONST));
+	public void push(Object value, Type type) {
+		SymNode symbol = new SymNode("w", new MemInfo(type, Kind.CONST));
 		stack.push(value, symbol);
 	}
+
+    public void push(String value) {
+        push(value, Type.STRING);
+    }
+
+    public void push(int value) {
+        push(value, Type.INT);
+    }
+
+    public void push(boolean value) {
+        push(value, Type.BOOL);
+    }
 
 	/**
 	 * Swaps the element on top of the memory stack with the element below it.

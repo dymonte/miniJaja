@@ -160,6 +160,7 @@ public class MemoryTest {
 		memory.declVar(ident, value, sorte);
 
 		Optional<SymNode> symNode = spySymTable.search("i");
+        Assert.assertTrue(symNode.isPresent());
 		symNode.get().removeInstance(symNode.get().getFirstInstance());
 
 		Assert.assertThrows(NoInstanceException.class, () -> memory.getVal(ident));
@@ -214,6 +215,7 @@ public class MemoryTest {
 		memory.declArray(ident, value, sorte);
 
 		Optional<SymNode> symNode = spySymTable.search("i");
+        Assert.assertTrue(symNode.isPresent());
 		symNode.get().removeInstance(symNode.get().getFirstInstance());
 
 		Assert.assertThrows(NoInstanceException.class, () -> memory.getValArray(ident, 0));
@@ -308,8 +310,8 @@ public class MemoryTest {
 
 	@Test
 	public void testJaJaCodeStack() {
-		m.push(4);
-		m.push(3);
+		m.push(4, Type.INT);
+		m.push(3, Type.INT);
 		Assert.assertEquals(3, m.getHead().getVal());
 		m.swap();
 		Assert.assertEquals(4, m.pop());
@@ -319,20 +321,20 @@ public class MemoryTest {
 
 	@Test
 	public void testIdentVal() {
-		m.push(4);
+		m.push(4, Type.INT);
 		m.identVal("i", Kind.VAR, Type.INT, 0);
 		Quad q = m.getHead();
-		Assert.assertEquals(q.getIdent(), "i");
-		Assert.assertEquals(q.getKind(), Kind.VAR);
-		Assert.assertEquals(q.getSorte(), Type.INT);
-		m.push(5);
-		m.push(6);
-		m.push(7);
+		Assert.assertEquals("i", q.getIdent());
+		Assert.assertEquals(Kind.VAR, q.getKind());
+		Assert.assertEquals(Type.INT, q.getSorte());
+		m.push(5, Type.INT);
+		m.push(6, Type.INT);
+		m.push(7, Type.INT);
 		m.identVal("f", Kind.METH, Type.VOID, 2);
 		q = m.getHead().next().next();
-		Assert.assertEquals(q.getIdent(), "f");
-		Assert.assertEquals(q.getKind(), Kind.METH);
-		Assert.assertEquals(q.getSorte(), Type.VOID);
+		Assert.assertEquals("f", q.getIdent());
+		Assert.assertEquals(Kind.METH, q.getKind());
+		Assert.assertEquals(Type.VOID, q.getSorte());
 	}
 
 	@Test
