@@ -30,6 +30,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarArray;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
@@ -37,6 +38,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 
 /**
  * The compiler class is responsible for traversing and compiling an Abstract
@@ -44,13 +46,14 @@ import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
  */
 public class MiniJajaCompiler {
 
-	private PrintStream out;
-    private int n;
-	public MiniJajaCompiler(PrintStream out) {
-		if (out == null) {
+	private final StringBuilder sb;
+	private int n;
+
+	public MiniJajaCompiler(StringBuilder sb) {
+		if (sb == null) {
 			throw new CompilationRuntimeException("Output cannot be null");
 		}
-		this.out = out;
+		this.sb = sb;
 	}
 
 	/**
@@ -62,19 +65,18 @@ public class MiniJajaCompiler {
 	 */
 	public Integer compile(ASTNode node) {
 		if (node == null) {
-			throw new RuntimeException();
+			throw new CompilationRuntimeException("node cannot be null");
 		}
 
 		Method m = findAnnotatedMethod(CompilationFunction.class, node.getClass());
 		if (m == null) {
-			throw new RuntimeException();
-
+			throw new CompilationRuntimeException("No @CompilationFunction found for " + node.getClass().getSimpleName());
 		}
 
 		try {
 			return (Integer) m.invoke(this, node);
 		} catch (Exception e) {
-			throw new RuntimeException();
+			throw new CompilationRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
 		}
 	}
 
@@ -87,18 +89,19 @@ public class MiniJajaCompiler {
 	 */
 	public Integer free(ASTNode node) {
 		if (node == null) {
-			throw new RuntimeException();
+			throw new FreeCompilationRuntimeException("node cannot be null");
 		}
 
 		Method m = findAnnotatedMethod(FreeCompilationFunction.class, node.getClass());
 		if (m == null) {
-			throw new RuntimeException();
+			throw new FreeCompilationRuntimeException(
+					"No @FreeCompilationFunction found for " + node.getClass().getSimpleName());
 		}
 
 		try {
 			return (Integer) m.invoke(this, node);
 		} catch (Exception e) {
-			throw new RuntimeException();
+			throw new FreeCompilationRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
 		}
 	}
 
@@ -127,72 +130,67 @@ public class MiniJajaCompiler {
 		return null;
 	}
 
+	private Integer emit(String instr) {
+		sb.append(instr).append("\n");
+		n++;
+		return 1;
+	}
+
+	private void patch(String fromString, String toString, Integer offsetStart) {
+		int start = sb.indexOf(fromString, offsetStart);
+		int end = start + fromString.length();
+		sb.replace(start, end, toString);
+	}
+
 	/** Compiles a class declaration. */
 	@CompilationFunction(ASTClass.class)
 	protected Integer compileClass(ASTClass node) {
-        int count = 0;
-        out.println("init");
-        count++;
-        int ndss = compile(node.getDecls());
-        count += ndss;
-        int nmma = compile(node.getMainMethod());
-        count += nmma;
-        int nrdss = free(node.getDecls());
-        count += nrdss;
-        out.println("pop");
-        out.println("jcstop");
-        count += 2;
-        n += count;
-        return count;
-    }
+		int count = 0;
+		count += emit("init");
+		count += compile(node.getDecls());
+		count += compile(node.getMainMethod());
+		count += free(node.getDecls());
+		count += emit("pop");
+		count += emit("jcstop");
+		return count;
+	}
 
 	/** Compiles the main method of a program. */
 	@CompilationFunction(ASTMainMethod.class)
 	protected Integer compileMainMethod(ASTMainMethod node) {
-        int count = 0;
-        int ndvs = compile(node.getVars());
-        count += ndvs;
-        int niss = compile(node.getInstrs());
-        count += niss;
-        out.println("push(0)");
-        count++;
-        int nrdvs = free(node.getVars());
-        count += nrdvs;
-        n += count;
-        return count;
-    }
+		int count = 0;
+		count += compile(node.getVars());
+		count += compile(node.getInstrs());
+		count += emit("push(0)");
+		count += free(node.getVars());
+		return count;
+	}
 
 	/** Compiles a method declaration. */
-    @CompilationFunction(ASTMethod.class)
-    protected Integer compileMethod(ASTMethod node) {
-        int start = n;
-        int count = 0;
-        out.println("jcnil"); count++;
-        out.println("push(" + (start + 3) + ")"); count++;
-        out.println("new(" + node.getIdent().getName() + ", " + node.getType() + ", meth, 0)"); count++;
-        int nens = compile(node.getParams());
-        count += nens;
-        int ndvs = compile(node.getVars());
-        count += ndvs;
-        int niss = compile(node.getInstrs());
-        count += niss;
-        int nrdvs = free(node.getVars());
-        count += nrdvs;
-        boolean isRecursive = node.getInstrs().toString().contains(node.getIdent().getName());
-        int gotoAddr = start + count + (isRecursive ? 6 : 5);
-        out.println("goto(" + gotoAddr + ")");
-        count++;
-        boolean hasReturn = !node.getType().toString().equalsIgnoreCase("void");
-        if (hasReturn) {
-            out.println("push(0)");
-            count++;
-        }
-        out.println("swap"); count++;
-        out.println("return"); count++;
+	@CompilationFunction(ASTMethod.class)
+	protected Integer compileMethod(ASTMethod node) {
+		int start = n;
+		int count = 0;
+		count += emit("jcnil");
+		count += emit("push(" + (start + 3) + ")");
+		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", meth, 0)");
 
-        n += count;
-        return count;
-    }
+		int gotoIndex = sb.length();
+		count += emit("goto(?)");
+		count += compile(node.getParams());
+		count += compile(node.getVars());
+		count += compile(node.getInstrs());
+		count += free(node.getVars());
+
+		if (!(node.getType() instanceof ASTVoidType)) {
+			count += emit("push(0)");
+		}
+
+		patch("goto(?)", "goto(" + n + ")", gotoIndex);
+		count += emit("swap");
+		count += emit("return");
+		return count;
+	}
 
 	/** Compiles a chain of declarations. */
 	@CompilationFunction(ASTDeclsChain.class)
@@ -221,31 +219,28 @@ public class MiniJajaCompiler {
 	/** Compiles a simple variable declaration. */
 	@CompilationFunction(ASTVarSimple.class)
 	protected Integer compileVarSimple(ASTVarSimple node) {
-		int vexpr = compile(node.getVExpr());
-		String i = node.getIdent().getName();
-		String t = node.getType().toString();
-		out.println("new(" + i + ", " + t + ", var, 0)");
-		return vexpr + 1;
+		int count = 0;
+		count += node.getVExpr() != null ? compile(node.getVExpr()) : emit("push(0)");
+		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", var, 0)");
+		return count;
 	}
 
 	/** Compiles an array variable declaration. */
 	@CompilationFunction(ASTVarArray.class)
 	protected Integer compileVarArray(ASTVarArray node) {
-		int vexpr = compile(node.getExpr());
-		String i = node.getIdent().getName();
-		String t = node.getType().toString();
-		out.println("new(" + i + ", " + t + ", cst, 0)");
-		return vexpr + 1;
+		int count = 0;
+		count += compile(node.getExpr());
+		count += emit("newarray(" + node.getIdent().getName() + ", " + node.getType() + ")");
+		return count;
 	}
 
 	/** Compiles a constant variable declaration. */
 	@CompilationFunction(ASTVarConst.class)
 	protected Integer compileVarConst(ASTVarConst node) {
-		int vexpr = compile(node.getVExpr());
-		String i = node.getIdent().getName();
-		String t = node.getType().toString();
-		out.println("newarray(" + i + ", " + t + ")");
-		return vexpr + 1;
+		int count = 0;
+		count += node.getVExpr() != null ? compile(node.getVExpr()) : emit("push(0)");
+		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", cst, 0)");
+		return count;
 	}
 
 	/** Compiles an if-else statement. */
@@ -305,93 +300,75 @@ public class MiniJajaCompiler {
 	/** Compiles a binary operation expression. */
 	@CompilationFunction(ASTBinaryOp.class)
 	protected Integer compileBinaryOp(ASTBinaryOp node) {
-		int nbInstr = compile(node.getLeft());
-        nbInstr += compile(node.getRight());
-        switch (node.getOp().toString()) {
-            case "+" -> out.println("add");
-            case "-" -> out.println("sub");
-            case "*" -> out.println("mul");
-            case "/" -> out.println("div");
-            case "&&" -> out.println("and");
-            case "||" -> out.println("or");
-            case "==" -> out.println("cmp");
-            case ">" -> out.println("sup");
-            default -> throw new CompilationRuntimeException("Operation not supported");
-        }
-        return nbInstr + 1;
+		int count = 0;
+		count += compile(node.getLeft());
+		count += compile(node.getRight());
+		count += emit(MiniJajaCompilerUtils.binaryOpToString(node.getOp().toString()));
+		return count;
 	}
 
 	/** Compiles a unary operation expression. */
 	@CompilationFunction(ASTUnaryOp.class)
 	protected Integer compileUnaryOp(ASTUnaryOp node) {
-        int nbInstr = compile(node.getExpr());
-        switch (node.getOp().toString()) {
-            case "-" -> out.println("neg");
-            case "!" -> out.println("not");
-            default -> throw new CompilationRuntimeException("Operation not supported");
-        }
-        return nbInstr + 1;
+		int count = 0;
+		count += compile(node.getExpr());
+		count += emit(MiniJajaCompilerUtils.unaryOpToString(node.getOp().toString()));
+		return count;
 	}
 
 	/** Compiles an array element access expression. */
 	@CompilationFunction(ASTArrayAccess.class)
 	protected Integer compileArrayAccess(ASTArrayAccess node) {
-		int nbInstr = compile(node.getExpr());
-        out.println("aload(" + node.getIdent().getName() + ")");
-        return nbInstr + 1;
+		int count = 0;
+		count += compile(node.getExpr());
+		count += emit("aload(" + node.getIdent().getName() + ")");
+		return count;
 	}
 
 	/** Compiles a boolean literal. */
 	@CompilationFunction(ASTBoolLiteral.class)
 	protected Integer compileBoolLiteral(ASTBoolLiteral node) {
-        if(node.getValue()) {
-            out.println("push(true)");
-        } else {
-            out.println("push(false)");
-        }
-		return 1;
+		return emit("push(" + node.getValue() + ")");
 	}
 
 	/** Compiles an integer literal. */
 	@CompilationFunction(ASTIntLiteral.class)
 	protected Integer compileIntLiteral(ASTIntLiteral node) {
-        out.println("push(" + node.getValue() + ")");
-		return 1;
+		return emit("push(" + node.getValue() + ")");
 	}
 
 	/** Compiles a string literal. */
 	@CompilationFunction(ASTStringLiteral.class)
 	protected Integer compileStringLiteral(ASTStringLiteral node) {
-		out.println("push(" + node.getValue() + ")");
-        return 1;
+		return emit("push(" + node.getValue() + ")");
 	}
 
 	/** Compiles an identifier (variable) reference. */
 	@CompilationFunction(ASTIdent.class)
 	protected Integer compileIdent(ASTIdent node) {
-		out.println("load(" + node.getName() + ")");
-        return 1;
+		return emit("load(" + node.getName() + ")");
 	}
 
-    /** Compiles a chain of expressions. */
-    @CompilationFunction(ASTExprsChain.class)
-    protected Integer compileExprsChain(ASTExprsChain node) {
-        int nbInstr = compile(node.getExpr());
-        nbInstr += compile(node.getExprs());
-        return nbInstr;
-    }
+	/** Compiles a chain of expressions. */
+	@CompilationFunction(ASTExprsChain.class)
+	protected Integer compileExprsChain(ASTExprsChain node) {
+		int count = 0;
+		count += compile(node.getExpr());
+		count += compile(node.getExprs());
+		return count;
+	}
 
-    /** Compiles an empty expression list. */
-    @CompilationFunction(ASTExprsNil.class)
-    protected Integer compileExprsNil(ASTExprsNil node) {
-        return 0;
-    }
+	/** Compiles an empty expression list. */
+	@CompilationFunction(ASTExprsNil.class)
+	protected Integer compileExprsNil(ASTExprsNil node) {
+		return 0;
+	}
 
 	/** Compiles an expression. */
-    @CompilationFunction(ASTVExpr.class)
-    protected Integer compileVExpr(ASTVExpr node) {
-        return compile(node.getExpr());
-    }
+	@CompilationFunction(ASTVExpr.class)
+	protected Integer compileVExpr(ASTVExpr node) {
+		return compile(node.getExpr());
+	}
 
 	/** Compiles a length expression on arrays. */
 	@CompilationFunction(ASTLength.class)
@@ -420,7 +397,6 @@ public class MiniJajaCompiler {
 	/** Frees a single variable declaration. */
 	@FreeCompilationFunction(ASTVar.class)
 	protected Integer freeVar(ASTVar node) {
-		out.println("pop");
-		return 1;
+		return emit("pop");
 	}
 }
