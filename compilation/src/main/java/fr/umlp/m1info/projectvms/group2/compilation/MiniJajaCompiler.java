@@ -1,13 +1,12 @@
 package fr.umlp.m1info.projectvms.group2.compilation;
 
-import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
@@ -33,6 +32,9 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarArray;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
@@ -195,6 +197,38 @@ public class MiniJajaCompiler {
 		count += emit("return");
 		return count;
 	}
+
+    /** Compiles parameters. */
+    @CompilationFunction(ASTParams.class)
+    protected Integer compileParams(ASTParams node) {
+        return compileParams(node, 1);
+    }
+
+    /** Compiles parameters. */
+    @CompilationFunction(ASTParams.class)
+    protected Integer compileParams(ASTParams node, int k) {
+        ASTParamsChain chain = (ASTParamsChain) node;
+        int nbInstr = compileParam(chain.getParam(), k);
+        if (chain.getParams() instanceof  ASTParamsNil paramNil) {
+            nbInstr += compilePramsNil(paramNil);
+        } else {
+            nbInstr += compileParams(chain.getParams(), k+1);
+        }
+        return nbInstr;
+    }
+
+    /** Compiles a parameter. */
+    @CompilationFunction(ASTParam.class)
+    protected Integer compileParam(ASTParam node, int k) {
+        emit("new(" + node.getIdent().getName() + "," + node.getType().toString() + ",var," + k + ")");
+        return 1;
+    }
+
+    /** Compiles an empty parameters list. */
+    @CompilationFunction(ASTParamsNil.class)
+    protected Integer compilePramsNil(ASTParamsNil node) {
+        return 0;
+    }
 
 	/** Compiles a chain of declarations. */
 	@CompilationFunction(ASTDeclsChain.class)

@@ -1,9 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.compilation;
 
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTDecl;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDecls;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
@@ -37,6 +34,8 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrs;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTIntType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
@@ -922,4 +921,51 @@ public class MiniJajaCompilerTest {
 		Assert.assertEquals(4, nbInstr);
 	}
 
+
+    @Test
+    public void testCompileSingleParam() {
+        ASTParam param = Mockito.mock(ASTParam.class);
+        ASTIdent ident = new ASTIdent("x", 0, 0);
+        ASTIntType type = new ASTIntType(0, 0);
+
+        Mockito.when(param.getIdent()).thenReturn(ident);
+        Mockito.when(param.getType()).thenReturn(type);
+
+        int nbInstr = miniJajaCompiler.compileParam(param, 1);
+
+        Assert.assertEquals(1, nbInstr);
+        Assert.assertEquals("new(x,int,var,1)\n", sb.toString());
+    }
+
+    @Test
+    public void testCompileParamsChain() {
+        // Create 2 parameters
+        ASTParam param1 = Mockito.mock(ASTParam.class);
+        ASTParam param2 = Mockito.mock(ASTParam.class);
+        ASTIdent ident1 = new ASTIdent("a", 0, 0);
+        ASTIdent ident2 = new ASTIdent("b", 0, 0);
+        ASTIntType type1 = new ASTIntType(0, 0);
+        ASTIntType type2 = new ASTIntType(0, 0);
+
+        Mockito.when(param1.getIdent()).thenReturn(ident1);
+        Mockito.when(param1.getType()).thenReturn(type1);
+        Mockito.when(param2.getIdent()).thenReturn(ident2);
+        Mockito.when(param2.getType()).thenReturn(type2);
+
+        ASTParamsNil nil = new ASTParamsNil(0, 0);
+        ASTParamsChain chain = new ASTParamsChain(param1, new ASTParamsChain(param2, nil, 0, 0), 0, 0);
+
+        int nbInstr = miniJajaCompiler.compileParams(chain);
+
+        Assert.assertEquals(2, nbInstr);
+        Assert.assertEquals("new(a,int,var,1)\nnew(b,int,var,2)\n", sb.toString());
+    }
+
+    @Test
+    public void testCompileParamsNil() {
+        ASTParamsNil nil = new ASTParamsNil(0, 0);
+        int nbInstr = miniJajaCompiler.compilePramsNil(nil);
+
+        Assert.assertEquals(0, nbInstr);
+    }
 }
