@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
@@ -52,7 +53,7 @@ public class MiniJajaInterpreter {
 		}
 
 		if (Thread.currentThread().isInterrupted()) {
-			throw new InterpretRuntimeException("Execution interrupted");
+			throw new InterpreterInterruptedException("Interpreter interrupted");
 		}
 
 		Method m = findAnnotatedMethod(InterpretFunction.class, node.getClass());
