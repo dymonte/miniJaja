@@ -886,12 +886,12 @@ public class MiniJajaCompilerTest {
 		ASTExpr innerExpr = Mockito.mock(ASTExpr.class);
 		ASTVExpr vexpr = new ASTVExpr(innerExpr, 0, 0);
 
-		Mockito.doReturn(1).when(spy).free(innerExpr);
+		Mockito.doReturn(2).when(spy).free(innerExpr);
 
 		int nbInstr = spy.free(vexpr);
 
-		Assert.assertEquals(1, nbInstr);
-		Assert.assertEquals("pop\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("swap\npop\n", sb.toString());
 	}
 
 	@Test
@@ -913,13 +913,13 @@ public class MiniJajaCompilerTest {
 		ASTExprsChain chain2 = new ASTExprsChain(expr2, nil, 0, 0);
 		ASTExprsChain chain1 = new ASTExprsChain(expr1, chain2, 0, 0);
 
-		Mockito.doReturn(1).when(spy).free(expr1);
-		Mockito.doReturn(1).when(spy).free(expr2);
+		Mockito.doReturn(2).when(spy).free(expr1);
+		Mockito.doReturn(2).when(spy).free(expr2);
 		Mockito.doReturn(0).when(spy).free(nil);
 
 		int nbInstr = spy.free(chain1);
 
-		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals(4, nbInstr);
 	}
 
 }

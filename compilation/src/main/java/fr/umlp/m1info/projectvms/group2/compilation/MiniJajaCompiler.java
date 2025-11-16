@@ -466,7 +466,7 @@ public class MiniJajaCompiler {
 
 	@FreeCompilationFunction(ASTVExpr.class)
 	protected Integer freeVExpr(ASTVExpr node) {
-		return emit("pop");
+		return emit("swap") + emit("pop");
 	}
 
 	/** Frees a chain of variable declarations. */
