@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.compilation;
 
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
@@ -14,6 +15,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLength;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTMethodCallExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
@@ -70,7 +72,8 @@ public class MiniJajaCompiler {
 
 		Method m = findAnnotatedMethod(CompilationFunction.class, node.getClass());
 		if (m == null) {
-			throw new CompilationRuntimeException("No @CompilationFunction found for " + node.getClass().getSimpleName());
+			throw new CompilationRuntimeException(
+					"No @CompilationFunction found for " + node.getClass().getSimpleName());
 		}
 
 		try {
@@ -117,7 +120,8 @@ public class MiniJajaCompiler {
 				var annotation = method.getAnnotation(annotationClass);
 				if (annotation != null) {
 					try {
-						Class<?> handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
+						Class<?> handledType = (Class<?>) annotationClass.getMethod("value")
+								.invoke(annotation);
 						if (handledType.isAssignableFrom(nodeClass)) {
 							return method;
 						}
@@ -195,13 +199,14 @@ public class MiniJajaCompiler {
 	/** Compiles a chain of declarations. */
 	@CompilationFunction(ASTDeclsChain.class)
 	protected Integer compileDeclsChain(ASTDeclsChain node) {
-		throw new RuntimeException("Not implemented");
+		return compile(node.getDecl()) + compile(node.getDecls());
 	}
 
 	/** Compiles an empty declaration list. */
 	@CompilationFunction(ASTDeclsNil.class)
 	protected Integer compileDeclsNil(ASTDeclsNil node) {
-		throw new RuntimeException("Not implemented");
+		// do nothing
+		return 0;
 	}
 
 	/** Compiles a chain of variable declarations. */
@@ -246,55 +251,116 @@ public class MiniJajaCompiler {
 	/** Compiles an if-else statement. */
 	@CompilationFunction(ASTIf.class)
 	protected Integer compileIf(ASTIf node) {
-		throw new RuntimeException("Not implemented");
+		int offset = sb.length();
+		int nbInstrs = compile(node.getExpr());
+		nbInstrs += emit("if(TMP_IF)");
+		nbInstrs += compile(node.getElseInstrs());
+		patch("TMP_IF", "" + (n + 1), offset);
+		offset = sb.length();
+		nbInstrs += emit("goto(TMP_GOTO)");
+		nbInstrs += compile(node.getIfInstrs());
+		patch("TMP_GOTO", "" + n, offset);
+		return nbInstrs;
 	}
 
 	/** Compiles a while loop. */
 	@CompilationFunction(ASTWhile.class)
 	protected Integer compileWhile(ASTWhile node) {
-		throw new RuntimeException("Not implemented");
+		int offset = sb.length();
+		int nStartWhile = n;
+		int nbInstrs = compile(node.getExpr());
+		nbInstrs += emit("not");
+		nbInstrs += emit("if(TMP_IF)");
+		nbInstrs += compile(node.getInstrs());
+		nbInstrs += emit("goto(" + nStartWhile + ")");
+		patch("TMP_IF", "" + n, offset);
+		return nbInstrs;
 	}
 
 	/** Compiles an assignment operation. */
 	@CompilationFunction(ASTAssignmentOp.class)
 	protected Integer compileAssignment(ASTAssignmentOp node) {
-		throw new RuntimeException("Not implemented");
+		int nbInstrs = 0;
+
+		String op = switch (node.getOp()) {
+			case EQ -> "store";
+			case ADD -> "inc";
+		};
+
+		ASTLValue lvalue = node.getLValue();
+		if (lvalue instanceof ASTIdent ident) {
+			nbInstrs += compile(node.getExpr());
+			nbInstrs += emit(op + "(" + ident.getName() + ")");
+		} else if (lvalue instanceof ASTArrayAccess arrayAccess) {
+			nbInstrs += compile(arrayAccess.getExpr());
+			nbInstrs += compile(node.getExpr());
+			nbInstrs += emit("a" + op + "(" + arrayAccess.getIdent().getName() + ")");
+		} else {
+			throw new CompilationRuntimeException("Unknown lvalue type: " + lvalue);
+		}
+
+		return nbInstrs;
+
 	}
 
 	/** Compiles an increment operation. */
 	@CompilationFunction(ASTIncrementOp.class)
 	protected Integer compileIncrement(ASTIncrementOp node) {
-		throw new RuntimeException("Not implemented");
+		int toPush = switch (node.getOp()) {
+			case INC -> 1;
+		};
+		int nbInstrs = 0;
+
+		ASTLValue lvalue = node.getLValue();
+		if (lvalue instanceof ASTIdent ident) {
+			nbInstrs += emit("push(" + toPush + ")");
+			nbInstrs += emit("inc(" + ident.getName() + ")");
+		} else if (lvalue instanceof ASTArrayAccess arrayAccess) {
+			nbInstrs += compile(arrayAccess.getExpr());
+			nbInstrs += emit("push(" + toPush + ")");
+			nbInstrs += emit("ainc(" + arrayAccess.getIdent().getName() + ")");
+		} else {
+			throw new CompilationRuntimeException("Unknown lvalue type: " + lvalue);
+		}
+		return nbInstrs;
 	}
 
 	/** Compiles a return statement. */
 	@CompilationFunction(ASTReturn.class)
 	protected Integer compileReturn(ASTReturn node) {
-		throw new RuntimeException("Not implemented");
+		return compile(node.getExpr());
 	}
 
 	/** Compiles a write instruction. */
 	@CompilationFunction(ASTWrite.class)
 	protected Integer compileWrite(ASTWrite node) {
-		throw new RuntimeException("Not implemented");
+		int nbInstrs = compile((ASTNode) node.getValue());
+		String op = node.getIsLn() ? "writeln" : "write";
+		nbInstrs += emit(op);
+		return nbInstrs;
 	}
 
 	/** Compiles a method call used as an instruction. */
 	@CompilationFunction(ASTMethodCallInstr.class)
 	protected Integer compileMethodCallInstr(ASTMethodCallInstr node) {
-		throw new RuntimeException("Not implemented");
+		int nbInstrs = compile(node.getExprs());
+		nbInstrs += emit("invoke(" + node.getIdent().getName() + ")");
+		nbInstrs += free(node.getExprs());
+		nbInstrs += emit("pop");
+		return nbInstrs;
 	}
 
 	/** Compiles a chain of instructions. */
 	@CompilationFunction(ASTInstrsChain.class)
 	protected Integer compileInstrsChain(ASTInstrsChain node) {
-		throw new RuntimeException("Not implemented");
+		return compile(node.getInstr()) + compile(node.getInstrs());
 	}
 
 	/** Compiles an empty instruction list. */
 	@CompilationFunction(ASTInstrsNil.class)
 	protected Integer compileInstrsNil(ASTInstrsNil node) {
-		throw new RuntimeException("Not implemented");
+		// do nothing
+		return 0;
 	}
 
 	/** Compiles a binary operation expression. */
@@ -373,13 +439,34 @@ public class MiniJajaCompiler {
 	/** Compiles a length expression on arrays. */
 	@CompilationFunction(ASTLength.class)
 	protected Integer compileLength(ASTLength node) {
-		throw new RuntimeException("Not implemented");
+		int nbInstrs = 0;
+		nbInstrs += emit("load(" + node.getIdent().getName() + ")");
+		nbInstrs += emit("length");
+		return nbInstrs;
 	}
 
 	/** Compiles a method call used as an expression. */
 	@CompilationFunction(ASTMethodCallExpr.class)
 	protected Integer compileMethodCallExpr(ASTMethodCallExpr node) {
-		throw new RuntimeException("Not implemented");
+		int nbInstrs = compile(node.getExprs());
+		nbInstrs += emit("invoke(" + node.getIdent().getName() + ")");
+		nbInstrs += free(node.getExprs());
+		return nbInstrs;
+	}
+
+	@FreeCompilationFunction(ASTExprsChain.class)
+	protected Integer freeExprsChain(ASTExprsChain node) {
+		return free(node.getExpr()) + free(node.getExprs());
+	}
+
+	@FreeCompilationFunction(ASTExprsNil.class)
+	protected Integer freeExprsNil(ASTExprsNil node) {
+		return 0;
+	}
+
+	@FreeCompilationFunction(ASTVExpr.class)
+	protected Integer freeVExpr(ASTVExpr node) {
+		return emit("pop");
 	}
 
 	/** Frees a chain of variable declarations. */

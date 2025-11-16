@@ -1,42 +1,57 @@
 package fr.umlp.m1info.projectvms.group2.compilation;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTDecl;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDecls;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrs;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVars;
-
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLength;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTMethodCallExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTUnaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTVExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.UnaryOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprs;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.AssignmentOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.IncrementOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTInstr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTMethodCallInstr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrs;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTIntType;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarArray;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVars;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
-
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
 import org.mockito.Mockito;
 
 public class MiniJajaCompilerTest {
@@ -568,4 +583,343 @@ public class MiniJajaCompilerTest {
 
 		Assert.assertEquals(1, nbInstr);
 	}
+
+	@Test
+	public void testInstrsChain() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+
+		ASTInstr instr1 = Mockito.mock(ASTInstr.class);
+		ASTInstr instr2 = Mockito.mock(ASTInstr.class);
+		ASTInstrsNil nil = new ASTInstrsNil(0, 0);
+		ASTInstrsChain innerChain = new ASTInstrsChain(instr2, nil, 0, 0);
+		ASTInstrsChain outerChain = new ASTInstrsChain(instr2, innerChain, 0, 0);
+
+		Mockito.doReturn(1).when(spyCompiler).compile(instr1);
+		Mockito.doReturn(1).when(spyCompiler).compile(instr2);
+		Mockito.doReturn(1).when(spyCompiler).compile(innerChain);
+		Mockito.doReturn(0).when(spyCompiler).compile(nil);
+
+		int nbInstr = spyCompiler.compile(outerChain);
+
+		Assert.assertEquals(2, nbInstr);
+	}
+
+	@Test
+	public void testDeclsChain() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+
+		ASTDecl decl1 = Mockito.mock(ASTDecl.class);
+		ASTDecl decl2 = Mockito.mock(ASTDecl.class);
+		ASTDeclsNil nil = new ASTDeclsNil(0, 0);
+		ASTDeclsChain innerChain = new ASTDeclsChain(decl2, nil, 0, 0);
+		ASTDeclsChain outerChain = new ASTDeclsChain(decl2, innerChain, 0, 0);
+
+		Mockito.doReturn(1).when(spyCompiler).compile(decl1);
+		Mockito.doReturn(1).when(spyCompiler).compile(decl2);
+		Mockito.doReturn(1).when(spyCompiler).compile(innerChain);
+		Mockito.doReturn(0).when(spyCompiler).compile(nil);
+
+		int nbInstr = spyCompiler.compile(outerChain);
+
+		Assert.assertEquals(2, nbInstr);
+	}
+
+	@Test
+	public void testCompileAssignmentEQ() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTAssignmentOp assignmentOp = Mockito.mock(ASTAssignmentOp.class);
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTExpr expr = Mockito.mock(ASTExpr.class);
+		AssignmentOp op = AssignmentOp.EQ;
+
+		Mockito.when(assignmentOp.getLValue()).thenReturn(ident);
+		Mockito.when(assignmentOp.getOp()).thenReturn(op);
+		Mockito.when(assignmentOp.getExpr()).thenReturn(expr);
+		Mockito.doReturn(1).when(spyCompiler).compile(expr);
+
+		int nbInstr = spyCompiler.compile(assignmentOp);
+
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("store(x)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileAssignmentADD() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTAssignmentOp assignmentOp = Mockito.mock(ASTAssignmentOp.class);
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTExpr expr = Mockito.mock(ASTExpr.class);
+		AssignmentOp op = AssignmentOp.ADD;
+
+		Mockito.when(assignmentOp.getLValue()).thenReturn(ident);
+		Mockito.when(assignmentOp.getOp()).thenReturn(op);
+		Mockito.when(assignmentOp.getExpr()).thenReturn(expr);
+		Mockito.doReturn(1).when(spyCompiler).compile(expr);
+
+		int nbInstr = spyCompiler.compile(assignmentOp);
+
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("inc(x)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileAssignmentArray() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTAssignmentOp assignmentOp = Mockito.mock(ASTAssignmentOp.class);
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTArrayAccess arrayAccess = Mockito.mock(ASTArrayAccess.class);
+		ASTExpr expr1 = Mockito.mock(ASTExpr.class);
+		ASTExpr expr2 = Mockito.mock(ASTExpr.class);
+		AssignmentOp op = AssignmentOp.ADD;
+
+		Mockito.when(assignmentOp.getLValue()).thenReturn(arrayAccess);
+		Mockito.when(assignmentOp.getOp()).thenReturn(op);
+		Mockito.when(assignmentOp.getExpr()).thenReturn(expr1);
+		Mockito.when(arrayAccess.getExpr()).thenReturn(expr2);
+		Mockito.when(arrayAccess.getIdent()).thenReturn(ident);
+
+		Mockito.doReturn(1).when(spyCompiler).compile(expr1);
+		Mockito.doReturn(1).when(spyCompiler).compile(expr2);
+
+		int nbInstr = spyCompiler.compile(assignmentOp);
+
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("ainc(x)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileIncrementArray() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTIncrementOp incrementOp = Mockito.mock(ASTIncrementOp.class);
+		IncrementOp op = IncrementOp.INC;
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTArrayAccess arrayAccess = Mockito.mock(ASTArrayAccess.class);
+		ASTExpr expr = Mockito.mock(ASTExpr.class);
+
+		Mockito.when(incrementOp.getLValue()).thenReturn(arrayAccess);
+		Mockito.when(incrementOp.getOp()).thenReturn(op);
+		Mockito.when(arrayAccess.getExpr()).thenReturn(expr);
+		Mockito.when(arrayAccess.getIdent()).thenReturn(ident);
+		Mockito.doReturn(1).when(spyCompiler).compile(expr);
+
+		int nbInstr = spyCompiler.compile(incrementOp);
+
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("push(1)\nainc(x)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileIncrement() {
+		ASTIncrementOp incrementOp = Mockito.mock(ASTIncrementOp.class);
+		IncrementOp op = IncrementOp.INC;
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+
+		Mockito.when(incrementOp.getLValue()).thenReturn(ident);
+		Mockito.when(incrementOp.getOp()).thenReturn(op);
+
+		int nbInstr = miniJajaCompiler.compile(incrementOp);
+
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("push(1)\ninc(x)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileIfWithElse() {
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTIntLiteral literal = new ASTIntLiteral(1, 0, 0);
+		ASTAssignmentOp assign = new ASTAssignmentOp(ident, literal, AssignmentOp.EQ, 0, 0);
+		ASTInstrs thenInstrs = new ASTInstrsChain(assign, new ASTInstrsNil(0, 0), 0, 0);
+		ASTInstrs elseInstrs = new ASTInstrsChain(assign, new ASTInstrsNil(0, 0), 0, 0);
+		ASTBoolLiteral cond = new ASTBoolLiteral(true, 0, 0);
+		ASTIf ifNode = new ASTIf(cond, thenInstrs, elseInstrs, 0, 0);
+
+		int nbInstr = miniJajaCompiler.compile(ifNode);
+
+		Assert.assertEquals(7, nbInstr);
+		Assert.assertEquals("push(true)\nif(5)\npush(1)\nstore(x)\ngoto(7)\npush(1)\nstore(x)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileIfWithoutElse() {
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTIntLiteral literal = new ASTIntLiteral(1, 0, 0);
+		ASTAssignmentOp assign = new ASTAssignmentOp(ident, literal, AssignmentOp.EQ, 0, 0);
+		ASTInstrs thenInstrs = new ASTInstrsChain(assign, new ASTInstrsNil(0, 0), 0, 0);
+		ASTInstrsNil elseInstrs = new ASTInstrsNil(0, 0);
+		ASTBoolLiteral cond = new ASTBoolLiteral(true, 0, 0);
+		ASTIf ifNode = new ASTIf(cond, thenInstrs, elseInstrs, 0, 0);
+
+		int nbInstr = miniJajaCompiler.compile(ifNode);
+
+		Assert.assertEquals(5, nbInstr);
+		Assert.assertEquals("push(true)\nif(3)\ngoto(5)\npush(1)\nstore(x)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileWhile() {
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTIntLiteral literal = new ASTIntLiteral(1, 0, 0);
+		ASTAssignmentOp assign = new ASTAssignmentOp(ident, literal, AssignmentOp.EQ, 0, 0);
+		ASTInstrs body = new ASTInstrsChain(assign, new ASTInstrsNil(0, 0), 0, 0);
+		ASTBoolLiteral cond = new ASTBoolLiteral(true, 0, 0);
+		ASTWhile whileNode = new ASTWhile(cond, body, 0, 0);
+
+		int nbInstr = miniJajaCompiler.compile(whileNode);
+
+		Assert.assertEquals(6, nbInstr);
+		Assert.assertEquals("push(true)\nnot\nif(6)\npush(1)\nstore(x)\ngoto(0)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileMethodCallInstr() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTMethodCallInstr methodCall = Mockito.mock(ASTMethodCallInstr.class);
+		ASTIdent ident = new ASTIdent("myMethod", 0, 0);
+		ASTExprs exprs = Mockito.mock(ASTExprs.class);
+
+		Mockito.when(methodCall.getIdent()).thenReturn(ident);
+		Mockito.when(methodCall.getExprs()).thenReturn(exprs);
+		Mockito.doReturn(2).when(spyCompiler).compile(exprs);
+		Mockito.doReturn(2).when(spyCompiler).free(exprs);
+
+		int nbInstr = spyCompiler.compile(methodCall);
+
+		Assert.assertEquals(6, nbInstr);
+		Assert.assertEquals("invoke(myMethod)\npop\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileMethodCallExpr() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTMethodCallExpr methodCall = Mockito.mock(ASTMethodCallExpr.class);
+		ASTIdent ident = new ASTIdent("myMethod", 0, 0);
+		ASTExprs exprs = Mockito.mock(ASTExprs.class);
+
+		Mockito.when(methodCall.getIdent()).thenReturn(ident);
+		Mockito.when(methodCall.getExprs()).thenReturn(exprs);
+		Mockito.doReturn(2).when(spyCompiler).compile(exprs);
+		Mockito.doReturn(2).when(spyCompiler).free(exprs);
+
+		int nbInstr = spyCompiler.compile(methodCall);
+
+		Assert.assertEquals(5, nbInstr);
+		Assert.assertEquals("invoke(myMethod)\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileWrite() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTWrite writeNode = Mockito.mock(ASTWrite.class);
+		ASTStringLiteral astStringLiteral = Mockito.mock(ASTStringLiteral.class);
+
+		Mockito.when(writeNode.getValue()).thenReturn(astStringLiteral);
+		Mockito.when(writeNode.getIsLn()).thenReturn(false);
+		Mockito.doReturn(1).when(spyCompiler).compile(astStringLiteral);
+
+		int nbInstr = spyCompiler.compile(writeNode);
+
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("write\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileWriteLn() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTWrite writeNode = Mockito.mock(ASTWrite.class);
+		ASTStringLiteral astStringLiteral = Mockito.mock(ASTStringLiteral.class);
+
+		Mockito.when(writeNode.getValue()).thenReturn(astStringLiteral);
+		Mockito.when(writeNode.getIsLn()).thenReturn(true);
+		Mockito.doReturn(1).when(spyCompiler).compile(astStringLiteral);
+
+		int nbInstr = spyCompiler.compile(writeNode);
+
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("writeln\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileReturn() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		ASTReturn returnNode = Mockito.mock(ASTReturn.class);
+		ASTExpr expr = Mockito.mock(ASTExpr.class);
+
+		Mockito.when(returnNode.getExpr()).thenReturn(expr);
+		Mockito.doReturn(1).when(spyCompiler).compile(expr);
+
+		int nbInstr = spyCompiler.compile(returnNode);
+
+		Assert.assertEquals(1, nbInstr);
+	}
+
+	@Test
+	public void testCompileLength() {
+		ASTLength lengthNode = Mockito.mock(ASTLength.class);
+		ASTIdent ident = new ASTIdent("myArray", 0, 0);
+		Mockito.when(lengthNode.getIdent()).thenReturn(ident);
+
+		int nbInstr = miniJajaCompiler.compile(lengthNode);
+
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("load(myArray)\nlength\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileDeclsNil() {
+		ASTDeclsNil declsNil = new ASTDeclsNil(0, 0);
+		int nbInstr = miniJajaCompiler.compile(declsNil);
+		Assert.assertEquals(0, nbInstr);
+		Assert.assertTrue(sb.toString().isEmpty());
+	}
+
+	@Test
+	public void testCompileInstrsNil() {
+		ASTInstrsNil instrsNil = new ASTInstrsNil(0, 0);
+		int nbInstr = miniJajaCompiler.compile(instrsNil);
+		Assert.assertEquals(0, nbInstr);
+		Assert.assertTrue(sb.toString().isEmpty());
+	}
+
+	@Test
+	public void testFreeVExpr() {
+		MiniJajaCompiler spy = Mockito.spy(miniJajaCompiler);
+		ASTExpr innerExpr = Mockito.mock(ASTExpr.class);
+		ASTVExpr vexpr = new ASTVExpr(innerExpr, 0, 0);
+
+		Mockito.doReturn(1).when(spy).free(innerExpr);
+
+		int nbInstr = spy.free(vexpr);
+
+		Assert.assertEquals(1, nbInstr);
+		Assert.assertEquals("pop\n", sb.toString());
+	}
+
+	@Test
+	public void testFreeExprsNil() {
+		ASTExprsNil nil = new ASTExprsNil(0, 0);
+
+		int nbInstr = miniJajaCompiler.free(nil);
+
+		Assert.assertEquals(0, nbInstr);
+		Assert.assertTrue(sb.toString().isEmpty());
+	}
+
+	@Test
+	public void testFreeExprsChain() {
+		MiniJajaCompiler spy = Mockito.spy(miniJajaCompiler);
+		ASTExpr expr1 = Mockito.mock(ASTExpr.class);
+		ASTExpr expr2 = Mockito.mock(ASTExpr.class);
+		ASTExprsNil nil = new ASTExprsNil(0, 0);
+		ASTExprsChain chain2 = new ASTExprsChain(expr2, nil, 0, 0);
+		ASTExprsChain chain1 = new ASTExprsChain(expr1, chain2, 0, 0);
+
+		Mockito.doReturn(1).when(spy).free(expr1);
+		Mockito.doReturn(1).when(spy).free(expr2);
+		Mockito.doReturn(0).when(spy).free(nil);
+
+		int nbInstr = spy.free(chain1);
+
+		Assert.assertEquals(2, nbInstr);
+	}
+
 }
