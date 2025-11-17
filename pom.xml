@@ -45,6 +45,7 @@
     <module>cli</module>
     <module>integration-tests</module>
     <module>utils</module>
+    <module>compilation</module>
   </modules>
   <distributionManagement>
     <repository>
