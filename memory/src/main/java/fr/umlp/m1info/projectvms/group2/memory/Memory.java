@@ -49,7 +49,7 @@ public class Memory {
 	 */
 	public <T> void declVar(String ident, T value, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, Kind.VAR, sorte);
-        symbol.ifPresent(symNode -> stack.push(value, symNode));
+		symbol.ifPresent(symNode -> stack.push(value, symNode));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class Memory {
 	 */
 	public <T> void declCst(String ident, T value, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, Kind.CONST, sorte);
-        symbol.ifPresent(symNode -> stack.push(value, symNode));
+		symbol.ifPresent(symNode -> stack.push(value, symNode));
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class Memory {
 	 */
 	public void declCst(String ident, Type sorte) {
 		Optional<SymNode> symbol = symTable.add(ident, Kind.VCONST, sorte);
-        symbol.ifPresent(symNode -> stack.push(null, symNode));
+		symbol.ifPresent(symNode -> stack.push(null, symNode));
 
 	}
 
@@ -394,17 +394,17 @@ public class Memory {
 		stack.push(value, symbol);
 	}
 
-    public void push(String value) {
-        push(value, Type.STRING);
-    }
+	public void push(String value) {
+		push(value, Type.STRING);
+	}
 
-    public void push(int value) {
-        push(value, Type.INT);
-    }
+	public void push(int value) {
+		push(value, Type.INT);
+	}
 
-    public void push(boolean value) {
-        push(value, Type.BOOL);
-    }
+	public void push(boolean value) {
+		push(value, Type.BOOL);
+	}
 
 	/**
 	 * Swaps the element on top of the memory stack with the element below it.
@@ -465,7 +465,7 @@ public class Memory {
 			address--;
 		}
 
-		if (address > 0 || cur == null) {
+		if (address > 0 || cur == null || bef == null) {
 			throw new StackInvalidAddressException(address);
 		}
 
