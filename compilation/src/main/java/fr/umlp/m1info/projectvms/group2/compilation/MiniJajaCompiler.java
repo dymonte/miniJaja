@@ -111,8 +111,16 @@ public class MiniJajaCompiler {
 	}
 
 	/**
-	 * Search for a method annotated with the given annotation that matches the node
-	 * class or its parent type
+	 * Searches the class hierarchy of this instance for a method annotated with the
+	 * specified annotation type whose value() attribute designates a type
+	 * that is assignable from the provided nodeClass.
+	 * 
+	 * @param annotationClass the annotation type to search for. The annotation is
+	 *                        expected to have a Class<?> value() method.
+	 * @param nodeClass       the class that the annotation's value() type
+	 *                        must be assignable from
+	 * @return the first method in the class hierarchy whose annotation matches the
+	 *         provided node class; or null if no such method is found
 	 */
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
 			Class<?> nodeClass) {
@@ -198,37 +206,37 @@ public class MiniJajaCompiler {
 		return count;
 	}
 
-    /** Compiles parameters. */
-    @CompilationFunction(ASTParams.class)
-    protected Integer compileParams(ASTParams node) {
-        return compileParams(node, 1);
-    }
+	/** Compiles parameters. */
+	@CompilationFunction(ASTParams.class)
+	protected Integer compileParams(ASTParams node) {
+		return compileParams(node, 1);
+	}
 
-    /** Compiles parameters. */
-    @CompilationFunction(ASTParams.class)
-    protected Integer compileParams(ASTParams node, int k) {
-        ASTParamsChain chain = (ASTParamsChain) node;
-        int nbInstr = compileParam(chain.getParam(), k);
-        if (chain.getParams() instanceof  ASTParamsNil paramNil) {
-            nbInstr += compilePramsNil(paramNil);
-        } else {
-            nbInstr += compileParams(chain.getParams(), k+1);
-        }
-        return nbInstr;
-    }
+	/** Compiles parameters. */
+	@CompilationFunction(ASTParams.class)
+	protected Integer compileParams(ASTParams node, int k) {
+		ASTParamsChain chain = (ASTParamsChain) node;
+		int nbInstr = compileParam(chain.getParam(), k);
+		if (chain.getParams() instanceof ASTParamsNil paramNil) {
+			nbInstr += compilePramsNil(paramNil);
+		} else {
+			nbInstr += compileParams(chain.getParams(), k + 1);
+		}
+		return nbInstr;
+	}
 
-    /** Compiles a parameter. */
-    @CompilationFunction(ASTParam.class)
-    protected Integer compileParam(ASTParam node, int k) {
-        emit("new(" + node.getIdent().getName() + "," + node.getType().toString() + ",var," + k + ")");
-        return 1;
-    }
+	/** Compiles a parameter. */
+	@CompilationFunction(ASTParam.class)
+	protected Integer compileParam(ASTParam node, int k) {
+		emit("new(" + node.getIdent().getName() + "," + node.getType().toString() + ",var," + k + ")");
+		return 1;
+	}
 
-    /** Compiles an empty parameters list. */
-    @CompilationFunction(ASTParamsNil.class)
-    protected Integer compilePramsNil(ASTParamsNil node) {
-        return 0;
-    }
+	/** Compiles an empty parameters list. */
+	@CompilationFunction(ASTParamsNil.class)
+	protected Integer compilePramsNil(ASTParamsNil node) {
+		return 0;
+	}
 
 	/** Compiles a chain of declarations. */
 	@CompilationFunction(ASTDeclsChain.class)
