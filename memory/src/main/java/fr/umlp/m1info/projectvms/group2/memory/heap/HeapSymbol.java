@@ -1,6 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.memory.heap;
 
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 /**
  * HeapSymbol
@@ -17,10 +17,10 @@ class HeapSymbol {
 	/**
 	 * Constructs a new heap symbol
 	 *
-	 * @param address the address of the data stored in the heap
-	 * @param size the size of the data stored
+	 * @param address   the address of the data stored in the heap
+	 * @param size      the size of the data stored
 	 * @param blockSize the block size (the smallest 2^n such that 2^n > size)
-	 * @param type the data type stored
+	 * @param type      the data type stored
 	 */
 	HeapSymbol(int address, int size, int blockSize, Type type) {
 		this.address = address;
@@ -46,14 +46,15 @@ class HeapSymbol {
 
 	/**
 	 * @return the size of the block that contains the data
-	 * (it is usually the smallest 2^n such that 2^n > data size)
+	 *         (it is usually the smallest 2^n such that 2^n > data size)
 	 */
 	public int getBlockSize() {
 		return blockSize;
 	}
 
 	/**
-	 * @return the number of references of the data stored in the heap referenced by this symbol
+	 * @return the number of references of the data stored in the heap referenced by
+	 *         this symbol
 	 */
 	public int getRef() {
 		return ref;

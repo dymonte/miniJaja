@@ -52,7 +52,7 @@ public class Stack {
 	/**
 	 * Removes the element on top of the stack and returns it.
 	 *
-	 * @returns the InstNode on top of the stack or null if the stack is empty.
+	 * @return the InstNode on top of the stack or null if the stack is empty.
 	 */
 	public InstNode pop() {
 		if (head == null) {
@@ -62,6 +62,35 @@ public class Stack {
 		head = old.getNextInStack();
 		depth--;
 		return old;
+	}
+
+	/**
+	 * Removes an element in the stack.
+	 *
+	 * @return true if the element was found then removed, false otherwise
+	 */
+	public boolean remove(InstNode instance) {
+		if (instance == null) {
+			return false;
+		}
+		InstNode bef = null;
+		InstNode cur = head;
+		while (cur != instance && cur != null) {
+			bef = cur;
+			cur = cur.getNextInStack();
+		}
+		if (cur == null) {
+			return false;
+		}
+
+		if (bef == null) {
+			pop();
+		} else {
+			bef.setNextInStack(cur.getNextInStack());
+			depth--;
+		}
+		return true;
+
 	}
 
 	/**
@@ -80,5 +109,14 @@ public class Stack {
 	 */
 	public InstNode getHead() {
 		return head;
+	}
+
+	/**
+	 * Gets the current stack depth.
+	 *
+	 * @return the current stack depth
+	 */
+	public int getDepth() {
+		return depth;
 	}
 }

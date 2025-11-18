@@ -1,5 +1,8 @@
 package fr.umlp.m1info.projectvms.group2.memory.symtable;
 
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
+
 import java.util.Optional;
 
 /**
@@ -50,7 +53,7 @@ public class SymTable {
 	 *         symbol
 	 * @throws IllegalArgumentException is thrown when parameter size <= 0
 	 */
-	public Optional<SymNode> add(String ident, ObjectKind kind, Type type, int size)
+	public Optional<SymNode> add(String ident, Kind kind, Type type, int size)
 			throws IllegalArgumentException {
 		int id = hash(ident);
 		Optional<SymNode> n = search(ident);
@@ -87,7 +90,7 @@ public class SymTable {
 	 * @return an optional containing possibly the added (or already existing)
 	 *         symbol
 	 */
-	public Optional<SymNode> add(String ident, ObjectKind kind, Type type) {
+	public Optional<SymNode> add(String ident, Kind kind, Type type) {
 		return add(ident, kind, type, 1);
 	}
 

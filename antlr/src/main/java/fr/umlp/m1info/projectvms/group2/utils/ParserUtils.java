@@ -1,6 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.utils;
 
-import fr.umlp.m1info.projectvms.group2.exception.SyntaxException;
 import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
 
 import fr.umlp.m1info.projectvms.group2.visitor.MiniJajaBuildVisitor;
@@ -37,18 +36,12 @@ public class ParserUtils {
 	 *
 	 * @param inputStr the Minijaja source code as a string
 	 * @return the root ASTNode of the parsed AST
-	 * @throws SyntaxException if syntax errors are detected
 	 */
-	public static ASTNode parseString(String inputStr) throws SyntaxException {
+	public static ASTNode parseString(String inputStr) {
 		logger.debug("Starting miniJaja parsing from string");
 
 		CharStream input = CharStreams.fromString(inputStr);
-		try {
-			return parseMiniJaja(input);
-		} catch (SyntaxException syntaxEx) {
-			logger.error(syntaxEx.getErrors());
-			throw syntaxEx;
-		}
+		return parseMiniJaja(input);
 	}
 
 	/**
@@ -56,24 +49,14 @@ public class ParserUtils {
 	 *
 	 * @param fileName the path to the Minijaja source file
 	 * @return the root ASTNode of the parsed AST
-	 * @throws SyntaxException if syntax errors are detected
-	 * @throws IOException     if reading the file fails
-	 *
+	 * @throws IOException if reading the file fails
 	 */
 
-	public static ASTNode parseFile(String fileName) throws SyntaxException, IOException {
+	public static ASTNode parseFile(String fileName) throws IOException {
 		logger.debug("Starting miniJaja parsing for file: " + fileName);
 
-		try {
-			CharStream input = CharStreams.fromFileName(fileName);
-			return parseMiniJaja(input);
-		} catch (IOException ioEx) {
-			logger.error("I/O error while reading file:  " + fileName + "\n" + ioEx.getMessage());
-			throw ioEx;
-		} catch (SyntaxException syntaxEx) {
-			logger.error(syntaxEx.getErrors());
-			throw syntaxEx;
-		}
+		CharStream input = CharStreams.fromFileName(fileName);
+		return parseMiniJaja(input);
 	}
 
 	/**
@@ -81,18 +64,12 @@ public class ParserUtils {
 	 *
 	 * @param inputStr the JajaCode source code as a string
 	 * @return the list of all instructions of the parsed instrs
-	 * @throws SyntaxException if syntax errors are detected
 	 */
-	public static List<Instr> jajaCodeParseString(String inputStr) throws SyntaxException {
+	public static List<Instr> jajaCodeParseString(String inputStr) {
 		logger.debug("Starting jajaCode parsing from string");
 
 		CharStream input = CharStreams.fromString(inputStr);
-		try {
-			return parseJajaCode(input);
-		} catch (SyntaxException syntaxEx) {
-			logger.error(syntaxEx.getErrors());
-			throw syntaxEx;
-		}
+		return parseJajaCode(input);
 	}
 
 	/**
@@ -100,22 +77,13 @@ public class ParserUtils {
 	 *
 	 * @param fileName the path to the JajaCode source file
 	 * @return the list of all instructions of the parsed instrs
-	 * @throws SyntaxException if syntax errors are detected
-	 * @throws IOException     if reading the file fails
+	 * @throws IOException if reading the file fails
 	 */
-	public static List<Instr> jajaCodeParseFile(String fileName) throws SyntaxException, IOException {
+	public static List<Instr> jajaCodeParseFile(String fileName) throws IOException {
 		logger.debug("Starting jajaCode parsing for file: " + fileName);
 
-		try {
-			CharStream input = CharStreams.fromFileName(fileName);
-			return parseJajaCode(input);
-		} catch (IOException ioEx) {
-			logger.error("I/O error while reading file:  " + fileName + "\n" + ioEx.getMessage());
-			throw ioEx;
-		} catch (SyntaxException syntaxEx) {
-			logger.error(syntaxEx.getErrors());
-			throw syntaxEx;
-		}
+		CharStream input = CharStreams.fromFileName(fileName);
+		return parseJajaCode(input);
 	}
 
 	/**
@@ -123,9 +91,8 @@ public class ParserUtils {
 	 *
 	 * @param input the CharStream containing Minijaja source
 	 * @return the AST root node
-	 * @throws SyntaxException if syntax errors are detected
 	 */
-	private static ASTNode parseMiniJaja(CharStream input) throws SyntaxException {
+	private static ASTNode parseMiniJaja(CharStream input) {
 		logger.debug("Creating miniJaja lexer and parser");
 
 		MiniJajaLexer lexer = new MiniJajaLexer(input);
@@ -143,9 +110,10 @@ public class ParserUtils {
 
 		ThrowingErrorListener.INSTANCE.throwIfErrors();
 		MiniJajaBuildVisitor builder = new MiniJajaBuildVisitor();
+		ASTNode node = builder.visit(tree);
 
 		logger.info("MiniJaja parsing completed successfully");
-		return builder.visit(tree);
+		return node;
 	}
 
 	/**
@@ -153,9 +121,8 @@ public class ParserUtils {
 	 *
 	 * @param input the CharStream containing JajaCode source
 	 * @return the list of instructions
-	 * @throws SyntaxException if syntax errors are detected
 	 */
-	private static List<Instr> parseJajaCode(CharStream input) throws SyntaxException {
+	private static List<Instr> parseJajaCode(CharStream input) {
 		logger.debug("Creating jajaCode lexer and parser");
 
 		JajaCodeLexer lexer = new JajaCodeLexer(input);

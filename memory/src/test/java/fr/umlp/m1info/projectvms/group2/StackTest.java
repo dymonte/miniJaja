@@ -65,4 +65,23 @@ public class StackTest {
 		Assert.assertThrows(IllegalArgumentException.class, () -> new Stack(0));
 		Assert.assertThrows(IllegalArgumentException.class, () -> new Stack(-1));
 	}
+
+	@Test
+	public void testRemove() {
+		Assert.assertFalse(s.remove(null));
+		InstNode in = Mockito.mock(InstNode.class);
+
+		SymNode symbol = Mockito.mock(SymNode.class);
+		s.push(10, symbol);
+		s.push(20, symbol);
+		s.push(30, symbol);
+		s.push(40, symbol);
+		Assert.assertFalse(s.remove(in));
+		Assert.assertEquals(s.getDepth(), 4);
+		Assert.assertTrue(s.remove(s.getHead()));
+		Assert.assertEquals(s.getDepth(), 3);
+		Assert.assertTrue(s.remove(s.getHead().getNextInStack()));
+		Assert.assertEquals(s.getDepth(), 2);
+
+	}
 }

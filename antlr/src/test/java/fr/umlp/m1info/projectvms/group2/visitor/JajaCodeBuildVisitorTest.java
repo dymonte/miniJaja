@@ -5,9 +5,9 @@ import fr.umlp.m1info.projectvms.group2.exception.SyntaxException;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.*;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.*;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 import org.junit.Test;
 
@@ -78,7 +78,7 @@ public class JajaCodeBuildVisitorTest {
 		Assert.assertEquals("tab", ((InstrNew) list.get(0)).getValIdent().getIdent());
 		Assert.assertEquals(Kind.VAR, ((InstrNew) list.get(0)).getKind().getKind());
 		Assert.assertEquals(Type.INT, ((InstrNew) list.get(0)).getType().getType());
-		Assert.assertEquals(3, ((ValAddress) ((InstrNew) list.get(0)).getValVal()).getAddress());
+		Assert.assertEquals(3, ((InstrNew) list.get(0)).getValAddress().getAddress());
 	}
 
 	@Test

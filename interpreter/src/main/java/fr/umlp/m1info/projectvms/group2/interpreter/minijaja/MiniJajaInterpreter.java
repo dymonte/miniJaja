@@ -2,6 +2,8 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
@@ -10,7 +12,7 @@ import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedExceptio
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTTypeMeth;
@@ -61,8 +63,18 @@ public class MiniJajaInterpreter {
 
 		try {
 			m.invoke(this, node);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getTargetException();
+			if (cause instanceof InterpretRuntimeException) {
+				throw (InterpretRuntimeException) cause;
+			} else if (cause instanceof EvalRuntimeException) {
+				throw (EvalRuntimeException) cause;
+			} else {
+				throw new InterpretRuntimeException(
+						"Error interpreting node " + node.getClass().getSimpleName() + ": " + cause.getMessage());
+			}
+		} catch (IllegalAccessException e) {
+			throw new InterpretRuntimeException("Illegal access: " + e.getMessage());
 		}
 	}
 
@@ -85,8 +97,18 @@ public class MiniJajaInterpreter {
 
 		try {
 			return m.invoke(this, node);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getTargetException();
+			if (cause instanceof InterpretRuntimeException) {
+				throw (InterpretRuntimeException) cause;
+			} else if (cause instanceof EvalRuntimeException) {
+				throw (EvalRuntimeException) cause;
+			} else {
+				throw new InterpretRuntimeException(
+						"Error interpreting node " + node.getClass().getSimpleName() + ": " + cause.getMessage());
+			}
+		} catch (IllegalAccessException e) {
+			throw new InterpretRuntimeException("Illegal access: " + e.getMessage());
 		}
 	}
 
@@ -108,8 +130,18 @@ public class MiniJajaInterpreter {
 
 		try {
 			m.invoke(this, node);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error interpreting node " + node.getClass().getSimpleName());
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getTargetException();
+			if (cause instanceof InterpretRuntimeException) {
+				throw (InterpretRuntimeException) cause;
+			} else if (cause instanceof EvalRuntimeException) {
+				throw (EvalRuntimeException) cause;
+			} else {
+				throw new InterpretRuntimeException(
+						"Error interpreting node " + node.getClass().getSimpleName() + ": " + cause.getMessage());
+			}
+		} catch (IllegalAccessException e) {
+			throw new InterpretRuntimeException("Illegal access: " + e.getMessage());
 		}
 	}
 

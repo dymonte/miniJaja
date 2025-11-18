@@ -1,33 +1,32 @@
 package fr.umlp.m1info.projectvms.group2.parser;
 
+import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.exception.SyntaxException;
+
+import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import fr.umlp.m1info.projectvms.group2.exception.SyntaxException;
-
-import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-
 public class MiniJajaParserTest {
 	private void shouldNotBeNullFile(String file) {
 		try {
 			ASTNode root = ParserUtils.parseFile(file);
-			assertNotNull(root);
+			Assert.assertNotNull(root);
 		} catch (Exception e) {
-			fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	private void shouldNotBeNullString(String str) {
 		try {
 			ASTNode root = ParserUtils.parseString(str);
-			assertNotNull(root);
+			Assert.assertNotNull(root);
 		} catch (Exception e) {
-			fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -164,76 +163,77 @@ public class MiniJajaParserTest {
 
 	@Test
 	public void testMissingClass() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("{ main { } }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("{ main { } }"));
 	}
 
 	@Test
 	public void testMissingSemicolon() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x main { } }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x main { } }"));
 	}
 
 	@Test
 	public void testInvalidType() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { float x; main { } }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { float x; main { } }"));
 	}
 
 	@Test
 	public void testMissingMain() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x; }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x; }"));
 	}
 
 	@Test
 	public void testMethodMissingParens() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { void f { } main { } }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { void f { } main { } }"));
 	}
 
 	@Test
 	public void testInvalidOperator() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x; main { x ** 2; } }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x; main { x ** 2; } }"));
 	}
 
 	@Test
 	public void testInvalidIncrement() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { main { 5++; } }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { main { 5++; } }"));
 	}
 
 	@Test
 	public void testMissingBrace() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x; main { x = 0; "));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int x; main { x = 0; "));
 	}
 
 	@Test
 	public void testArrayWithoutSize() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int arr[]; main { } }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { int arr[]; main { } }"));
 	}
 
 	@Test
 	public void testMissingToken() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { ? }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { ? }"));
 	}
 
 	@Test
 	public void testUnexpectedToken() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { Main {} }"));
+		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("class Test { Main {} }"));
 	}
 
 	@Test
 	public void testInvalidFile() {
-		assertThrows(IOException.class, () -> ParserUtils.parseFile("notExistFile"));
+		Assert.assertThrows(IOException.class, () -> ParserUtils.parseFile("notExistFile"));
 	}
 
 	@Test
 	public void testEmptyFile() {
-		assertThrows(SyntaxException.class, () -> ParserUtils.parseFile("./src/test/resources/samples/emptyFile.txt"));
+		Assert.assertThrows(SyntaxException.class,
+				() -> ParserUtils.parseFile("./src/test/resources/samples/emptyFile.txt"));
 	}
 
 	public void testInvalidInput() {
 		String input = "class { var ; }";
 		try {
 			shouldNotBeNullString(input);
-			fail("Should have thrown an exception for invalid input");
+			Assert.fail("Should have thrown an exception for invalid input");
 		} catch (Exception e) {
-			assertTrue(e.getMessage().contains("mismatched"));
+			Assert.assertTrue(e.getMessage().contains("mismatched"));
 		}
 	}
 
@@ -242,17 +242,17 @@ public class MiniJajaParserTest {
 		try {
 			throw new SyntaxException(null);
 		} catch (SyntaxException e) {
-			assertEquals("Unknown syntax error", e.getMessage());
+			Assert.assertEquals("Unknown syntax error", e.getMessage());
 			List<String> errors = e.getErrors();
-			assertEquals(null, errors);
+			Assert.assertEquals(null, errors);
 		}
 
 		try {
 			throw new SyntaxException(Arrays.asList());
 		} catch (SyntaxException e) {
-			assertEquals("Unknown syntax error", e.getMessage());
+			Assert.assertEquals("Unknown syntax error", e.getMessage());
 			List<String> errors = e.getErrors();
-			assertEquals(0, errors.size());
+			Assert.assertEquals(0, errors.size());
 		}
 	}
 }

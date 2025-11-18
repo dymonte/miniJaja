@@ -1,15 +1,15 @@
 package fr.umlp.m1info.projectvms.group2.ast.jajacode.var;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.JajaCodeNode;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 public class VarType extends JajaCodeNode {
 	private final Type type;
 
 	public VarType(int lineId, Type type) {
 		super(lineId);
-        if (type == null)
-            throw new NullPointerException("type cannot be null");
+		if (type == null)
+			throw new NullPointerException("type cannot be null");
 		this.type = type;
 	}
 

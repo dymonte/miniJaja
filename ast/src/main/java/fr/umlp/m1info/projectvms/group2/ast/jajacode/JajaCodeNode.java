@@ -7,7 +7,7 @@ public abstract class JajaCodeNode {
 
     public JajaCodeNode(int lineId) {
         if (lineId <= 0) {
-            throw new IllegalArgumentException("Line id must be positive");
+            throw new IllegalArgumentException("Line id must be greater than 0");
         }
         this.lineId = lineId;
     }

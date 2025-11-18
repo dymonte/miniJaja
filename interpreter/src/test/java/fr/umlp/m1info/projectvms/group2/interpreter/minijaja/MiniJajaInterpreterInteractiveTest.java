@@ -1,4 +1,4 @@
-package fr.umlp.m1info.projectvms.group2.interpreter;
+package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -13,7 +13,6 @@ import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 
-import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;

@@ -1,15 +1,15 @@
 package fr.umlp.m1info.projectvms.group2.ast.jajacode.var;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.JajaCodeNode;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
 
 public class VarKind extends JajaCodeNode {
 	private final Kind kind;
 
 	public VarKind(int lineId, Kind kind) {
 		super(lineId);
-        if (kind == null)
-            throw new NullPointerException("kind cannot be null");
+		if (kind == null)
+			throw new NullPointerException("kind cannot be null");
 		this.kind = kind;
 	}
 

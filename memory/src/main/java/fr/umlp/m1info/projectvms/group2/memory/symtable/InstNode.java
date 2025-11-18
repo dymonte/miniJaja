@@ -9,14 +9,14 @@ public class InstNode {
 	private InstNode nextInStack;
 	private InstNode nextInstance;
 
-	public InstNode(Object val, SymNode symbol, InstNode stackHead) {
+	public InstNode(Object val, SymNode symbol, InstNode nextInStack) {
 		if (symbol == null) {
 			throw new NullPointerException("Symbol cannot be null");
 		}
 		this.val = val;
 		this.symbol = symbol;
 		this.symbol.addInstance(this);
-		this.nextInStack = stackHead;
+		this.nextInStack = nextInStack;
 	}
 
 	/**
@@ -33,6 +33,13 @@ public class InstNode {
 	 */
 	public InstNode getNextInStack() {
 		return nextInStack;
+	}
+
+	/**
+	 * Sets the next element in the stack
+	 */
+	public void setNextInStack(InstNode nextInStack) {
+		this.nextInStack = nextInStack;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package fr.umlp.m1info.projectvms.group2.ast.jajacode.instr;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarKind;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarType;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.Val;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValAddress;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
 
 /**
@@ -12,31 +13,31 @@ public class InstrNew extends Instr {
 	private final ValIdent valIdent;
 	private final VarType type;
 	private final VarKind kind;
-	private final Val val;
+	private final ValAddress address;
 
 	/**
 	 * Instruction for declaring a variable or a method
 	 * 
-	 * @param lineId the line number of the instruction
-	 * @param valIdent  the valIdentifier of the element
-	 * @param kind   the kind of the element
-	 * @param type   the type of the element
-	 * @param val    the initial value of the element
+	 * @param lineId   the line number of the instruction
+	 * @param valIdent the valIdentifier of the element
+	 * @param kind     the kind of the element
+	 * @param type     the type of the element
+	 * @param address  the initial value of the element
 	 */
-	public InstrNew(int lineId, ValIdent valIdent, VarKind kind, VarType type, Val val) {
+	public InstrNew(int lineId, ValIdent valIdent, VarKind kind, VarType type, ValAddress address) {
 		super(lineId);
-        if (valIdent == null)
-            throw new NullPointerException("valIdent cannot be null");
-        if (kind == null)
-            throw new NullPointerException("kind cannot be null");
-        if (type == null)
-            throw new NullPointerException("type cannot be null");
-        if (val == null)
-            throw new NullPointerException("val cannot be null");
+		if (valIdent == null)
+			throw new NullPointerException("valIdent cannot be null");
+		if (kind == null)
+			throw new NullPointerException("kind cannot be null");
+		if (type == null)
+			throw new NullPointerException("type cannot be null");
+		if (address == null)
+			throw new NullPointerException("val cannot be null");
 		this.valIdent = valIdent;
 		this.type = type;
 		this.kind = kind;
-		this.val = val;
+		this.address = address;
 	}
 
 	/**
@@ -49,8 +50,8 @@ public class InstrNew extends Instr {
 	/**
 	 * @return the initial value of the element
 	 */
-	public Val getValVal() {
-		return val;
+	public ValAddress getValAddress() {
+		return address;
 	}
 
 	/**
@@ -72,6 +73,6 @@ public class InstrNew extends Instr {
 	 */
 	@Override
 	public String toString() {
-		return super.toString() + "new(" + kind + ", " + valIdent + ", " + type + ", " + val + ")";
+		return super.toString() + "new(" + kind + ", " + valIdent + ", " + type + ", " + address + ")";
 	}
 }

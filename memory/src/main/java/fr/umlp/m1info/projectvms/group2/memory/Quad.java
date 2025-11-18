@@ -1,9 +1,9 @@
 package fr.umlp.m1info.projectvms.group2.memory;
 
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 /**
  * Quad
@@ -13,7 +13,7 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
 public class Quad {
 	private String ident = "";
 	private Object val = null;
-	private ObjectKind kind = null;
+	private Kind kind = null;
 	private Type sorte = null;
 	private InstNode ref = null;
 
@@ -33,7 +33,6 @@ public class Quad {
 		this.ident = symbol.getIdent();
 		this.kind = symbol.getInfo().getKind();
 		this.sorte = symbol.getInfo().getSorte();
-
 	}
 
 	/**
@@ -59,7 +58,7 @@ public class Quad {
 	 * 
 	 * @return the object kind
 	 */
-	public ObjectKind getKind() {
+	public Kind getKind() {
 		return kind;
 	}
 
@@ -97,6 +96,10 @@ public class Quad {
 	 */
 	@Override
 	public String toString() {
-		return String.format("< %s, %s, %s, %s >", ident, val.toString(), kind.toString(), sorte.toString());
+		return String.format("< %s, %s, %s, %s >",
+				ident != null ? ident : "",
+				val != null ? val.toString() : "",
+				kind != null ? kind.toString() : "",
+				sorte != null ? sorte.toString() : "");
 	}
 }
