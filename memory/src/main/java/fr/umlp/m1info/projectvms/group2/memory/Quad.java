@@ -96,9 +96,10 @@ public class Quad {
 	 */
 	@Override
 	public String toString() {
-		if (ident == null || val == null || kind == null || sorte == null) {
-			return "";
-		}
-		return String.format("< %s, %s, %s, %s >", ident, val.toString(), kind.toString(), sorte.toString());
+		return String.format("< %s, %s, %s, %s >",
+				ident != null ? ident : "",
+				val != null ? val.toString() : "",
+				kind != null ? kind.toString() : "",
+				sorte != null ? sorte.toString() : "");
 	}
 }
