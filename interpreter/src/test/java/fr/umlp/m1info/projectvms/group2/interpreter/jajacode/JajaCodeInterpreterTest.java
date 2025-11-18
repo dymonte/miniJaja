@@ -67,22 +67,7 @@ public class JajaCodeInterpreterTest {
 	public void testInterpretStop() {
 		InstrStop stop = new InstrStop(1);
 		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(stop));
-		AtomicBoolean wasInterrupted = new AtomicBoolean(false);
-		Thread thread = new Thread(() -> {
-			interpreter.interpret(stop);
-			wasInterrupted.set(Thread.currentThread().isInterrupted());
-		});
-		thread.start();
-		try {
-			thread.join(1000);
-			if (thread.isAlive()) {
-				thread.interrupt();
-				Assert.fail("Interpreter thread did not finish in time");
-			}
-		} catch (InterruptedException e) {
-			Assert.fail("Test thread should not be interrupted");
-		}
-		assertTrue(wasInterrupted.get());
+		interpreter.interpret(stop);
 	}
 
 	@Test

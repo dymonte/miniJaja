@@ -18,6 +18,8 @@ import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.utils.Kind;
 import fr.umlp.m1info.projectvms.group2.utils.Type;
 
+import static fr.umlp.m1info.projectvms.group2.interpreter.jajacode.JajaCodeInterpreterUtils.*;
+
 public class JajaCodeInterpreter {
 	Memory memory;
 	List<Instr> instrs;
@@ -124,7 +126,7 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrStop.class)
 	protected void interpretStop(InstrStop node) {
-		Thread.currentThread().interrupt();
+		return; // end of the interpretation, does nothing
 	}
 
     /**
@@ -413,11 +415,8 @@ public class JajaCodeInterpreter {
 		int targetAddress = node.getValAddress().getAddress();
 		Instr nextInstr;
 
-		if (condition) {
-			nextInstr = getInstr(targetAddress);
-		} else {
-			nextInstr = getNextInstr(node);
-		}
+        nextInstr = condition ? getInstr(targetAddress) : getNextInstr(node);
+
 		interpret(nextInstr);
 	}
 
@@ -427,33 +426,9 @@ public class JajaCodeInterpreter {
 		Object v1 = memory.pop();
 
 		JajaCodeBinaryOper oper = node.getOper();
-		Object result;
+		Object result = evalOperBinary(v1, v2, oper);
 
-		switch (oper) {
-			case ADD -> result = (int) v1 + (int) v2;
-			case SUB -> result = (int) v1 - (int) v2;
-			case MUL -> result = (int) v1 * (int) v2;
-			case DIV -> {
-				if ((int) v2 == 0)
-					throw new InterpretRuntimeException("Division by zero");
-				result = (int) v1 / (int) v2;
-			}
-			case CMP -> {
-				// Compare two integers
-				result = Integer.compare((int) v1, (int) v2);
-			}
-			case SUP -> result = (int) v1 > (int) v2;
-			case AND -> result = (boolean) v1 && (boolean) v2;
-			case OR -> result = (boolean) v1 || (boolean) v2;
-			default -> throw new InterpretRuntimeException("Unknown binary operator: " + oper);
-		}
-
-        Type type;
-        if (result instanceof Boolean)
-            type = Type.BOOL;
-        else
-            type = Type.INT;
-
+        Type type = getTypeFromObject(result);
 
 		memory.push(result, type);
 		interpret(getNextInstr(node));
@@ -463,24 +438,9 @@ public class JajaCodeInterpreter {
 	protected void interpretOperUnary(InstrOperUnary node) {
 		Object v1 = memory.pop();
 		JajaCodeUnaryOper oper = node.getOper();
-		Object result;
-        Type type;
+		Object result = evalOperUnary(v1, oper);
 
-		switch (oper) {
-			case NEG -> {
-				if (!(v1 instanceof Integer))
-					throw new InterpretRuntimeException("NEG requires an integer operand.");
-				result = -((int) v1);
-                type = Type.INT;
-			}
-			case NOT -> {
-				if (!(v1 instanceof Boolean))
-					throw new InterpretRuntimeException("NOT requires a boolean operand.");
-				result = !((boolean) v1);
-                type = Type.BOOL;
-			}
-			default -> throw new InterpretRuntimeException("Unknown unary operator: " + oper);
-		}
+        Type type = getTypeFromObject(result);
 
 		memory.push(result, type);
 		interpret(getNextInstr(node));
