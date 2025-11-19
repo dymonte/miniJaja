@@ -25,10 +25,21 @@ public class CLIOptions {
      */
     public static final String DEBUG = "--debug";
 
+    /**
+     * Command-line option to set the compiled output file.
+     */
+    public static final String COMPILATION_OUTPUT = "--compiler-output";
+
+    /**
+     * Command-line option to set the compiled output file.
+     */
+    public static final String COMPILATION_OUTPUT_SHORT = "-o";
+
     private int symTableSize = 256;
     private int heapSize = 1024;
     private int stackDepth = 1024;
     private boolean isDebugging = false;
+    private String compilationOutput;
     private String filePath;
     private String command;
 
@@ -134,9 +145,38 @@ public class CLIOptions {
     /**
      * Sets the output mode to debug (show every logger messages)
      *
-     * @param isDebugging a boolean (true for activating debug mode, false to deactivate)
+     * @param isDebugging a boolean (true for activating debug mode, false to
+     *                    deactivate)
      */
     public void setDebug(boolean isDebugging) {
         this.isDebugging = isDebugging;
     }
+
+    /**
+     * Gets the file where the compiled file is written.
+     *
+     * @return the compiled file path
+     */
+    public String getCompilationOutput() {
+        return compilationOutput;
+    }
+
+    /**
+     * Sets the file where the compiled file is written.
+     *
+     * @param the compiled file path
+     */
+    public void setCompilationOutput(String outputFile) {
+        compilationOutput = outputFile;
+    }
+
+    /**
+     * Gets wether an compiled output file path was specified or not
+     *
+     * @return true if a path was specified, false otherwise.
+     */
+    public boolean isCompilationOutputPath() {
+        return getCompilationOutput() != null;
+    }
+
 }

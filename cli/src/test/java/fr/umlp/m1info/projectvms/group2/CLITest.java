@@ -6,9 +6,15 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import fr.umlp.m1info.projectvms.group2.cli.CLI;
+import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
 
 public class CLITest {
 
@@ -27,6 +33,12 @@ public class CLITest {
     public void restoreStreams() {
         System.setOut(originalOut);
         System.setErr(originalErr);
+    }
+
+    @After
+    public void cleanUpLoggers() {
+        ParserLogger.getInstance().clearListeners();
+        InterpreterLogger.getInstance().clearListeners();
     }
 
     @Test
@@ -93,23 +105,51 @@ public class CLITest {
 
     @Test
     public void testCompilation() {
-        // TODO: replace this when jajacode compilation is implemented
-        Assert.assertThrows(UnsupportedOperationException.class,
-                () -> CLI.main(new String[] { "compile", "./src/test/resources/empty.mjj" }));
+        CLI.main(new String[] { "compile", "./src/test/resources/empty.mjj" });
+        Assert.assertTrue(outContent.toString().contains("init"));
     }
 
     @Test
-    public void testJaJaCodeInterpretation() {
-        // TODO: replace this when jajacode interpretation is implemented
-        Assert.assertThrows(UnsupportedOperationException.class,
-                () -> CLI.main(new String[] { "execute:jjc", "./src/test/resources/empty.mjj" }));
+    public void testCompilationOutput() throws IOException {
+        Path outputPath = Files.createTempFile("output", ".jjc");
+        try {
+            CLI.main(new String[] { "compile", "-o", outputPath.toString(), "./src/test/resources/empty.mjj" });
+            
+            String fileContent = Files.readString(outputPath);
+            Assert.assertTrue(fileContent.toString().contains("init"));
+
+            CLI.main(new String[] { "compile", "--compiler-output", outputPath.toString(), "./src/test/resources/empty.mjj" });
+
+            fileContent = Files.readString(outputPath);
+            Assert.assertTrue(fileContent.toString().contains("init"));
+        } finally {
+            Files.deleteIfExists(outputPath);
+        }
+    }
+
+    @Test
+    public void testCompilationEmptyOutputOption() {
+        CLI.main(new String[] { "compile", "./src/test/resources/empty.mjj" ,"-o" });
+        Assert.assertTrue(errContent.toString().contains("Error Missing value for"));
+        CLI.main(new String[] { "compile", "./src/test/resources/empty.mjj", "--compiler-output" });
+        Assert.assertTrue(errContent.toString().contains("Error Missing value for"));
+    }
+
+    @Test
+    public void testJaJaCodeInterpretation() throws IOException {
+        CLI.main(new String[] { "execute:jjc", "./src/test/resources/empty.jjc" });
+        Assert.assertEquals("", outContent.toString());
+        Assert.assertEquals("", errContent.toString());
+        CLI.main(new String[] { "execute:jjc", "./src/test/resources/empty.jjc", "--debug" });
+        Assert.assertTrue(outContent.toString().contains("Debug"));
+        Assert.assertEquals("", errContent.toString());
     }
 
     @Test
     public void testUnknownCommand() {
         CLI.main(new String[] { "exec:mjj", "./src/test/resources/empty.mjj" });
         Assert.assertTrue(errContent.toString()
-                .contains("Unrecognized CLI command. type --help for help."));
+                .contains("Unrecognized CLI command"));
     }
 
     @Test
