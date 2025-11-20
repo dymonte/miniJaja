@@ -38,6 +38,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -65,7 +66,6 @@
             <MenuItem mnemonicParsing="false" text="Quit" onAction="#quitApp" fx:id="menuExitApp"/>
           </items>
         </Menu>
-				
         <Menu mnemonicParsing="false" text="Edit">
           <items>
             <MenuItem mnemonicParsing="false" text="Undo" onAction="#undoCode" />
@@ -88,20 +88,25 @@
             <MenuItem mnemonicParsing="false" text="Errors" onAction="#openHelpErrors"/>
           </items>
         </Menu>
-            <Menu mnemonicParsing="false" text="Execution" fx:id="menuExecution">
+        <Menu mnemonicParsing="false" text="Execution" fx:id="menuExecution">
+          <items>
+            <Menu mnemonicParsing="false" text="Start" fx:id="menuStartSubmenu">
               <items>
-                <Menu mnemonicParsing="false" text="Start" fx:id="menuStartSubmenu">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Run" onAction="#runCurrentFile" fx:id="menuStart"/>
-                    <MenuItem mnemonicParsing="false" text="Run step by step" onAction="#runCurrentFileStep"/>
-                  </items>
-                </Menu>
-                <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation" fx:id="menuStop"/>
-                <MenuItem mnemonicParsing="false" text="Clear Console" onAction="#clearConsole" fx:id="menuClearConsole"/>
+                <MenuItem mnemonicParsing="false" text="Run" onAction="#runCurrentFile" fx:id="menuStart"/>
+                <MenuItem mnemonicParsing="false" text="Run step by step" onAction="#runCurrentFileStep"/>
               </items>
             </Menu>
+            <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation" fx:id="menuStop"/>
+            <MenuItem mnemonicParsing="false" text="Clear Console" onAction="#clearConsole" fx:id="menuClearConsole"/>
+          </items>
+        </Menu>
       </menus>
     </MenuBar>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+      <ToggleButton fx:id="darkModeSwitch" text="Dark Mode"/>
+    </HBox>
+  
     <SplitPane dividerPositions="0.15, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
         <fx:include fx:id="fileTreeSection" source="FileTreeSection.fxml" />

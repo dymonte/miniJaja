@@ -1,0 +1,33 @@
+.root {
+    -fx-bg-color: -color-bg;
+    -fx-text-color: -color-text;
+    -fx-transition: all 0.25s ease-in-out;
+
+    -fx-font-family: "Inter";
+}
+
+.button {
+    -fx-background-color: -color-button-bg;
+    -fx-text-fill: -color-button-text;
+    -fx-font: 16px "Serif";
+}
+
+.lineno-rect {
+	-fx-fill: #f0f0f0;
+	-fx-stroke: #d0d0d0;
+}
+
+.code-area {
+	-fx-font-family: 'Monospaced', monospace;
+	-fx-font-size: 14px;
+}
+
+#headerLabel {
+	-fx-font-weight: bold;
+	-fx-font-size: 11px;
+	-fx-padding: 4 10;
+}
+
+#memoryStackTextArea {
+    -fx-control-inner-background: -color-bg;
+}

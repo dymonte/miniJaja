@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
-
-import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
-
+import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
@@ -28,8 +26,9 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -53,11 +52,18 @@ public class AppController implements StatefulController {
 	@FXML
 	private MemorySectionController memorySectionController;
 
+	@FXML
+	private ToggleButton darkModeSwitch;
+
 	private Stage primaryStage;
 
 	private AppState state;
 
 	private Thread miniJajaInterpreterThread;
+
+	private Scene mainScene;
+	private String LIGHT_THEME;
+	private String DARK_THEME;
 
 	@Override
 	public void bindState(AppState appState) {
@@ -520,11 +526,34 @@ public class AppController implements StatefulController {
 		this.primaryStage = stage;
 
 		Platform.runLater(() -> {
-			Scene scene = primaryStage.getScene();
-			if (scene != null) {
-				addCtrlCHandler(scene);
+			Scene mainScene = primaryStage.getScene();
+			if (mainScene != null) {
+
+				String LIGHT_THEME = getClass().getResource("/fr/umlp/m1info/projectvms/group2/styles/theme-light.css").toExternalForm();
+				String DARK_THEME  = getClass().getResource("/fr/umlp/m1info/projectvms/group2/styles/theme-dark.css").toExternalForm();
+
+				if (darkModeSwitch != null) {
+					darkModeSwitch.setOnAction(e -> {
+						mainScene.getStylesheets().remove(LIGHT_THEME);
+						mainScene.getStylesheets().remove(DARK_THEME);
+						mainScene.getStylesheets().add(darkModeSwitch.isSelected() ? DARK_THEME : LIGHT_THEME);
+					});
+				}
 			}
 		});
+	}
+
+	private void toggleDarkMode() {
+		if (mainScene == null) return;
+
+		mainScene.getStylesheets().remove(LIGHT_THEME);
+		mainScene.getStylesheets().remove(DARK_THEME);
+
+		if (darkModeSwitch.isSelected()) {
+			mainScene.getStylesheets().add(DARK_THEME);
+		} else {
+			mainScene.getStylesheets().add(LIGHT_THEME);
+		}
 	}
 
 	private void addCtrlCHandler(Scene scene) {

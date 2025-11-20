@@ -5,23 +5,22 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <TabPane fx:id="tabPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="fr.umlp.m1info.projectvms.group2.controller.ConsoleSectionController" tabClosingPolicy="UNAVAILABLE">
 	<tabs>
+		<Tab fx:id="outputTab" text="Output">
+			<AnchorPane>
+				<TextArea fx:id="outputArea" editable="false" wrapText="true" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
+			</AnchorPane>
+		</Tab>
 		<Tab fx:id="errorTab" text="Error">
 			<AnchorPane>
 				<TextArea fx:id="errorArea" editable="false" wrapText="true" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
 			</AnchorPane>
-    </Tab>
-    <Tab fx:id="outputTab" text="Output">
-			<AnchorPane>
-				<TextArea fx:id="outputArea" editable="false" wrapText="true" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
-			</AnchorPane>
-    </Tab>
-    <Tab fx:id="debugTab" text="Debug">
+		</Tab>
+		<Tab fx:id="debugTab" text="Debug">
 			<AnchorPane>
 				<TextArea fx:id="debugArea" editable="false" wrapText="true" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
 			</AnchorPane>
-    </Tab>
+		</Tab>
   </tabs>
 </TabPane>

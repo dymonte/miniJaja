@@ -1,11 +1,10 @@
 package fr.umlp.m1info.projectvms.group2;
 
 import fr.umlp.m1info.projectvms.group2.controller.AppController;
-
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
 
 /**
  * Entry point of the project GUI
@@ -22,8 +21,14 @@ public class App extends Application {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("App.fxml"));
 		Scene scene = new Scene(loader.load(), DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
-		scene.getStylesheets()
-				.add(getClass().getResource("styles/style.css").toExternalForm());
+
+		scene.getStylesheets().add(
+			getClass().getResource("styles/base.css").toExternalForm()
+		);
+		scene.getStylesheets().add(
+			getClass().getResource("styles/theme-light.css").toExternalForm()
+		);
+
 		AppController controller = loader.getController();
 		controller.bindState(state);
 		controller.setPrimaryStage(stage);
