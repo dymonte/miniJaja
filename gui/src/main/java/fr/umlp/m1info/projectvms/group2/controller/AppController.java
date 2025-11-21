@@ -269,6 +269,14 @@ public class AppController implements StatefulController {
 	}
 
 	/**
+	 * Opens help jajacode language window
+	 */
+	@FXML
+	private void openHelpJajaCode() {
+		openHelpFile("help_jajacode_content.html");
+	}
+
+	/**
 	 * Opens help memory window
 	 */
 	@FXML

@@ -1,0 +1,232 @@
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Jaja-Code Documentation</title>
+	<style>
+		body {
+			font-family: "Segoe UI", Arial, sans-serif;
+			background-color: #f7f7f7;
+			color: #222;
+			line-height: 1.6;
+			margin: 2em;
+		}
+
+		h1,
+		h2,
+		h3 {
+			color: #2a2a2a;
+		}
+
+		.codeBlock {
+			font-family: monospace;
+			background-color: #454545;
+			color: #fff;
+			border-radius: 6px;
+			white-space: pre-wrap;
+			display: block;
+			padding: 0 2em;
+			margin: 1em 0;
+			overflow-x: auto;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 1em;
+		}
+
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 0.6em;
+			text-align: left;
+		}
+
+		th {
+			background-color: #eaeaea;
+		}
+
+		.section {
+			margin-bottom: 2em;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>📘 Jaja-Code Documentation</h1>
+
+	<p>
+		Jaja-Code is the low-level representation of a Jaja program. It operates as a stack-based virtual machine where
+		instructions manipulate memory, control flow, and the program stack.
+	</p>
+
+	<div class="section">
+		<h2>1. Variables and Arrays</h2>
+		<p>
+			You can create variables and arrays in memory. Each variable has a type and an address, arrays store multiple
+			values.
+		</p>
+		<div class="codeBlock">
+<code>
+// Create a variable x of type integer at address 1
+new(x,int,0,1)
+
+// Create an integer array t
+newarray(t,int)
+			</code>
+		</div>
+		<p>
+			<strong>Load and store operations:</strong> read and write values in memory or arrays.
+		</p>
+		<div class="codeBlock">
+<code>
+load(x) // Push value of x onto the stack
+store(y) // Pop value from stack and store in y
+aload(t) // Push array element onto stack
+astore(t) // Pop value into array element
+</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>2. Stack Operations</h2>
+		<p>
+			Jaja-Code relies on a stack for computations.
+		</p>
+		<div class="codeBlock">
+<code>
+push(5) // Push the number 5 onto the stack
+pop // Remove the top value from the stack
+</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>3. Method Calls and Returns</h2>
+		<div class="codeBlock">
+<code>
+invoke(fct) // Call the method fct
+return // Return from current method
+</code>
+		</div>
+		<p>
+			Methods are executed with their own stack frame. Use <code>invoke</code> to call and <code>return</code> to go
+			back.
+		</p>
+	</div>
+
+	<div class="section">
+		<h2>4. Control Flow</h2>
+		<p>
+			Conditional and unconditional jumps allow loops, if-else, and branching.
+		</p>
+		<div class="codeBlock">
+<code>
+if(10) // If top of stack != 0, jump to instruction at address 10
+goto(20) // Jump unconditionally to address 20
+</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>5. Arithmetic and Logic</h2>
+		<p>
+			Perform calculations and logical operations directly on stack values.
+		</p>
+		<div class="codeBlock">
+<code>
+add // Pop two values, push sum
+sub // Pop two values, push difference
+mul // Pop two values, push product
+div // Pop two values, push quotient
+cmp // Compare two values
+sup // Check greater-than
+and // Logical AND
+or // Logical OR
+neg // Negate value
+not // Logical NOT
+</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>6. Increment Operations</h2>
+		<div class="codeBlock">
+<code>
+inc(x) // Increment variable x by 1
+ainc(t) // Increment array element t[i] by 1
+</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>7. Input / Output</h2>
+		<div class="codeBlock">
+<code>
+write // Print top of stack without newline
+writeln // Print top of stack with newline
+</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>8. Program Termination</h2>
+		<div class="codeBlock">
+<code>
+jcstop // Stop program execution
+nop // Do nothing
+</code>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>9. Summary Table</h2>
+		<table>
+			<tr>
+				<th>Instruction</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>new / newarray</td>
+				<td>Create variables or arrays</td>
+			</tr>
+			<tr>
+				<td>load / store / aload / astore</td>
+				<td>Access memory or arrays</td>
+			</tr>
+			<tr>
+				<td>push / pop</td>
+				<td>Stack operations</td>
+			</tr>
+			<tr>
+				<td>invoke / return</td>
+				<td>Call and return from methods</td>
+			</tr>
+			<tr>
+				<td>if / goto</td>
+				<td>Conditional and unconditional jumps</td>
+			</tr>
+			<tr>
+				<td>add / sub / mul / div / cmp / sup / and / or / neg / not</td>
+				<td>Arithmetic and logical operations</td>
+			</tr>
+			<tr>
+				<td>inc / ainc</td>
+				<td>Increment variables or array elements</td>
+			</tr>
+			<tr>
+				<td>write / writeln</td>
+				<td>Output values</td>
+			</tr>
+			<tr>
+				<td>jcstop / nop</td>
+				<td>Program termination or no operation</td>
+			</tr>
+		</table>
+	</div>
+
+</body>
+
+</html>
