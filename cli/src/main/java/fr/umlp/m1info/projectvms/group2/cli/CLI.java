@@ -66,7 +66,7 @@ public class CLI {
         Stack stack = new Stack(opts.getStackDepth());
         Heap heap = new Heap(opts.getHeapSize());
         Memory memory = new Memory(symTable, stack, heap);
-        //InterpreterLogger.getInstance().addListener(CLIOutput.getInstance());
+        InterpreterLogger.getInstance().addListener(CLIOutput.getInstance());
         if (opts.getDebug()) {
             ParserLogger.getInstance().addListener(CLIOutput.getInstance());
         }
@@ -258,7 +258,8 @@ public class CLI {
         CLIOutput.write("  " + CLIOptions.SET_SYMTABLE_SIZE + " \n\tSet the Symbol table size\n");
         CLIOutput.write("  " + CLIOptions.DEBUG + " \n\tShow every debug logger messages\n");
         CLIOutput.write("  --help\n\tShow this help message\n");
-        CLIOutput.write("\nExamples:\n\texecute:mjj minijajafile.mjj\n\tcompile -o jajacodefile.jjc minijajafile.mjj\n\texecute:jjc jajacodefile.jjc\n");
+        CLIOutput.write(
+                "\nExamples:\n\texecute:mjj minijajafile.mjj\n\tcompile -o jajacodefile.jjc minijajafile.mjj\n\texecute:jjc jajacodefile.jjc\n");
     }
 
     /**
