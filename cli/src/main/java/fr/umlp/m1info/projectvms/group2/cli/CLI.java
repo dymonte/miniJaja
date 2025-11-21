@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.IntConsumer;
 
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
