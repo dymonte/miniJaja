@@ -496,6 +496,11 @@ public class MiniJajaCompiler {
 		return nbInstrs;
 	}
 
+	@FreeCompilationFunction(ASTDeclsNil.class)
+	protected Integer freeDeclsNil(ASTDeclsNil node) {
+		return 0;
+	}
+
 	@FreeCompilationFunction(ASTExprsChain.class)
 	protected Integer freeExprsChain(ASTExprsChain node) {
 		return free(node.getExpr()) + free(node.getExprs());
