@@ -1,20 +1,24 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
-import fr.umlp.m1info.projectvms.group2.PopUp;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
+
+import fr.umlp.m1info.projectvms.group2.PopUp;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 
 public class FileTreeSectionController {
 
@@ -40,7 +44,6 @@ public class FileTreeSectionController {
 
 	@FXML
 	public void initialize() {
-		fileTreeScroll.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
 		// Initialize with user home by default
 		openDir(new File(System.getProperty("user.dir")));
 	}
@@ -75,7 +78,6 @@ public class FileTreeSectionController {
 				}
 			}
 		});
-		treeView.setStyle("-fx-border-width: 0; -fx-background-insets: 0;");
 		fileTreeContainer.getChildren().add(treeView);
 	}
 

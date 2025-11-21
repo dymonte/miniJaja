@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="fr.umlp.m1info.projectvms.group2.controller.FileTreeSectionController" fillWidth="true" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="fr.umlp.m1info.projectvms.group2.controller.FileTreeSectionController" fillWidth="true" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS" styleClass="file-tree-section">
 	<StackPane>
 		<Label fx:id="headerLabel" text="EXPLORER" StackPane.alignment="CENTER_LEFT"/>
 	</StackPane>

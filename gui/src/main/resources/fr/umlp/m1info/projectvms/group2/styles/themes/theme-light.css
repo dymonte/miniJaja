@@ -1,9 +1,30 @@
 /* ThemeName: Light Theme */
 
 .root {
-    -color-bg: #ffffff;
-    -color-text: #222222;
+    /* Color Palette */
+    /* -color-black: #000000; */
+    /* -color-white: #ffffff; */
+    -color-bg: #feedff;
+    -color-bg-alt: #f9dfff;
+    -color-text: #68094a;
+    -color-text-muted: #9a025d;
+    -color-border: #025d9a;
 
-    -color-button-bg: #e4e4e4;
-    -color-button-text: #222222;
+    -color-primary: #007bff;
+    -color-secondary: #6c757d;
+    /* -color-tertiary: #ffffff; */
+
+    /* -color-button-play: #f0f0f0;
+    -color-button-stop: #222222;
+    -color-button-compile: #222222;
+    -color-button-next: #222222; */
+
+    /* -color-success: #28a745;
+    -color-error: #dc3545; */
+
+    -color-dropshadow: #00000070;
+
+    /* Other elements */
+    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family-code: "Monospaced", monospace;
 }
