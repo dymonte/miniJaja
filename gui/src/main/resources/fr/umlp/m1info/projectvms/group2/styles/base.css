@@ -19,17 +19,17 @@
 
 /* BUTTONS */
 .button, .toggle-button {
-    -fx-background-color: -color-primary;
+    -fx-background-color: -color-bg;
     -fx-border-color: -color-border;
     -fx-text-fill: -color-text;
 }
 
 .button:hover, .toggle-button:hover {
-    -fx-background-color: -color-secondary;
+    -fx-background-color: -color-bg-alt;
 }
 
 .button:focused, .toggle-button:focused {
-    -fx-border-color: -color-secondary;
+    -fx-border-color: -color-bg-alt;
 }
 
 /* TEXT AREA */
@@ -57,7 +57,7 @@
 }
 
 .scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
-    -fx-background-color: -color-border;
+    -fx-background-color: -color-border-light;
     -fx-background-insets: 1;
     -fx-background-radius: 3;
 }
@@ -65,6 +65,7 @@
 /* MENU */
 .menu-bar {
     -fx-background-color: -color-bg;
+    -fx-background-insets: 0;
     -fx-border-color: -color-border;
     -fx-border-width: 0 0 1 0;
 }
@@ -166,6 +167,10 @@
     -fx-padding: 2;
 }
 
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: -color-border-light;
+}
+
 .tab-pane:focused, .tab-pane .tab:focused, .tab-pane .tab:selected:focused {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
@@ -183,11 +188,43 @@
 }
 
 .tree-cell {
-    -fx-text-fill: -color-text-muted;
+    -fx-text-fill: -color-text;
     -fx-background-color: -color-bg;
 }
 
 .tree-cell:hover, .tree-cell:focused, .tree-cell:armed, .tree-cell:showing {
     -fx-text-fill: -color-text;
     -fx-background-color: -color-bg-alt;
+}
+
+.tree-cell .image-view {
+    -fx-effect: innershadow(gaussian, -color-text, 50, 0.3, 0, 0);
+}
+
+.arrow {
+    -fx-background-color: -color-text;
+}
+
+/* MEMORY SECTION */
+#memorySection {
+    -fx-padding: 5;
+}
+
+#memorySection .label {
+    -fx-padding: 3 3 7 3;
+}
+
+#memoryStackTextArea, #memoryHeapTextArea {
+    -fx-control-inner-background: -color-bg;
+    -fx-text-fill: -color-text;
+    -fx-border-color: -color-border;
+    -fx-border-width: 2;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-background-insets: 0;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-highlight-fill: transparent;
+    -fx-effect: none;
 }

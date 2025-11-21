@@ -1,9 +1,27 @@
 /* ThemeName: Dark Theme */
 
 .root {
-    -color-bg: #1e1e1e;
-    -color-text: #f1f1f1;
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
 
-    -color-button-bg: #333333;
-    -color-button-text: #f1f1f1;
+    -color-bg: #1d1e1f;
+    -color-bg-alt: #2a2b2c;
+    -color-text: #c3c3c3;
+    -color-text-muted: #9d9d9d;
+    -color-border: #c2b07f;
+    -color-border-light: #c2b07f3f;
+
+    -color-button-play: #069712;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #414141;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #00000070;
+
+    /* Other elements */
+    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family-code: "Monospaced", monospace;
 }

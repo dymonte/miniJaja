@@ -79,14 +79,6 @@
             <MenuItem mnemonicParsing="false" text="Unselect All" onAction="#unSelectAllCode" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="MiniJaja language" onAction="#openHelpMiniJaja"/>
-            <MenuItem mnemonicParsing="false" text="JajaCode language" onAction="#openHelpJajaCode"/>
-            <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
-            <MenuItem mnemonicParsing="false" text="Errors" onAction="#openHelpErrors"/>
-          </items>
-        </Menu>
         <Menu mnemonicParsing="false" text="Execution" fx:id="menuExecution">
           <items>
             <Menu mnemonicParsing="false" text="Start" fx:id="menuStartSubmenu">
@@ -101,6 +93,14 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Themes" fx:id="menuThemes">
           <items>
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="MiniJaja language" onAction="#openHelpMiniJaja"/>
+            <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
+            <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
+            <MenuItem mnemonicParsing="false" text="Errors" onAction="#openHelpErrors"/>
           </items>
         </Menu>
       </menus>

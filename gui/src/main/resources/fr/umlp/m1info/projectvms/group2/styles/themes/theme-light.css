@@ -2,26 +2,23 @@
 
 .root {
     /* Color Palette */
-    /* -color-black: #000000; */
-    /* -color-white: #ffffff; */
-    -color-bg: #feedff;
-    -color-bg-alt: #f9dfff;
-    -color-text: #68094a;
-    -color-text-muted: #9a025d;
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #f5faff;
+    -color-bg-alt: #dfefff;
+    -color-text: #091e68;
+    -color-text-muted: #025d9a;
     -color-border: #025d9a;
+    -color-border-light: #025d9a3f;
 
-    -color-primary: #007bff;
-    -color-secondary: #6c757d;
-    /* -color-tertiary: #ffffff; */
+    -color-button-play: #069712;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #414141;
+    -color-button-next: #102d8e;
 
-    /* -color-button-play: #f0f0f0;
-    -color-button-stop: #222222;
-    -color-button-compile: #222222;
-    -color-button-next: #222222; */
-
-    /* -color-success: #28a745;
-    -color-error: #dc3545; */
-
+    -color-success: #28a745;
+    -color-error: #dc3545;
     -color-dropshadow: #00000070;
 
     /* Other elements */
