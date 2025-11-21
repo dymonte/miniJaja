@@ -100,13 +100,12 @@
             <MenuItem mnemonicParsing="false" text="Clear Console" onAction="#clearConsole" fx:id="menuClearConsole"/>
           </items>
         </Menu>
+        <Menu mnemonicParsing="false" text="Themes" fx:id="menuThemes">
+          <items>
+          </items>
+        </Menu>
       </menus>
     </MenuBar>
-
-    <HBox alignment="CENTER_RIGHT" spacing="10">
-      <ToggleButton fx:id="darkModeSwitch" text="Dark Mode"/>
-    </HBox>
-  
     <SplitPane dividerPositions="0.15, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
         <fx:include fx:id="fileTreeSection" source="FileTreeSection.fxml" />

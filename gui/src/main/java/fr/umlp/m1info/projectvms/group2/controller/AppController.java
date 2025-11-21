@@ -1,6 +1,8 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +28,8 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -53,7 +56,7 @@ public class AppController implements StatefulController {
 	private MemorySectionController memorySectionController;
 
 	@FXML
-	private ToggleButton darkModeSwitch;
+	private Menu menuThemes;
 
 	private Stage primaryStage;
 
@@ -62,8 +65,8 @@ public class AppController implements StatefulController {
 	private Thread miniJajaInterpreterThread;
 
 	private Scene mainScene;
-	private String LIGHT_THEME;
-	private String DARK_THEME;
+
+	private final String STYLE_FOLDER = "/fr/umlp/m1info/projectvms/group2/styles/themes/";
 
 	@Override
 	public void bindState(AppState appState) {
@@ -521,39 +524,86 @@ public class AppController implements StatefulController {
 	 *
 	 * @param stage the primary stage
 	 */
-
 	public void setPrimaryStage(Stage stage) {
 		this.primaryStage = stage;
 
 		Platform.runLater(() -> {
 			Scene mainScene = primaryStage.getScene();
 			if (mainScene != null) {
-
-				String LIGHT_THEME = getClass().getResource("/fr/umlp/m1info/projectvms/group2/styles/theme-light.css").toExternalForm();
-				String DARK_THEME  = getClass().getResource("/fr/umlp/m1info/projectvms/group2/styles/theme-dark.css").toExternalForm();
-
-				if (darkModeSwitch != null) {
-					darkModeSwitch.setOnAction(e -> {
-						mainScene.getStylesheets().remove(LIGHT_THEME);
-						mainScene.getStylesheets().remove(DARK_THEME);
-						mainScene.getStylesheets().add(darkModeSwitch.isSelected() ? DARK_THEME : LIGHT_THEME);
-					});
-				}
+				loadThemesMenu();
 			}
 		});
 	}
 
-	private void toggleDarkMode() {
-		if (mainScene == null) return;
+	/**
+	 * Loads available themes into the themes menu
+	 */
+	private void loadThemesMenu() {
+		menuThemes.getItems().clear();
 
-		mainScene.getStylesheets().remove(LIGHT_THEME);
-		mainScene.getStylesheets().remove(DARK_THEME);
-
-		if (darkModeSwitch.isSelected()) {
-			mainScene.getStylesheets().add(DARK_THEME);
-		} else {
-			mainScene.getStylesheets().add(LIGHT_THEME);
+		URL themesFolderUrl = getClass().getResource(STYLE_FOLDER);
+		if (themesFolderUrl == null) {
+			System.err.println("Themes folder not found");
+			return;
 		}
+
+		File themesFolder = new File(themesFolderUrl.getPath());
+		File[] cssFiles = themesFolder.listFiles((dir, name) -> name.endsWith(".css"));
+
+		for (File file : cssFiles) {
+			String cssName = extractThemeName(file);
+			MenuItem item = new MenuItem(cssName);
+
+			item.setOnAction(e -> applyTheme(file.getName()));
+			menuThemes.getItems().add(item);
+		}
+	}
+
+	/**
+	 * Extracts the theme name from the CSS file
+	 *
+	 * @param file the CSS file
+	 * @return the theme name
+	 */
+	private String extractThemeName(File file) {
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			String firstLine = br.readLine();
+
+			if (firstLine != null && firstLine.contains("ThemeName:")) {
+				return firstLine.replace("/*", "")
+								.replace("*/", "")
+								.replace("ThemeName:", "")
+								.trim();
+			}
+		} catch (Exception ignored) {}
+
+		// fallback to file name
+		String name = file.getName().replace(".css", "");
+		return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+	}
+
+	/**
+	 * Applies the selected theme by changing the stylesheet
+	 *
+	 * @param cssFileName the CSS file name of the theme
+	 */
+	private void applyTheme(String cssFileName) {
+		Scene scene = primaryStage.getScene();
+		if (scene == null) return;
+
+		// Remove all existing stylesheets
+		scene.getStylesheets().removeIf(url -> url.contains("themes/"));
+
+		// Add the new one
+		String fullPath = STYLE_FOLDER + cssFileName;
+		URL cssUrl = getClass().getResource(fullPath);
+
+		if (cssUrl == null) {
+			System.err.println("Unable to find " + fullPath);
+			return;
+		}
+
+		scene.getStylesheets().add(cssUrl.toExternalForm());
 	}
 
 	private void addCtrlCHandler(Scene scene) {
