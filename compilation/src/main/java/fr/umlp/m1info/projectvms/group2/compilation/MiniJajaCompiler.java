@@ -185,7 +185,6 @@ public class MiniJajaCompiler {
 	protected Integer compileMethod(ASTMethod node) {
 		int start = n;
 		int count = 0;
-		count += emit("jcnil");
 		count += emit("push(" + (start + 3) + ")");
 		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", meth, 0)");
 
@@ -213,7 +212,6 @@ public class MiniJajaCompiler {
 	}
 
 	/** Compiles parameters. */
-	@CompilationFunction(ASTParams.class)
 	protected Integer compileParams(ASTParams node, int k) {
 		ASTParamsChain chain = (ASTParamsChain) node;
 		int nbInstr = compileParam(chain.getParam(), k);
@@ -501,9 +499,16 @@ public class MiniJajaCompiler {
 		return 0;
 	}
 
+	@FreeCompilationFunction(ASTDeclsChain.class)
+	protected Integer freeDeclsChain(ASTDeclsChain node) {
+		return free(node.getDecl()) + free(node.getDecls());
+	}
+
 	@FreeCompilationFunction(ASTExprsChain.class)
 	protected Integer freeExprsChain(ASTExprsChain node) {
-		return free(node.getExpr()) + free(node.getExprs());
+		emit("swap");
+		emit("pop");
+		return free(node.getExprs()) + 2;
 	}
 
 	@FreeCompilationFunction(ASTExprsNil.class)
@@ -532,5 +537,26 @@ public class MiniJajaCompiler {
 	@FreeCompilationFunction(ASTVar.class)
 	protected Integer freeVar(ASTVar node) {
 		return emit("pop");
+	}
+
+	@FreeCompilationFunction(ASTVarSimple.class)
+	protected Integer freeVarSimple(ASTVarSimple node){
+		emit("swap");
+		emit("pop");
+		return 2;
+	}
+
+	@FreeCompilationFunction(ASTVarConst.class)
+	protected Integer freeVarConst(ASTVarConst node){
+		emit("swap");
+		emit("pop");
+		return 2;
+	}
+
+	@FreeCompilationFunction(ASTMethod.class)
+	protected Integer freeMethod(ASTMethod node) {
+		emit("swap");
+		emit("pop");
+		return 2;
 	}
 }

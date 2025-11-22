@@ -48,10 +48,14 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
+import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class MiniJajaCompilerTest {
 	MiniJajaCompiler miniJajaCompiler;
@@ -155,8 +159,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(instrs);
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
-		Assert.assertEquals(7, nbInstr);
-		Assert.assertEquals("jcnil\npush(3)\nnew(m, int, meth, 0)\ngoto(5)\npush(0)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals(6, nbInstr);
+		Assert.assertEquals("push(3)\nnew(m, int, meth, 0)\ngoto(4)\npush(0)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
@@ -180,8 +184,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(instrs);
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
-		Assert.assertEquals(6, nbInstr);
-		Assert.assertEquals("jcnil\npush(3)\nnew(m, void, meth, 0)\ngoto(4)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals(5, nbInstr);
+		Assert.assertEquals("push(3)\nnew(m, void, meth, 0)\ngoto(3)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
