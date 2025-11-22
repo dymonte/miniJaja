@@ -130,6 +130,11 @@
 	-fx-font-size: 14px;
 }
 
+.code-area .text {
+    -fx-fill: -color-text;
+    -fx-font-size: 14px;
+}
+
 /* TAB PANE */
 .tab-pane {
     -fx-background-color: -color-bg;
@@ -227,4 +232,21 @@
     -fx-faint-focus-color: transparent;
     -fx-highlight-fill: transparent;
     -fx-effect: none;
+}
+
+/* LINE NUMBER STYLES */
+.line-number {
+    -fx-background-color: -color-bg-alt;
+    -fx-text-fill: -color-text;
+    -fx-font-family: -font-family-code;
+    -fx-font-size: 14px;
+    -fx-pref-width: 35px;
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 0 -5 0 0;
+}
+
+.line-number-box {
+    -fx-background-color: -color-bg-alt;
+    -fx-padding: 0 8 0 4;
+    -fx-alignment: CENTER_LEFT;
 }
