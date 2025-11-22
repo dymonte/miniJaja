@@ -25,4 +25,18 @@
     /* Other elements */
     -font-family: "Inter", "Segoe UI", sans-serif;
     -font-family-code: "Monospaced", monospace;
+
+    /* Code */
+    -color-code-normal: -color-text;
+    -color-code-keyword-main: #0077cc;
+    -color-code-keyword-bis: #8B4AB0;
+    -color-code-boolean: #650000;
+    -color-code-types: #003900;
+    -color-code-builtin-functions: #7007a1;
+    -color-code-paren: #ff9900;
+    -color-code-brace: #cc00cc;
+    -color-code-bracket: #009900;
+    -color-code-semicolon: #999999;
+    -color-code-string: #cc0000;
+    -color-code-comment: #888888;
 }
