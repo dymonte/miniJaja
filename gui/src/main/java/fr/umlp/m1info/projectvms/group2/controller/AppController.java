@@ -284,6 +284,14 @@ public class AppController implements StatefulController {
 		openHelpFile("help_memory_content.html");
 	}
 
+	/**
+	 * Opens help errors window
+	 */
+	@FXML
+	private void openHelpErrors() {
+		openHelpFile("help_errors_content.html");
+	}
+
 	private void openHelpFile(String resourceName) {
 		try {
 			URL resource = getClass().getResource(resourceName);

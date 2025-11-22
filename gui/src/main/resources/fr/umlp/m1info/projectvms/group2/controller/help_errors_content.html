@@ -1,0 +1,175 @@
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>MiniJaja & Jaja-Code Errors</title>
+	<style>
+		body {
+			font-family: "Segoe UI", Arial, sans-serif;
+			background-color: #f7f7f7;
+			color: #222;
+			line-height: 1.6;
+			margin: 2em;
+		}
+
+		h1,
+		h2,
+		h3 {
+			color: #2a2a2a;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 1em;
+		}
+
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 0.6em;
+			text-align: left;
+		}
+
+		th {
+			background-color: #eaeaea;
+		}
+
+		.section {
+			margin-bottom: 2em;
+		}
+
+		.codeBlock {
+			font-family: monospace;
+			background-color: #454545;
+			color: #fff;
+			border-radius: 6px;
+			white-space: pre-wrap;
+			display: block;
+			padding: 0 2em;
+			margin: 1em 0;
+			overflow-x: auto;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>⚠️ MiniJaja & Jaja-Code Errors Reference</h1>
+
+	<p>This reference lists common errors that can occur during compilation or interpretation of MiniJaja programs, as
+		well as runtime errors in Jaja-Code execution.</p>
+
+	<div class="section">
+		<h2>1. MiniJaja Compilation Errors</h2>
+		<table>
+			<tr>
+				<th>Error</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>UndefinedVariable</td>
+				<td>A variable is used before being declared.</td>
+			</tr>
+			<tr>
+				<td>TypeMismatch</td>
+				<td>An operation or assignment uses incompatible types (e.g., assigning a boolean to an integer variable).</td>
+			</tr>
+			<tr>
+				<td>MethodNotFound</td>
+				<td>Calling a method that does not exist in the class.</td>
+			</tr>
+			<tr>
+				<td>ArraySizeError</td>
+				<td>Declaring an array with invalid or negative size.</td>
+			</tr>
+			<tr>
+				<td>DuplicateDeclaration</td>
+				<td>Variable or method is declared multiple times in the same scope.</td>
+			</tr>
+			<tr>
+				<td>InvalidReturn</td>
+				<td>A method returns a value when its type is void, or does not return a value when a type is required.</td>
+			</tr>
+			<tr>
+				<td>SyntaxError</td>
+				<td>Program does not conform to MiniJaja syntax rules (e.g., missing semicolon, wrong keywords).</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="section">
+		<h2>2. MiniJaja Runtime / Interpretation Errors</h2>
+		<table>
+			<tr>
+				<th>Error</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>NullReference</td>
+				<td>Accessing an array or object that has not been initialized.</td>
+			</tr>
+			<tr>
+				<td>IndexOutOfBounds</td>
+				<td>Accessing an array element outside its valid indices.</td>
+			</tr>
+			<tr>
+				<td>DivisionByZero</td>
+				<td>Dividing an integer by zero.</td>
+			</tr>
+			<tr>
+				<td>UninitializedVariable</td>
+				<td>Using a local variable before assigning a value.</td>
+			</tr>
+			<tr>
+				<td>InvalidOperation</td>
+				<td>Performing an operation that is not defined for the type (e.g., adding a boolean to an integer).</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="section">
+		<h2>3. Jaja-Code Runtime Errors</h2>
+		<p>These errors occur during execution of the compiled Jaja-Code instructions.</p>
+		<table>
+			<tr>
+				<th>Error</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>StackUnderflow</td>
+				<td>An instruction attempts to pop a value from an empty stack.</td>
+			</tr>
+			<tr>
+				<td>StackOverflow</td>
+				<td>Too many values are pushed onto the stack, exceeding the maximum size.</td>
+			</tr>
+			<tr>
+				<td>InvalidMemoryAccess</td>
+				<td>Accessing a variable or array at an invalid memory address.</td>
+			</tr>
+			<tr>
+				<td>ArrayIndexOutOfBounds</td>
+				<td>Accessing an array element with an index outside its bounds.</td>
+			</tr>
+			<tr>
+				<td>DivisionByZero</td>
+				<td>Executing a <code>div</code> instruction with a divisor of zero.</td>
+			</tr>
+			<tr>
+				<td>UnknownInstruction</td>
+				<td>The interpreter encounters an instruction that is not defined.</td>
+			</tr>
+			<tr>
+				<td>InvalidJump</td>
+				<td>A jump instruction (<code>if</code> or <code>goto</code>) targets an invalid or non-existent address.</td>
+			</tr>
+			<tr>
+				<td>StackTypeError</td>
+				<td>An arithmetic or logical operation is applied to incompatible stack types.</td>
+			</tr>
+		</table>
+	</div>
+</body>
+
+</html>

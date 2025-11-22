@@ -85,6 +85,7 @@
             <MenuItem mnemonicParsing="false" text="MiniJaja language" onAction="#openHelpMiniJaja"/>
             <MenuItem mnemonicParsing="false" text="JajaCode language" onAction="#openHelpJajaCode"/>
             <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
+            <MenuItem mnemonicParsing="false" text="Errors" onAction="#openHelpErrors"/>
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Execution" fx:id="menuExecution">
