@@ -91,6 +91,9 @@ public class AppController implements StatefulController {
 		fileTreeSectionController.setOnFileOpen(this::displayFile);
 	}
 
+	/**
+	 * Adds control buttons to the code section toolbar
+	 */
 	private void addControlButtons() {
 		// Run Button
 		Button btnRun = new Button();
