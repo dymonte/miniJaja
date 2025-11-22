@@ -1,16 +1,16 @@
-/* ThemeName: Light Theme */
+/* ThemeName: Simple Dark */
 
 .root {
     /* Color Palette */
     -color-black: #000000;
     -color-white: #ffffff;
 
-    -color-bg: #f5faff;
-    -color-bg-alt: #dfefff;
-    -color-text: #091e68;
-    -color-text-muted: #025d9a;
-    -color-border: #025d9a;
-    -color-border-light: #025d9a3f;
+    -color-bg: #282D35;
+    -color-bg-alt: #20252D;
+    -color-text: #A8AAAD;
+    -color-text-muted: #89909C;
+    -color-border: #404958;
+    -color-border-light: #4049583f;
 
     -color-button-play: #09bb18;
     -color-button-play-sbs: #085d0f;
@@ -20,7 +20,7 @@
 
     -color-success: #28a745;
     -color-error: #dc3545;
-    -color-dropshadow: #00000070;
+    -color-dropshadow: #2e2e2e70;
 
     /* Other elements */
     -font-family: "Inter", "Segoe UI", sans-serif;

@@ -1,0 +1,28 @@
+/* ThemeName: Blue Light */
+
+.root {
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #f5faff;
+    -color-bg-alt: #dfefff;
+    -color-text: #091e68;
+    -color-text-muted: #025d9a;
+    -color-border: #025d9a;
+    -color-border-light: #025d9a3f;
+
+    -color-button-play: #09bb18;
+    -color-button-play-sbs: #085d0f;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #575757;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #2e2e2e70;
+
+    /* Other elements */
+    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family-code: "Monospaced", monospace;
+}

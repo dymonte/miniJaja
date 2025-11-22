@@ -1,4 +1,4 @@
-/* ThemeName: Dark Theme */
+/* ThemeName: Gold Dark */
 
 .root {
     /* Color Palette */
@@ -20,7 +20,7 @@
 
     -color-success: #28a745;
     -color-error: #dc3545;
-    -color-dropshadow: #00000070;
+    -color-dropshadow: #2e2e2e70;
 
     /* Other elements */
     -font-family: "Inter", "Segoe UI", sans-serif;

@@ -26,7 +26,7 @@ public class App extends Application {
 			getClass().getResource("styles/base.css").toExternalForm()
 		);
 		scene.getStylesheets().add(
-			getClass().getResource("styles/themes/theme-light.css").toExternalForm()
+			getClass().getResource("styles/themes/theme-blue-light.css").toExternalForm()
 		);
 
 		AppController controller = loader.getController();

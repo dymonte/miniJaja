@@ -149,10 +149,6 @@
     -fx-padding: 0;
 }
 
-#buttonBar Button:hover {
-    /* -fx-background-color: rgba(255, 255, 255, 0.1); */
-}
-
 .btn-run {
     -fx-effect: innershadow(gaussian, -color-button-play, 50, 0.3, 0, 0);
 }
@@ -187,7 +183,7 @@
 .line-number-box {
     -fx-background-color: -color-bg-alt;
     -fx-padding: 0 8 0 4;
-    -fx-alignment: CENTER_LEFT;
+    -fx-alignment: CENTER_RIGHT;
 }
 
 /* TAB PANE */
@@ -242,6 +238,10 @@
     -fx-padding: 5;
 }
 
+.file-tree-section .label {
+    -fx-padding: 3 3 10 3;
+}
+
 .file-tree-section .scroll-pane, .file-tree-section .viewport, .file-tree-section .tree-view {
     -fx-background-color: transparent;
     -fx-control-inner-background: transparent;
@@ -271,7 +271,7 @@
 }
 
 #memorySection .label {
-    -fx-padding: 3 3 7 3;
+    -fx-padding: 3 3 10 3;
 }
 
 #memoryStackTextArea, #memoryHeapTextArea {

@@ -1,0 +1,28 @@
+/* ThemeName: Navy Dark */
+
+.root {
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #242936;
+    -color-bg-alt: #1F2430;
+    -color-text: #CCCAC2;
+    -color-text-muted: #606A7A;
+    -color-border: #171B24;
+    -color-border-light: #0a10263f;
+
+    -color-button-play: #09bb18;
+    -color-button-play-sbs: #085d0f;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #575757;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #2e2e2e70;
+
+    /* Other elements */
+    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family-code: "Monospaced", monospace;
+}
