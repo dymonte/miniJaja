@@ -23,6 +23,9 @@ public class CodeSectionController implements StatefulController {
 	@FXML
 	private CodeArea codeArea;
 
+	@FXML
+	private HBox buttonBar;
+
 	private Runnable onSaveRequested;
 
 	private int highlightedLine;
@@ -58,6 +61,10 @@ public class CodeSectionController implements StatefulController {
 				e.consume();
 			}
 		});
+	}
+
+	public HBox getButtonBar() {
+		return buttonBar;
 	}
 
 	private void toggleBreakpoint(int line) {

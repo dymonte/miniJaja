@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import org.fxmisc.richtext.CodeArea?>
+<?import javafx.scene.control.Button?>
 
 <VBox xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.umlp.m1info.projectvms.group2.controller.CodeSectionController">
-  <CodeArea fx:id="codeArea" styleClass="code-area" wrapText="true" VBox.vgrow="ALWAYS" />
+  <StackPane VBox.vgrow="ALWAYS">
+    <CodeArea fx:id="codeArea" styleClass="code-area" wrapText="true" VBox.vgrow="ALWAYS" />
+
+    <AnchorPane pickOnBounds="false">
+      <HBox fx:id="buttonBar" spacing="5" AnchorPane.topAnchor="5" AnchorPane.rightAnchor="5"></HBox>
+    </AnchorPane>
+  </StackPane>
 </VBox>

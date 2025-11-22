@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.fxmisc.richtext.CodeArea;
+
 import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
@@ -30,6 +32,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -58,6 +62,9 @@ public class AppController implements StatefulController {
 	@FXML
 	private Menu menuThemes;
 
+	@FXML
+	private CodeArea codeArea;
+
 	private Stage primaryStage;
 
 	private AppState state;
@@ -68,6 +75,11 @@ public class AppController implements StatefulController {
 
 	private final String STYLE_FOLDER = "/fr/umlp/m1info/projectvms/group2/styles/themes/";
 
+	@FXML
+	public void initialize() {
+		addControlButtons();
+	}
+
 	@Override
 	public void bindState(AppState appState) {
 		// set App state to all controllers
@@ -77,6 +89,38 @@ public class AppController implements StatefulController {
 		memorySectionController.bindState(appState);
 
 		fileTreeSectionController.setOnFileOpen(this::displayFile);
+	}
+
+	private void addControlButtons() {
+		// Run Button
+		Button btnRun = new Button();
+		btnRun.getStyleClass().add("btn-run");
+		btnRun.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("run.png"), 32, 32, true, true)));
+		btnRun.setOnAction(e -> runCurrentFile());
+		codeSectionController.getButtonBar().getChildren().add(btnRun);
+
+		// Step Button (for step by step)
+		Button btnStep = new Button();
+		btnStep.getStyleClass().add("btn-step");
+		btnStep.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("step.png"), 36, 36, true, true)));
+		btnStep.setOnAction(e -> runCurrentFileStep());
+		codeSectionController.getButtonBar().getChildren().add(btnStep);
+
+		// Stop Button
+		Button btnStop = new Button();
+		btnStop.getStyleClass().add("btn-stop");
+		btnStop.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("stop.png"), 36, 36, true, true)));
+		btnStop.setOnAction(e -> stopInterpretation());
+		codeSectionController.getButtonBar().getChildren().add(btnStop);
+
+		// Compile Button
+		Button btnCompile = new Button();
+		btnCompile.getStyleClass().add("btn-compile");
+		btnCompile.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("compile.png"), 30, 30, true, true)));
+		btnCompile.setOnAction(e -> {
+			PopUp.info("Compile", "Compilation not implemented", "This feature is not yet implemented.");
+		});
+		codeSectionController.getButtonBar().getChildren().add(btnCompile);
 	}
 
 	/**
