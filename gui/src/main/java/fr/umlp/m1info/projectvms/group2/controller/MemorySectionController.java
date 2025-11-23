@@ -22,8 +22,10 @@ public class MemorySectionController implements StatefulController {
 	public void bindState(AppState appState) {
 		Memory memory = appState.getMemory();
 		if (memory == null) {
-			memoryStackTextArea.setText("Empty stack.");
-			memoryHeapTextArea.appendText("Empty heap.\n");
+			Platform.runLater(() -> {
+				memoryStackTextArea.setText("Empty stack.");
+				memoryHeapTextArea.setText("Empty heap.\n");
+			});
 			return;
 		}
 
@@ -40,11 +42,6 @@ public class MemorySectionController implements StatefulController {
 				quad = quad.next();
 			}
 		}
-		memoryStackTextArea.setText(stackDisplay.toString());
-		Platform.runLater(() -> {
-			memoryStackTextArea.positionCaret(0);
-			memoryStackTextArea.setScrollTop(0);
-		});
 
 		// Display heap content
 		StringBuilder heapDisplay = new StringBuilder();
@@ -56,8 +53,16 @@ public class MemorySectionController implements StatefulController {
 		} else {
 			heapDisplay.append(heap);
 		}
-		memoryHeapTextArea.setText(heapDisplay.toString());
+
+		String finalStackDisplay = stackDisplay.toString();
+		String finalHeapDisplay = heapDisplay.toString();
+
 		Platform.runLater(() -> {
+			memoryStackTextArea.setText(finalStackDisplay);
+			memoryStackTextArea.positionCaret(0);
+			memoryStackTextArea.setScrollTop(0);
+
+			memoryHeapTextArea.setText(finalHeapDisplay);
 			memoryHeapTextArea.positionCaret(0);
 			memoryHeapTextArea.setScrollTop(0);
 		});
