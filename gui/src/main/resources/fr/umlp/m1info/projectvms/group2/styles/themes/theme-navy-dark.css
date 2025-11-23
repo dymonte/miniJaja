@@ -25,4 +25,20 @@
     /* Other elements */
     -font-family: "Inter", "Segoe UI", sans-serif;
     -font-family-code: "Monospaced", monospace;
+
+    /* Code */
+    -color-code-normal: #CCCAC2;
+    -color-code-keyword-main: #7AA2F7;
+    -color-code-keyword-bis: #89DDFF;
+    -color-code-boolean: #FF757F;
+    -color-code-types: #C3E88D;
+    -color-code-builtin-functions: #82AAFF;
+    -color-code-paren: #F5B78A;
+    -color-code-brace: #C792EA;
+    -color-code-bracket: #A3E3FF;
+    -color-code-semicolon: #6E7180;
+    -color-code-string: #F2D88B;
+    -color-code-comment: #5C6370;
+
+    -color-caret: -color-text;
 }

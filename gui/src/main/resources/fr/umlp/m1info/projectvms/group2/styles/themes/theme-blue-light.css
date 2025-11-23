@@ -23,7 +23,8 @@
     -color-dropshadow: #2e2e2e70;
 
     /* Other elements */
-    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family: "JetBrains Mono";
+    /*-fx-font-weight: 800; /* extra bold → large */
     -font-family-code: "Monospaced", monospace;
 
     /* Code */
@@ -39,4 +40,6 @@
     -color-code-semicolon: #999999;
     -color-code-string: #cc0000;
     -color-code-comment: #888888;
+
+    -color-caret: #9a0202;
 }

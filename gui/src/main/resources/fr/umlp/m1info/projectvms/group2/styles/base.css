@@ -135,13 +135,7 @@
     -fx-background-color: -color-bg;
 }
 
-/* CODE AREA */
-.code-area {
-    -fx-background-color: -color-bg;
-    -fx-text-fill: -color-text;
-    -fx-font-family: -font-family-code;
-    -fx-font-size: 14px;
-}
+
 
 #buttonBar {
     -fx-background-color: transparent;
@@ -310,6 +304,17 @@
 .code-area {
     -fx-background-color: -color-bg;
     -fx-font-family: -font-family-code;
+    -fx-font-size: 14px;
+}
+
+/* Caret color */
+.code-area .caret {
+    -fx-stroke: -color-caret;
+}
+
+/* Selection color */
+.code-area .selection {
+    -fx-fill: #C4C4C455;
 }
 
 /* Default text color */

@@ -33,8 +33,6 @@ public class MiniJajaStyler {
     };
 
 
-
-
     private static final String KEYWORDS_MAIN_PATTERN = "\\b(" + String.join("|", KEYWORDS_MAIN) + ")\\b";
     private static final String KEYWORDS_BIS_PATTERN = "\\b(" + String.join("|", KEYWORDS_BIS) + ")\\b";
     private static final String BOOLEANS_PATTERN = "\\b(" + String.join("|", BOOLEANS) + ")\\b";
@@ -102,7 +100,6 @@ public class MiniJajaStyler {
         this.matcher = PATTERN.matcher(text);
         this.spansBuilder = new StyleSpansBuilder<>();
         this.lastSpanEnd = 0;
-        System.out.println("ICI");
     }
 
     public StyleSpans<Collection<String>> style() {
