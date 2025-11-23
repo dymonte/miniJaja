@@ -125,84 +125,87 @@ public class TypeChecker implements Checker {
 		check(node.getInstrs());
 	}
 
-	// Add it only in env
 	@TypeCheckFunction(ASTMethod.class)
 	protected void checkMethod(ASTMethod node) {
-		Type type = TypeCheckerUtils.getTypeMeth(node.getType());
-		List<Type> params = new ArrayList<>();
+		Type returnType = TypeCheckerUtils.getTypeMeth(node.getType());
+		List<Type> paramTypes = new ArrayList<>();
 
-		ASTParams curr = node.getParams();
-		while (!(curr instanceof ASTParamsNil)) {
-			ASTParamsChain chain = (ASTParamsChain) curr;
-			params.add(TypeCheckerUtils.getType(chain.getParam().getType()));
-			curr = chain.getParams();
+		for (ASTParams curr = node.getParams(); curr instanceof ASTParamsChain chain; curr = chain.getParams()) {
+			paramTypes.add(TypeCheckerUtils.getType(chain.getParam().getType()));
 		}
 
-		String name = TypeCheckerUtils.methodKey(node.getIdent().getName(), params);
-		if (env.isDefine(name)) {
+		String methodKey = TypeCheckerUtils.methodKey(node.getIdent().getName(), paramTypes);
+
+		if (env.isDefine(methodKey)) {
 			diag.error(ErrorCode.METHOD_ALREADY_EXISTS,
 					"The method '" + node.getIdent().getName() + "' already exists with the same arguments", node.getLine(),
 					node.getColumn());
 		}
-		env.define(name, type);
+		env.define(methodKey, returnType);
 	}
 
 	@TypeCheckFunction(ASTDecls.class)
 	protected void checkDecls(ASTDecls node) {
-		ASTDecls curr = node;
-		List<ASTMethod> allMethods = new ArrayList<>();
-		while (!(curr instanceof ASTDeclsNil)) {
-			ASTDeclsChain chain = (ASTDeclsChain) curr;
+		List<ASTMethod> deferredMethods = new ArrayList<>();
 
-			if (chain.getDecl() instanceof ASTMethod method) {
-				// To check after all instrs of method
-				allMethods.add(method);
+		for (ASTDecls curr = node; curr instanceof ASTDeclsChain chain; curr = chain.getDecls()) {
+			ASTDecl decl = chain.getDecl();
+
+			if (decl instanceof ASTMethod method) {
+				deferredMethods.add(method);
 			}
-			check(chain.getDecl());
-			curr = chain.getDecls();
+
+			check(decl);
 		}
 
-		// Check all instrs in each methods
-		for (ASTMethod method : allMethods) {
+		for (ASTMethod method : deferredMethods) {
 			check(method.getInstrs());
+
 			ASTReturn ret = searchReturn(method.getInstrs());
-			Type methodReturnType = TypeCheckerUtils.getTypeMeth(method.getType());
+			Type expectedReturnType = TypeCheckerUtils.getTypeMeth(method.getType());
+
 			if (ret == null) {
-				if (methodReturnType != Type.VOID) {
-					diag.error(ErrorCode.MISSING_RETURN_STATEMENT, "This method must return a result of type " + methodReturnType,
+				if (!Type.VOID.equals(expectedReturnType)) {
+					diag.error(ErrorCode.MISSING_RETURN_STATEMENT, "Method must return a value of type " + expectedReturnType,
 							method.getLine(), method.getColumn());
 				}
-			} else {
-				Type returnType = evalType(ret);
-				if (methodReturnType != returnType) {
-					diag.error(ErrorCode.RETURN_TYPE_MISMATCH, "Not same type of return", ret.getLine(), ret.getColumn());
-				}
+				continue;
 			}
 
+			Type actualReturnType = evalType(ret);
+			if (!expectedReturnType.equals(actualReturnType)) {
+				diag.error(ErrorCode.RETURN_TYPE_MISMATCH,
+						"Return type mismatch: expected " + expectedReturnType + ", got " + actualReturnType, ret.getLine(),
+						ret.getColumn());
+			}
 		}
 	}
 
 	@TypeCheckFunction(ASTAssignmentOp.class)
 	protected void checkAssignment(ASTAssignmentOp node) {
-		Type left = evalType(node.getLValue());
-		Type right = evalType(node.getExpr());
+		Type leftType = evalType(node.getLValue());
+		Type rightType = evalType(node.getExpr());
 
 		// right must be integer (left verified after)
-		if (node.getOp() == AssignmentOp.ADD && right != Type.INT) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Assignment += must be an integer value", node.getLine(), node.getColumn());
+		if (node.getOp() == AssignmentOp.ADD && !Type.INT.equals(rightType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Assignment '+=' requires an integer value on the right-hand side, got " + rightType, node.getLine(),
+					node.getColumn());
 		}
 
-		if (left != right) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Assignment type mismatch: left=" + left + ", right=" + right,
+		if (!leftType.equals(rightType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "Assignment type mismatch: left = " + leftType + ", right = " + rightType,
 					node.getLine(), node.getColumn());
 		}
 	}
 
 	@TypeCheckFunction(ASTIf.class)
 	protected void checkIf(ASTIf node) {
-		Type type = evalType(node.getExpr());
-		if (type != Type.BOOL) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "If condition must be boolean", node.getLine(), node.getColumn());
+		Type conditionType = evalType(node.getExpr());
+
+		if (!Type.BOOL.equals(conditionType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "If condition must be of type BOOLEAN, got " + conditionType, node.getLine(),
+					node.getColumn());
 		}
 
 		check(node.getIfInstrs());
@@ -211,20 +214,24 @@ public class TypeChecker implements Checker {
 
 	@TypeCheckFunction(ASTIncrementOp.class)
 	protected void checkIncrement(ASTIncrementOp node) {
-		Type addType = TypeCheckerUtils.getBinaryOpType(BinaryOp.ADD);
-		Type type = evalType(node.getLValue());
-		if (type != addType) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Increment can be possible only with" + addType, node.getLine(),
+		Type expectedType = TypeCheckerUtils.getBinaryOpType(BinaryOp.ADD);
+		Type actualType = evalType(node.getLValue());
+
+		if (!expectedType.equals(actualType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Increment operator can only be applied to type " + expectedType + ", got " + actualType, node.getLine(),
 					node.getColumn());
 		}
 	}
 
 	@TypeCheckFunction(ASTWhile.class)
 	protected void checkWhile(ASTWhile node) {
-		Type condType = evalType(node.getExpr());
-		if (condType != Type.BOOL) {
+		Type conditionType = evalType(node.getExpr());
+
+		if (!Type.BOOL.equals(conditionType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH, "While condition must be boolean", node.getLine(), node.getColumn());
 		}
+
 		check(node.getInstrs());
 	}
 
@@ -247,24 +254,32 @@ public class TypeChecker implements Checker {
 	@TypeCheckFunction(ASTVarSimple.class)
 	protected void checkVarSimple(ASTVarSimple node) {
 		String name = node.getIdent().getName();
-		Type type = TypeCheckerUtils.getTypeMeth(node.getType());
+		Type declaredType = TypeCheckerUtils.getTypeMeth(node.getType());
 
-		env.define(name, type);
+		env.define(name, declaredType);
 
-		if (node.getVExpr() != null && evalType(node.getVExpr().getExpr()) != type) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Variable '" + name + "' assigned with wrong type", node.getLine(),
-					node.getColumn());
+		ASTVExpr initializer = node.getVExpr();
+		if (initializer == null) {
+			return;
+		}
+
+		Type actualType = evalType(initializer.getExpr());
+		if (!declaredType.equals(actualType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Variable '" + name + "' assigned with wrong type: expected " + declaredType + ", got " + actualType,
+					node.getLine(), node.getColumn());
 		}
 	}
 
 	@TypeCheckFunction(ASTVarArray.class)
 	protected void checkVarArray(ASTVarArray node) {
 		String name = node.getIdent().getName();
-		Type type = TypeCheckerUtils.getTypeMeth(node.getType());
+		Type declaredType = TypeCheckerUtils.getTypeMeth(node.getType());
 
-		env.define(name, type);
+		env.define(name, declaredType);
 
-		if (evalType(node.getExpr()) != Type.INT) {
+		Type indexType = evalType(node.getExpr());
+		if (!Type.INT.equals(indexType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH, "Array size must be integer", node.getLine(), node.getColumn());
 		}
 	}
@@ -272,13 +287,20 @@ public class TypeChecker implements Checker {
 	@TypeCheckFunction(ASTVarConst.class)
 	protected void checkVarConst(ASTVarConst node) {
 		String name = node.getIdent().getName();
-		Type type = TypeCheckerUtils.getType(node.getType());
+		Type declaredType = TypeCheckerUtils.getType(node.getType());
 
-		env.define(name, type);
+		env.define(name, declaredType);
 
-		if (node.getVExpr() != null && evalType(node.getVExpr().getExpr()) != type) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Constant '" + name + "'assigned with wront type", node.getLine(),
-					node.getColumn());
+		ASTVExpr valueExpr = node.getVExpr();
+		if (valueExpr == null) {
+			return;
+		}
+
+		Type actualType = evalType(valueExpr.getExpr());
+		if (!declaredType.equals(actualType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Variable '" + name + "' assigned with wrong type: expected " + declaredType + ", got " + actualType,
+					node.getLine(), node.getColumn());
 		}
 	}
 
@@ -300,67 +322,72 @@ public class TypeChecker implements Checker {
 
 	@TypeEvalFunction(ASTBinaryOp.class)
 	protected Type evalTypeBinary(ASTBinaryOp node) {
-		Type type = TypeCheckerUtils.getBinaryOpType(node.getOp());
-		Type left = evalType(node.getLeft());
-		Type right = evalType(node.getRight());
+		Type expectedType = TypeCheckerUtils.getBinaryOpType(node.getOp());
+		Type leftType = evalType(node.getLeft());
+		Type rightType = evalType(node.getRight());
 
-		if (left != type || right != type) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Binary operation types do not match operator", node.getLine(),
-					node.getColumn());
+		if (!expectedType.equals(leftType) || !expectedType.equals(rightType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "Binary operation '" + node.getOp() + "' requires operands of type "
+					+ expectedType + ", got left = " + leftType + ", right = " + rightType, node.getLine(), node.getColumn());
 		}
-		return type;
+		return expectedType;
 	}
 
 	@TypeEvalFunction(ASTUnaryOp.class)
 	protected Type evalTypeUnary(ASTUnaryOp node) {
-		Type type = TypeCheckerUtils.getUnaryOpType(node.getOp());
-		Type value = evalType(node.getExpr());
+		Type expectedType = TypeCheckerUtils.getUnaryOpType(node.getOp());
+		Type valueType = evalType(node.getExpr());
 
-		if (value != type) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Unary operation type mismatch", node.getLine(), node.getColumn());
+		if (!expectedType.equals(valueType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Unary operation '" + node.getOp() + "' requires type " + expectedType + ", but got " + valueType,
+					node.getLine(), node.getColumn());
 		}
-		return type;
+		return expectedType;
 	}
 
 	@TypeEvalFunction(ASTArrayAccess.class)
 	protected Type evalTypeArrayAccess(ASTArrayAccess node) {
-		Type accessType = evalType(node.getExpr());
-		if (accessType != Type.INT) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Array index must be integer", node.getLine(), node.getColumn());
+		Type indexType = evalType(node.getExpr());
+
+		if (!Type.INT.equals(indexType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "Array index must be of type INT, got " + indexType, node.getLine(),
+					node.getColumn());
 		}
 		return evalType(node.getIdent());
 	}
 
 	@TypeEvalFunction(ASTMethodCallInstr.class)
 	protected Type evalTypeMethodCallInstr(ASTMethodCallInstr node) {
-		String name = node.getIdent().getName();
-		List<Type> paramsCall = new ArrayList<>();
+		String methodBaseName = node.getIdent().getName();
 
-		ASTExprs curr = node.getExprs();
-		while (!(curr instanceof ASTExprsNil)) {
-			ASTExprsChain chain = (ASTExprsChain) curr;
-			paramsCall.add(evalType(chain.getExpr()));
-			curr = chain.getExprs();
+		List<Type> argTypes = new ArrayList<>();
+		for (ASTExprs exprs = node.getExprs(); exprs instanceof ASTExprsChain chain; exprs = chain.getExprs()) {
+			argTypes.add(evalType(chain.getExpr()));
 		}
 
-		String methodName = TypeCheckerUtils.methodKey(name, paramsCall);
-		Type type = env.get(methodName);
-		if (type == null) {
-			if (env.hasMethod(name)) {
-				diag.error(ErrorCode.ARGUMENT_MISMATCH, "Argument mismatch", node.getLine(), node.getColumn());
-			} else {
-				diag.error(ErrorCode.UNKNOWN_FUNCTION, "Unknown method '" + node.getIdent().getName() + "'", node.getLine(),
-						node.getColumn());
-			}
+		String methodKey = TypeCheckerUtils.methodKey(methodBaseName, argTypes);
+
+		Type resolvedType = env.get(methodKey);
+		if (resolvedType != null) {
+			return resolvedType;
 		}
-		return type;
+
+		if (env.hasMethod(methodBaseName)) {
+			diag.error(ErrorCode.ARGUMENT_MISMATCH, "Argument mismatch for method '" + methodBaseName + "'", node.getLine(),
+					node.getColumn());
+		} else {
+			diag.error(ErrorCode.UNKNOWN_FUNCTION, "Unknown method '" + node.getIdent().getName() + "'", node.getLine(),
+					node.getColumn());
+		}
+		return null;
 	}
 
 	@TypeEvalFunction(ASTMethodCallExpr.class)
 	protected Type evalTypeMethodCallExpr(ASTMethodCallExpr node) {
 		Type type = evalType(new ASTMethodCallInstr(node.getIdent(), node.getExprs(), node.getLine(), node.getColumn()));
-		if (type == Type.VOID) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "No value been returned", node.getLine(), node.getColumn());
+		if (Type.VOID.equals(type)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "Method call does not return a value", node.getLine(), node.getColumn());
 		}
 		return type;
 	}
@@ -401,13 +428,10 @@ public class TypeChecker implements Checker {
 	}
 
 	private ASTReturn searchReturn(ASTInstrs node) {
-		ASTInstrs curr = node;
-		while (!(curr instanceof ASTInstrsNil)) {
-			ASTInstrsChain chain = (ASTInstrsChain) curr;
-			if (chain.getInstr() instanceof ASTReturn) {
-				return (ASTReturn) chain.getInstr();
+		for (ASTInstrs curr = node; curr instanceof ASTInstrsChain chain; curr = chain.getInstrs()) {
+			if (chain.getInstr() instanceof ASTReturn ret) {
+				return ret;
 			}
-			curr = chain.getInstrs();
 		}
 		return null;
 	}
