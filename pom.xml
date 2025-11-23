@@ -46,6 +46,7 @@
     <module>integration-tests</module>
     <module>utils</module>
     <module>compilation</module>
+    <module>checker</module>
   </modules>
   <distributionManagement>
     <repository>
