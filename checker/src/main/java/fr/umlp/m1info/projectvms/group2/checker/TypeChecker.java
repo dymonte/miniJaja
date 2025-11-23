@@ -68,7 +68,6 @@ class TypeEnv {
 	 */
 	public boolean hasMethod(String name) {
 		for (String key : vars.keySet()) {
-			System.out.println(key);
 			if (key.startsWith("-" + name)) {
 				return true;
 			}

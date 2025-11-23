@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import fr.umlp.m1info.projectvms.group2.exception.TypeCheckException;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
@@ -42,14 +41,15 @@ public class TypeCheckerTest {
 	@Test
 	public void checkTest() {
 		Assert.assertThrows(NullPointerException.class, () -> checker.check(null));
-		Assert.assertThrows(TypeCheckException.class, () -> checker.check(new ASTIdent("a", 0, 0)));
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		Assert.assertThrows(TypeCheckException.class, () -> checker.check(ident));
 	}
 
 	@Test
 	public void evalTypeTest() {
 		Assert.assertThrows(NullPointerException.class, () -> checker.evalType(null));
-		Assert.assertThrows(TypeCheckException.class,
-				() -> checker.evalType(new ASTWrite(new ASTStringLiteral("ah", 0, 0), false, 0, 0)));
+		ASTWrite write = new ASTWrite(new ASTStringLiteral("ah", 0, 0), false, 0, 0);
+		Assert.assertThrows(TypeCheckException.class, () -> checker.evalType(write));
 	}
 
 	@Test

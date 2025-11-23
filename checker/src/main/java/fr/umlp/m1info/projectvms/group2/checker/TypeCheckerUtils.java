@@ -122,9 +122,10 @@ public class TypeCheckerUtils {
 	 * @return a unique string key representing the method
 	 */
 	public static String methodKey(String name, List<Type> params) {
+		StringBuilder sb = new StringBuilder(name);
 		for (Type type : params) {
-			name += type.name();
+			sb.append(type.name());
 		}
-		return "-" + name;
+		return "-" + sb.toString();
 	}
 }
