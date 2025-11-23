@@ -1,15 +1,17 @@
 package fr.umlp.m1info.projectvms.group2;
 
 import org.fxmisc.richtext.CodeArea;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import static org.testfx.util.WaitForAsyncUtils.waitForFxEvents;
+import org.testfx.matcher.base.NodeMatchers;
+import org.testfx.util.WaitForAsyncUtils;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javafx.scene.Node;
 import javafx.scene.control.DialogPane;
@@ -18,14 +20,13 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 @ExtendWith(ApplicationExtension.class)
-public class AppFunctionalTest {
+public class AppFunctionalIT {
 
     @Start
     public void start(Stage stage) throws Exception {
         new App().start(stage);
     }
 
-    @Disabled
     @Test
     void testWriteAndRunProgram(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -42,7 +43,7 @@ public class AppFunctionalTest {
         robot.clickOn("#menuStart");
         robot.clickOn("#outputTab");
 
-        waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
 
         verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
@@ -50,7 +51,6 @@ public class AppFunctionalTest {
         });
     }
 
-    @Disabled
     @Test
     void testComments(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -67,8 +67,8 @@ public class AppFunctionalTest {
         robot.clickOn("#menuStartSubmenu");
         robot.clickOn("#menuStart");
         robot.clickOn("#outputTab");
-        
-        waitForFxEvents();
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
@@ -76,9 +76,8 @@ public class AppFunctionalTest {
         });
     }
 
-    @Disabled
     @Test
-    void testErrorSyntax(FxRobot robot) {
+    void testErrorSyntax(FxRobot robot) throws TimeoutException {
         robot.clickOn("#codeArea");
 
         robot.write("class Test {\n");
@@ -92,17 +91,16 @@ public class AppFunctionalTest {
         robot.clickOn("#menuStartSubmenu");
         robot.clickOn("#menuStart");
 
-        waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitFor(10, TimeUnit.SECONDS, () -> robot.lookup(".alert").tryQuery().isPresent());
 
-        verifyThat(".alert", isVisible());
-        verifyThat(".dialog-pane .label", (Label label) ->
-            label.getText().contains("AST build error in Decls")
-        );
+        verifyThat(".alert", NodeMatchers.isVisible());
+        verifyThat(".dialog-pane .label",
+                (Label label) -> label.getText().contains("error: illegal start of statement"));
     }
 
-    @Disabled
     @Test
-    void testErrorUndeclaredVariable(FxRobot robot) {
+    void testErrorUndeclaredVariable(FxRobot robot) throws TimeoutException {
         robot.clickOn("#codeArea");
         robot.write("class Test {\n");
         robot.write("   main {\n");
@@ -114,15 +112,14 @@ public class AppFunctionalTest {
         robot.clickOn("#menuStartSubmenu");
         robot.clickOn("#menuStart");
 
-        waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitFor(10, TimeUnit.SECONDS, () -> robot.lookup(".alert").tryQuery().isPresent());
 
-        verifyThat(".alert", isVisible());
-        verifyThat(".dialog-pane .label", (Label label) ->
-            label.getText().contains("Error interpreting node ASTClass")
-        );
+        verifyThat(".alert", NodeMatchers.isVisible());
+        verifyThat(".dialog-pane .label",
+                (Label label) -> label.getText().contains("Error interpreting node ASTIdent"));
     }
 
-    @Disabled
     @Test
     void testCloseFile(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -138,7 +135,7 @@ public class AppFunctionalTest {
         robot.clickOn("#menuCloseCurrentFile");
         robot.clickOn("#codeArea");
 
-        waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
 
         verifyThat("#codeArea", (Node node) -> {
             String text = ((CodeArea) node).getText();
@@ -146,13 +143,12 @@ public class AppFunctionalTest {
         });
     }
 
-    @Disabled
     @Test
     void testCloseApp(FxRobot robot) {
         robot.clickOn("#menuFile");
         robot.clickOn("#menuExitApp");
 
-        waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
 
         verifyThat(".dialog-pane", (DialogPane pane) -> {
             String content = pane.getContentText();
@@ -160,7 +156,6 @@ public class AppFunctionalTest {
         });
     }
 
-    @Disabled
     @Test
     void testClearConsole(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -177,7 +172,7 @@ public class AppFunctionalTest {
         robot.clickOn("#menuStart");
         robot.clickOn("#outputTab");
 
-        waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
 
         verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
@@ -188,7 +183,7 @@ public class AppFunctionalTest {
         robot.clickOn("#menuClearConsole");
         robot.clickOn("#outputTab");
 
-        waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
 
         verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
@@ -196,12 +191,23 @@ public class AppFunctionalTest {
         });
     }
 
-    /** TODO :
-     * En tant qu’utilisateur, je veux pouvoir observer les états mémoire en fin d’exécution des programmes afin de les comparer.
-     * En tant que développeur, je veux voir le JajaCode produit par la compilation, afin de comprendre le résultat obtenu.
-     * En tant que développeur ayant compilé un programme, je souhaite pouvoir placer des points d'arrêts dans le JajaCode, afin d’analyser l’exécution après compilation.
-     * En tant que développeur ayant compilé un programme, je souhaite pouvoir exécuter pas à pas le programme JajaCode obtenu, afin d'analyser plus finement son comportement.
-     * En tant que développeur, je veux que l’outil permette de visualiser les résultats mémoire, afin d'analyser plus finement (la gestion de la mémoire dans mon programme. | le comportement de mon programme.)
-     * En tant qu’utilisateur, je veux visualiser l’évolution de la pile, du tas et des variables pendant l’exécution pas à pas, afin de comprendre le comportement mémoire du programme.
+    /**
+     * TODO :
+     * En tant qu’utilisateur, je veux pouvoir observer les états mémoire en fin
+     * d’exécution des programmes afin de les comparer.
+     * En tant que développeur, je veux voir le JajaCode produit par la compilation,
+     * afin de comprendre le résultat obtenu.
+     * En tant que développeur ayant compilé un programme, je souhaite pouvoir
+     * placer des points d'arrêts dans le JajaCode, afin d’analyser l’exécution
+     * après compilation.
+     * En tant que développeur ayant compilé un programme, je souhaite pouvoir
+     * exécuter pas à pas le programme JajaCode obtenu, afin d'analyser plus
+     * finement son comportement.
+     * En tant que développeur, je veux que l’outil permette de visualiser les
+     * résultats mémoire, afin d'analyser plus finement (la gestion de la mémoire
+     * dans mon programme. | le comportement de mon programme.)
+     * En tant qu’utilisateur, je veux visualiser l’évolution de la pile, du tas et
+     * des variables pendant l’exécution pas à pas, afin de comprendre le
+     * comportement mémoire du programme.
      */
 }

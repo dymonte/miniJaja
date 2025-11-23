@@ -3,7 +3,6 @@ package fr.umlp.m1info.projectvms.group2;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 
-public class AppStateTest {
+public class AppStateIT {
 
 	private AppState appState;
 
