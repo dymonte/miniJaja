@@ -96,34 +96,29 @@ public class AppController implements StatefulController {
 	 */
 	private void addControlButtons() {
 		// Run Button
-		Button btnRun = new Button();
-		btnRun.getStyleClass().add("btn-run");
-		btnRun.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("run.png"), 32, 32, true, true)));
-		btnRun.setOnAction(e -> runCurrentFile());
-		codeSectionController.getButtonBar().getChildren().add(btnRun);
+		createToolbarButton("btn-run", "run.png", 32, this::runCurrentFile);
 
 		// Step Button (for step by step)
-		Button btnStep = new Button();
-		btnStep.getStyleClass().add("btn-step");
-		btnStep.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("step.png"), 36, 36, true, true)));
-		btnStep.setOnAction(e -> runCurrentFileStep());
-		codeSectionController.getButtonBar().getChildren().add(btnStep);
+		createToolbarButton("btn-step", "step.png", 36, this::runCurrentFileStep);
 
 		// Stop Button
-		Button btnStop = new Button();
-		btnStop.getStyleClass().add("btn-stop");
-		btnStop.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("stop.png"), 36, 36, true, true)));
-		btnStop.setOnAction(e -> stopInterpretation());
-		codeSectionController.getButtonBar().getChildren().add(btnStop);
+		createToolbarButton("btn-stop", "stop.png", 36, this::stopInterpretation);
 
 		// Compile Button
-		Button btnCompile = new Button();
-		btnCompile.getStyleClass().add("btn-compile");
-		btnCompile.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("compile.png"), 30, 30, true, true)));
-		btnCompile.setOnAction(e -> {
+		createToolbarButton("btn-compile", "compile.png", 30, () -> {
 			PopUp.info("Compile", "Compilation not implemented", "This feature is not yet implemented.");
 		});
-		codeSectionController.getButtonBar().getChildren().add(btnCompile);
+	}
+
+	/**
+	 * Creates a toolbar button with an icon.
+	 */
+	private void createToolbarButton(String cssClass, String iconName, int size, Runnable action) {
+		Button button = new Button();
+		button.getStyleClass().add(cssClass);
+		button.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(iconName), size, size, true, true)));
+		button.setOnAction(e -> action.run());
+		codeSectionController.getButtonBar().getChildren().add(button);
 	}
 
 	/**
@@ -638,10 +633,8 @@ public class AppController implements StatefulController {
 		Scene scene = primaryStage.getScene();
 		if (scene == null) return;
 
-		// Remove all existing stylesheets
 		scene.getStylesheets().removeIf(url -> url.contains("themes/"));
 
-		// Add the new one
 		String fullPath = STYLE_FOLDER + cssFileName;
 		URL cssUrl = getClass().getResource(fullPath);
 
