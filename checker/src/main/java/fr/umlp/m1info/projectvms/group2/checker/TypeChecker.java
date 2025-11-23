@@ -24,21 +24,48 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 
 import fr.umlp.m1info.projectvms.group2.checker.Diagnostic.ErrorCode;
 
+/**
+ * Maintains a type environment for variables and methods.
+ */
 class TypeEnv {
 	private final Map<String, Type> vars = new HashMap<>();
 
+	/**
+	 * Defines a variable or method in the environment
+	 *
+	 * @param name the name of the variable
+	 * @param type the type of the variable
+	 */
 	public void define(String name, Type type) {
 		vars.put(name, type);
 	}
 
+	/**
+	 * Returns the type of a variable of method by name
+	 *
+	 * @param name the name of variable of method
+	 * @return the type of the variable or method
+	 */
 	public Type get(String name) {
 		return vars.get(name);
 	}
 
+	/**
+	 * Checks if a variable or method is defined in the environment
+	 *
+	 * @param name the name of variable of method
+	 * @return if a variable or method is defined
+	 */
 	public boolean isDefine(String name) {
 		return vars.containsKey(name);
 	}
 
+	/**
+	 * Checks if a method with the given name exists (ignores parameters)
+	 *
+	 * @param name the name of method
+	 * @return if a method name exists
+	 */
 	public boolean hasMethod(String name) {
 		for (String key : vars.keySet()) {
 			System.out.println(key);
@@ -50,10 +77,20 @@ class TypeEnv {
 	}
 }
 
+/**
+ * The TypeChecker performs type-checking of MiniJaja AST nodes
+ * It uses a diagnostic object to report errors
+ */
 public class TypeChecker implements Checker {
 	private final Diagnostic diag;
 	private TypeEnv env;
 
+	/**
+	 * Constructs a TypeChecker with a diagnostic object
+	 *
+	 * @param diag the diagnostic handler
+	 * @throws NullPointerException if diag is null
+	 */
 	public TypeChecker(Diagnostic diag) {
 		if (diag == null) {
 			throw new NullPointerException("Diagnostic cannot be null");
@@ -62,6 +99,14 @@ public class TypeChecker implements Checker {
 		env = new TypeEnv();
 	}
 
+	/**
+	 * Type-checks an AST node by invoking the corresponding @TypeCheckFunction
+	 * method
+	 *
+	 * @param node the AST node to check
+	 * @throws NullPointerException if node is null
+	 * @throws TypeCheckException   if no suitable check method exists
+	 */
 	public void check(ASTNode node) {
 		if (node == null) {
 			throw new NullPointerException("node cannot be null");
@@ -79,6 +124,15 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/**
+	 * Evaluates the type of an AST node by invoking the
+	 * corresponding @TypeEvalFunction method
+	 *
+	 * @param node the AST node
+	 * @return the type of the node
+	 * @throws NullPointerException if node is null
+	 * @throws TypeCheckException   if no suitable eval method exists
+	 */
 	public Type evalType(ASTNode node) {
 		if (node == null) {
 			throw new NullPointerException("node cannot be null");
@@ -96,6 +150,14 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/**
+	 * Finds a method annotated with a specific annotation that can handle the given
+	 * AST node class
+	 *
+	 * @param annotationClass the annotation class
+	 * @param nodeClass       the AST node class
+	 * @return the Method if found, null otherwise
+	 */
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
 			Class<?> nodeClass) {
 		for (Method method : this.getClass().getDeclaredMethods()) {
@@ -113,18 +175,21 @@ public class TypeChecker implements Checker {
 		return null;
 	}
 
+	/** Checks a class declaration by checking its declarations and main method */
 	@TypeCheckFunction(ASTClass.class)
 	protected void checkClass(ASTClass node) {
 		check(node.getDecls());
 		check(node.getMainMethod());
 	}
 
+	/** Checks the main method by checking variables and instructions */
 	@TypeCheckFunction(ASTMainMethod.class)
 	protected void checkMainMethod(ASTMainMethod node) {
 		check(node.getVars());
 		check(node.getInstrs());
 	}
 
+	/** Registers a method in the environment and checks for duplicate signatures */
 	@TypeCheckFunction(ASTMethod.class)
 	protected void checkMethod(ASTMethod node) {
 		Type returnType = TypeCheckerUtils.getTypeMeth(node.getType());
@@ -144,6 +209,10 @@ public class TypeChecker implements Checker {
 		env.define(methodKey, returnType);
 	}
 
+	/**
+	 * Checks a sequence of declarations, and deferred method instructions after all
+	 * declarations
+	 */
 	@TypeCheckFunction(ASTDecls.class)
 	protected void checkDecls(ASTDecls node) {
 		List<ASTMethod> deferredMethods = new ArrayList<>();
@@ -181,6 +250,7 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/** Checks an assignment operation for type correctness */
 	@TypeCheckFunction(ASTAssignmentOp.class)
 	protected void checkAssignment(ASTAssignmentOp node) {
 		Type leftType = evalType(node.getLValue());
@@ -199,6 +269,7 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/** Checks an if statement for boolean condition and checks its branches */
 	@TypeCheckFunction(ASTIf.class)
 	protected void checkIf(ASTIf node) {
 		Type conditionType = evalType(node.getExpr());
@@ -212,6 +283,7 @@ public class TypeChecker implements Checker {
 		check(node.getElseInstrs());
 	}
 
+	/** Checks increment operator for type compatibility */
 	@TypeCheckFunction(ASTIncrementOp.class)
 	protected void checkIncrement(ASTIncrementOp node) {
 		Type expectedType = TypeCheckerUtils.getBinaryOpType(BinaryOp.ADD);
@@ -224,6 +296,7 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/** Checks a while loop condition type and its instructions */
 	@TypeCheckFunction(ASTWhile.class)
 	protected void checkWhile(ASTWhile node) {
 		Type conditionType = evalType(node.getExpr());
@@ -235,22 +308,26 @@ public class TypeChecker implements Checker {
 		check(node.getInstrs());
 	}
 
+	/** Type-checks a write instruction */
 	@TypeCheckFunction(ASTWrite.class)
 	protected void checkWrite(ASTWrite node) {
 		// do nothing
 	}
 
+	/** Checks a chain of instructions recursively */
 	@TypeCheckFunction(ASTInstrsChain.class)
 	protected void checkInstrsChain(ASTInstrsChain node) {
 		check(node.getInstr());
 		check(node.getInstrs());
 	}
 
+	/** Type-checks an empty instruction chain (nothing to check) */
 	@TypeCheckFunction(ASTInstrsNil.class)
 	protected void checkInstrsNil(ASTInstrsNil node) {
 		// do nothing
 	}
 
+	/** Type-checks a simple variable declaration and its initializer */
 	@TypeCheckFunction(ASTVarSimple.class)
 	protected void checkVarSimple(ASTVarSimple node) {
 		String name = node.getIdent().getName();
@@ -271,6 +348,7 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/** Type-checks an array variable declaration and its size expression */
 	@TypeCheckFunction(ASTVarArray.class)
 	protected void checkVarArray(ASTVarArray node) {
 		String name = node.getIdent().getName();
@@ -284,6 +362,9 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/**
+	 * Type-checks a constant variable declaration and its initializer expression
+	 */
 	@TypeCheckFunction(ASTVarConst.class)
 	protected void checkVarConst(ASTVarConst node) {
 		String name = node.getIdent().getName();
@@ -304,22 +385,26 @@ public class TypeChecker implements Checker {
 		}
 	}
 
+	/** Type-checks a chain of variable declarations recursively */
 	@TypeCheckFunction(ASTVarsChain.class)
 	protected void checkVarsChain(ASTVarsChain node) {
 		check(node.getVar());
 		check(node.getVars());
 	}
 
+	/** Type-checks an empty variable declaration chain */
 	@TypeCheckFunction(ASTVarsNil.class)
 	protected void checkVarsNil(ASTVarsNil node) {
 		// do nothing
 	}
 
+	/** Type-checks a return statement */
 	@TypeCheckFunction(ASTReturn.class)
 	protected void checkReturn(ASTReturn node) {
 		// do nothing
 	}
 
+	/** Evaluates the type of a binary operation */
 	@TypeEvalFunction(ASTBinaryOp.class)
 	protected Type evalTypeBinary(ASTBinaryOp node) {
 		Type expectedType = TypeCheckerUtils.getBinaryOpType(node.getOp());
@@ -333,6 +418,7 @@ public class TypeChecker implements Checker {
 		return expectedType;
 	}
 
+	/** Evaluates the type of a unary operation */
 	@TypeEvalFunction(ASTUnaryOp.class)
 	protected Type evalTypeUnary(ASTUnaryOp node) {
 		Type expectedType = TypeCheckerUtils.getUnaryOpType(node.getOp());
@@ -346,6 +432,7 @@ public class TypeChecker implements Checker {
 		return expectedType;
 	}
 
+	/** Evaluates the type of an array access expression */
 	@TypeEvalFunction(ASTArrayAccess.class)
 	protected Type evalTypeArrayAccess(ASTArrayAccess node) {
 		Type indexType = evalType(node.getExpr());
@@ -357,6 +444,7 @@ public class TypeChecker implements Checker {
 		return evalType(node.getIdent());
 	}
 
+	/** Evaluates the type of a method call instruction */
 	@TypeEvalFunction(ASTMethodCallInstr.class)
 	protected Type evalTypeMethodCallInstr(ASTMethodCallInstr node) {
 		String methodBaseName = node.getIdent().getName();
@@ -383,6 +471,7 @@ public class TypeChecker implements Checker {
 		return null;
 	}
 
+	/** Evaluates the type of a method call expression */
 	@TypeEvalFunction(ASTMethodCallExpr.class)
 	protected Type evalTypeMethodCallExpr(ASTMethodCallExpr node) {
 		Type type = evalType(new ASTMethodCallInstr(node.getIdent(), node.getExprs(), node.getLine(), node.getColumn()));
@@ -392,31 +481,37 @@ public class TypeChecker implements Checker {
 		return type;
 	}
 
+	/** Evaluates the type of a return statement */
 	@TypeEvalFunction(ASTReturn.class)
 	protected Type evalTypeReturn(ASTReturn node) {
 		return evalType(node.getExpr());
 	}
 
+	/** Evaluates the type of a length expression */
 	@TypeEvalFunction(ASTLength.class)
 	protected Type evalTypeLength(ASTLength node) {
 		return Type.INT;
 	}
 
+	/** Evaluates the type of an integer literal */
 	@TypeEvalFunction(ASTIntLiteral.class)
 	protected Type evalTypeIntLiteral(ASTIntLiteral node) {
 		return Type.INT;
 	}
 
+	/** Evaluates the type of a boolean literal */
 	@TypeEvalFunction(ASTBoolLiteral.class)
 	protected Type evalTypeBoolLiteral(ASTBoolLiteral node) {
 		return Type.BOOL;
 	}
 
+	/** Evaluates the type of a string literal */
 	@TypeEvalFunction(ASTStringLiteral.class)
 	protected Type evalTypeStringLiteral(ASTStringLiteral node) {
 		return Type.STRING;
 	}
 
+	/** Evaluates the type of an identifier */
 	@TypeEvalFunction(ASTIdent.class)
 	protected Type evalTypeIdent(ASTIdent node) {
 		Type type = env.get(node.getName());
@@ -427,6 +522,12 @@ public class TypeChecker implements Checker {
 		return type;
 	}
 
+	/**
+	 * Searches for the first return statement in an instruction sequence.
+	 *
+	 * @param node the instruction sequence
+	 * @return the first ASTReturn found or null if none
+	 */
 	private ASTReturn searchReturn(ASTInstrs node) {
 		for (ASTInstrs curr = node; curr instanceof ASTInstrsChain chain; curr = chain.getInstrs()) {
 			if (chain.getInstr() instanceof ASTReturn ret) {
