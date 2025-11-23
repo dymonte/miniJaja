@@ -25,7 +25,7 @@ public class MiniJajaStyler {
     };
 
     private static final String[] TYPES = new String[] {
-            "int", "bool", "void"
+            "int", "boolean", "void"
     };
 
     private static final String [] BUILTIN_FUNCTIONS = new String[] {
