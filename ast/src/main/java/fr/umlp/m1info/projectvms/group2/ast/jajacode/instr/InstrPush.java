@@ -15,10 +15,14 @@ public class InstrPush extends Instr{
      */
     public InstrPush(int lineId, Val val) {
         super(lineId);
+        //System.out.println("DEBUG InstrPush: constructor called, val = " + val);
+
         if (val == null)
             throw new NullPointerException("val cannot be null");
+
         this.val = val;
     }
+
 
     /**
      * @return the value to push

@@ -1,0 +1,6 @@
+init
+push(3)
+new(m,int,meth,0)
+load(m)
+write
+jcstop

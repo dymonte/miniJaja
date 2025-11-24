@@ -1,0 +1,6 @@
+init
+push(99)
+new(c,int,cst,0)
+load(c)
+write
+jcstop

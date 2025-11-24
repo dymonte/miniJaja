@@ -12,8 +12,8 @@ public final class ValAddress extends Val{
      */
     public ValAddress(int lineId, int address) {
         super(lineId);
-        if (address <= 0)
-            throw new IllegalArgumentException("Address must be greater than 0");
+        if (address < 0)
+            throw new IllegalArgumentException("address should be >= 0");
         this.address = address;
     }
 

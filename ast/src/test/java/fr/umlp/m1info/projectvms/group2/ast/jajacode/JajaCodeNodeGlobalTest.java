@@ -22,12 +22,7 @@ public class JajaCodeNodeGlobalTest {
 			new ValAddress(1, -1);
 		});
 
-		Assert.assertEquals("Address must be greater than 0", e.getMessage());
+		Assert.assertEquals("address should be >= 0", e.getMessage());
 
-		e = Assert.assertThrows(IllegalArgumentException.class, () -> {
-			new ValAddress(1, 0);
-		});
-
-		Assert.assertEquals("Address must be greater than 0", e.getMessage());
-	}
+    }
 }

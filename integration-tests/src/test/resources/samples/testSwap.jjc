@@ -1,0 +1,7 @@
+init
+push(10)
+push(20)
+swap
+write
+write
+jcstop

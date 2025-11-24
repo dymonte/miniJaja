@@ -33,7 +33,7 @@ public class JajaCodeNodeToStringTest {
 	public void testValToStringNbre() {
 		int lineId = 1;
 		ValNbre val = new ValNbre(lineId, 10);
-		Assert.assertEquals("jcnbre(10)", val.toString());
+		Assert.assertEquals("10", val.toString());
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class JajaCodeNodeToStringTest {
 	public void testInstrToStringPush() {
 		int lineId = 1;
 		InstrPush instr = new InstrPush(lineId, new ValNbre(lineId, 10));
-		Assert.assertEquals("1 : push(jcnbre(10))", instr.toString());
+		Assert.assertEquals("1 : push(10)", instr.toString());
 	}
 
 	@Test

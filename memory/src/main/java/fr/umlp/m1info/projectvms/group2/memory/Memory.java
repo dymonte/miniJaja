@@ -391,7 +391,7 @@ public class Memory {
 	 */
 	public void push(Object value, Type type) {
 		SymNode symbol = new SymNode("w", new MemInfo(type, Kind.CONST));
-		stack.push(value, symbol);
+        stack.push(value, symbol);
 	}
 
 	public void push(String value) {
@@ -399,7 +399,7 @@ public class Memory {
 	}
 
 	public void push(int value) {
-		push(value, Type.INT);
+        push(value, Type.INT);
 	}
 
 	public void push(boolean value) {
