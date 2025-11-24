@@ -1,0 +1,44 @@
+/* ThemeName: Gold Dark */
+
+.root {
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #1d1e1f;
+    -color-bg-alt: #2a2b2c;
+    -color-text: #c3c3c3;
+    -color-text-muted: #9d9d9d;
+    -color-border: #c2b07f;
+    -color-border-light: #c2b07f3f;
+
+    -color-button-play: #09bb18;
+    -color-button-play-sbs: #085d0f;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #575757;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #2e2e2e70;
+
+    /* Other elements */
+    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family-code: "Monospaced", monospace;
+
+    /* Code */
+    -color-code-normal: -color-text;
+    -color-code-keyword-main: #d4af37;
+    -color-code-keyword-bis: #c2851d;
+    -color-code-boolean: #e94b35;
+    -color-code-types: #b2b27f;
+    -color-code-builtin-functions: #c2b07f;
+    -color-code-paren: #ffcc00;
+    -color-code-brace: #d4af37;
+    -color-code-bracket: #b2d235;
+    -color-code-semicolon: #9d9d9d;
+    -color-code-string: #e6b800;
+    -color-code-comment: #7a7a7a;
+
+    -color-caret: -color-text;
+}

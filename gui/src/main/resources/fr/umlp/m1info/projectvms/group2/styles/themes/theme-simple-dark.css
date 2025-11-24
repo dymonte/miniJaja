@@ -1,0 +1,44 @@
+/* ThemeName: Simple Dark */
+
+.root {
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #282D35;
+    -color-bg-alt: #20252D;
+    -color-text: #A8AAAD;
+    -color-text-muted: #89909C;
+    -color-border: #404958;
+    -color-border-light: #4049583f;
+
+    -color-button-play: #09bb18;
+    -color-button-play-sbs: #085d0f;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #575757;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #2e2e2e70;
+
+    /* Other elements */
+    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family-code: "Monospaced", monospace;
+
+    /* Code */
+    -color-code-normal: #A8AAAD;
+    -color-code-keyword-main: #C792EA;
+    -color-code-keyword-bis: #82AAFF;
+    -color-code-boolean: #FF6A6A;
+    -color-code-types: #C3E88D;
+    -color-code-builtin-functions: #7FD3FF;
+    -color-code-paren: #F4BF75;
+    -color-code-brace: #D487E6;
+    -color-code-bracket: #A6E3FF;
+    -color-code-semicolon: #7A7F89;
+    -color-code-string: #FFE28A;
+    -color-code-comment: #6C707A;
+
+    -color-caret: -color-text;
+}

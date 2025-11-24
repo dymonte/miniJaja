@@ -1,0 +1,45 @@
+/* ThemeName: Dracula Dark */
+
+.root {
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #282a36;
+    -color-bg-alt: #1b1d24;
+    -color-text: #f8f8f2;
+    -color-text-muted: #025d9a;
+    -color-border: #44475a;
+    -color-border-light: #383a4a;
+
+    -color-button-play: #09bb18;
+    -color-button-play-sbs: #085d0f;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #575757;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #2e2e2e70;
+
+    /* Other elements */
+    -font-family: "JetBrains Mono";
+    /*-fx-font-weight: 800; /* extra bold → large */
+    -font-family-code: "Monospaced", monospace;
+
+    /* Code */
+    -color-code-normal: -color-text;
+    -color-code-keyword-main: #ff79c6;
+    -color-code-keyword-bis: #8be9fd;
+    -color-code-boolean: #ffb86c;
+    -color-code-types: #bd93f9;
+    -color-code-builtin-functions: #50fa7b;
+    -color-code-paren: #ffb86c;
+    -color-code-brace: -color-text;
+    -color-code-bracket: -color-text;
+    -color-code-semicolon: #6272a4;
+    -color-code-string: #f1fa8c;
+    -color-code-comment: #6272a4;
+
+    -color-caret: #ff5555;
+}

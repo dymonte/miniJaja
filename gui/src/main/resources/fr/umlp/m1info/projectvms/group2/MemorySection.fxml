@@ -3,18 +3,17 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
 
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="fr.umlp.m1info.projectvms.group2.controller.MemorySectionController" fillWidth="true" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="fr.umlp.m1info.projectvms.group2.controller.MemorySectionController" fillWidth="true" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS" fx:id="memorySection">
   <StackPane>
     <Label fx:id="headerLabel" text="MEMORY" StackPane.alignment="CENTER_LEFT" />
   </StackPane>
-	<SplitPane dividerPositions="0.5" orientation="VERTICAL" focusTraversable="true" VBox.vgrow="ALWAYS">
-		<items>
-      <TextArea fx:id="memoryStackTextArea" editable="false" wrapText="false" VBox.vgrow="ALWAYS" />
-		  <TextArea fx:id="memoryHeapTextArea" editable="false" wrapText="false" VBox.vgrow="ALWAYS" />
-		</items>
-  </SplitPane>
+	<VBox spacing="5" VBox.vgrow="ALWAYS">
+    <TextArea fx:id="memoryStackTextArea" editable="false" wrapText="false" VBox.vgrow="ALWAYS" />
+    <TextArea fx:id="memoryHeapTextArea" editable="false" wrapText="false" VBox.vgrow="ALWAYS" />
+	</VBox>
 </VBox>

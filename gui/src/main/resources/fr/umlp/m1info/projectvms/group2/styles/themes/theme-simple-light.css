@@ -1,0 +1,44 @@
+/* ThemeName: Simple Light */
+
+.root {
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #FFFFFF;
+    -color-bg-alt: #A0C8ED;
+    -color-text: #086ADA;
+    -color-text-muted: #828185;
+    -color-border: #828185;
+    -color-border-light: #DCF5FF;
+
+    -color-button-play: #09bb18;
+    -color-button-play-sbs: #085d0f;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #575757;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #2e2e2e70;
+
+    /* Other elements */
+    -font-family: "Inter", "Segoe UI", sans-serif;
+    -font-family-code: "Monospaced", monospace;
+
+    /* Code */
+    -color-code-normal: #086ADA;
+    -color-code-keyword-main: #005BBB;
+    -color-code-keyword-bis: #7A3EB1;
+    -color-code-boolean: #C91E1E;
+    -color-code-types: #2E7D32;
+    -color-code-builtin-functions: #005F8F;
+    -color-code-paren: #E69A00;
+    -color-code-brace: #A647C6;
+    -color-code-bracket: #2FA83C;
+    -color-code-semicolon: #6F6F6F;
+    -color-code-string: #C97F00;
+    -color-code-comment: #8E8E8E;
+
+    -color-caret: -color-text;
+}

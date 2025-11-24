@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 626 462" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-3382.151179,-1666.499296)">
+        <g id="Small-logo" serif:id="Small logo" transform="matrix(0.700393,0,0,0.700393,2186.718567,959.444865)">
+            <path d="M2242.904,1512.573L2139.047,1512.573L2139.047,1320.025C2139.047,1271.008 2121.023,1246.5 2084.975,1246.5C2067.83,1246.5 2053.873,1253.864 2043.103,1268.591C2032.332,1283.318 2026.947,1301.671 2026.947,1323.652L2026.947,1512.573L1922.76,1512.573L1922.76,1318.047C1922.76,1270.349 1905.066,1246.5 1869.677,1246.5C1851.873,1246.5 1837.641,1253.534 1826.98,1267.602C1816.32,1281.669 1810.989,1300.792 1810.989,1324.97L1810.989,1512.573L1706.802,1512.573L1706.802,1174.954L1810.989,1174.954L1810.989,1227.707L1812.308,1227.707C1823.079,1209.683 1838.19,1195.011 1857.643,1183.691C1877.095,1172.371 1898.362,1166.711 1921.441,1166.711C1969.138,1166.711 2001.779,1187.703 2019.364,1229.685C2045.081,1187.703 2082.887,1166.711 2132.783,1166.711C2206.197,1166.711 2242.904,1211.991 2242.904,1302.55L2242.904,1512.573Z" style="fill:rgb(245,108,57);"/>
+            <g transform="matrix(1,0,0,1,544.93395,21.649863)">
+                <g transform="matrix(675.238179,0,0,675.238179,1892.019132,1486.760778)">
+                </g>
+                <text x="1700.13px" y="1486.761px" style="font-family:'SegoeUI-Bold', 'Segoe UI', sans-serif;font-weight:700;font-size:675.238px;fill:rgb(20,60,87);stroke:rgb(20,60,87);stroke-width:1.43px;">j</text>
+            </g>
+            <g transform="matrix(1,0,0,1,743.746754,23.710527)">
+                <g transform="matrix(675.238179,0,0,675.238179,1892.019132,1486.760778)">
+                </g>
+                <text x="1700.13px" y="1486.761px" style="font-family:'SegoeUI-Bold', 'Segoe UI', sans-serif;font-weight:700;font-size:675.238px;fill:rgb(20,60,87);">j</text>
+            </g>
+        </g>
+    </g>
+</svg>

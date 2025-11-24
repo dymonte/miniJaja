@@ -1,6 +1,8 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -9,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.fxmisc.richtext.CodeArea;
+
 import fr.umlp.m1info.projectvms.group2.AppState;
-
-import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
-
+import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
@@ -28,8 +30,12 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -53,11 +59,26 @@ public class AppController implements StatefulController {
 	@FXML
 	private MemorySectionController memorySectionController;
 
+	@FXML
+	private Menu menuThemes;
+
+	@FXML
+	private CodeArea codeArea;
+
 	private Stage primaryStage;
 
 	private AppState state;
 
 	private Thread miniJajaInterpreterThread;
+
+	private Scene mainScene;
+
+	private final String STYLE_FOLDER = "/fr/umlp/m1info/projectvms/group2/styles/themes/";
+
+	@FXML
+	public void initialize() {
+		addControlButtons();
+	}
 
 	@Override
 	public void bindState(AppState appState) {
@@ -68,6 +89,36 @@ public class AppController implements StatefulController {
 		memorySectionController.bindState(appState);
 
 		fileTreeSectionController.setOnFileOpen(this::displayFile);
+	}
+
+	/**
+	 * Adds control buttons to the code section toolbar
+	 */
+	private void addControlButtons() {
+		// Run Button
+		createToolbarButton("btn-run", "run.png", 32, this::runCurrentFile);
+
+		// Step Button (for step by step)
+		createToolbarButton("btn-step", "step.png", 36, this::runCurrentFileStep);
+
+		// Stop Button
+		createToolbarButton("btn-stop", "stop.png", 36, this::stopInterpretation);
+
+		// Compile Button
+		createToolbarButton("btn-compile", "compile.png", 30, () -> {
+			PopUp.info("Compile", "Compilation not implemented", "This feature is not yet implemented.");
+		});
+	}
+
+	/**
+	 * Creates a toolbar button with an icon.
+	 */
+	private void createToolbarButton(String cssClass, String iconName, int size, Runnable action) {
+		Button button = new Button();
+		button.getStyleClass().add(cssClass);
+		button.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(iconName), size, size, true, true)));
+		button.setOnAction(e -> action.run());
+		codeSectionController.getButtonBar().getChildren().add(button);
 	}
 
 	/**
@@ -269,11 +320,27 @@ public class AppController implements StatefulController {
 	}
 
 	/**
+	 * Opens help jajacode language window
+	 */
+	@FXML
+	private void openHelpJajaCode() {
+		openHelpFile("help_jajacode_content.html");
+	}
+
+	/**
 	 * Opens help memory window
 	 */
 	@FXML
 	private void openHelpMemory() {
 		openHelpFile("help_memory_content.html");
+	}
+
+	/**
+	 * Opens help errors window
+	 */
+	@FXML
+	private void openHelpErrors() {
+		openHelpFile("help_errors_content.html");
 	}
 
 	private void openHelpFile(String resourceName) {
@@ -499,16 +566,84 @@ public class AppController implements StatefulController {
 	 *
 	 * @param stage the primary stage
 	 */
-
 	public void setPrimaryStage(Stage stage) {
 		this.primaryStage = stage;
 
 		Platform.runLater(() -> {
-			Scene scene = primaryStage.getScene();
-			if (scene != null) {
-				addCtrlCHandler(scene);
+			Scene mainScene = primaryStage.getScene();
+			if (mainScene != null) {
+				loadThemesMenu();
 			}
 		});
+	}
+
+	/**
+	 * Loads available themes into the themes menu
+	 */
+	private void loadThemesMenu() {
+		menuThemes.getItems().clear();
+
+		URL themesFolderUrl = getClass().getResource(STYLE_FOLDER);
+		if (themesFolderUrl == null) {
+			System.err.println("Themes folder not found");
+			return;
+		}
+
+		File themesFolder = new File(themesFolderUrl.getPath());
+		File[] cssFiles = themesFolder.listFiles((dir, name) -> name.endsWith(".css"));
+
+		for (File file : cssFiles) {
+			String cssName = extractThemeName(file);
+			MenuItem item = new MenuItem(cssName);
+
+			item.setOnAction(e -> applyTheme(file.getName()));
+			menuThemes.getItems().add(item);
+		}
+	}
+
+	/**
+	 * Extracts the theme name from the CSS file
+	 *
+	 * @param file the CSS file
+	 * @return the theme name
+	 */
+	private String extractThemeName(File file) {
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			String firstLine = br.readLine();
+
+			if (firstLine != null && firstLine.contains("ThemeName:")) {
+				return firstLine.replace("/*", "")
+								.replace("*/", "")
+								.replace("ThemeName:", "")
+								.trim();
+			}
+		} catch (Exception ignored) {}
+
+		// fallback to file name
+		String name = file.getName().replace(".css", "");
+		return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+	}
+
+	/**
+	 * Applies the selected theme by changing the stylesheet
+	 *
+	 * @param cssFileName the CSS file name of the theme
+	 */
+	private void applyTheme(String cssFileName) {
+		Scene scene = primaryStage.getScene();
+		if (scene == null) return;
+
+		scene.getStylesheets().removeIf(url -> url.contains("themes/"));
+
+		String fullPath = STYLE_FOLDER + cssFileName;
+		URL cssUrl = getClass().getResource(fullPath);
+
+		if (cssUrl == null) {
+			System.err.println("Unable to find " + fullPath);
+			return;
+		}
+
+		scene.getStylesheets().add(cssUrl.toExternalForm());
 	}
 
 	private void addCtrlCHandler(Scene scene) {

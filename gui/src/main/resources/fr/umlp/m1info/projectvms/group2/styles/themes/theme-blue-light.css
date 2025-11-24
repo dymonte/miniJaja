@@ -1,0 +1,45 @@
+/* ThemeName: Blue Light */
+
+.root {
+    /* Color Palette */
+    -color-black: #000000;
+    -color-white: #ffffff;
+
+    -color-bg: #f5faff;
+    -color-bg-alt: #dfefff;
+    -color-text: #091e68;
+    -color-text-muted: #025d9a;
+    -color-border: #025d9a;
+    -color-border-light: #025d9a3f;
+
+    -color-button-play: #09bb18;
+    -color-button-play-sbs: #085d0f;
+    -color-button-stop: #9b0505;
+    -color-button-compile: #575757;
+    -color-button-next: #102d8e;
+
+    -color-success: #28a745;
+    -color-error: #dc3545;
+    -color-dropshadow: #2e2e2e70;
+
+    /* Other elements */
+    -font-family: "JetBrains Mono";
+    /*-fx-font-weight: 800; /* extra bold → large */
+    -font-family-code: "Monospaced", monospace;
+
+    /* Code */
+    -color-code-normal: -color-text;
+    -color-code-keyword-main: #0077cc;
+    -color-code-keyword-bis: #8B4AB0;
+    -color-code-boolean: #650000;
+    -color-code-types: #003900;
+    -color-code-builtin-functions: #7007a1;
+    -color-code-paren: #ff9900;
+    -color-code-brace: #cc00cc;
+    -color-code-bracket: #009900;
+    -color-code-semicolon: #999999;
+    -color-code-string: #cc0000;
+    -color-code-comment: #888888;
+
+    -color-caret: #9a0202;
+}

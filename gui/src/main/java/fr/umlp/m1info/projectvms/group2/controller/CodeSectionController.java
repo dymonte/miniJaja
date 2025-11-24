@@ -1,5 +1,17 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import fr.umlp.m1info.projectvms.group2.styler.MiniJajaStyler;
+import javafx.scene.control.IndexRange;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+
+import fr.umlp.m1info.projectvms.group2.AppState;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -9,27 +21,38 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-
-import fr.umlp.m1info.projectvms.group2.AppState;
-
-import javafx.fxml.FXML;
+import org.fxmisc.richtext.model.TwoDimensional;
+import org.reactfx.Subscription;
 
 public class CodeSectionController implements StatefulController {
 
 	@FXML
 	private CodeArea codeArea;
 
+	@FXML
+	private HBox buttonBar;
+
 	private Runnable onSaveRequested;
 
 	private int highlightedLine;
 
 	private final Set<Integer> breakpoints = new HashSet<>();
+
+    @FXML
+    public void initialize() {
+        Subscription cleanupWhenNoLongerNeedIt = codeArea
+                .multiPlainChanges()
+                .successionEnds(Duration.ofMillis(500))
+                .subscribe(ignore -> {
+                    // Recoloration sur *tout* le document
+                    String fullText = codeArea.getText();
+                    MiniJajaStyler styler = new MiniJajaStyler(fullText);
+                    codeArea.setStyleSpans(0, styler.style());
+                });
+
+
+
+    }
 
 	@Override
 	public void bindState(AppState appState) {
@@ -60,6 +83,10 @@ public class CodeSectionController implements StatefulController {
 				e.consume();
 			}
 		});
+	}
+
+	public HBox getButtonBar() {
+		return buttonBar;
 	}
 
 	private void toggleBreakpoint(int line) {
@@ -133,6 +160,7 @@ public class CodeSectionController implements StatefulController {
 	private void applyLineNumberFactory() {
 		codeArea.setParagraphGraphicFactory(line -> {
 			Node lineNumber = LineNumberFactory.get(codeArea).apply(line);
+			lineNumber.getStyleClass().add("line-number");
 
 			if (line + 1 == highlightedLine && lineNumber instanceof Label label) {
 				label.setStyle(label.getStyle() + "; -fx-text-fill: red;");
@@ -143,6 +171,7 @@ public class CodeSectionController implements StatefulController {
 			marker.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
 
 			HBox box = new HBox(5, marker, lineNumber);
+			box.getStyleClass().add("line-number-box");
 			box.setOnMouseClicked(e -> toggleBreakpoint(line + 1));
 
 			return box;

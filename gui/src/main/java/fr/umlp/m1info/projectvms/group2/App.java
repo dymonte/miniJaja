@@ -1,11 +1,11 @@
 package fr.umlp.m1info.projectvms.group2;
 
 import fr.umlp.m1info.projectvms.group2.controller.AppController;
-
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 /**
  * Entry point of the project GUI
@@ -20,16 +20,31 @@ public class App extends Application {
 	public void start(Stage stage) throws Exception {
 		AppState state = new AppState();
 
+
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("App.fxml"));
 		Scene scene = new Scene(loader.load(), DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
-		scene.getStylesheets()
-				.add(getClass().getResource("styles/style.css").toExternalForm());
+
+		scene.getStylesheets().add(
+			getClass().getResource("styles/base.css").toExternalForm()
+		);
+		scene.getStylesheets().add(
+			getClass().getResource("styles/themes/theme-blue-light.css").toExternalForm()
+		);
+
 		AppController controller = loader.getController();
 		controller.bindState(state);
 		controller.setPrimaryStage(stage);
 
 		// Set initial title
 		controller.updateWindowTitle("MiniJaja IDE");
+
+		// Set window icon
+		try {
+			Image icon = new Image(getClass().getResourceAsStream("assets/small_logo_bis.png"));
+			stage.getIcons().add(icon);
+		} catch (Exception e) {
+			System.err.println("Could not load window icon: " + e.getMessage());
+		}
 
 		stage.setScene(scene);
 		stage.show();
