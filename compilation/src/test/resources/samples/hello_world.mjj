@@ -1,0 +1,5 @@
+class Hello {
+	main {
+		write("Hello, World!");
+	}
+}
