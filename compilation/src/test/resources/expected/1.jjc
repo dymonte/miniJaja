@@ -80,7 +80,7 @@ invoke(somme)
 swap
 pop
 store(x)
-push("x (8) = ")
+push(x (8) = )
 write
 load(x)
 writeln
@@ -89,7 +89,7 @@ invoke(f)
 swap
 pop
 pop
-push("x (11) = ")
+push(x (11) = )
 write
 load(x)
 writeln

@@ -1,5 +1,5 @@
 init
-push("Hello, World!")
+push(Hello, World!)
 write
 push(0)
 pop

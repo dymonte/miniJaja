@@ -27,7 +27,7 @@ add
 push(0)
 sub
 store(x)
-push("x (15) = ")
+push(x (15) = )
 write
 load(x)
 writeln
@@ -41,7 +41,7 @@ div
 store(x)
 push(1)
 inc(x)
-push("x (11) = ")
+push(x (11) = )
 write
 load(x)
 writeln
