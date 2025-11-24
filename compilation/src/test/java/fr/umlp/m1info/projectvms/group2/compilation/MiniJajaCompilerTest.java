@@ -159,8 +159,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(instrs);
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
-		Assert.assertEquals(6, nbInstr);
-		Assert.assertEquals("push(3)\nnew(m, int, meth, 0)\ngoto(4)\npush(0)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals(5, nbInstr);
+		Assert.assertEquals("push(3)\nnew(m, int, meth, 0)\ngoto(6)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
@@ -184,8 +184,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(instrs);
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
-		Assert.assertEquals(5, nbInstr);
-		Assert.assertEquals("push(3)\nnew(m, void, meth, 0)\ngoto(3)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals(6, nbInstr);
+		Assert.assertEquals("push(3)\nnew(m, void, meth, 0)\ngoto(7)\npush(0)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
@@ -569,8 +569,8 @@ public class MiniJajaCompilerTest {
 	public void testFreeVar() {
 		ASTVar var = Mockito.mock(ASTVar.class);
 		int nbInstr = miniJajaCompiler.free(var);
-		Assert.assertEquals("pop\n", sb.toString());
-		Assert.assertEquals(1, nbInstr);
+		Assert.assertEquals("swap\npop\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -739,7 +739,7 @@ public class MiniJajaCompilerTest {
 		int nbInstr = miniJajaCompiler.compile(ifNode);
 
 		Assert.assertEquals(7, nbInstr);
-		Assert.assertEquals("push(true)\nif(5)\npush(1)\nstore(x)\ngoto(7)\npush(1)\nstore(x)\n", sb.toString());
+		Assert.assertEquals("push(true)\nif(6)\npush(1)\nstore(x)\ngoto(8)\npush(1)\nstore(x)\n", sb.toString());
 	}
 
 	@Test
@@ -755,7 +755,7 @@ public class MiniJajaCompilerTest {
 		int nbInstr = miniJajaCompiler.compile(ifNode);
 
 		Assert.assertEquals(5, nbInstr);
-		Assert.assertEquals("push(true)\nif(3)\ngoto(5)\npush(1)\nstore(x)\n", sb.toString());
+		Assert.assertEquals("push(true)\nif(4)\ngoto(6)\npush(1)\nstore(x)\n", sb.toString());
 	}
 
 	@Test
@@ -968,7 +968,7 @@ public class MiniJajaCompilerTest {
     @Test
     public void testCompileParamsNil() {
         ASTParamsNil nil = new ASTParamsNil(0, 0);
-        int nbInstr = miniJajaCompiler.compilePramsNil(nil);
+        int nbInstr = miniJajaCompiler.compileParamsNil(nil);
 
         Assert.assertEquals(0, nbInstr);
     }
