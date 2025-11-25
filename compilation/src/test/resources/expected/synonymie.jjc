@@ -21,12 +21,12 @@ aload(t)
 store(a)
 load(a)
 write
-push( )
+push(" ")
 write
 push(1)
 inc(i)
 goto(13)
-push( )
+push(" ")
 writeln
 swap
 pop

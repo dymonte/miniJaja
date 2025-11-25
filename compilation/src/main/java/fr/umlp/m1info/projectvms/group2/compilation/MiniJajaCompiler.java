@@ -446,7 +446,7 @@ public class MiniJajaCompiler {
 	/** Compiles a string literal. */
 	@CompilationFunction(ASTStringLiteral.class)
 	protected Integer compileStringLiteral(ASTStringLiteral node) {
-		return emit("push(" + node.getValue() + ")");
+		return emit("push(\"" + node.getValue() + "\")");
 	}
 
 	/** Compiles an identifier (variable) reference. */

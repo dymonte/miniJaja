@@ -200,7 +200,7 @@ public class MiniJajaCompilerTest {
 	public void testCompileStringLiteral() {
 		ASTStringLiteral stringLiteral = new ASTStringLiteral("text", 0, 0);
 		int nbInstr = miniJajaCompiler.compile(stringLiteral);
-		Assert.assertEquals("push(text)\n", sb.toString());
+		Assert.assertEquals("push(\"text\")\n", sb.toString());
 		Assert.assertEquals(1, nbInstr);
 	}
 
