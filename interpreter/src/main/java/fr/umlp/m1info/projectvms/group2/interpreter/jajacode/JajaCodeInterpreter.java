@@ -152,7 +152,6 @@ public class JajaCodeInterpreter {
 			return;
 		}
 		String identifier = node.getValIdent().getIdent();
-
 		Type type = node.getType().getType();
         switch (node.getKind().getKind()) {
 			case VAR: {
@@ -161,11 +160,11 @@ public class JajaCodeInterpreter {
 				break;
 			}
 			case CONST: {
-				memory.declCst(identifier, memory.pop(), type);
+                memory.declCst(identifier, memory.pop(), type);
 				break;
 			}
 			case METH: {
-				memory.declMeth(identifier, memory.pop(), Collections.emptyList(), type);
+                memory.declMeth(identifier, memory.pop(), Collections.emptyList(), type);
 				break;
 			}
 			default:
@@ -369,10 +368,11 @@ public class JajaCodeInterpreter {
      */
     @JajaCodeInterpretFunction(InstrPush.class)
     protected void interpretPush(InstrPush node) {
+
+
         Val valNode = node.getValVal();
         Object value = eval(valNode);
         Type type;
-
         if (value instanceof Boolean) {
             type = Type.BOOL;
         } else if (value instanceof Integer) {

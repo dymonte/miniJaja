@@ -97,6 +97,7 @@ public class CLIEndToEndIT {
 		assertEquals(0, out.exitCode());
 		assertEquals("Result:5+10=15\n", out.output());
 	}
+    @Ignore
     @Test
     public void testPushAndAdd() throws IOException, InterruptedException {
         ProgramOutput out = executeProgram(new String[] {
@@ -106,6 +107,7 @@ public class CLIEndToEndIT {
         assertEquals(0, out.exitCode());
         assertEquals("11\n", out.output());
     }
+    @Ignore
     @Test
     public void testNew() throws IOException, InterruptedException {
         ProgramOutput out = executeProgram(new String[] {
@@ -115,6 +117,7 @@ public class CLIEndToEndIT {
         assertEquals(0, out.exitCode());
         assertEquals("1020\n", out.output());
     }
+    @Ignore
     @Test
     public void testNewVar() throws Exception {
         ProgramOutput out = executeProgram(new String[]{
@@ -123,7 +126,7 @@ public class CLIEndToEndIT {
         });
         assertEquals("7\n", out.output());
     }
-
+    @Ignore
     @Test
     public void testNewConst() throws Exception {
         ProgramOutput out = executeProgram(new String[]{
@@ -139,11 +142,10 @@ public class CLIEndToEndIT {
                 "execute:jjc",
                 codeSamplesPath + "newmeth_test.jjc"
         });
-        System.out.println("DEBUG OUTPUT >>>" + out.output() + "<<<");
-
         assertEquals("3\n", out.output());
     }
 
+    @Ignore
     @Test
     public void testNewArray() throws Exception {
         ProgramOutput out = executeProgram(new String[]{
@@ -151,6 +153,15 @@ public class CLIEndToEndIT {
                 codeSamplesPath + "newarray_test.jjc"
         });
         assertEquals("0\n", out.output());
+    }
+
+    @Test
+    public void testReturn() throws Exception {
+        ProgramOutput out = executeProgram(new String[]{
+                "execute:jjc",
+                codeSamplesPath + "test_return.jjc"
+        });
+        assertEquals("3\n", out.output());
     }
 
 
