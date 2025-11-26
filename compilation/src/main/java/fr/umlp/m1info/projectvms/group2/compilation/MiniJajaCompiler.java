@@ -544,22 +544,6 @@ public class MiniJajaCompiler {
 		return emit("swap") + emit("pop");
 	}
 
-	/** Free a simple variable declaration. */
-	@FreeCompilationFunction(ASTVarSimple.class)
-	protected Integer freeVarSimple(ASTVarSimple node){
-		emit("swap");
-		emit("pop");
-		return 2;
-	}
-
-	/** Frees a constenant variable declaration. */
-	@FreeCompilationFunction(ASTVarConst.class)
-	protected Integer freeVarConst(ASTVarConst node){
-		emit("swap");
-		emit("pop");
-		return 2;
-	}
-
 	/** Frees a method declaration. */
 	@FreeCompilationFunction(ASTMethod.class)
 	protected Integer freeMethod(ASTMethod node) {
