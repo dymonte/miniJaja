@@ -570,7 +570,7 @@ public class AppController implements StatefulController {
 		this.primaryStage = stage;
 
 		Platform.runLater(() -> {
-			Scene mainScene = primaryStage.getScene();
+			mainScene = primaryStage.getScene();
 			if (mainScene != null) {
 				loadThemesMenu();
 			}
@@ -585,7 +585,7 @@ public class AppController implements StatefulController {
 
 		URL themesFolderUrl = getClass().getResource(STYLE_FOLDER);
 		if (themesFolderUrl == null) {
-			System.err.println("Themes folder not found");
+			PopUp.error("Themes folder not found", "Not found", "Error while loading " + STYLE_FOLDER);
 			return;
 		}
 
