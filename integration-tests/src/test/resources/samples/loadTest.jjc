@@ -1,0 +1,9 @@
+init
+push(10)
+new(x,int,cst,0)
+load(x)
+push(5)
+add
+load(x)
+write
+jcstop

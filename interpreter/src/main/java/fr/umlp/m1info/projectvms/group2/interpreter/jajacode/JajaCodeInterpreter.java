@@ -190,9 +190,15 @@ public class JajaCodeInterpreter {
      */
     @JajaCodeInterpretFunction(InstrInvoke.class)
     protected void interpretInvoke(InstrInvoke node) {
+        String ident = node.getValIdent().getIdent();
+        String identWithTypes = memory.getMethKey(ident, Collections.emptyList());
+        Object addrObj = memory.getVal(identWithTypes);
+        if (!(addrObj instanceof Integer)) {
+            throw new InterpretRuntimeException("Adresse de méthode invalide pour " + ident);
+        }
         int currentLine = node.getLineId();
-        int methodAddress = (int) memory.getVal(node.getValIdent().getIdent());
-        memory.push(currentLine + 1, Type.INT); // next line to execute after return
+        int methodAddress = (int) addrObj;
+        memory.push(currentLine + 1, Type.INT);
         interpret(getInstr(methodAddress));
     }
 
@@ -299,7 +305,6 @@ public class JajaCodeInterpreter {
         } catch (EmptyStackException e) {
             throw new InterpretRuntimeException("Stack is empty");
         }
-        System.out.println(memory.getValArray(node.getValIdent().getIdent(), index));
         memory.push(memory.getValArray(node.getValIdent().getIdent(), index), memory.getType(node.getValIdent().getIdent()));
         interpret(getNextInstr(node));
 	}
@@ -324,6 +329,7 @@ public class JajaCodeInterpreter {
         }
 
         memory.updateVal(node.getValIdent().getIdent(), value);
+        interpret(getNextInstr(node));
 	}
 
     /**
@@ -336,24 +342,21 @@ public class JajaCodeInterpreter {
      */
     @JajaCodeInterpretFunction(InstrAStore.class)
     protected void interpretAStore(InstrAStore node) {
-        int index;
-        try {
-            Object top = memory.pop();
-            if (!(top instanceof Integer)) {
-                throw new InterpretRuntimeException("Array index must be an integer.");
-            }
-            index = (int) top;
-
-        } catch (EmptyStackException e) {
-            throw new InterpretRuntimeException("Stack is empty");
-        }
-
         Object value;
+        Object indexObj;
+
         try {
             value = memory.pop();
+            indexObj = memory.pop();
         } catch (EmptyStackException e) {
             throw new InterpretRuntimeException("Stack is empty");
         }
+
+        if (!(indexObj instanceof Integer)) {
+            throw new InterpretRuntimeException("Array index must be an integer.");
+        }
+
+        int index = (int) indexObj;
         memory.updateValArray(node.getValIdent().getIdent(), index, value);
 
         interpret(getNextInstr(node));
@@ -452,54 +455,45 @@ public class JajaCodeInterpreter {
 	protected void interpretInc(InstrInc node) {
 		ValIdent valIdent = node.getValIdent();
 		String varName = valIdent.getIdent();
-
 		Object v = memory.pop();
-
 		Object currentVal = memory.getVal(varName);
-
 		if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
 			throw new InterpretRuntimeException("Invalid types for inc operation on variable: " + varName);
 		}
-
 		int newVal = (int) currentVal + (int) v;
-
 		memory.updateVal(varName, newVal);
 		interpret(getNextInstr(node));
 	}
 
 	@JajaCodeInterpretFunction(InstrAInc.class)
 	protected void interpretAInc(InstrAInc node) {
-		ValIdent valIdent = node.getValIdent();
-		String arrayName = valIdent.getIdent();
+        String arrayName = node.getValIdent().getIdent();
 
-		Object v = memory.pop();
+        Object value;
+        Object indexObj;
 
-		Object indObj = memory.pop();
+        try {
+            value = memory.pop();
+            indexObj = memory.pop();
+        } catch (EmptyStackException e) {
+            throw new InterpretRuntimeException("Stack is empty");
+        }
 
-		if (!(indObj instanceof Integer)) {
-			throw new InterpretRuntimeException("Array index must be an integer.");
-		}
-		int index = (int) indObj;
+        if (!(indexObj instanceof Integer)) {
+            throw new InterpretRuntimeException("Array index must be an integer.");
+        }
 
-		Object currentVal;
-		try {
-			currentVal = memory.getValArray(arrayName, index);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error accessing array " + arrayName + " at index " + index);
-		}
+        int index = (int) indexObj;
+        Object currentVal = memory.getValArray(arrayName, index);
 
-		if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
-			throw new InterpretRuntimeException("Invalid types for ainc operation on array: " + arrayName);
-		}
+        if (!(currentVal instanceof Integer) || !(value instanceof Integer)) {
+            throw new InterpretRuntimeException("Invalid types for ainc operation on array: " + arrayName);
+        }
 
-		int newVal = (int) currentVal + (int) v;
+        int newVal = (int) currentVal + (int) value;
+        memory.updateValArray(arrayName, index, newVal);
 
-		try {
-			memory.updateValArray(arrayName, index, newVal);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error updating array " + arrayName + " at index " + index);
-		}
-		interpret(getNextInstr(node));
+        interpret(getNextInstr(node));
 	}
 
 	@JajaCodeEvalFunction(ValAddress.class)

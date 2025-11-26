@@ -1,9 +1,9 @@
 init
-push(3)
+push(7)
 new(m,int,meth,0)
-goto(8)
 invoke(m)
 write
 jcstop
-push(6)
+push(2)
+swap
 return

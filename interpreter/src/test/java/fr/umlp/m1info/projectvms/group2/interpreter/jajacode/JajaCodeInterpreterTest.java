@@ -285,15 +285,13 @@ public class JajaCodeInterpreterTest {
     @Test
     public void testInterpretInvoke() {
         memory.declMeth("f", 2, List.of(), Type.VOID);
-        System.out.println(memory.getVal("1f"));
-        InstrInvoke instrInvoke = new InstrInvoke(1, new ValIdent(1, "1f"));
+        InstrInvoke instrInvoke = new InstrInvoke(1, new ValIdent(1, "f"));
         InstrStop instrStop = new InstrStop(2);
         interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrInvoke, instrStop));
         JajaCodeInterpreter spy = spy(interpreter);
         doNothing().when(spy).interpret(instrStop);
         spy.interpret(instrInvoke);
-
-        Assert.assertEquals(2, memory.pop());
+        assertEquals(instrInvoke.getLineId() + 1, memory.pop());
     }
 
     @Test
@@ -453,7 +451,7 @@ public class JajaCodeInterpreterTest {
         JajaCodeInterpreter spy = spy(interpreter);
         doNothing().when(spy).interpret(instrStop);
         spy.interpret(instrAStore);
-        assertEquals(2, memory.getValArray("arr", 1));
+        assertEquals(3, memory.getValArray("arr", 1));
     }
 
     @Test
