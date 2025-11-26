@@ -1,12 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-
 import fr.umlp.m1info.projectvms.group2.AppState;
+import fr.umlp.m1info.projectvms.group2.styler.MiniJajaStyler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -17,6 +12,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.reactfx.Subscription;
+
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CodeSectionController implements StatefulController {
 
@@ -31,6 +33,20 @@ public class CodeSectionController implements StatefulController {
 	private int highlightedLine;
 
 	private final Set<Integer> breakpoints = new HashSet<>();
+
+	@FXML
+	public void initialize() {
+		Subscription cleanupWhenNoLongerNeedIt = codeArea
+				.multiPlainChanges()
+				.successionEnds(Duration.ofMillis(500))
+				.subscribe(ignore -> {
+					// Recoloration sur *tout* le document
+					String fullText = codeArea.getText();
+					MiniJajaStyler styler = new MiniJajaStyler(fullText);
+					codeArea.setStyleSpans(0, styler.style());
+				});
+	}
+
 
 	@Override
 	public void bindState(AppState appState) {
