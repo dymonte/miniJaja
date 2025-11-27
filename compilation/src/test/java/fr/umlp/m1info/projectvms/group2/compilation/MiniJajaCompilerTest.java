@@ -962,7 +962,7 @@ public class MiniJajaCompilerTest {
         int nbInstr = miniJajaCompiler.compileParams(chain);
 
         Assert.assertEquals(2, nbInstr);
-        Assert.assertEquals("new(a,int,var,1)\nnew(b,int,var,2)\n", sb.toString());
+        Assert.assertEquals("new(a,int,var,2)\nnew(b,int,var,1)\n", sb.toString());
     }
 
     @Test

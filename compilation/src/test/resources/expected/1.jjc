@@ -35,8 +35,8 @@ return
 push(38)
 new(test, boolean, meth, 0)
 goto(45)
-new(a,int,var,1)
-new(b,int,var,2)
+new(a,int,var,2)
+new(b,int,var,1)
 load(a)
 load(b)
 sup
