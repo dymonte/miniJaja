@@ -2,8 +2,9 @@ package fr.umlp.m1info.projectvms.group2;
 
 import org.fxmisc.richtext.CodeArea;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.testfx.api.FxAssert.verifyThat;
+import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
@@ -27,6 +28,11 @@ public class AppFunctionalIT {
         new App().start(stage);
     }
 
+    @BeforeEach
+    public void setUp() {
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
     @Test
     void testWriteAndRunProgram(FxRobot robot) {
         robot.clickOn("#codeArea");
@@ -45,7 +51,7 @@ public class AppFunctionalIT {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat("#outputArea", (Node node) -> {
+        FxAssert.verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
             return text.contains("42");
         });
@@ -70,7 +76,7 @@ public class AppFunctionalIT {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat("#outputArea", (Node node) -> {
+        FxAssert.verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
             return text.contains("24");
         });
@@ -94,8 +100,8 @@ public class AppFunctionalIT {
         WaitForAsyncUtils.waitForFxEvents();
         WaitForAsyncUtils.waitFor(10, TimeUnit.SECONDS, () -> robot.lookup(".alert").tryQuery().isPresent());
 
-        verifyThat(".alert", NodeMatchers.isVisible());
-        verifyThat(".dialog-pane .label",
+        FxAssert.verifyThat(".alert", NodeMatchers.isVisible());
+        FxAssert.verifyThat(".dialog-pane .label",
                 (Label label) -> label.getText().contains("error: illegal start of statement"));
     }
 
@@ -115,8 +121,8 @@ public class AppFunctionalIT {
         WaitForAsyncUtils.waitForFxEvents();
         WaitForAsyncUtils.waitFor(10, TimeUnit.SECONDS, () -> robot.lookup(".alert").tryQuery().isPresent());
 
-        verifyThat(".alert", NodeMatchers.isVisible());
-        verifyThat(".dialog-pane .label",
+        FxAssert.verifyThat(".alert", NodeMatchers.isVisible());
+        FxAssert.verifyThat(".dialog-pane .label",
                 (Label label) -> label.getText().contains("Error interpreting node ASTIdent"));
     }
 
@@ -126,7 +132,7 @@ public class AppFunctionalIT {
 
         robot.write("TODO : Just a clear test\n");
 
-        verifyThat("#codeArea", (Node node) -> {
+        FxAssert.verifyThat("#codeArea", (Node node) -> {
             String text = ((CodeArea) node).getText();
             return !text.isEmpty();
         });
@@ -137,7 +143,7 @@ public class AppFunctionalIT {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat("#codeArea", (Node node) -> {
+        FxAssert.verifyThat("#codeArea", (Node node) -> {
             String text = ((CodeArea) node).getText();
             return text.isEmpty();
         });
@@ -150,7 +156,7 @@ public class AppFunctionalIT {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat(".dialog-pane", (DialogPane pane) -> {
+        FxAssert.verifyThat(".dialog-pane", (DialogPane pane) -> {
             String content = pane.getContentText();
             return content != null && content.contains("Are you sure you want to quit?");
         });
@@ -174,7 +180,7 @@ public class AppFunctionalIT {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat("#outputArea", (Node node) -> {
+        FxAssert.verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
             return text.contains("24");
         });
@@ -185,7 +191,7 @@ public class AppFunctionalIT {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat("#outputArea", (Node node) -> {
+        FxAssert.verifyThat("#outputArea", (Node node) -> {
             String text = ((TextArea) node).getText();
             return text.isEmpty();
         });

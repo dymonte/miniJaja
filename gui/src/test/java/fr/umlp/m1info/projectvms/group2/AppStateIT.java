@@ -1,11 +1,11 @@
 package fr.umlp.m1info.projectvms.group2;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
@@ -16,59 +16,61 @@ public class AppStateIT {
 
 	private AppState appState;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		appState = new AppState();
 	}
 
 	@Test
 	public void testWorkspaceDir() {
-		assertFalse("Workspace should be empty initially", appState.getWorkspaceDir().isPresent());
+		Assertions.assertFalse(appState.getWorkspaceDir().isPresent(), "Workspace should be empty initially");
 
 		File dir = new File("testWorkspace");
 		appState.setWorkspaceDir(dir);
-		assertTrue("Workspace should be present after setting", appState.getWorkspaceDir().isPresent());
-		assertEquals("Workspace should match the file set", dir, appState.getWorkspaceDir().get());
+		Assertions.assertTrue(appState.getWorkspaceDir().isPresent(), "Workspace should be present after setting");
+		Assertions.assertEquals(dir, appState.getWorkspaceDir().get(), "Workspace should match the file set");
 	}
 
 	@Test
 	public void testWorkspaceFiles() {
-		assertFalse("Workspace files should be empty initially", appState.getWorkspaceFiles().isPresent());
+		Assertions.assertFalse(appState.getWorkspaceFiles().isPresent(), "Workspace files should be empty initially");
 
 		File[] files = { new File("file1.txt"), new File("file2.txt") };
 		appState.setWorkspaceFiles(files);
-		assertTrue("Workspace files should be present after setting", appState.getWorkspaceFiles().isPresent());
-		assertArrayEquals("Workspace files should match the files set", files, appState.getWorkspaceFiles().get());
+		Assertions.assertTrue(appState.getWorkspaceFiles().isPresent(),
+				"Workspace files should be present after setting");
+		Assertions.assertArrayEquals(files, appState.getWorkspaceFiles().get(),
+				"Workspace files should match the files set");
 	}
 
 	@Test
 	public void testOpenedFile() {
-		assertFalse("Opened file should be empty initially", appState.getOpenedFile().isPresent());
+		Assertions.assertFalse(appState.getOpenedFile().isPresent(), "Opened file should be empty initially");
 
 		File file = new File("opened.txt");
 		appState.setOpenedFile(file);
-		assertTrue("Opened file should be present after setting", appState.getOpenedFile().isPresent());
-		assertEquals("Opened file should match the file set", file, appState.getOpenedFile().get());
+		Assertions.assertTrue(appState.getOpenedFile().isPresent(), "Opened file should be present after setting");
+		Assertions.assertEquals(file, appState.getOpenedFile().get(), "Opened file should match the file set");
 
 		appState.closeOpenedFile();
-		assertFalse("Opened file should be empty after closing", appState.getOpenedFile().isPresent());
+		Assertions.assertFalse(appState.getOpenedFile().isPresent(), "Opened file should be empty after closing");
 	}
 
 	@Test
 	public void testCodeProperty() {
-		assertNotNull("Code property should not be null initially", appState.codeProperty());
-		assertEquals("Initial code should be empty", "", appState.codeProperty().get());
+		Assertions.assertNotNull(appState.codeProperty(), "Code property should not be null initially");
+		Assertions.assertEquals("", appState.codeProperty().get(), "Initial code should be empty");
 
 		String testCode = "print('Hello World')";
 		appState.codeProperty().set(testCode);
-		assertEquals("Code property should reflect the value set", testCode, appState.codeProperty().get());
+		Assertions.assertEquals(testCode, appState.codeProperty().get(), "Code property should reflect the value set");
 	}
 
 	@Test
 	public void testMemory() {
-		assertNull("Memory should be null initially", appState.getMemory());
+		Assertions.assertNull(appState.getMemory(), "Memory should be null initially");
 		Memory memory = new Memory(new SymTable(10), new Stack(10), new Heap(10)); // Assuming default constructor
 		appState.setMemory(memory);
-		assertEquals("Memory should match the object set", memory, appState.getMemory());
+		Assertions.assertEquals(memory, appState.getMemory(), "Memory should match the object set");
 	}
 }

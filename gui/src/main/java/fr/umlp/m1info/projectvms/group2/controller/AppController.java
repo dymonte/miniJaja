@@ -2,14 +2,17 @@ package fr.umlp.m1info.projectvms.group2.controller;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.fxmisc.richtext.CodeArea;
 
@@ -490,7 +493,8 @@ public class AppController implements StatefulController {
 	 * @param interpreter    the interpreter for the buttons to interact with
 	 * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
-	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter, boolean hasBreakpoints) {
+	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter,
+			boolean hasBreakpoints) {
 		Button btnNext = new Button("Next");
 
 		Button btnStop = new Button("Stop");
@@ -589,39 +593,86 @@ public class AppController implements StatefulController {
 			return;
 		}
 
-		File themesFolder = new File(themesFolderUrl.getPath());
-		File[] cssFiles = themesFolder.listFiles((dir, name) -> name.endsWith(".css"));
-
-		for (File file : cssFiles) {
-			String cssName = extractThemeName(file);
-			MenuItem item = new MenuItem(cssName);
-
-			item.setOnAction(e -> applyTheme(file.getName()));
-			menuThemes.getItems().add(item);
+		switch (themesFolderUrl.getProtocol()) {
+			case "file" -> _loadThemesFromFileSystem(themesFolderUrl);
+			case "jar" -> _loadThemesFromJar(themesFolderUrl);
+			default ->
+				PopUp.error("Theme error", "Themes folder should be in the filesystem or in the jar", STYLE_FOLDER);
 		}
 	}
 
 	/**
-	 * Extracts the theme name from the CSS file
+	 * Sub-function of loadThemesMenu that loads all the theme's CSS files from
+	 * the given theme diretory url.
 	 *
-	 * @param file the CSS file
-	 * @return the theme name
+	 * This specific version is for when the url points to a directory inside
+	 * the file-system.
+	 *
+	 * @param themesDirUrl the theme directory url
 	 */
-	private String extractThemeName(File file) {
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-			String firstLine = br.readLine();
+	private void _loadThemesFromFileSystem(URL themesDirUrl) {
+		File themesDir = new File(themesDirUrl.getPath());
+		File[] cssFiles = themesDir.listFiles((dir, name) -> name.endsWith(".css"));
 
-			if (firstLine != null && firstLine.contains("ThemeName:")) {
-				return firstLine.replace("/*", "")
-								.replace("*/", "")
-								.replace("ThemeName:", "")
-								.trim();
+		if (cssFiles != null) {
+			for (File file : cssFiles) {
+				addThemeMenuItem(file.getName());
 			}
-		} catch (Exception ignored) {}
+		}
+	}
 
-		// fallback to file name
-		String name = file.getName().replace(".css", "");
-		return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+	/**
+	 * Sub-function of loadThemesMenu that loads all the theme's CSS files from
+	 * the given theme diretory url.
+	 *
+	 * This specific version is for when the url points to a directory inside
+	 * the gui jar.
+	 *
+	 * @param themesDirUrl the theme directory url
+	 */
+	private void _loadThemesFromJar(URL themesDirUrl) {
+		try {
+			String path = STYLE_FOLDER.startsWith("/") ? STYLE_FOLDER.substring(1) : STYLE_FOLDER;
+			JarURLConnection connection = (JarURLConnection) themesDirUrl.openConnection();
+			JarFile jarFile = connection.getJarFile();
+			Enumeration<JarEntry> entries = jarFile.entries();
+
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				String entryName = entry.getName();
+				if (entryName.startsWith(path) && entryName.endsWith(".css")) {
+					String fileName = entryName.substring(entryName.lastIndexOf("/") + 1);
+					addThemeMenuItem(fileName);
+				}
+			}
+		} catch (IOException e) {
+			PopUp.error("Theme Error", "Error loading themes from JAR", e.getMessage());
+		}
+	}
+
+	private void addThemeMenuItem(String cssFileName) {
+		String themeName;
+		// Try to read the theme name from the file content
+		try (java.io.InputStream is = getClass().getResourceAsStream(STYLE_FOLDER + cssFileName);
+				BufferedReader br = new BufferedReader(new java.io.InputStreamReader(is))) {
+			String firstLine = br.readLine();
+			if (firstLine != null && firstLine.contains("ThemeName:")) {
+				themeName = firstLine.replace("/*", "")
+						.replace("*/", "")
+						.replace("ThemeName:", "")
+						.trim();
+			} else {
+				throw new Exception("No theme name found");
+			}
+		} catch (Exception ignored) {
+			// fallback to file name
+			String name = cssFileName.replace(".css", "");
+			themeName = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+		}
+
+		MenuItem item = new MenuItem(themeName);
+		item.setOnAction(e -> applyTheme(cssFileName));
+		menuThemes.getItems().add(item);
 	}
 
 	/**
@@ -631,7 +682,8 @@ public class AppController implements StatefulController {
 	 */
 	private void applyTheme(String cssFileName) {
 		Scene scene = primaryStage.getScene();
-		if (scene == null) return;
+		if (scene == null)
+			return;
 
 		scene.getStylesheets().removeIf(url -> url.contains("themes/"));
 
