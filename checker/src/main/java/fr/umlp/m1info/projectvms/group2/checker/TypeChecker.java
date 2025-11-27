@@ -225,8 +225,11 @@ public class TypeChecker implements Checker {
 
 			check(decl);
 		}
+		checkMethods(deferredMethods);
+	}
 
-		for (ASTMethod method : deferredMethods) {
+	private void checkMethods(List<ASTMethod> methods) {
+		for (ASTMethod method : methods) {
 			check(method.getInstrs());
 
 			ASTReturn ret = searchReturn(method.getInstrs());
