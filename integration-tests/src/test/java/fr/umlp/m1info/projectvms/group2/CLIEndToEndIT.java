@@ -4,6 +4,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -207,6 +210,48 @@ public class CLIEndToEndIT {
         });
         assertEquals("10\n", out.output());
     }
+
+	private void testFile(String file, String result) throws IOException, InterruptedException {
+		ProgramOutput compileOut = executeProgram(new String[]{
+				"compile",
+				codeSamplesPath + file + ".mjj"
+		});
+		assertEquals(0, compileOut.exitCode());
+
+		String jajacode = compileOut.output();
+		assertNotNull(jajacode);
+		assertFalse(jajacode.isEmpty());
+
+		Path tmpDir = Files.createTempDirectory("jaja-test-");
+		Path jjcFile = tmpDir.resolve("out.jjc");
+		try {
+			Files.writeString(jjcFile, jajacode, StandardCharsets.UTF_8);
+
+			ProgramOutput execOut = executeProgram(new String[]{
+					"execute:jjc",
+					jjcFile.toString()
+			});
+
+			assertEquals(0, execOut.exitCode());
+			assertEquals(result, execOut.output());
+
+		} finally {
+			try {
+				Files.deleteIfExists(jjcFile);
+			} catch (IOException ignored) {}
+			try {
+				Files.deleteIfExists(tmpDir);
+			} catch (IOException ignored) {}
+		}
+	}
+
+	@Ignore
+	@Test
+	public void testCompileInterpreter() throws IOException, InterruptedException {
+		testFile("0", "x (15) = 15\nx (11) = 11\n");
+		testFile("1", "x (8) = 8\nx (11) = 11\n");
+		testFile("synonymie", "3 3 3 4 3 3 3 3 3 3 \n7 7 7 7 7 7 7 4 7 7 \n");
+	}
 
     @Test
     public void testainc() throws Exception {
