@@ -25,7 +25,7 @@ push(" ")
 write
 push(1)
 inc(i)
-goto(13)
+goto(14)
 push(" ")
 writeln
 swap
@@ -53,7 +53,7 @@ load(x)
 astore(t1)
 push(1)
 inc(i)
-goto(45)
+goto(46)
 load(t1)
 store(t)
 load(x)
@@ -86,7 +86,7 @@ sub
 astore(t)
 push(1)
 inc(i)
-goto(76)
+goto(77)
 push(3)
 invoke(f)
 swap

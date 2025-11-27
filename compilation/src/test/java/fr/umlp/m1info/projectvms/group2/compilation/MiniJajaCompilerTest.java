@@ -770,7 +770,7 @@ public class MiniJajaCompilerTest {
 		int nbInstr = miniJajaCompiler.compile(whileNode);
 
 		Assert.assertEquals(6, nbInstr);
-		Assert.assertEquals("push(true)\nnot\nif(7)\npush(1)\nstore(x)\ngoto(0)\n", sb.toString());
+		Assert.assertEquals("push(true)\nnot\nif(7)\npush(1)\nstore(x)\ngoto(1)\n", sb.toString());
 	}
 
 	@Test

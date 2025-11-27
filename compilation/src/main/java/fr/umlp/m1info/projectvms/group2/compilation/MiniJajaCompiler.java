@@ -313,7 +313,7 @@ public class MiniJajaCompiler {
 		nbInstrs += emit("not");
 		nbInstrs += emit("if(TMP_IF)");
 		nbInstrs += compile(node.getInstrs());
-		nbInstrs += emit("goto(" + nStartWhile + ")");
+		nbInstrs += emit("goto(" + (nStartWhile + 1) + ")");
 		patch("TMP_IF", "" + (n + 1), offset);
 		return nbInstrs;
 	}

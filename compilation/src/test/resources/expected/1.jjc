@@ -26,7 +26,7 @@ load(max)
 push(1)
 sub
 store(max)
-goto(17)
+goto(18)
 load(t)
 swap
 pop
