@@ -185,7 +185,7 @@ public class MiniJajaCompiler {
 	protected Integer compileMethod(ASTMethod node) {
 		int start = n;
 		int count = 0;
-		count += emit("push(" + (start + 3) + ")");
+		count += emit("push(" + (start + 4) + ")");
 		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", meth, 0)");
 
 		int gotoIndex = sb.length();

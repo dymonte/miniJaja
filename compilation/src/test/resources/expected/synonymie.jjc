@@ -3,7 +3,7 @@ push(4)
 newarray(t, int)
 push(4)
 new(taille, int, var, 0)
-push(8)
+push(9)
 new(afficher, void, meth, 0)
 goto(38)
 new(taille,int,var,1)
@@ -35,7 +35,7 @@ pop
 push(0)
 swap
 return
-push(40)
+push(41)
 new(f, void, meth, 0)
 goto(69)
 new(x,int,var,1)
@@ -66,7 +66,7 @@ pop
 push(0)
 swap
 return
-push(71)
+push(72)
 new(pause, void, meth, 0)
 goto(75)
 push(0)

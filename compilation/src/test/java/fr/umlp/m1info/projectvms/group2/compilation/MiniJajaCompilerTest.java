@@ -160,7 +160,7 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
 		Assert.assertEquals(5, nbInstr);
-		Assert.assertEquals("push(3)\nnew(m, int, meth, 0)\ngoto(6)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals("push(4)\nnew(m, int, meth, 0)\ngoto(6)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
 		Assert.assertEquals(6, nbInstr);
-		Assert.assertEquals("push(3)\nnew(m, void, meth, 0)\ngoto(7)\npush(0)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals("push(4)\nnew(m, void, meth, 0)\ngoto(7)\npush(0)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test

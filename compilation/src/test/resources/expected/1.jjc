@@ -9,7 +9,7 @@ push(true)
 new(b1, boolean, var, 0)
 push(false)
 new(b2, boolean, var, 0)
-push(14)
+push(15)
 new(somme, int, meth, 0)
 goto(35)
 new(max,int,var,1)
@@ -32,7 +32,7 @@ swap
 pop
 swap
 return
-push(37)
+push(38)
 new(test, boolean, meth, 0)
 goto(45)
 new(a,int,var,1)
@@ -42,7 +42,7 @@ load(b)
 sup
 swap
 return
-push(47)
+push(48)
 new(f, void, meth, 0)
 goto(62)
 new(z,int,var,1)
