@@ -19,7 +19,7 @@ load(max)
 push(0)
 sup
 not
-if(29)
+if(30)
 load(max)
 inc(t)
 load(max)

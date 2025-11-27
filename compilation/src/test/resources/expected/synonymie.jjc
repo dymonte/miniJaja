@@ -15,7 +15,7 @@ load(taille)
 load(i)
 sup
 not
-if(28)
+if(29)
 load(i)
 aload(t)
 store(a)
@@ -47,7 +47,7 @@ push(10)
 load(i)
 sup
 not
-if(56)
+if(57)
 load(i)
 load(x)
 astore(t1)
@@ -78,7 +78,7 @@ push(4)
 load(i)
 sup
 not
-if(89)
+if(90)
 load(i)
 load(taille)
 load(i)
