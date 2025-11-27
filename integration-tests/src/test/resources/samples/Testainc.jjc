@@ -1,0 +1,13 @@
+init
+push(3)
+newarray(tab,int)
+push(0)
+push(10)
+astore(tab)
+push(0)
+push(5)
+ainc(tab)
+push(0)
+aload(tab)
+write
+jcstop

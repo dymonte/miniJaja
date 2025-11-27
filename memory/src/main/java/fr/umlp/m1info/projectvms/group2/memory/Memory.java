@@ -101,9 +101,10 @@ public class Memory {
 	 * @param sorte       the method type
 	 */
 	public void declMeth(String ident, Object meth, List<Type> paramsTypes, Type sorte) {
-		String identWithTypes = getMethKey(ident, paramsTypes);
+        String identWithTypes = getMethKey(ident, paramsTypes);
 		Optional<SymNode> symbol = symTable.add(identWithTypes, Kind.METH, sorte);
 		symbol.ifPresent(symNode -> stack.push(meth, symNode));
+
 	}
 
 	/**
