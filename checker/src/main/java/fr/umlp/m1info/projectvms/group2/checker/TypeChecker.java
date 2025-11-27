@@ -56,7 +56,7 @@ class TypeEnv {
 	 * @param name the name of variable of method
 	 * @return if a variable or method is defined
 	 */
-	public boolean isDefine(String name) {
+	public boolean isDefined(String name) {
 		return vars.containsKey(name);
 	}
 
@@ -200,7 +200,7 @@ public class TypeChecker implements Checker {
 
 		String methodKey = TypeCheckerUtils.methodKey(node.getIdent().getName(), paramTypes);
 
-		if (env.isDefine(methodKey)) {
+		if (env.isDefined(methodKey)) {
 			diag.error(ErrorCode.METHOD_ALREADY_EXISTS,
 					"The method '" + node.getIdent().getName() + "' already exists with the same arguments", node.getLine(),
 					node.getColumn());
