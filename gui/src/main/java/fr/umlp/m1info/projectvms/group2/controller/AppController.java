@@ -1,18 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.fxmisc.richtext.CodeArea;
-
 import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
@@ -41,6 +28,18 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.fxmisc.richtext.CodeArea;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * AppController
@@ -123,7 +122,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Opens a file
-	 * 
+	 *
 	 * @return the file chosen by the user
 	 */
 	private File chooseFile() {
@@ -135,7 +134,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Opens a file and updates the code section
-	 * 
+	 *
 	 * @param file the file to open
 	 */
 	private void openFile(File file) {
@@ -163,7 +162,7 @@ public class AppController implements StatefulController {
 	/**
 	 * Create a file with "untilted.mjj as default name
 	 * Called by the button
-	 * 
+	 *
 	 * @return the file created
 	 */
 	@FXML
@@ -214,7 +213,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Opens a folder and updates the file tree
-	 * 
+	 *
 	 * @param file the folder to open
 	 */
 	private void openFolder(File file) {
@@ -223,7 +222,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Lets the user choose a directory
-	 * 
+	 *
 	 * @return the directory chosen by the user
 	 */
 	private File chooseDirectory() {
@@ -240,11 +239,13 @@ public class AppController implements StatefulController {
 	private void saveFile() {
 		File file;
 		Optional<File> openedFile = state.getOpenedFile();
+		boolean createdFile;
 		if (openedFile.isEmpty()) {
 			file = createFile();
-			openFile(file);
+			createdFile = true;
 		} else {
 			file = openedFile.get();
+			createdFile = false;
 		}
 
 		if (file == null) {
@@ -257,6 +258,9 @@ public class AppController implements StatefulController {
 					file.toPath(),
 					state.codeProperty().get(),
 					StandardCharsets.UTF_8);
+			if (createdFile) {
+				openFile(file);
+			}
 		} catch (IOException e) {
 			PopUp.error("File Error", "Cannot save file", e.getMessage());
 		}
@@ -302,7 +306,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Change the window name
-	 * 
+	 *
 	 * @param newTitle new window name
 	 */
 	public void updateWindowTitle(String newTitle) {
@@ -613,11 +617,12 @@ public class AppController implements StatefulController {
 
 			if (firstLine != null && firstLine.contains("ThemeName:")) {
 				return firstLine.replace("/*", "")
-								.replace("*/", "")
-								.replace("ThemeName:", "")
-								.trim();
+						.replace("*/", "")
+						.replace("ThemeName:", "")
+						.trim();
 			}
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 
 		// fallback to file name
 		String name = file.getName().replace(".css", "");
