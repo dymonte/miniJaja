@@ -61,11 +61,11 @@ value
 
 address : NUMBER ;
 type
-    : 'int' | 'boolean' | 'void' | 'meth'
+    : 'int' | 'boolean' | 'void'
     ;
 
 kind
-    : 'var' | 'cst' | 'arr'
+    : 'var' | 'cst' | 'arr' | 'meth'
     ;
 
 fragment CHARS: (~["\\\r\n] | '\\' .)*;

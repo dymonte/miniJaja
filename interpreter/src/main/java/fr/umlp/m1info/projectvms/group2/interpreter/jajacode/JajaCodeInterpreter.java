@@ -122,8 +122,7 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrInit.class)
 	protected void interpretInit(InstrInit node) {
-		// since memory is already initialized in the constructor, does nothing
-        return;
+		interpret(getNextInstr(node));
     }
 
 	@JajaCodeInterpretFunction(InstrStop.class)
@@ -192,7 +191,8 @@ public class JajaCodeInterpreter {
     @JajaCodeInterpretFunction(InstrInvoke.class)
     protected void interpretInvoke(InstrInvoke node) {
         int currentLine = node.getLineId();
-        int methodAddress = (int) memory.getVal(node.getValIdent().getIdent());
+		String methodeName = memory.getMethKey(node.getValIdent().getIdent(), Collections.emptyList());
+        int methodAddress = (int) memory.getVal(methodeName);
         memory.push(currentLine + 1, Type.INT); // next line to execute after return
         interpret(getInstr(methodAddress));
     }
@@ -325,6 +325,7 @@ public class JajaCodeInterpreter {
         }
 
         memory.updateVal(node.getValIdent().getIdent(), value);
+		interpret(getNextInstr(node));
 	}
 
     /**
@@ -377,7 +378,9 @@ public class JajaCodeInterpreter {
             type = Type.BOOL;
         } else if (value instanceof Integer) {
             type = Type.INT;
-        } else {
+        } else if (value instanceof String) {
+			type = Type.STRING;
+		} else {
             throw new InterpretRuntimeException("The value is not of the expected type");
         }
         memory.push(value, type);
