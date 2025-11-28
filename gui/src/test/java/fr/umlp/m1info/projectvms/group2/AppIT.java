@@ -1,34 +1,18 @@
 package fr.umlp.m1info.projectvms.group2;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Unit test for simple App.
  */
-public class AppIT
-        extends TestCase {
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppIT(String testName) {
-        super(testName);
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite() {
-        return new TestSuite(AppIT.class);
-    }
+public class AppIT {
 
     /**
      * Rigourous Test :-)
      */
+    @Test
     public void testApp() {
-        assertTrue(true);
+        Assertions.assertTrue(true);
     }
 }
