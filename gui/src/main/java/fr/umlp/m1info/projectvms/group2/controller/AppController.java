@@ -601,8 +601,8 @@ public class AppController implements StatefulController {
 		}
 
 		switch (themesFolderUrl.getProtocol()) {
-			case "file" -> _loadThemesFromFileSystem(themesFolderUrl);
-			case "jar" -> _loadThemesFromJar(themesFolderUrl);
+			case "file" -> loadThemesFromFileSystem(themesFolderUrl);
+			case "jar" -> loadThemesFromJar(themesFolderUrl);
 			default ->
 				PopUp.error("Theme error", "Themes folder should be in the filesystem or in the jar", STYLE_FOLDER);
 		}
@@ -617,7 +617,7 @@ public class AppController implements StatefulController {
 	 *
 	 * @param themesDirUrl the theme directory url
 	 */
-	private void _loadThemesFromFileSystem(URL themesDirUrl) {
+	private void loadThemesFromFileSystem(URL themesDirUrl) {
 		File themesDir = new File(themesDirUrl.getPath());
 		File[] cssFiles = themesDir.listFiles((dir, name) -> name.endsWith(".css"));
 
@@ -639,7 +639,7 @@ public class AppController implements StatefulController {
 	 *
 	 * @param themesDirUrl the theme directory url
 	 */
-	private void _loadThemesFromJar(URL themesDirUrl) {
+	private void loadThemesFromJar(URL themesDirUrl) {
 		try {
 			String path = STYLE_FOLDER.startsWith("/") ? STYLE_FOLDER.substring(1) : STYLE_FOLDER;
 			JarURLConnection connection = (JarURLConnection) themesDirUrl.openConnection();
