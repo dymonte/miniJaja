@@ -15,7 +15,7 @@ prog
 instr
     : 'init'                 #Init
     | 'swap'                 #Swap
-    | 'new' '(' ident ',' type ',' kind ',' address ')' #New
+    | 'new' '(' ident ',' type ',' kind ',' NUMBER ')' #New
     | 'newarray' '(' ident ',' type ')'                 #NewArray
     | 'invoke' '(' ident ')' #Invoke
     | 'length' '(' ident ')' #Length

@@ -121,7 +121,7 @@ public class JajaCodeNodeNullArgumentTest {
 
 		exception = Assert.assertThrows(NullPointerException.class,
 				() -> new InstrNew(1, new ValIdent(1, "a"), new VarKind(1, Kind.VAR), new VarType(1, Type.INT), null));
-		Assert.assertEquals("val cannot be null", exception.getMessage());
+		Assert.assertEquals("depth cannot be null", exception.getMessage());
 	}
 
 	@Test

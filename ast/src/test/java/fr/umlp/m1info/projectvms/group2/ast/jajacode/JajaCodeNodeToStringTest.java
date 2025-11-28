@@ -161,15 +161,15 @@ public class JajaCodeNodeToStringTest {
 				new ValIdent(lineId, "a"),
 				new VarKind(lineId, Kind.VAR),
 				new VarType(lineId, Type.INT),
-				new ValAddress(lineId, 10));
-		Assert.assertEquals("1 : new(var, jcident(a), int, jcnbre(10))", instr.toString());
+				new ValNbre(lineId, 10));
+		Assert.assertEquals("1 : new(var, jcident(a), int, 10)", instr.toString());
 
 		InstrNew instr2 = new InstrNew(1,
 				new ValIdent(lineId, "b"),
 				new VarKind(lineId, Kind.VAR),
 				new VarType(lineId, Type.BOOL),
-				new ValAddress(lineId, 1));
-		Assert.assertEquals("1 : new(var, jcident(b), boolean, jcnbre(1))", instr2.toString());
+				new ValNbre(lineId, 1));
+		Assert.assertEquals("1 : new(var, jcident(b), boolean, 1)", instr2.toString());
 	}
 
 	@Test
@@ -181,12 +181,12 @@ public class JajaCodeNodeToStringTest {
 		Assert.assertEquals("1 : newarray(jcident(a), int)", instr.toString());
 	}
 
-    @Test
-    public void testInstrToStringNop() {
-        int lineId = 1;
-        InstrNop instr = new InstrNop(lineId);
-        Assert.assertEquals("1 : nop", instr.toString());
-    }
+	@Test
+	public void testInstrToStringNop() {
+		int lineId = 1;
+		InstrNop instr = new InstrNop(lineId);
+		Assert.assertEquals("1 : nop", instr.toString());
+	}
 
 	@Test
 	public void testInstrToStringPop() {

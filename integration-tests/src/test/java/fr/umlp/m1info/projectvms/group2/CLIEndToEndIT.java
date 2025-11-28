@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class CLIEndToEndIT {
 
-    private final String codeSamplesPath = "src/test/resources/samples/";
+	private final String codeSamplesPath = "src/test/resources/samples/";
 
 	record ProgramOutput(int exitCode, String output) {
 	}
@@ -100,119 +100,128 @@ public class CLIEndToEndIT {
 		assertEquals(0, out.exitCode());
 		assertEquals("Result:5+10=15\n", out.output());
 	}
-    @Test
-    public void testPushAndAdd() throws IOException, InterruptedException {
-        ProgramOutput out = executeProgram(new String[] {
-                "execute:jjc",
-                codeSamplesPath + "testAddPush.jjc"
-        });
-        assertEquals(0, out.exitCode());
-        assertEquals("11\n", out.output());
-    }
-    @Test
-    public void testNew() throws IOException, InterruptedException {
-        ProgramOutput out = executeProgram(new String[] {
-                "execute:jjc",
-                codeSamplesPath + "testSwap.jjc"
-        });
-        assertEquals(0, out.exitCode());
-        assertEquals("1020\n", out.output());
-    }
-    @Test
-    public void testNewVar() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "newvar_test.jjc"
-        });
-        assertEquals("7\n", out.output());
-    }
-    @Test
-    public void testNewConst() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "newconst_test.jjc"
-        });
-        assertEquals("99\n", out.output());
-    }
-    @Test
-    public void testNewMethod() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "newmeth_test.jjc"
-        });
-        assertEquals("3\n", out.output());
-    }
 
-    @Test
-    public void testNewArray() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "newarray_test.jjc"
-        });
-        assertEquals("42\n", out.output());
-    }
-    @Test
-    public void testReturn() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "test_return_goto.jjc"
-        });
-        assertEquals("3\n", out.output());
-    }
+	@Test
+	public void testPushAndAdd() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "testAddPush.jjc"
+		});
+		assertEquals(0, out.exitCode());
+		assertEquals("11\n", out.output());
+	}
 
-    @Test
-    public void testInvoke() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "testinvoke.jjc"
-        });
-        assertEquals("2\n", out.output());
-    }
+	@Test
+	public void testNew() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "testSwap.jjc"
+		});
+		assertEquals(0, out.exitCode());
+		assertEquals("1020\n", out.output());
+	}
 
-    @Test
-    public void testload() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "loadTest.jjc"
-        });
-        assertEquals("10\n", out.output());
-    }
+	@Test
+	public void testNewVar() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "newvar_test.jjc"
+		});
+		assertEquals("7\n", out.output());
+	}
 
-    @Test
-    public void teststore() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "storeTest.jjc"
-        });
-        assertEquals("15\n", out.output());
-    }
-    @Test
-    public void testiftrue() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "testiftrue.jjc"
-        });
-        assertEquals("1\n", out.output());
-    }
-    @Test
-    public void testiffalse() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "testiffalse.jjc"
-        });
-        assertEquals("0\n", out.output());
-    }
-    @Test
-    public void testinc() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "incTest.jjc"
-        });
-        assertEquals("10\n", out.output());
-    }
+	@Test
+	public void testNewConst() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "newconst_test.jjc"
+		});
+		assertEquals("99\n", out.output());
+	}
+
+	@Test
+	public void testNewMethod() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "newmeth_test.jjc"
+		});
+		assertEquals("3\n", out.output());
+	}
+
+	@Test
+	public void testNewArray() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "newarray_test.jjc"
+		});
+		assertEquals("42\n", out.output());
+	}
+
+	@Test
+	public void testReturn() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "test_return_goto.jjc"
+		});
+		assertEquals("3\n", out.output());
+	}
+
+	@Test
+	public void testInvoke() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "testinvoke.jjc"
+		});
+		assertEquals("2\n", out.output());
+	}
+
+	@Test
+	public void testload() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "loadTest.jjc"
+		});
+		assertEquals("10\n", out.output());
+	}
+
+	@Test
+	public void teststore() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "storeTest.jjc"
+		});
+		assertEquals("15\n", out.output());
+	}
+
+	@Test
+	public void testiftrue() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "testiftrue.jjc"
+		});
+		assertEquals("1\n", out.output());
+	}
+
+	@Test
+	public void testiffalse() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "testiffalse.jjc"
+		});
+		assertEquals("0\n", out.output());
+	}
+
+	@Test
+	public void testinc() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "incTest.jjc"
+		});
+		assertEquals("10\n", out.output());
+	}
 
 	private void testFile(String file, String result) throws IOException, InterruptedException {
-		ProgramOutput compileOut = executeProgram(new String[]{
+		ProgramOutput compileOut = executeProgram(new String[] {
 				"compile",
 				codeSamplesPath + file + ".mjj"
 		});
@@ -227,7 +236,7 @@ public class CLIEndToEndIT {
 		try {
 			Files.writeString(jjcFile, jajacode, StandardCharsets.UTF_8);
 
-			ProgramOutput execOut = executeProgram(new String[]{
+			ProgramOutput execOut = executeProgram(new String[] {
 					"execute:jjc",
 					jjcFile.toString()
 			});
@@ -238,10 +247,12 @@ public class CLIEndToEndIT {
 		} finally {
 			try {
 				Files.deleteIfExists(jjcFile);
-			} catch (IOException ignored) {}
+			} catch (IOException ignored) {
+			}
 			try {
 				Files.deleteIfExists(tmpDir);
-			} catch (IOException ignored) {}
+			} catch (IOException ignored) {
+			}
 		}
 	}
 
@@ -253,13 +264,13 @@ public class CLIEndToEndIT {
 		testFile("synonymie", "3 3 3 4 3 3 3 3 3 3 \n7 7 7 7 7 7 7 4 7 7 \n");
 	}
 
-    @Test
-    public void testainc() throws Exception {
-        ProgramOutput out = executeProgram(new String[]{
-                "execute:jjc",
-                codeSamplesPath + "Testainc.jjc"
-        });
-        assertEquals("15\n", out.output());
-    }
+	@Test
+	public void testainc() throws Exception {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:jjc",
+				codeSamplesPath + "Testainc.jjc"
+		});
+		assertEquals("15\n", out.output());
+	}
 
 }

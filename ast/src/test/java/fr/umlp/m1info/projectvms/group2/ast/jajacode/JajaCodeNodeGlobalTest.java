@@ -7,11 +7,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class JajaCodeNodeGlobalTest {
-    @Test
-    public void testJajaCodeNodeIllegalLineId() {
-        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class, () -> {
-            new InstrNop(-1);
-        });
+	@Test
+	public void testJajaCodeNodeIllegalLineId() {
+		IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class, () -> {
+			new InstrNop(-1);
+		});
 
 		Assert.assertEquals("Line id must be greater than 0", e.getMessage());
 	}
@@ -22,7 +22,6 @@ public class JajaCodeNodeGlobalTest {
 			new ValAddress(1, -1);
 		});
 
-		Assert.assertEquals("address should be >= 0", e.getMessage());
-
-    }
+		Assert.assertEquals("address must be greater than 0", e.getMessage());
+	}
 }

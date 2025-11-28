@@ -78,12 +78,13 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	 */
 	@Override
 	public JajaCodeNode visitNew(JajaCodeParser.NewContext ctx) {
+		ValNbre depth = new ValNbre(VisitorUtils.line(ctx), Integer.parseInt(ctx.NUMBER().getText()));
 		instructions.add(new InstrNew(
 				VisitorUtils.line(ctx),
 				(ValIdent) visit(ctx.ident()),
 				(VarKind) visit(ctx.kind()),
 				(VarType) visit(ctx.type()),
-				(ValAddress) visit(ctx.address())));
+				depth));
 		return null;
 	}
 
