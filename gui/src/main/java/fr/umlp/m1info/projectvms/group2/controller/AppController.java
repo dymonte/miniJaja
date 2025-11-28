@@ -3,6 +3,8 @@ package fr.umlp.m1info.projectvms.group2.controller;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -126,7 +128,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Opens a file
-	 * 
+	 *
 	 * @return the file chosen by the user
 	 */
 	private File chooseFile() {
@@ -138,7 +140,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Opens a file and updates the code section
-	 * 
+	 *
 	 * @param file the file to open
 	 */
 	private void openFile(File file) {
@@ -166,7 +168,7 @@ public class AppController implements StatefulController {
 	/**
 	 * Create a file with "untilted.mjj as default name
 	 * Called by the button
-	 * 
+	 *
 	 * @return the file created
 	 */
 	@FXML
@@ -217,7 +219,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Opens a folder and updates the file tree
-	 * 
+	 *
 	 * @param file the folder to open
 	 */
 	private void openFolder(File file) {
@@ -226,7 +228,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Lets the user choose a directory
-	 * 
+	 *
 	 * @return the directory chosen by the user
 	 */
 	private File chooseDirectory() {
@@ -243,11 +245,13 @@ public class AppController implements StatefulController {
 	private void saveFile() {
 		File file;
 		Optional<File> openedFile = state.getOpenedFile();
+		boolean createdFile;
 		if (openedFile.isEmpty()) {
 			file = createFile();
-			openFile(file);
+			createdFile = true;
 		} else {
 			file = openedFile.get();
+			createdFile = false;
 		}
 
 		if (file == null) {
@@ -260,6 +264,9 @@ public class AppController implements StatefulController {
 					file.toPath(),
 					state.codeProperty().get(),
 					StandardCharsets.UTF_8);
+			if (createdFile) {
+				openFile(file);
+			}
 		} catch (IOException e) {
 			PopUp.error("File Error", "Cannot save file", e.getMessage());
 		}
@@ -305,7 +312,7 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Change the window name
-	 * 
+	 *
 	 * @param newTitle new window name
 	 */
 	public void updateWindowTitle(String newTitle) {
@@ -614,6 +621,10 @@ public class AppController implements StatefulController {
 		File themesDir = new File(themesDirUrl.getPath());
 		File[] cssFiles = themesDir.listFiles((dir, name) -> name.endsWith(".css"));
 
+		if (cssFiles == null) {
+			return;
+		}
+
 		if (cssFiles != null) {
 			for (File file : cssFiles) {
 				addThemeMenuItem(file.getName());
@@ -650,11 +661,15 @@ public class AppController implements StatefulController {
 		}
 	}
 
+	/**
+	 * Sub-function for loadThemes that adds a theme item on the menu.
+	 *
+	 * @param cssFileName the theme's css file name
+	 */
 	private void addThemeMenuItem(String cssFileName) {
 		String themeName;
-		// Try to read the theme name from the file content
-		try (java.io.InputStream is = getClass().getResourceAsStream(STYLE_FOLDER + cssFileName);
-				BufferedReader br = new BufferedReader(new java.io.InputStreamReader(is))) {
+		try (InputStream is = getClass().getResourceAsStream(STYLE_FOLDER + cssFileName);
+				BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 			String firstLine = br.readLine();
 			if (firstLine != null && firstLine.contains("ThemeName:")) {
 				themeName = firstLine.replace("/*", "")
@@ -665,7 +680,6 @@ public class AppController implements StatefulController {
 				throw new Exception("No theme name found");
 			}
 		} catch (Exception ignored) {
-			// fallback to file name
 			String name = cssFileName.replace(".css", "");
 			themeName = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 		}
