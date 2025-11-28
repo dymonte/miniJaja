@@ -144,6 +144,8 @@ public class AppController implements StatefulController {
 	private void displayFile(File file) {
 		if (file == null || file.isDirectory()) {
 			return;
+		} else if (isInterpreterRunningAndBlock("open a file")) {
+			return;
 		}
 
 		try {
@@ -167,6 +169,9 @@ public class AppController implements StatefulController {
 	 */
 	@FXML
 	private File createFile() {
+		if (isInterpreterRunningAndBlock("create a file")) {
+			return null;
+		}
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("New File");
 		fileChooser.setInitialFileName("untitled.mjj");
@@ -197,6 +202,9 @@ public class AppController implements StatefulController {
 	 */
 	@FXML
 	private void openFile() {
+		if (isInterpreterRunningAndBlock("open a file")) {
+			return;
+		}
 		File file = chooseFile();
 		openFile(file);
 	}
@@ -207,6 +215,9 @@ public class AppController implements StatefulController {
 	 */
 	@FXML
 	private void openFolder() {
+		if (isInterpreterRunningAndBlock("open a folder")) {
+			return;
+		}
 		File file = chooseDirectory();
 		openFolder(file);
 	}
@@ -299,6 +310,9 @@ public class AppController implements StatefulController {
 	 */
 	@FXML
 	private void closeCurrentFile() {
+		if (isInterpreterRunningAndBlock("close the file")) {
+			return;
+		}
 		state.closeOpenedFile();
 		state.codeProperty().set("");
 		updateWindowTitle("MiniJaja IDE");
@@ -660,6 +674,25 @@ public class AppController implements StatefulController {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Checks whether the interpreter is currently running.
+	 * If it is, a pop-up is shown informing the user that the action cannot proceed.
+	 *
+	 * @param action The action the user is attempting to perform.
+	 * @return true if the interpreter is running (the caller should block the action), false otherwise.
+	 */
+	private boolean isInterpreterRunningAndBlock(String action) {
+		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
+			PopUp.info(
+					"Minijaja Interpreter",
+					"Interpreter is running",
+					"Stop the interpretation before you can " + action + "."
+			);
+			return true;
+		}
+		return false;
 	}
 
 	@FXML
