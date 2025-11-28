@@ -625,10 +625,8 @@ public class AppController implements StatefulController {
 			return;
 		}
 
-		if (cssFiles != null) {
-			for (File file : cssFiles) {
-				addThemeMenuItem(file.getName());
-			}
+		for (File file : cssFiles) {
+			addThemeMenuItem(file.getName());
 		}
 	}
 
