@@ -96,7 +96,7 @@ public class JajaCodeInterpreter {
 	}
 
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
-			Class<?> nodeClass) {
+									   Class<?> nodeClass) {
 		Class<?> cls = this.getClass();
 		while (cls != null) {
 			for (Method method : cls.getDeclaredMethods()) {
@@ -130,7 +130,7 @@ public class JajaCodeInterpreter {
 	/**
 	 * Interprets a nop instruction, do nothing and continue to interpret the next
 	 * instruction
-	 * 
+	 *
 	 * @param node the nop instruction to interpret
 	 */
 	@JajaCodeInterpretFunction(InstrNop.class)
@@ -146,16 +146,11 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrNew.class)
 	protected void interpretNew(InstrNew node) {
-		if (node.getType() == null || node.getKind() == null) {
-			return;
-		}
 		String identifier = node.getValIdent().getIdent();
-
 		Type type = node.getType().getType();
 		switch (node.getKind().getKind()) {
 			case VAR: {
-				memory.identVal(identifier, Kind.VAR, type,
-						node.getValDepth().getValue());
+				memory.identVal(identifier, Kind.VAR, type, node.getValDepth().getValue());
 				break;
 			}
 			case CONST: {
@@ -186,7 +181,7 @@ public class JajaCodeInterpreter {
 	 * Interprets an invoke instruction
 	 * Store the return address on the head of the stack and start to interpret the
 	 * method
-	 * 
+	 *
 	 * @param node the invoke instruction to interpret
 	 */
 	@JajaCodeInterpretFunction(InstrInvoke.class)
@@ -195,7 +190,7 @@ public class JajaCodeInterpreter {
 		String identWithTypes = memory.getMethKey(ident, Collections.emptyList());
 		Object addrObj = memory.getVal(identWithTypes);
 		if (!(addrObj instanceof Integer)) {
-			throw new InterpretRuntimeException("Adresse de méthode invalide pour " + ident);
+			throw new InterpretRuntimeException("invalid method adress for" + ident);
 		}
 		int currentLine = node.getLineId();
 		int methodAddress = (int) addrObj;
@@ -207,7 +202,7 @@ public class JajaCodeInterpreter {
 	 * Interprets a return instruction
 	 * Pop the return address from the stack and start to interpret the next
 	 * instruction
-	 * 
+	 *
 	 * @param node the return instruction to interpret
 	 */
 	@JajaCodeInterpretFunction(InstrReturn.class)
@@ -226,9 +221,8 @@ public class JajaCodeInterpreter {
 	/**
 	 * Interprets a write instruction
 	 * Pop the value from the stack and log it
-	 * 
-	 * @param node the write instruction to interpret
 	 *
+	 * @param node the write instruction to interpret
 	 * @throws InterpretRuntimeException if the head of stack is not a string
 	 */
 	@JajaCodeInterpretFunction(InstrWrite.class)
@@ -248,9 +242,8 @@ public class JajaCodeInterpreter {
 	/**
 	 * Interprets a writeln instruction
 	 * Pop the value from the stack and log it with a newline
-	 * 
-	 * @param node the writeln instruction to interpret
 	 *
+	 * @param node the writeln instruction to interpret
 	 * @throws InterpretRuntimeException if the head of stack is not a string
 	 */
 	@JajaCodeInterpretFunction(InstrWriteln.class)
@@ -272,7 +265,7 @@ public class JajaCodeInterpreter {
 
 	/**
 	 * Interprets a goto instruction
-	 * 
+	 *
 	 * @param node the goto instruction to interpret that contains the address of
 	 *             the next instruction
 	 */
@@ -284,9 +277,8 @@ public class JajaCodeInterpreter {
 	/**
 	 * Interprets a load instruction
 	 * Push the value of the variable on the stack
-	 * 
-	 * @param node the load instruction to interpret
 	 *
+	 * @param node the load instruction to interpret
 	 * @throws InterpretRuntimeException if the variable is not declared
 	 */
 	@JajaCodeInterpretFunction(InstrLoad.class)
@@ -299,9 +291,8 @@ public class JajaCodeInterpreter {
 	 * Interprets an aload instruction
 	 * Retrieve the index i from the stack
 	 * Push the value of the array at index i on the stack
-	 * 
-	 * @param node the aload instruction to interpret
 	 *
+	 * @param node the aload instruction to interpret
 	 * @throws InterpretRuntimeException if the array is not declared
 	 */
 	@JajaCodeInterpretFunction(InstrALoad.class)
@@ -311,8 +302,6 @@ public class JajaCodeInterpreter {
 			index = (int) memory.pop();
 		} catch (ClassCastException e) {
 			throw new InterpretRuntimeException("The head of stack is not an integer");
-		} catch (EmptyStackException e) {
-			throw new InterpretRuntimeException("Stack is empty");
 		}
 		memory.push(memory.getValArray(node.getValIdent().getIdent(), index),
 				memory.getType(node.getValIdent().getIdent()));
@@ -323,10 +312,9 @@ public class JajaCodeInterpreter {
 	 * Interprets a store instruction
 	 * Retrieve the value from the stack
 	 * Update the variable with the value
-	 * 
+	 *
 	 * @param node the store instruction to interpret that contains the identifier
 	 *             of the variable
-	 *
 	 * @throws InterpretRuntimeException if the variable is not declared
 	 */
 	@JajaCodeInterpretFunction(InstrStore.class)
@@ -347,10 +335,9 @@ public class JajaCodeInterpreter {
 	 * Interprets an astore instruction
 	 * Retrieve the value and the index i from the stack
 	 * Update the array at index i with the value
-	 * 
+	 *
 	 * @param node the astore instruction to interpret that contains the identifier
 	 *             of the array
-	 *
 	 * @throws InterpretRuntimeException if the array is not declared
 	 */
 	@JajaCodeInterpretFunction(InstrAStore.class)
@@ -378,9 +365,8 @@ public class JajaCodeInterpreter {
 	/**
 	 * Interprets a push instruction
 	 * Push the value on the stack
-	 * 
-	 * @param node the push instruction to interpret that contains the value to push
 	 *
+	 * @param node the push instruction to interpret that contains the value to push
 	 * @throws InterpretRuntimeException if the value is not of the expected type
 	 */
 	@JajaCodeInterpretFunction(InstrPush.class)
@@ -405,7 +391,7 @@ public class JajaCodeInterpreter {
 	/**
 	 * Interprets a pop instruction
 	 * Pop the value from the stack
-	 * 
+	 *
 	 * @param node the pop instruction to interpret
 	 */
 	@JajaCodeInterpretFunction(InstrPop.class)
@@ -421,9 +407,8 @@ public class JajaCodeInterpreter {
 	 * Interprets an if instruction
 	 * Pop the value from the stack
 	 * If the value is true, interpret the instruction at the target address
-	 * 
-	 * @param node the if instruction to interpret that contains the target address
 	 *
+	 * @param node the if instruction to interpret that contains the target address
 	 * @throws InterpretRuntimeException if the top of stack is not a boolean
 	 */
 	@JajaCodeInterpretFunction(InstrIf.class)
@@ -436,9 +421,7 @@ public class JajaCodeInterpreter {
 		boolean condition = (Boolean) topValue;
 		int targetAddress = node.getValAddress().getAddress();
 		Instr nextInstr;
-
 		nextInstr = condition ? getInstr(targetAddress) : getNextInstr(node);
-
 		interpret(nextInstr);
 	}
 
@@ -446,12 +429,9 @@ public class JajaCodeInterpreter {
 	protected void interpretOperBinary(InstrOperBinary node) {
 		Object v2 = memory.pop();
 		Object v1 = memory.pop();
-
 		JajaCodeBinaryOper oper = node.getOper();
 		Object result = evalOperBinary(v1, v2, oper);
-
 		Type type = getTypeFromObject(result);
-
 		memory.push(result, type);
 		interpret(getNextInstr(node));
 	}
@@ -472,17 +452,12 @@ public class JajaCodeInterpreter {
 	protected void interpretInc(InstrInc node) {
 		ValIdent valIdent = node.getValIdent();
 		String varName = valIdent.getIdent();
-
 		Object v = memory.pop();
-
 		Object currentVal = memory.getVal(varName);
-
 		if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
 			throw new InterpretRuntimeException("Invalid types for inc operation on variable: " + varName);
 		}
-
 		int newVal = (int) currentVal + (int) v;
-
 		memory.updateVal(varName, newVal);
 		interpret(getNextInstr(node));
 	}
@@ -490,31 +465,20 @@ public class JajaCodeInterpreter {
 	@JajaCodeInterpretFunction(InstrAInc.class)
 	protected void interpretAInc(InstrAInc node) {
 		String arrayName = node.getValIdent().getIdent();
-
 		Object value;
 		Object indexObj;
-
-		try {
-			value = memory.pop();
-			indexObj = memory.pop();
-		} catch (EmptyStackException e) {
-			throw new InterpretRuntimeException("Stack is empty");
-		}
-
+		value = memory.pop();
+		indexObj = memory.pop();
 		if (!(indexObj instanceof Integer)) {
 			throw new InterpretRuntimeException("Array index must be an integer.");
 		}
-
 		int index = (int) indexObj;
 		Object currentVal = memory.getValArray(arrayName, index);
-
 		if (!(currentVal instanceof Integer) || !(value instanceof Integer)) {
 			throw new InterpretRuntimeException("Invalid types for ainc operation on array: " + arrayName);
 		}
-
 		int newVal = (int) currentVal + (int) value;
 		memory.updateValArray(arrayName, index, newVal);
-
 		interpret(getNextInstr(node));
 	}
 

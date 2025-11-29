@@ -2,7 +2,9 @@ package fr.umlp.m1info.projectvms.group2;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,7 +26,7 @@ public class CLIEndToEndIT {
 	/**
 	 * Executes the CLI program and returns the output as a string (stderr + stdout)
 	 * with the exitCode.
-	 * 
+	 *
 	 * @param args the CLI arguments
 	 * @return the program output and exit code
 	 * @throws IOException          if an I/O error occurs when creating the
@@ -55,28 +57,28 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testCli0() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] { "execute:mjj", codeSamplesPath + "hello_world.mjj" });
+		ProgramOutput out = executeProgram(new String[]{"execute:mjj", codeSamplesPath + "hello_world.mjj"});
 		assertEquals(0, out.exitCode());
 		assertEquals("Hello, World!\n", out.output());
 	}
 
 	@Test
 	public void testWhile() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] { "execute:mjj", codeSamplesPath + "while_test.mjj" });
+		ProgramOutput out = executeProgram(new String[]{"execute:mjj", codeSamplesPath + "while_test.mjj"});
 		assertEquals(0, out.exitCode());
 		assertEquals("5\n", out.output());
 	}
 
 	@Test
 	public void testVariableCreation() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] { "execute:mjj", codeSamplesPath + "variables_test.mjj" });
+		ProgramOutput out = executeProgram(new String[]{"execute:mjj", codeSamplesPath + "variables_test.mjj"});
 		assertEquals(0, out.exitCode());
 		assertEquals("1020\n", out.output());
 	}
 
 	@Test
 	public void testEndToEndConditions() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:mjj",
 				codeSamplesPath + "conditions_test.mjj"
 		});
@@ -86,14 +88,14 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testMethodCall() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] { "execute:mjj", codeSamplesPath + "methods_test.mjj" });
+		ProgramOutput out = executeProgram(new String[]{"execute:mjj", codeSamplesPath + "methods_test.mjj"});
 		assertEquals(0, out.exitCode());
 		assertEquals("12\n", out.output());
 	}
 
 	@Test
 	public void testEndToEndIO() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:mjj",
 				codeSamplesPath + "io_test.mjj"
 		});
@@ -103,7 +105,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testPushAndAdd() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "testAddPush.jjc"
 		});
@@ -113,7 +115,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testNew() throws IOException, InterruptedException {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "testSwap.jjc"
 		});
@@ -123,7 +125,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testNewVar() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "newvar_test.jjc"
 		});
@@ -132,7 +134,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testNewConst() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "newconst_test.jjc"
 		});
@@ -141,7 +143,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testNewMethod() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "newmeth_test.jjc"
 		});
@@ -150,7 +152,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testNewArray() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "newarray_test.jjc"
 		});
@@ -159,7 +161,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testReturn() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "test_return_goto.jjc"
 		});
@@ -168,7 +170,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testInvoke() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "testinvoke.jjc"
 		});
@@ -177,7 +179,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testload() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "loadTest.jjc"
 		});
@@ -186,7 +188,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void teststore() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "storeTest.jjc"
 		});
@@ -195,7 +197,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testiftrue() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "testiftrue.jjc"
 		});
@@ -204,7 +206,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testiffalse() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "testiffalse.jjc"
 		});
@@ -213,7 +215,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testinc() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "incTest.jjc"
 		});
@@ -221,7 +223,7 @@ public class CLIEndToEndIT {
 	}
 
 	private void testFile(String file, String result) throws IOException, InterruptedException {
-		ProgramOutput compileOut = executeProgram(new String[] {
+		ProgramOutput compileOut = executeProgram(new String[]{
 				"compile",
 				codeSamplesPath + file + ".mjj"
 		});
@@ -236,7 +238,7 @@ public class CLIEndToEndIT {
 		try {
 			Files.writeString(jjcFile, jajacode, StandardCharsets.UTF_8);
 
-			ProgramOutput execOut = executeProgram(new String[] {
+			ProgramOutput execOut = executeProgram(new String[]{
 					"execute:jjc",
 					jjcFile.toString()
 			});
@@ -266,7 +268,7 @@ public class CLIEndToEndIT {
 
 	@Test
 	public void testainc() throws Exception {
-		ProgramOutput out = executeProgram(new String[] {
+		ProgramOutput out = executeProgram(new String[]{
 				"execute:jjc",
 				codeSamplesPath + "Testainc.jjc"
 		});
