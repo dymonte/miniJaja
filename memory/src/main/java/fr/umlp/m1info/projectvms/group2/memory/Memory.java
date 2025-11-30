@@ -24,7 +24,6 @@ public class Memory {
 	SymTable symTable;
 	Stack stack;
 	Heap heap;
-
 	/**
 	 * Constructs a new Memory
 	 *
@@ -32,6 +31,7 @@ public class Memory {
 	 * @param stack    the memory stack
 	 * @param heap     the memory heap
 	 */
+
 	public Memory(SymTable symTable, Stack stack, Heap heap) {
 		this.symTable = symTable;
 		this.stack = stack;
@@ -42,7 +42,7 @@ public class Memory {
 
 	/**
 	 * Add a new variable declaration to the program memory.
-	 * 
+	 *
 	 * @param ident the variable identifier
 	 * @param value the variable initial value
 	 * @param sorte the variable type
@@ -54,7 +54,7 @@ public class Memory {
 
 	/**
 	 * Add a new constant declaration with it's value to the program memory.
-	 * 
+	 *
 	 * @param ident the constant identifier
 	 * @param value the constant initial value
 	 * @param sorte the constant type
@@ -66,7 +66,7 @@ public class Memory {
 
 	/**
 	 * Add a new constant declaration to the program memory.
-	 * 
+	 *
 	 * @param ident the constant identifier
 	 * @param sorte the constant type
 	 */
@@ -78,7 +78,7 @@ public class Memory {
 
 	/**
 	 * Add a new array declaration to the program memory.
-	 * 
+	 *
 	 * @param ident the array identifier
 	 * @param size  the array size
 	 * @param sorte the array type
@@ -104,6 +104,7 @@ public class Memory {
 		String identWithTypes = getMethKey(ident, paramsTypes);
 		Optional<SymNode> symbol = symTable.add(identWithTypes, Kind.METH, sorte);
 		symbol.ifPresent(symNode -> stack.push(meth, symNode));
+
 	}
 
 	/**
@@ -156,7 +157,7 @@ public class Memory {
 	/**
 	 * Sets the value stored in the first instance of the symbol of identifier
 	 * ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
 	 * @param val   the new value to set
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
@@ -199,7 +200,7 @@ public class Memory {
 	/**
 	 * Returns the value stored in the first instance of the symbol of identifier
 	 * ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
 	 * @return the value stored in the symbol's first instance
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
@@ -232,7 +233,7 @@ public class Memory {
 
 	/**
 	 * Get the value at a given index in an array.
-	 * 
+	 *
 	 * @param ident the array identifier
 	 * @param index the index to read
 	 * @return the value at the given index in the array
@@ -332,7 +333,7 @@ public class Memory {
 
 	/**
 	 * Gets the type of the symbol of indentifier ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
 	 * @return the symbol's data type
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
@@ -350,7 +351,7 @@ public class Memory {
 
 	/**
 	 * Gets the head of the stack as a Quad
-	 * 
+	 *
 	 * @return the head of the stack as a Quad
 	 */
 	public Quad getHead() {
@@ -359,7 +360,7 @@ public class Memory {
 
 	/**
 	 * Sets the type of the symbol of indentifier ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
 	 * @param sorte the new type to set
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
@@ -386,7 +387,7 @@ public class Memory {
 
 	/**
 	 * Pushes a new value on top of the stack
-	 * 
+	 *
 	 * @param value the value to add on top of the stack
 	 */
 	public void push(Object value, Type type) {

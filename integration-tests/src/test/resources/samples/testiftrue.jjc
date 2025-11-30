@@ -1,0 +1,9 @@
+init
+push(true)
+if(6)
+push(0)
+write
+goto(7)
+push(1)
+write
+jcstop

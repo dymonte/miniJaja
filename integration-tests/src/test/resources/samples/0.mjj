@@ -7,6 +7,7 @@
 class C {
   int x;
   int y = 10;
+  int z = 1;
   final int VAL = 5;
   boolean b1 = true;
   boolean b2 = false;

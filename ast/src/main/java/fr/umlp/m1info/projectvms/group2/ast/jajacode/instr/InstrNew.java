@@ -2,8 +2,7 @@ package fr.umlp.m1info.projectvms.group2.ast.jajacode.instr;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarKind;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarType;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.Val;
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValAddress;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValNbre;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
 
 /**
@@ -13,7 +12,7 @@ public class InstrNew extends Instr {
 	private final ValIdent valIdent;
 	private final VarType type;
 	private final VarKind kind;
-	private final ValAddress address;
+	private final ValNbre depth;
 
 	/**
 	 * Instruction for declaring a variable or a method
@@ -24,7 +23,7 @@ public class InstrNew extends Instr {
 	 * @param type     the type of the element
 	 * @param address  the initial value of the element
 	 */
-	public InstrNew(int lineId, ValIdent valIdent, VarKind kind, VarType type, ValAddress address) {
+	public InstrNew(int lineId, ValIdent valIdent, VarKind kind, VarType type, ValNbre depth) {
 		super(lineId);
 		if (valIdent == null)
 			throw new NullPointerException("valIdent cannot be null");
@@ -32,12 +31,12 @@ public class InstrNew extends Instr {
 			throw new NullPointerException("kind cannot be null");
 		if (type == null)
 			throw new NullPointerException("type cannot be null");
-		if (address == null)
-			throw new NullPointerException("val cannot be null");
+		if (depth == null)
+			throw new NullPointerException("depth cannot be null");
 		this.valIdent = valIdent;
 		this.type = type;
 		this.kind = kind;
-		this.address = address;
+		this.depth = depth;
 	}
 
 	/**
@@ -50,8 +49,8 @@ public class InstrNew extends Instr {
 	/**
 	 * @return the initial value of the element
 	 */
-	public ValAddress getValAddress() {
-		return address;
+	public ValNbre getValDepth() {
+		return depth;
 	}
 
 	/**
@@ -73,6 +72,6 @@ public class InstrNew extends Instr {
 	 */
 	@Override
 	public String toString() {
-		return super.toString() + "new(" + kind + ", " + valIdent + ", " + type + ", " + address + ")";
+		return super.toString() + "new(" + kind + ", " + valIdent + ", " + type + ", " + depth + ")";
 	}
 }

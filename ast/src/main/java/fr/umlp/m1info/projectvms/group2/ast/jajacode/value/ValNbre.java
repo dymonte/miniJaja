@@ -24,6 +24,6 @@ public final class ValNbre extends Val{
 
     @Override
     public String toString() {
-        return "jcnbre(" + value + ")";
+        return String.valueOf(value);
     }
 }

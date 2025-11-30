@@ -15,7 +15,7 @@ prog
 instr
     : 'init'                 #Init
     | 'swap'                 #Swap
-    | 'new' '(' ident ',' type ',' kind ',' address ')' #New
+    | 'new' '(' ident ',' type ',' kind ',' NUMBER ')' #New
     | 'newarray' '(' ident ',' type ')'                 #NewArray
     | 'invoke' '(' ident ')' #Invoke
     | 'length' '(' ident ')' #Length
@@ -61,11 +61,11 @@ value
 
 address : NUMBER ;
 type
-    : 'int' | 'boolean' | 'void' | 'meth'
+    : 'int' | 'boolean' | 'void'
     ;
 
 kind
-    : 'var' | 'cst' | 'arr'
+    : 'var' | 'cst' | 'arr' | 'meth'
     ;
 
 fragment CHARS: (~["\\\r\n] | '\\' .)*;

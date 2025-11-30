@@ -62,12 +62,11 @@ public class JajaCodeInterpreter {
 			throw new InterpretRuntimeException(
 					"No @JajaCodeInterpretFunction found for " + node.getClass().getSimpleName());
 		}
-
 		try {
 			m.invoke(this, node);
 		} catch (Exception e) {
 			throw new InterpretRuntimeException(
-					"Error interpreting node " + node.getClass().getSimpleName());
+					"Error interpreting node " + node.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 	}
 
@@ -92,12 +91,12 @@ public class JajaCodeInterpreter {
 			return m.invoke(this, node);
 		} catch (Exception e) {
 			throw new InterpretRuntimeException(
-					"Error interpreting node " + node.getClass().getSimpleName());
+					"Error interpreting node eval" + node.getClass().getSimpleName());
 		}
 	}
 
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
-			Class<?> nodeClass) {
+									   Class<?> nodeClass) {
 		Class<?> cls = this.getClass();
 		while (cls != null) {
 			for (Method method : cls.getDeclaredMethods()) {
@@ -120,19 +119,20 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrInit.class)
 	protected void interpretInit(InstrInit node) {
-		// since memory is already initialized in the constructor, does nothing
-		return;
+		interpret(getNextInstr(node));
 	}
 
 	@JajaCodeInterpretFunction(InstrStop.class)
 	protected void interpretStop(InstrStop node) {
-		return; // end of the interpretation, does nothing
+		return;
 	}
 
-    /**
-     * Interprets a nop instruction, do nothing and continue to interpret the next instruction
-     * @param node the nop instruction to interpret
-     */
+	/**
+	 * Interprets a nop instruction, do nothing and continue to interpret the next
+	 * instruction
+	 *
+	 * @param node the nop instruction to interpret
+	 */
 	@JajaCodeInterpretFunction(InstrNop.class)
 	protected void interpretNop(InstrNop node) {
 		interpret(getNextInstr(node));
@@ -146,18 +146,11 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrNew.class)
 	protected void interpretNew(InstrNew node) {
-		if (node.getType() == null || node.getKind() == null) {
-			return;
-		}
-
 		String identifier = node.getValIdent().getIdent();
-
 		Type type = node.getType().getType();
-
 		switch (node.getKind().getKind()) {
 			case VAR: {
-				memory.identVal(identifier, Kind.VAR, type,
-						node.getValAddress().getAddress());
+				memory.identVal(identifier, Kind.VAR, type, node.getValDepth().getValue());
 				break;
 			}
 			case CONST: {
@@ -184,209 +177,223 @@ public class JajaCodeInterpreter {
 		interpret(getNextInstr(node));
 	}
 
-    /**
-     * Interprets an invoke instruction
-     * Store the return address on the head of the stack and start to interpret the method
-     * @param node the invoke instruction to interpret
-     */
-    @JajaCodeInterpretFunction(InstrInvoke.class)
-    protected void interpretInvoke(InstrInvoke node) {
-        int currentLine = node.getLineId();
-        int methodAddress = (int) memory.getVal(node.getValIdent().getIdent());
-        memory.push(currentLine + 1, Type.INT); // next line to execute after return
-        interpret(getInstr(methodAddress));
-    }
+	/**
+	 * Interprets an invoke instruction
+	 * Store the return address on the head of the stack and start to interpret the
+	 * method
+	 *
+	 * @param node the invoke instruction to interpret
+	 */
+	@JajaCodeInterpretFunction(InstrInvoke.class)
+	protected void interpretInvoke(InstrInvoke node) {
+		String ident = node.getValIdent().getIdent();
+		String identWithTypes = memory.getMethKey(ident, Collections.emptyList());
+		Object addrObj = memory.getVal(identWithTypes);
+		if (!(addrObj instanceof Integer)) {
+			throw new InterpretRuntimeException("invalid method adress for" + ident);
+		}
+		int currentLine = node.getLineId();
+		int methodAddress = (int) addrObj;
+		memory.push(currentLine + 1, Type.INT);
+		interpret(getInstr(methodAddress));
+	}
 
-    /**
-     * Interprets a return instruction
-     * Pop the return address from the stack and start to interpret the next instruction
-     * @param node the return instruction to interpret
-     */
-    @JajaCodeInterpretFunction(InstrReturn.class)
-    protected void interpretReturn(InstrReturn node) {
-        int returnLine;
-        try {
-            returnLine = (int) memory.pop();
-        } catch (EmptyStackException e) {
-            throw new InterpretRuntimeException("Stack is empty, the return address is not present");
-        } catch (ClassCastException e) {
-            throw new InterpretRuntimeException("The head of stack is not an address");
-        }
-        interpret(getInstr(returnLine));
-    }
+	/**
+	 * Interprets a return instruction
+	 * Pop the return address from the stack and start to interpret the next
+	 * instruction
+	 *
+	 * @param node the return instruction to interpret
+	 */
+	@JajaCodeInterpretFunction(InstrReturn.class)
+	protected void interpretReturn(InstrReturn node) {
+		int returnLine;
+		try {
+			returnLine = (int) memory.pop();
+		} catch (EmptyStackException e) {
+			throw new InterpretRuntimeException("Stack is empty, the return address is not present");
+		} catch (ClassCastException e) {
+			throw new InterpretRuntimeException("The head of stack is not an address");
+		}
+		interpret(getInstr(returnLine));
+	}
 
-    /**
-     * Interprets a write instruction
-     * Pop the value from the stack and log it
-     * @param node the write instruction to interpret
-     *
-     * @throws InterpretRuntimeException if the head of stack is not a string
-     */
+	/**
+	 * Interprets a write instruction
+	 * Pop the value from the stack and log it
+	 *
+	 * @param node the write instruction to interpret
+	 * @throws InterpretRuntimeException if the head of stack is not a string
+	 */
 	@JajaCodeInterpretFunction(InstrWrite.class)
 	protected void interpretWrite(InstrWrite node) {
-        String content;
-        try {
-            content = (String) memory.pop();
-        } catch (ClassCastException e){
-            throw new InterpretRuntimeException("The head of stack is not a string");
-        } catch (EmptyStackException e) {
-            throw new InterpretRuntimeException("Stack is empty, the value to write is not present");
-        }
-        writeInLog(content);
-        interpret(getNextInstr(node));
+		String content;
+		try {
+			content = memory.pop().toString();
+		} catch (EmptyStackException e) {
+			throw new InterpretRuntimeException("Stack is empty, the value to write is not present");
+		}
+
+		writeInLog(String.valueOf(content));
+
+		interpret(getNextInstr(node));
 	}
 
-    /**
-     * Interprets a writeln instruction
-     * Pop the value from the stack and log it with a newline
-     * @param node the writeln instruction to interpret
-     *
-     * @throws InterpretRuntimeException if the head of stack is not a string
-     */
+	/**
+	 * Interprets a writeln instruction
+	 * Pop the value from the stack and log it with a newline
+	 *
+	 * @param node the writeln instruction to interpret
+	 * @throws InterpretRuntimeException if the head of stack is not a string
+	 */
 	@JajaCodeInterpretFunction(InstrWriteln.class)
 	protected void interpretWriteln(InstrWriteln node) {
-        String content;
-        try {
-            content = (String) memory.pop();
-        } catch (ClassCastException e){
-            throw new InterpretRuntimeException("The head of stack is not a string");
-        } catch (EmptyStackException e) {
-            throw new InterpretRuntimeException("Stack is empty, the value to write is not present");
-        }
-        writeInLog(content + "\n");
-        interpret(getNextInstr(node));
+		String content;
+		try {
+			content = memory.pop().toString();
+		} catch (EmptyStackException e) {
+			throw new InterpretRuntimeException("Stack is empty, the value to write is not present");
+		}
+
+		writeInLog(String.valueOf(content) + "\n");
+		interpret(getNextInstr(node));
 	}
 
-    private void writeInLog(String s) {
-        InterpreterLogger.getInstance().log(s, InterpreterLogger.MessageLevel.WRITE);
-    }
+	private void writeInLog(String s) {
+		InterpreterLogger.getInstance().log(s, InterpreterLogger.MessageLevel.WRITE);
+	}
 
-    /**
-     * Interprets a goto instruction
-     * @param node the goto instruction to interpret that contains the address of the next instruction
-     */
+	/**
+	 * Interprets a goto instruction
+	 *
+	 * @param node the goto instruction to interpret that contains the address of
+	 *             the next instruction
+	 */
 	@JajaCodeInterpretFunction(InstrGoto.class)
 	protected void interpretGoto(InstrGoto node) {
 		interpret(getInstr(node.getValAddress().getAddress()));
 	}
 
-    /**
-     * Interprets a load instruction
-     * Push the value of the variable on the stack
-     * @param node the load instruction to interpret
-     *
-     * @throws InterpretRuntimeException if the variable is not declared
-     */
+	/**
+	 * Interprets a load instruction
+	 * Push the value of the variable on the stack
+	 *
+	 * @param node the load instruction to interpret
+	 * @throws InterpretRuntimeException if the variable is not declared
+	 */
 	@JajaCodeInterpretFunction(InstrLoad.class)
 	protected void interpretLoad(InstrLoad node) {
-        memory.push(memory.getVal(node.getValIdent().getIdent()), memory.getType(node.getValIdent().getIdent()));
-        interpret(getNextInstr(node));
+		memory.push(memory.getVal(node.getValIdent().getIdent()), memory.getType(node.getValIdent().getIdent()));
+		interpret(getNextInstr(node));
 	}
 
-    /**
-     * Interprets an aload instruction
-     * Retrieve the index i from the stack
-     * Push the value of the array at index i on the stack
-     * @param node the aload instruction to interpret
-     *
-     * @throws InterpretRuntimeException if the array is not declared
-     */
+	/**
+	 * Interprets an aload instruction
+	 * Retrieve the index i from the stack
+	 * Push the value of the array at index i on the stack
+	 *
+	 * @param node the aload instruction to interpret
+	 * @throws InterpretRuntimeException if the array is not declared
+	 */
 	@JajaCodeInterpretFunction(InstrALoad.class)
 	protected void interpretALoad(InstrALoad node) {
-        int index;
-        try {
-            index = (int) memory.pop();
-        } catch (ClassCastException e) {
-            throw new InterpretRuntimeException("The head of stack is not an integer");
-        } catch (EmptyStackException e) {
-            throw new InterpretRuntimeException("Stack is empty");
-        }
-        System.out.println(memory.getValArray(node.getValIdent().getIdent(), index));
-        memory.push(memory.getValArray(node.getValIdent().getIdent(), index), memory.getType(node.getValIdent().getIdent()));
-        interpret(getNextInstr(node));
+		int index;
+		try {
+			index = (int) memory.pop();
+		} catch (ClassCastException e) {
+			throw new InterpretRuntimeException("The head of stack is not an integer");
+		}
+		memory.push(memory.getValArray(node.getValIdent().getIdent(), index),
+				memory.getType(node.getValIdent().getIdent()));
+		interpret(getNextInstr(node));
 	}
 
-    /**
-     * Interprets a store instruction
-     * Retrieve the value from the stack
-     * Update the variable with the value
-     * @param node the store instruction to interpret that contains the identifier of the variable
-     *
-     * @throws InterpretRuntimeException if the variable is not declared
-     */
+	/**
+	 * Interprets a store instruction
+	 * Retrieve the value from the stack
+	 * Update the variable with the value
+	 *
+	 * @param node the store instruction to interpret that contains the identifier
+	 *             of the variable
+	 * @throws InterpretRuntimeException if the variable is not declared
+	 */
 	@JajaCodeInterpretFunction(InstrStore.class)
 	protected void interpretStore(InstrStore node) {
-        Object value = memory.pop();
-        Type memoryType = memory.getType(node.getValIdent().getIdent());
+		Object value = memory.pop();
+		Type memoryType = memory.getType(node.getValIdent().getIdent());
 
-        if (!((memoryType == Type.INT && value instanceof Integer)
-                || (memoryType == Type.BOOL && value instanceof Boolean)))
-        {
-            throw new InterpretRuntimeException("The value is not of the expected type");
-        }
+		if (!((memoryType == Type.INT && value instanceof Integer)
+				|| (memoryType == Type.BOOL && value instanceof Boolean))) {
+			throw new InterpretRuntimeException("The value is not of the expected type");
+		}
 
-        memory.updateVal(node.getValIdent().getIdent(), value);
+		memory.updateVal(node.getValIdent().getIdent(), value);
+		interpret(getNextInstr(node));
 	}
 
-    /**
-     * Interprets an astore instruction
-     * Retrieve the value and the index i from the stack
-     * Update the array at index i with the value
-     * @param node the astore instruction to interpret that contains the identifier of the array
-     *
-     * @throws InterpretRuntimeException if the array is not declared
-     */
-    @JajaCodeInterpretFunction(InstrAStore.class)
-    protected void interpretAStore(InstrAStore node) {
-        Object value;
-        try {
-            value = memory.pop();
-        } catch (EmptyStackException e) {
-            throw new InterpretRuntimeException("Stack is empty");
-        }
+	/**
+	 * Interprets an astore instruction
+	 * Retrieve the value and the index i from the stack
+	 * Update the array at index i with the value
+	 *
+	 * @param node the astore instruction to interpret that contains the identifier
+	 *             of the array
+	 * @throws InterpretRuntimeException if the array is not declared
+	 */
+	@JajaCodeInterpretFunction(InstrAStore.class)
+	protected void interpretAStore(InstrAStore node) {
+		Object value;
+		Object indexObj;
 
-        int index;
-        try {
-            index = (int) memory.pop();
-        } catch (ClassCastException e) {
-            throw new InterpretRuntimeException("The head of stack is not an integer");
-        } catch (EmptyStackException e) {
-            throw new InterpretRuntimeException("Stack is empty");
-        }
+		try {
+			value = memory.pop();
+			indexObj = memory.pop();
+		} catch (EmptyStackException e) {
+			throw new InterpretRuntimeException("Stack is empty");
+		}
 
-        memory.updateValArray(node.getValIdent().getIdent(), index, value);
-    }
+		if (!(indexObj instanceof Integer)) {
+			throw new InterpretRuntimeException("Array index must be an integer.");
+		}
 
-    /**
-     * Interprets a push instruction
-     * Push the value on the stack
-     * @param node the push instruction to interpret that contains the value to push
-     *
-     * @throws InterpretRuntimeException if the value is not of the expected type
-     */
-    @JajaCodeInterpretFunction(InstrPush.class)
-    protected void interpretPush(InstrPush node) {
-        Val valNode = node.getValVal();
-        Object value = eval(valNode);
-        Type type;
+		int index = (int) indexObj;
+		memory.updateValArray(node.getValIdent().getIdent(), index, value);
 
-        if (value instanceof Boolean) {
-            type = Type.BOOL;
-        } else if (value instanceof Integer) {
-            type = Type.INT;
-        } else {
-            throw new InterpretRuntimeException("The value is not of the expected type");
-        }
+		interpret(getNextInstr(node));
+	}
 
-        memory.push(value, type);
-        interpret(getNextInstr(node));
-    }
+	/**
+	 * Interprets a push instruction
+	 * Push the value on the stack
+	 *
+	 * @param node the push instruction to interpret that contains the value to push
+	 * @throws InterpretRuntimeException if the value is not of the expected type
+	 */
+	@JajaCodeInterpretFunction(InstrPush.class)
+	protected void interpretPush(InstrPush node) {
+		Val valNode = node.getValVal();
+		Object value = eval(valNode);
+		Type type;
 
-    /**
-     * Interprets a pop instruction
-     * Pop the value from the stack
-     * @param node the pop instruction to interpret
-     */
+		if (value instanceof Boolean) {
+			type = Type.BOOL;
+		} else if (value instanceof Integer) {
+			type = Type.INT;
+		} else if (value instanceof String) {
+			type = Type.STRING;
+		} else {
+			throw new InterpretRuntimeException("The value is not of the expected type");
+		}
+		memory.push(value, type);
+		interpret(getNextInstr(node));
+	}
+
+	/**
+	 * Interprets a pop instruction
+	 * Pop the value from the stack
+	 *
+	 * @param node the pop instruction to interpret
+	 */
 	@JajaCodeInterpretFunction(InstrPop.class)
 	protected void interpretPop(InstrPop node) {
 		if (memory == null) {
@@ -396,14 +403,14 @@ public class JajaCodeInterpreter {
 		interpret(getNextInstr(node));
 	}
 
-    /**
-     * Interprets an if instruction
-     * Pop the value from the stack
-     * If the value is true, interpret the instruction at the target address
-     * @param node the if instruction to interpret that contains the target address
-     *
-     * @throws InterpretRuntimeException if the top of stack is not a boolean
-     */
+	/**
+	 * Interprets an if instruction
+	 * Pop the value from the stack
+	 * If the value is true, interpret the instruction at the target address
+	 *
+	 * @param node the if instruction to interpret that contains the target address
+	 * @throws InterpretRuntimeException if the top of stack is not a boolean
+	 */
 	@JajaCodeInterpretFunction(InstrIf.class)
 	protected void interpretIf(InstrIf node) {
 		Object topValue = memory.pop();
@@ -414,9 +421,7 @@ public class JajaCodeInterpreter {
 		boolean condition = (Boolean) topValue;
 		int targetAddress = node.getValAddress().getAddress();
 		Instr nextInstr;
-
-        nextInstr = condition ? getInstr(targetAddress) : getNextInstr(node);
-
+		nextInstr = condition ? getInstr(targetAddress) : getNextInstr(node);
 		interpret(nextInstr);
 	}
 
@@ -424,12 +429,9 @@ public class JajaCodeInterpreter {
 	protected void interpretOperBinary(InstrOperBinary node) {
 		Object v2 = memory.pop();
 		Object v1 = memory.pop();
-
 		JajaCodeBinaryOper oper = node.getOper();
 		Object result = evalOperBinary(v1, v2, oper);
-
-        Type type = getTypeFromObject(result);
-
+		Type type = getTypeFromObject(result);
 		memory.push(result, type);
 		interpret(getNextInstr(node));
 	}
@@ -440,7 +442,7 @@ public class JajaCodeInterpreter {
 		JajaCodeUnaryOper oper = node.getOper();
 		Object result = evalOperUnary(v1, oper);
 
-        Type type = getTypeFromObject(result);
+		Type type = getTypeFromObject(result);
 
 		memory.push(result, type);
 		interpret(getNextInstr(node));
@@ -450,53 +452,33 @@ public class JajaCodeInterpreter {
 	protected void interpretInc(InstrInc node) {
 		ValIdent valIdent = node.getValIdent();
 		String varName = valIdent.getIdent();
-
 		Object v = memory.pop();
-
 		Object currentVal = memory.getVal(varName);
-
 		if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
 			throw new InterpretRuntimeException("Invalid types for inc operation on variable: " + varName);
 		}
-
 		int newVal = (int) currentVal + (int) v;
-
 		memory.updateVal(varName, newVal);
 		interpret(getNextInstr(node));
 	}
 
 	@JajaCodeInterpretFunction(InstrAInc.class)
 	protected void interpretAInc(InstrAInc node) {
-		ValIdent valIdent = node.getValIdent();
-		String arrayName = valIdent.getIdent();
-
-		Object v = memory.pop();
-
-		Object indObj = memory.pop();
-
-		if (!(indObj instanceof Integer)) {
+		String arrayName = node.getValIdent().getIdent();
+		Object value;
+		Object indexObj;
+		value = memory.pop();
+		indexObj = memory.pop();
+		if (!(indexObj instanceof Integer)) {
 			throw new InterpretRuntimeException("Array index must be an integer.");
 		}
-		int index = (int) indObj;
-
-		Object currentVal;
-		try {
-			currentVal = memory.getValArray(arrayName, index);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error accessing array " + arrayName + " at index " + index);
-		}
-
-		if (!(currentVal instanceof Integer) || !(v instanceof Integer)) {
+		int index = (int) indexObj;
+		Object currentVal = memory.getValArray(arrayName, index);
+		if (!(currentVal instanceof Integer) || !(value instanceof Integer)) {
 			throw new InterpretRuntimeException("Invalid types for ainc operation on array: " + arrayName);
 		}
-
-		int newVal = (int) currentVal + (int) v;
-
-		try {
-			memory.updateValArray(arrayName, index, newVal);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException("Error updating array " + arrayName + " at index " + index);
-		}
+		int newVal = (int) currentVal + (int) value;
+		memory.updateValArray(arrayName, index, newVal);
 		interpret(getNextInstr(node));
 	}
 

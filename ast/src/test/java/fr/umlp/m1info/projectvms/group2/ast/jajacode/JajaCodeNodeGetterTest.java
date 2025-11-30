@@ -12,12 +12,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class JajaCodeNodeGetterTest {
-    @Test
-    public void testJajaCodeNodeGetterLineId() {
-        int lineId = 1;
-        JajaCodeNode node = new InstrNop(lineId);
-        Assert.assertEquals(lineId, node.getLineId());
-    }
+	@Test
+	public void testJajaCodeNodeGetterLineId() {
+		int lineId = 1;
+		JajaCodeNode node = new InstrNop(lineId);
+		Assert.assertEquals(lineId, node.getLineId());
+	}
 
 	@Test
 	public void testVarKindGetter() {
@@ -197,14 +197,14 @@ public class JajaCodeNodeGetterTest {
 		ValIdent valIdent = new ValIdent(lineId, "a");
 		VarKind kind = new VarKind(lineId, Kind.VAR);
 		VarType type = new VarType(lineId, Type.INT);
-		ValAddress valAddress = new ValAddress(lineId, 10);
+		ValNbre depth = new ValNbre(lineId, 10);
 
-		InstrNew instr = new InstrNew(lineId, valIdent, kind, type, valAddress);
+		InstrNew instr = new InstrNew(lineId, valIdent, kind, type, depth);
 
 		Assert.assertSame(valIdent, instr.getValIdent());
 		Assert.assertSame(kind, instr.getKind());
 		Assert.assertSame(type, instr.getType());
-		Assert.assertSame(valAddress, instr.getValAddress());
+		Assert.assertSame(depth, instr.getValDepth());
 	}
 
 	@Test

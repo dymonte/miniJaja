@@ -72,9 +72,7 @@ public class CLI {
         try {
             List<Instr> instrs = ParserUtils.jajaCodeParseFile(opts.getFilePath());
             JajaCodeInterpreter interpreter = new JajaCodeInterpreter(memory, instrs);
-            for (Instr instr : instrs) {
-                interpreter.interpret(instr);
-            }
+            interpreter.interpret(instrs.get(0));
         } catch (Exception e) {
             CLIOutput.error("while interpreting file", e.getMessage());
         }
