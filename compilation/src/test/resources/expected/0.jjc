@@ -1,0 +1,62 @@
+init
+push(0)
+new(x, int, var, 0)
+push(10)
+new(y, int, var, 0)
+push(1)
+new(z, int, var, 0)
+push(5)
+new(VAL, int, cst, 0)
+push(true)
+new(b1, boolean, var, 0)
+push(false)
+new(b2, boolean, var, 0)
+load(b1)
+load(b1)
+load(b2)
+not
+or
+and
+if(24)
+push(1)
+inc(x)
+goto(30)
+load(VAL)
+load(y)
+add
+push(0)
+sub
+store(x)
+push("x (15) = ")
+write
+load(x)
+writeln
+load(y)
+load(z)
+mul
+store(x)
+load(x)
+load(z)
+div
+store(x)
+push(1)
+inc(x)
+push("x (11) = ")
+write
+load(x)
+writeln
+push(0)
+swap
+pop
+swap
+pop
+swap
+pop
+swap
+pop
+swap
+pop
+swap
+pop
+pop
+jcstop

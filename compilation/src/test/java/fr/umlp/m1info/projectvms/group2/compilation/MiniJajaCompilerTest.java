@@ -48,10 +48,14 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
+import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class MiniJajaCompilerTest {
 	MiniJajaCompiler miniJajaCompiler;
@@ -155,8 +159,8 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).compile(instrs);
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
-		Assert.assertEquals(7, nbInstr);
-		Assert.assertEquals("jcnil\npush(3)\nnew(m, int, meth, 0)\ngoto(5)\npush(0)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals(5, nbInstr);
+		Assert.assertEquals("push(4)\nnew(m, int, meth, 0)\ngoto(6)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
@@ -181,7 +185,7 @@ public class MiniJajaCompilerTest {
 		Mockito.doReturn(0).when(spyCompiler).free(vars);
 		int nbInstr = spyCompiler.compile(method);
 		Assert.assertEquals(6, nbInstr);
-		Assert.assertEquals("jcnil\npush(3)\nnew(m, void, meth, 0)\ngoto(4)\nswap\nreturn\n", sb.toString());
+		Assert.assertEquals("push(4)\nnew(m, void, meth, 0)\ngoto(7)\npush(0)\nswap\nreturn\n", sb.toString());
 	}
 
 	@Test
@@ -196,7 +200,7 @@ public class MiniJajaCompilerTest {
 	public void testCompileStringLiteral() {
 		ASTStringLiteral stringLiteral = new ASTStringLiteral("text", 0, 0);
 		int nbInstr = miniJajaCompiler.compile(stringLiteral);
-		Assert.assertEquals("push(text)\n", sb.toString());
+		Assert.assertEquals("push(\"text\")\n", sb.toString());
 		Assert.assertEquals(1, nbInstr);
 	}
 
@@ -565,8 +569,8 @@ public class MiniJajaCompilerTest {
 	public void testFreeVar() {
 		ASTVar var = Mockito.mock(ASTVar.class);
 		int nbInstr = miniJajaCompiler.free(var);
-		Assert.assertEquals("pop\n", sb.toString());
-		Assert.assertEquals(1, nbInstr);
+		Assert.assertEquals("swap\npop\n", sb.toString());
+		Assert.assertEquals(2, nbInstr);
 	}
 
 	@Test
@@ -735,7 +739,7 @@ public class MiniJajaCompilerTest {
 		int nbInstr = miniJajaCompiler.compile(ifNode);
 
 		Assert.assertEquals(7, nbInstr);
-		Assert.assertEquals("push(true)\nif(5)\npush(1)\nstore(x)\ngoto(7)\npush(1)\nstore(x)\n", sb.toString());
+		Assert.assertEquals("push(true)\nif(6)\npush(1)\nstore(x)\ngoto(8)\npush(1)\nstore(x)\n", sb.toString());
 	}
 
 	@Test
@@ -751,7 +755,7 @@ public class MiniJajaCompilerTest {
 		int nbInstr = miniJajaCompiler.compile(ifNode);
 
 		Assert.assertEquals(5, nbInstr);
-		Assert.assertEquals("push(true)\nif(3)\ngoto(5)\npush(1)\nstore(x)\n", sb.toString());
+		Assert.assertEquals("push(true)\nif(4)\ngoto(6)\npush(1)\nstore(x)\n", sb.toString());
 	}
 
 	@Test
@@ -766,7 +770,7 @@ public class MiniJajaCompilerTest {
 		int nbInstr = miniJajaCompiler.compile(whileNode);
 
 		Assert.assertEquals(6, nbInstr);
-		Assert.assertEquals("push(true)\nnot\nif(6)\npush(1)\nstore(x)\ngoto(0)\n", sb.toString());
+		Assert.assertEquals("push(true)\nnot\nif(7)\npush(1)\nstore(x)\ngoto(1)\n", sb.toString());
 	}
 
 	@Test
@@ -958,14 +962,29 @@ public class MiniJajaCompilerTest {
         int nbInstr = miniJajaCompiler.compileParams(chain);
 
         Assert.assertEquals(2, nbInstr);
-        Assert.assertEquals("new(a,int,var,1)\nnew(b,int,var,2)\n", sb.toString());
+        Assert.assertEquals("new(a,int,var,2)\nnew(b,int,var,1)\n", sb.toString());
     }
 
     @Test
     public void testCompileParamsNil() {
         ASTParamsNil nil = new ASTParamsNil(0, 0);
-        int nbInstr = miniJajaCompiler.compilePramsNil(nil);
+        int nbInstr = miniJajaCompiler.compileParamsNil(nil);
 
         Assert.assertEquals(0, nbInstr);
     }
+
+	@Test
+	public void testFullFiles() throws Exception {
+		String[] files = {"hello_world", "0", "1", "synonymie"};
+		for(String file: files) {
+			ASTClass ast = (ASTClass) ParserUtils.parseFile("src/test/resources/samples/" + file + ".mjj");
+
+			StringBuilder sb = new StringBuilder();
+			MiniJajaCompiler compiler = new MiniJajaCompiler(sb);
+			compiler.compile(ast);
+
+			String expected = Files.readString(Paths.get("src/test/resources/expected/" + file + ".jjc"));
+			Assert.assertEquals(expected.trim(), sb.toString().trim());
+		}
+	}
 }
