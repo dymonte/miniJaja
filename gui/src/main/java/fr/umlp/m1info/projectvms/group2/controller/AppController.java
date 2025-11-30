@@ -361,6 +361,11 @@ public class AppController implements StatefulController {
 		openHelpFile("help_errors_content.html");
 	}
 
+	@FXML
+	private void openHelpInterface() {
+		openHelpFile("help_interface_content.html");
+	}
+
 	private void openHelpFile(String resourceName) {
 		try {
 			URL resource = getClass().getResource(resourceName);
@@ -508,7 +513,8 @@ public class AppController implements StatefulController {
 	 * @param interpreter    the interpreter for the buttons to interact with
 	 * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
-	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter, boolean hasBreakpoints) {
+	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter,
+			boolean hasBreakpoints) {
 		Button btnNext = new Button("Next");
 
 		Button btnStop = new Button("Stop");
@@ -650,7 +656,8 @@ public class AppController implements StatefulController {
 	 */
 	private void applyTheme(String cssFileName) {
 		Scene scene = primaryStage.getScene();
-		if (scene == null) return;
+		if (scene == null)
+			return;
 
 		scene.getStylesheets().removeIf(url -> url.contains("themes/"));
 
@@ -678,18 +685,19 @@ public class AppController implements StatefulController {
 
 	/**
 	 * Checks whether the interpreter is currently running.
-	 * If it is, a pop-up is shown informing the user that the action cannot proceed.
+	 * If it is, a pop-up is shown informing the user that the action cannot
+	 * proceed.
 	 *
 	 * @param action The action the user is attempting to perform.
-	 * @return true if the interpreter is running (the caller should block the action), false otherwise.
+	 * @return true if the interpreter is running (the caller should block the
+	 *         action), false otherwise.
 	 */
 	private boolean isInterpreterRunningAndBlock(String action) {
 		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
 			PopUp.info(
 					"Minijaja Interpreter",
 					"Interpreter is running",
-					"Stop the interpretation before you can " + action + "."
-			);
+					"Stop the interpretation before you can " + action + ".");
 			return true;
 		}
 		return false;
