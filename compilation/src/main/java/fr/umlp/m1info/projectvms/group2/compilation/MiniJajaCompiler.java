@@ -183,9 +183,8 @@ public class MiniJajaCompiler {
 	/** Compiles a method declaration. */
 	@CompilationFunction(ASTMethod.class)
 	protected Integer compileMethod(ASTMethod node) {
-		int start = n;
 		int count = 0;
-		count += emit("push(" + (start + 4) + ")");
+		count += emit("push(" + (n + 4) + ")");
 		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", meth, 0)");
 
 		int gotoIndex = sb.length();
@@ -510,9 +509,7 @@ public class MiniJajaCompiler {
 	/** Frees a chain of expression declarations. */
 	@FreeCompilationFunction(ASTExprsChain.class)
 	protected Integer freeExprsChain(ASTExprsChain node) {
-		emit("swap");
-		emit("pop");
-		return free(node.getExprs()) + 2;
+		return emit("swap") + emit("pop") + free(node.getExprs());
 	}
 
 	/** Frees a null expression */
@@ -548,8 +545,6 @@ public class MiniJajaCompiler {
 	/** Frees a method declaration. */
 	@FreeCompilationFunction(ASTMethod.class)
 	protected Integer freeMethod(ASTMethod node) {
-		emit("swap");
-		emit("pop");
-		return 2;
+		return emit("swap") + emit("pop");
 	}
 }
