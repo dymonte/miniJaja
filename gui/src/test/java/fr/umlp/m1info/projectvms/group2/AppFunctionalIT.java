@@ -33,7 +33,7 @@ public class AppFunctionalIT {
 		WaitForAsyncUtils.waitForFxEvents();
 	}
 
-	@Ignore
+	@Test
 	void testWriteAndRunProgram(FxRobot robot) {
 		robot.clickOn("#codeArea");
 
@@ -57,7 +57,7 @@ public class AppFunctionalIT {
 		});
 	}
 
-	@Ignore
+	@Test
 	void testComments(FxRobot robot) {
 		robot.clickOn("#codeArea");
 
@@ -82,7 +82,7 @@ public class AppFunctionalIT {
 		});
 	}
 
-	@Ignore
+	@Test
 	void testErrorSyntax(FxRobot robot) throws TimeoutException {
 		robot.clickOn("#codeArea");
 
@@ -105,7 +105,7 @@ public class AppFunctionalIT {
 				(Label label) -> label.getText().contains("error: illegal start of statement"));
 	}
 
-	@Ignore
+	@Test
 	void testErrorUndeclaredVariable(FxRobot robot) throws TimeoutException {
 		robot.clickOn("#codeArea");
 		robot.write("class Test {\n");
@@ -126,7 +126,7 @@ public class AppFunctionalIT {
 				(Label label) -> label.getText().contains("Error interpreting node ASTIdent"));
 	}
 
-	@Ignore
+	@Test
 	void testCloseFile(FxRobot robot) {
 		robot.clickOn("#codeArea");
 
@@ -149,7 +149,7 @@ public class AppFunctionalIT {
 		});
 	}
 
-	@Ignore
+	@Test
 	void testCloseApp(FxRobot robot) {
 		robot.clickOn("#menuFile");
 		robot.clickOn("#menuExitApp");
@@ -162,7 +162,7 @@ public class AppFunctionalIT {
 		});
 	}
 
-	@Ignore
+	@Test
 	void testClearConsole(FxRobot robot) {
 		robot.clickOn("#codeArea");
 
