@@ -77,7 +77,7 @@ public class Heap {
 		int requestedSize = (type == Type.INT) ? (size * INT_SIZE) : size;
 
 		// Search block > size
-		int blockIndex = (int) Math.ceil(Math.log(size) / Math.log(2));
+		int blockIndex = (int) Math.ceil(Math.log(requestedSize) / Math.log(2));
 		int blockSize = 1 << blockIndex;
 
 		if (blockSize > HEAP_SIZE) {
@@ -369,20 +369,50 @@ public class Heap {
 	public String toString() {
 		StringBuilder string = new StringBuilder();
 		ByteBuffer byteBuffer = heap.asReadOnlyBuffer();
+		byteBuffer.rewind();
+
+		// Build allocation map
+		boolean[] allocatedMap = new boolean[HEAP_SIZE];
+		for (HeapSymbol symbol : localTable) {
+			if (symbol != null) {
+				int start = symbol.getAddress();
+				int size = symbol.getSize();
+				for (int i = 0; i < size && (start + i) < HEAP_SIZE; i++) {
+					allocatedMap[start + i] = true;
+				}
+			}
+		}
 
 		int address = 0;
 		while (byteBuffer.hasRemaining()) {
-			string.append(String.format("0x%04X: ", address));
+			StringBuilder line = new StringBuilder();
+			boolean isAllocated = false;
+			
+			// Check allocation for this 4-byte block
+			for(int k=0; k<4 && (address+k) < HEAP_SIZE; k++) {
+				if(allocatedMap[address+k]) {
+					isAllocated = true;
+					break;
+				}
+			}
+
+			line.append(String.format("0x%04X: ", address));
 
 			for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
-				string.append(String.format("%02X ", byteBuffer.get()));
+				byte b = byteBuffer.get();
+				line.append(String.format("%02X ", b));
 				address++;
 			}
 
-			string.append("\n");
+			if (isAllocated) {
+				string.append("[ALLOC] ");
+			} else {
+				string.append("	");
+			}
+
+			string.append(line).append("\n");
 		}
 
 		return string.toString();
 	}
-
 }

@@ -60,7 +60,7 @@ public class HeapTest {
 	public void testTooMuchAllocation() {
 		Assert.assertThrows(HeapOutOfMemoryException.class,
 				() -> heap.allocate(heap.getHeapSize() + 1, Type.INT));
-		heap.allocate(heap.getHeapSize() - 1, Type.INT);
+		heap.allocate(heap.getHeapSize() - 1, Type.BOOL);
 		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(10, Type.INT));
 		Assert.assertThrows(HeapOutOfMemoryException.class,
 				() -> heap.allocate(heap.getHeapSize() * 2, Type.INT));
