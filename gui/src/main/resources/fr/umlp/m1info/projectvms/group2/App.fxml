@@ -101,6 +101,7 @@
             <MenuItem mnemonicParsing="false" text="JajaCode language" onAction="#openHelpJajaCode"/>
             <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
             <MenuItem mnemonicParsing="false" text="Errors" onAction="#openHelpErrors"/>
+            <MenuItem mnemonicParsing="false" text="Interface" onAction="#openHelpInterface"/>
           </items>
         </Menu>
       </menus>
