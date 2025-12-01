@@ -334,6 +334,7 @@ public class CLIEndToEndIT {
 				out.output()
 		);
 	}
+
 	@Test
 	public void testvarCompilation() throws IOException, InterruptedException {
 		ProgramOutput out = executeProgram(new String[]{"compile", codeSamplesPath + "variables_test.mjj"});
