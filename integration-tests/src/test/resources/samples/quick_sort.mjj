@@ -1,9 +1,4 @@
-/************************************************/
-/* Programme MiniJaja				*/
-/* Utilisation des tableaux avec un tri 	*/
-/************************************************/
-
-class quicksort{ 
+class quicksort{
     final int longueur;
     int tableau[longueur];
     
