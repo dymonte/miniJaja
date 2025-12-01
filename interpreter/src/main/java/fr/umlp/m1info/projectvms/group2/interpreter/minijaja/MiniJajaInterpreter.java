@@ -172,6 +172,8 @@ public class MiniJajaInterpreter {
 		memory.declVar(node.getIdent().getName(), 0, Type.INT);
 		interpret(node.getDecls());
 		interpret(node.getMainMethod());
+		free(node.getDecls());
+		memory.removeDecl(node.getIdent().getName());
 	}
 
 	/** Interprets the main method of a program */
@@ -442,6 +444,23 @@ public class MiniJajaInterpreter {
 	@EvalFunction(ASTUnaryOp.class)
 	protected Object evalUnaryOp(ASTUnaryOp node) {
 		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
+	}
+
+	@FreeFunction(ASTDeclsChain.class)
+	protected void freeDeclsChain(ASTDeclsChain node) {
+		free(node.getDecls());
+		free(node.getDecl());
+	}
+
+	@FreeFunction(ASTDeclsNil.class)
+	protected void freeDeclsNil(ASTDeclsNil node) {
+		// do nothing
+	}
+
+	@FreeFunction(ASTMethod.class)
+	protected void freeMethod(ASTMethod node) {
+		List<Type> paramsTypes = MiniJajaInterpreterUtils.collectParamTypes(node.getParams());
+		memory.removeDecl(memory.getMethKey(node.getIdent().getName(), paramsTypes));
 	}
 
 	/** Free a variable for memory */
