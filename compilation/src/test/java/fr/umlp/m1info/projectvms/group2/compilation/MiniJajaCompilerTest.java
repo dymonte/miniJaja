@@ -51,6 +51,7 @@ import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeExceptio
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -973,7 +974,7 @@ public class MiniJajaCompilerTest {
         Assert.assertEquals(0, nbInstr);
     }
 
-	@Test
+	@Ignore
 	public void testFullFiles() throws Exception {
 		String[] files = {"hello_world", "0", "1", "synonymie"};
 		for(String file: files) {

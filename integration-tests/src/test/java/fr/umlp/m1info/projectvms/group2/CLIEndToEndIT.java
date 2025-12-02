@@ -275,4 +275,79 @@ public class CLIEndToEndIT {
 		assertEquals("15\n", out.output());
 	}
 
+	@Test
+	public void testHelloWorldCompilation() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[]{"compile", codeSamplesPath + "hello_world.mjj"});
+		assertEquals(0, out.exitCode());
+		assertEquals("init\npush(\"Hello, World!\")\nwrite\npush(0)\npop\njcstop\n", out.output());
+	}
+
+	@Test
+	public void testConditionscompilation() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[]{
+				"compile",
+				codeSamplesPath + "conditions_test.mjj"
+		});
+		assertEquals(0, out.exitCode());
+		assertEquals(
+				"init\npush(0)\nnew(x, int, var, 0)\npush(0)\nnew(y, int, var, 0)\npush(5)\nstore(x)\npush(0)\nstore(y)\nload(x)\npush(3)\nsup\nif(17)\npush(20)\nstore(y)\ngoto(19)\npush(10)\nstore(y)\nload(y)\nwrite\npush(0)\nswap\npop\nswap\npop\npop\njcstop\n",
+				out.output()
+		);
+
+	}
+
+	@Test
+	public void testFactCompilation() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[]{
+				"compile",
+				codeSamplesPath + "fact.mjj"
+		});
+		assertEquals(0, out.exitCode());
+		assertEquals(
+				"init\npush(7)\nnew(x, int, var, 0)\npush(7)\nnew(pause, void, meth, 0)\ngoto(14)\npush(0)\nnew(i, int, var, 0)\nswap\npop\npush(0)\nswap\nreturn\npush(17)\nnew(fact, int, meth, 0)\ngoto(41)\nnew(x,int,var,1)\npush(0)\nnew(retour, int, var, 0)\nload(x)\npush(0)\ncmp\nif(34)\nload(x)\nload(x)\npush(1)\nsub\ninvoke(fact)\nswap\npop\nmul\nstore(retour)\ngoto(36)\npush(1)\nstore(retour)\nload(retour)\nswap\npop\nswap\nreturn\nload(x)\ninvoke(fact)\nswap\npop\nnew(res, int, var, 0)\npush(\"x(5040) = \")\nwrite\nload(res)\nwriteln\ninvoke(pause)\npop\npush(0)\nswap\npop\nswap\npop\nswap\npop\nswap\npop\npop\njcstop\n",
+				out.output()
+		);
+	}
+
+	@Test
+	public void testioCompilation() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[]{
+				"compile",
+				codeSamplesPath + "io_test.mjj"
+		});
+		assertEquals(0, out.exitCode());
+		assertEquals(
+				"init\npush(0)\nnew(a, int, var, 0)\npush(0)\nnew(b, int, var, 0)\npush(0)\nnew(c, int, var, 0)\npush(5)\nstore(a)\npush(10)\nstore(b)\nload(a)\nload(b)\nadd\nstore(c)\npush(\"Result:\")\nwrite\nload(a)\nwrite\npush(\"+\")\nwrite\nload(b)\nwrite\npush(\"=\")\nwrite\nload(c)\nwrite\npush(0)\nswap\npop\nswap\npop\nswap\npop\npop\njcstop\n",
+				out.output()
+		);
+	}
+
+	@Test
+	public void testmethodsCompilation() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[]{
+				"compile",
+				codeSamplesPath + "methods_test.mjj"
+		});
+		assertEquals(0, out.exitCode());
+		assertEquals(
+				"init\npush(5)\nnew(add, int, meth, 0)\ngoto(18)\nnew(x,int,var,2)\nnew(y,int,var,1)\npush(0)\nnew(z, int, var, 0)\nload(x)\nload(y)\nadd\nstore(z)\nload(z)\nswap\npop\nswap\nreturn\npush(0)\nnew(result, int, var, 0)\npush(5)\npush(7)\ninvoke(add)\nswap\npop\nswap\npop\nstore(result)\nload(result)\nwrite\npush(0)\nswap\npop\nswap\npop\npop\njcstop\n",
+				out.output()
+		);
+	}
+
+	@Test
+	public void testvarCompilation() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[]{"compile", codeSamplesPath + "variables_test.mjj"});
+		assertEquals(0, out.exitCode());
+		assertEquals("init\npush(0)\nnew(a, int, var, 0)\npush(0)\nnew(b, int, var, 0)\npush(10)\nstore(a)\npush(20)\nstore(b)\nload(a)\nwrite\nload(b)\nwrite\npush(0)\nswap\npop\nswap\npop\npop\njcstop\n"
+				, out.output());
+	}
+
+	@Test
+	public void testwhileCompilation() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[]{"compile", codeSamplesPath + "while_test.mjj"});
+		assertEquals(0, out.exitCode());
+		assertEquals("init\npush(0)\nnew(i, int, var, 0)\npush(0)\nnew(max, int, var, 0)\npush(5)\nstore(max)\npush(1)\nstore(i)\nload(max)\nload(i)\nsup\nnot\nif(18)\npush(1)\ninc(i)\ngoto(10)\nload(i)\nwrite\npush(0)\nswap\npop\nswap\npop\npop\njcstop\n"
+				, out.output());
+	}
 }
