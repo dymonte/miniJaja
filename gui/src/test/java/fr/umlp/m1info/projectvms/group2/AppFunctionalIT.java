@@ -1,7 +1,6 @@
 package fr.umlp.m1info.projectvms.group2;
 
 import org.fxmisc.richtext.CodeArea;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;

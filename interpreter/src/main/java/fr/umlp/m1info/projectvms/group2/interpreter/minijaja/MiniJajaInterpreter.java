@@ -2,7 +2,6 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 

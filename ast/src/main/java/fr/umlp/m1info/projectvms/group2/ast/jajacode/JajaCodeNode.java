@@ -1,7 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.ast.jajacode;
 
-import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
-
 public abstract class JajaCodeNode {
     protected final int lineId;
 
