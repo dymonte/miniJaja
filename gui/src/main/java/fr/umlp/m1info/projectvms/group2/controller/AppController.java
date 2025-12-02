@@ -4,6 +4,7 @@ import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.compilation.MiniJajaCompiler;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
@@ -30,10 +31,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.fxmisc.richtext.CodeArea;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -69,6 +67,8 @@ public class AppController implements StatefulController {
 	private AppState state;
 
 	private Thread miniJajaInterpreterThread;
+
+	private Thread minijajaCompilerThread;
 
 	private Scene mainScene;
 
@@ -391,6 +391,66 @@ public class AppController implements StatefulController {
 	}
 
 	/**
+	 * Compiles the current file.
+	 */
+	@FXML
+	private void compileCurrentFile(){
+		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
+			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
+					"Stop interpretation and after you can compile");
+			return;
+		}
+
+		StringBuilder result = new StringBuilder();
+		MiniJajaCompiler compiler = new MiniJajaCompiler(result);
+
+		Stage popupStage = new Stage();
+
+		Task<Void> task = new Task<>() {
+			@Override
+			protected Void call() {
+				try {
+					File openedFile = state.getOpenedFile().orElse(null);
+					File targetDir;
+					String fileName;
+					ASTNode programRoot;
+
+					if (openedFile == null) {
+						fileName = "untitled.jjc";
+						targetDir = new File("target");
+						programRoot = ParserUtils.parseString(state.codeProperty().get());
+					} else {
+						fileName = openedFile.getName().replace(".mjj", ".jjc");
+						targetDir = new File(openedFile.getParent(), "target");
+						programRoot = ParserUtils.parseFile(openedFile.getAbsolutePath());
+					}
+
+					if(!targetDir.exists() && !targetDir.mkdirs()) {
+						throw new IOException("Failed to create target directory: " + targetDir.getAbsolutePath());
+					}
+
+					File outputFile = new File(targetDir, fileName);
+
+					compiler.compile(programRoot);
+
+					try (FileWriter writer = new FileWriter(outputFile, StandardCharsets.UTF_8)) {
+						writer.write(result.toString());
+					}
+
+					Platform.runLater(() -> fileTreeSectionController.refreshTree());
+
+				} catch (Exception e) {
+					handleCompilationError(popupStage, e.getMessage());
+				}
+				return null;
+			}
+		};
+
+		minijajaCompilerThread = new Thread(task);
+		minijajaCompilerThread.start();
+	}
+
+	/**
 	 * Runs the current file in a seperate thread in step by step mode.
 	 */
 	@FXML
@@ -467,6 +527,13 @@ public class AppController implements StatefulController {
 		Platform.runLater(() -> {
 			popupStage.close();
 			PopUp.error("MiniJaja Interpreter Error", message, "");
+		});
+	}
+
+	private void handleCompilationError(Stage popupStage, String message) {
+		Platform.runLater(() -> {
+			popupStage.close();
+			PopUp.error("MiniJaja Compiler Error", message, "");
 		});
 	}
 
