@@ -821,12 +821,13 @@ public class MiniJajaInterpreterTest {
 	public void testInterpretMainMeth() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
 		ASTMainMethod mainMethod = Mockito.mock(ASTMainMethod.class);
-		ASTVars vars = Mockito.mock(ASTVars.class);
+		ASTVarsChain vars = Mockito.mock(ASTVarsChain.class);
 		ASTInstrs instrs = Mockito.mock(ASTInstrs.class);
 
 		Mockito.when(mainMethod.getVars()).thenReturn(vars);
 		Mockito.when(mainMethod.getInstrs()).thenReturn(instrs);
 		Mockito.doNothing().when(spyInterpreter).interpret(Mockito.any());
+		Mockito.doNothing().when(spyInterpreter).free(vars);
 
 		spyInterpreter.interpretMainMethod(mainMethod);
 
