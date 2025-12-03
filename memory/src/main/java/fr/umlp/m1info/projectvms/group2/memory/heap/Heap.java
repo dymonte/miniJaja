@@ -400,14 +400,12 @@ public class Heap {
 
 			for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
 				byte b = byteBuffer.get();
-				line.append(String.format("%02X ", b));
+				if (isAllocated) {
+					line.append("CC ");
+				} else {
+					line.append(String.format("%02X ", b));
+				}
 				address++;
-			}
-
-			if (isAllocated) {
-				string.append("[ALLOC] ");
-			} else {
-				string.append("	");
 			}
 
 			string.append(line).append("\n");
