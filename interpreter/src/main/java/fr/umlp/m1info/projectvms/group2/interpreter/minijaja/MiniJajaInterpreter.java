@@ -180,6 +180,7 @@ public class MiniJajaInterpreter {
 	protected void interpretMainMethod(ASTMainMethod node) {
 		interpret(node.getVars());
 		interpret(node.getInstrs());
+		free(node.getVars());
 	}
 
 	/** Interprets a method declaration */
@@ -475,7 +476,7 @@ public class MiniJajaInterpreter {
 		// do nothing
 	}
 
-	/** Free an variable */
+	/** Free a variable */
 	@FreeFunction(ASTVar.class)
 	protected void freeVar(ASTVar node) {
 		memory.removeDecl(node.getIdent().getName());
