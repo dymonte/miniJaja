@@ -104,9 +104,7 @@ public class AppController implements StatefulController {
 		createToolbarButton("btn-stop", "stop.png", 36, this::stopInterpretation);
 
 		// Compile Button
-		createToolbarButton("btn-compile", "compile.png", 30, () -> {
-			PopUp.info("Compile", "Compilation not implemented", "This feature is not yet implemented.");
-		});
+		createToolbarButton("btn-compile", "compile.png", 30, this::compileCurrentFile);
 	}
 
 	/**
