@@ -164,7 +164,7 @@ public class CLIOptions {
     /**
      * Sets the file where the compiled file is written.
      *
-     * @param the compiled file path
+     * @param outputFile compiled file path
      */
     public void setCompilationOutput(String outputFile) {
         compilationOutput = outputFile;

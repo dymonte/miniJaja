@@ -1,0 +1,213 @@
+<!-- class C {
+  int x = 0;
+  bool b = true;
+  int t[4];
+
+  int fct(int max) {
+    int y = 5;
+    while (max>0) {
+      y += max;
+      max = max - 1;
+    };
+    return y;
+  };
+
+  void result(int z) {
+    write("x = ");
+    writeln(x);
+  };
+
+  main {
+    if (b) {
+      x = fct(x);
+    }
+    else {
+      x = 0;
+    };
+    result(x);
+  }
+} -->
+
+
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Interface Documentation</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #f7f7f7;
+      color: #222;
+      line-height: 1.6;
+      margin: 2em;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #2a2a2a;
+    }
+
+    .codeBlock {
+      font-family: monospace;
+      background-color: #454545;
+      color: #fff;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      display: block;
+      padding: 0 2em;
+      margin: 1em 0;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 0.6em;
+      text-align: left;
+    }
+
+    th {
+      background-color: #eaeaea;
+    }
+
+    .section {
+      margin-bottom: 2em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>How to use MiniJaja IDE</h1>
+
+  <p>
+    This IDE was developped exclusively to support MiniJaja / JajaCode languages.
+  </p>
+
+  <div class="section">
+    <h2>1. Top Menu</h2>
+    <img src="top_menu.png" alt="">
+    <p>The top menu will help you to access different features, customizations and help pages (such as this one).</p>
+    <h3>File</h3>
+    <!-- TODO Menu déroulant -->
+    In this menu, you can:
+    <ul>
+      <li>New : Create a new file</li>
+      <li>Open File : Open an existing file</li>
+      <li>Open Folder : Open an existing folder to quickly open all the file in it</li>
+      <li>Close : Close the current file</li>
+      <li>Save : the current file as</li>
+      <li>Save As : Save the current file with a new name</li>
+      <li>Quit : Quit the application</li>
+    </ul>
+
+    <h3>Edit</h3>
+    In this menu, you can:
+    <ul>
+      <li>Undo : Undo the last action</li>
+      <li>Redo : Redo the last undone action</li>
+      <li>Cut : Cut the selected text</li>
+      <li>Copy : Copy the selected text</li>
+      <li>Paste : Paste the copied/cut text</li>
+      <li>Delete : Delete the selected text</li>
+      <li>Select All : Select all the text in the current file</li>
+      <li>Unselect All : Unselect all the text in the current file</li>
+    </ul>
+  </div>
+
+  <h3>Execution</h3>
+  In this menu, you can:
+  <ul>
+    <li>Start : Execute the current file</li>
+    <ul>
+      <li>Run : Run the current file</li>
+      <li>Run Step-by-step : Run the current file step-by-step</li>
+    </ul>
+    <li>Stop : Stop the execution</li>
+    <li>Clear Output : Clear the output</li>
+  </ul>
+
+  <h3>Themes</h3>
+  In this menu, you can choose between different themes for the IDE. It also affects the syntax highlighting in the
+  editor.
+  <img src="default_theme_screen.png" alt="" width="50%">
+  <p>The default theme is the light theme.</p>
+
+  <img src="dracula_theme_screen.png" alt="" width="50%">
+  <p>Here is an example of a dark theme. (Dracula theme)</p>
+
+  <h3>Help</h3>
+  In this menu, you can access different help pages:
+  <ul>
+    <li>Interface : this page</li>
+    <li>MiniJaja : documentation about the MiniJaja language</li>
+    <li>JajaCode : documentation about the JajaCode language</li>
+    <li>Memory : informations about the memory management</li>
+    <li>Errors : informations about different error names and their meaning</li>
+  </ul>
+
+  <h2>2. File Tree</h2>
+  <img src="file_tree.png" alt=""">
+
+  <p>
+    The file tree allows you to quickly open files in the opened folder.
+    You can also expand/collapse folders by clicking on the arrows next to them.
+  </p>
+
+  <h2>3. Editor</h2>
+  <img src=" editor.png" alt="">
+
+  <p>
+    The editor is where you can write your MiniJaja code.
+    It supports syntax highlighting and basic code editing features.
+    You can also see line numbers on the left side of the editor and click on them to add/remove breakpoints;
+  </p>
+
+  <h3>Commands</h3>
+  <img src="commands.png" alt="">
+  <p>
+    The commands section allows you to control the execution of your code.
+    You have the following buttons:
+  </p>
+  <ul>
+    <li><img src="run.png" alt="" height="15em"> Run : Execute the code normally</li>
+    <li><img src="step.png" alt="" height="15em"> Run Step-by-step : Execute the code step-by-step</li>
+    <li><img src="stop.png" alt="" height="15em"> Stop : Stop the execution</li>
+    <li><img src="compile.png" alt="" height="15em"> Compile : Compile the code</li>
+  </ul>
+
+  <h2>4. Output</h2>
+  <img src="output.png" alt="" width="50%">
+  <p>
+    The output section displays the result of the execution of your code.
+    It also shows error messages and other relevant information.
+    You have 3 sections in the output:
+
+  </p>
+  <ul>
+    <li>Output : displays the standard output of your program</li>
+    <li>Errors : displays error messages if the program fails</li>
+    <li>Debug : displays debug messages such as breakpoints</li>
+  </ul>
+
+
+  <h2>5. Memory</h2>
+
+  <img src="memory.png" alt="" height="50%">
+  <p>
+    The memory section displays the current memory of your program (Heap and Stack, check the memory help for more
+    informations).
+  </p>
+
+</body>
+
+</html>

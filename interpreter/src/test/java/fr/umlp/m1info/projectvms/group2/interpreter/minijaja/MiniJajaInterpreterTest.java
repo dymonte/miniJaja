@@ -809,6 +809,7 @@ public class MiniJajaInterpreterTest {
 		Mockito.when(astClass.getMainMethod()).thenReturn(main);
 		Mockito.doNothing().when(spyInterpreter).interpretDeclsChain(Mockito.any());
 		Mockito.doNothing().when(spyInterpreter).interpretMainMethod(Mockito.any());
+		Mockito.doNothing().when(spyInterpreter).free(decls);
 
 		spyInterpreter.interpret(astClass);
 
@@ -820,12 +821,13 @@ public class MiniJajaInterpreterTest {
 	public void testInterpretMainMeth() {
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
 		ASTMainMethod mainMethod = Mockito.mock(ASTMainMethod.class);
-		ASTVars vars = Mockito.mock(ASTVars.class);
+		ASTVarsChain vars = Mockito.mock(ASTVarsChain.class);
 		ASTInstrs instrs = Mockito.mock(ASTInstrs.class);
 
 		Mockito.when(mainMethod.getVars()).thenReturn(vars);
 		Mockito.when(mainMethod.getInstrs()).thenReturn(instrs);
 		Mockito.doNothing().when(spyInterpreter).interpret(Mockito.any());
+		Mockito.doNothing().when(spyInterpreter).free(vars);
 
 		spyInterpreter.interpretMainMethod(mainMethod);
 
@@ -967,6 +969,53 @@ public class MiniJajaInterpreterTest {
 		memory.declArray("tab", 2, Type.INT);
 
 		Assert.assertEquals(2, spyInterpreter.eval(length));
+	}
+
+	@Test
+	public void testFreeDeclsChain() {
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		ASTDeclsNil end = new ASTDeclsNil(0, 0);
+		ASTVarSimple simple = new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), null, 0, 0);
+		ASTDecls decls = new ASTDeclsChain(simple, end, 0, 0);
+
+		Mockito.doNothing().when(spyInterpreter).free(end);
+		Mockito.doNothing().when(spyInterpreter).free(simple);
+
+		spyInterpreter.free(decls);
+
+		Mockito.verify(spyInterpreter).free(end);
+		Mockito.verify(spyInterpreter).free(simple);
+	}
+
+	@Test
+	public void testFreeDeclsNil() {
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		ASTDeclsNil end = new ASTDeclsNil(0, 0);
+
+		spyInterpreter.free(end);
+	}
+
+	@Test
+	public void testFreeMethod() {
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		ASTMethod method = Mockito.mock(ASTMethod.class);
+		ASTIdent ident = new ASTIdent("method", 0, 0);
+		ASTParams params = new ASTParamsNil(0, 0);
+		ASTVoidType type = new ASTVoidType(0, 0);
+		List<Type> types = MiniJajaInterpreterUtils.collectParamTypes(params);
+
+		Mockito.when(method.getIdent()).thenReturn(ident);
+		Mockito.when(method.getParams()).thenReturn(params);
+		Mockito.when(method.getType()).thenReturn(type);
+
+		spyInterpreter.interpret(method);
+
+		String fullIdent = memory.getMethKey("method", types);
+		Assert.assertNotNull(memory.getVal(fullIdent));
+
+		spyInterpreter.free(method);
+
+		Assert.assertThrows(SymbolNotFoundException.class, () -> memory.getVal(fullIdent));
 	}
 
 	@Test

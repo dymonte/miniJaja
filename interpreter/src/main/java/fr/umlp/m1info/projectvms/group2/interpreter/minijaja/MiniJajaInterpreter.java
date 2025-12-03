@@ -2,7 +2,6 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -172,6 +171,8 @@ public class MiniJajaInterpreter {
 		memory.declVar(node.getIdent().getName(), 0, Type.INT);
 		interpret(node.getDecls());
 		interpret(node.getMainMethod());
+		free(node.getDecls());
+		memory.removeDecl(node.getIdent().getName());
 	}
 
 	/** Interprets the main method of a program */
@@ -179,6 +180,7 @@ public class MiniJajaInterpreter {
 	protected void interpretMainMethod(ASTMainMethod node) {
 		interpret(node.getVars());
 		interpret(node.getInstrs());
+		free(node.getVars());
 	}
 
 	/** Interprets a method declaration */
@@ -444,6 +446,23 @@ public class MiniJajaInterpreter {
 		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
 	}
 
+	@FreeFunction(ASTDeclsChain.class)
+	protected void freeDeclsChain(ASTDeclsChain node) {
+		free(node.getDecls());
+		free(node.getDecl());
+	}
+
+	@FreeFunction(ASTDeclsNil.class)
+	protected void freeDeclsNil(ASTDeclsNil node) {
+		// do nothing
+	}
+
+	@FreeFunction(ASTMethod.class)
+	protected void freeMethod(ASTMethod node) {
+		List<Type> paramsTypes = MiniJajaInterpreterUtils.collectParamTypes(node.getParams());
+		memory.removeDecl(memory.getMethKey(node.getIdent().getName(), paramsTypes));
+	}
+
 	/** Free a variable for memory */
 	@FreeFunction(ASTVarsChain.class)
 	protected void freeVarsChain(ASTVarsChain node) {
@@ -457,7 +476,7 @@ public class MiniJajaInterpreter {
 		// do nothing
 	}
 
-	/** Free an variable */
+	/** Free a variable */
 	@FreeFunction(ASTVar.class)
 	protected void freeVar(ASTVar node) {
 		memory.removeDecl(node.getIdent().getName());
