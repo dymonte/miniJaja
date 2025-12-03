@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
+import fr.umlp.m1info.projectvms.group2.styler.JajaCodeStyler;
 import fr.umlp.m1info.projectvms.group2.styler.MiniJajaStyler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -16,11 +17,25 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.reactfx.Subscription;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class CodeSectionController implements StatefulController {
+
+	public enum LanguageType {
+		MINIJAJA, JAJACODE
+	}
+
+	private static final String SKIP = "(?:\\s|//.*|/\\*(?:.|\\R)*?\\*/)*";
+	private static final Pattern JAJACODE_START_PATTERN =
+			Pattern.compile("^" + SKIP + "init", Pattern.MULTILINE | Pattern.DOTALL);
+	private static final Pattern MINIJAJA_START_PATTERN =
+			Pattern.compile("^" + SKIP + "class", Pattern.MULTILINE | Pattern.DOTALL);
+
+	private AppState appState;
 
 	@FXML
 	private CodeArea codeArea;
@@ -41,15 +56,24 @@ public class CodeSectionController implements StatefulController {
 				.successionEnds(Duration.ofMillis(500))
 				.subscribe(ignore -> {
 					// Recoloration sur *tout* le document
-					String fullText = codeArea.getText();
-					MiniJajaStyler styler = new MiniJajaStyler(fullText);
-					codeArea.setStyleSpans(0, styler.style());
+					highlightCode();
 				});
+	}
+
+	private void highlightCode() {
+		String text = codeArea.getText();
+		LanguageType type = detectLanguage();
+		if (type == LanguageType.MINIJAJA) {
+			codeArea.setStyleSpans(0, new MiniJajaStyler(text).style());
+		} else {
+			codeArea.setStyleSpans(0, new JajaCodeStyler(text).style());
+		}
 	}
 
 
 	@Override
 	public void bindState(AppState appState) {
+		this.appState = appState;
 		applyLineNumberFactory();
 		codeArea.getStyleClass().add("code-area");
 
@@ -170,5 +194,24 @@ public class CodeSectionController implements StatefulController {
 
 			return box;
 		});
+	}
+
+	private LanguageType detectLanguage() {
+		File openedFile = appState.getOpenedFile().orElse(null);
+
+		// File-based detection
+		if (openedFile != null) {
+			String name = openedFile.getName();
+			if (name.endsWith(".mjj")) return LanguageType.MINIJAJA;
+			if (name.endsWith(".jjc")) return LanguageType.JAJACODE;
+		}
+
+		// Fallback: text-based detection
+		String text = codeArea.getText();
+		if (MINIJAJA_START_PATTERN.matcher(text).find()) return LanguageType.MINIJAJA;
+		if (JAJACODE_START_PATTERN.matcher(text).find()) return LanguageType.JAJACODE;
+
+		// Default
+		return LanguageType.MINIJAJA;
 	}
 }
