@@ -1,5 +1,8 @@
 package fr.umlp.m1info.projectvms.group2.memory.symtable;
 
+import fr.umlp.m1info.projectvms.group2.utils.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+
 import java.util.Objects;
 
 /**
@@ -8,7 +11,7 @@ import java.util.Objects;
  */
 public class MemInfo {
 	private Type sorte;
-	private ObjectKind kind;
+	private Kind kind;
 	private int size;
 
 	/**
@@ -19,7 +22,7 @@ public class MemInfo {
 	 * @param size  the data size
 	 * @throws IllegalArgumentException when size < 0 (negative data size)
 	 */
-	public MemInfo(Type sorte, ObjectKind kind, int size) throws IllegalArgumentException {
+	public MemInfo(Type sorte, Kind kind, int size) throws IllegalArgumentException {
 		this.sorte = sorte;
 		this.kind = kind;
 		if (size < 0) {
@@ -28,7 +31,7 @@ public class MemInfo {
 		this.size = size;
 	}
 
-	public MemInfo(Type sorte, ObjectKind kind) {
+	public MemInfo(Type sorte, Kind kind) {
 		this(sorte, kind, 1);
 	}
 
@@ -42,7 +45,7 @@ public class MemInfo {
 	/**
 	 * @return the data kind (VAR, METH, ...)
 	 */
-	public ObjectKind getKind() {
+	public Kind getKind() {
 		return kind;
 	}
 

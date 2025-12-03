@@ -1,0 +1,10 @@
+init
+if(1)
+goto(20)
+nop
+jcstop
+push(10)
+pop
+neg
+mul
+init

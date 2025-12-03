@@ -1,0 +1,6 @@
+init
+push(6)
+push(5)
+add
+write
+jcstop

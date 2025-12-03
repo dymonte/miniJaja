@@ -2,6 +2,8 @@ package fr.umlp.m1info.projectvms.group2.logger;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Assert;
@@ -65,5 +67,8 @@ public class ParserLoggerTest {
 		ParserLogger.getInstance().addListener(listener);
 		Assert.assertEquals(1, ParserLogger.getInstance().getListeners().size());
 		logger.log("ah", ParserLogger.MessageLevel.INFO);
+		logger.warning("ah");
+		logger.error("ah");
+		logger.error(Arrays.asList("ah"));
 	}
 }

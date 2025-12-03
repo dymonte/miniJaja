@@ -4,16 +4,18 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.umlp.m1info.projectvms.group2.exception.BadSymbolKindException;
+import fr.umlp.m1info.projectvms.group2.exception.EmptyStackException;
 import fr.umlp.m1info.projectvms.group2.exception.NoInstanceException;
+import fr.umlp.m1info.projectvms.group2.exception.StackInvalidAddressException;
 import fr.umlp.m1info.projectvms.group2.exception.SymbolNotFoundException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.InstNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
 
 /**
  * Memory
@@ -22,7 +24,6 @@ public class Memory {
 	SymTable symTable;
 	Stack stack;
 	Heap heap;
-
 	/**
 	 * Constructs a new Memory
 	 *
@@ -30,6 +31,7 @@ public class Memory {
 	 * @param stack    the memory stack
 	 * @param heap     the memory heap
 	 */
+
 	public Memory(SymTable symTable, Stack stack, Heap heap) {
 		this.symTable = symTable;
 		this.stack = stack;
@@ -40,55 +42,49 @@ public class Memory {
 
 	/**
 	 * Add a new variable declaration to the program memory.
-	 * 
+	 *
 	 * @param ident the variable identifier
 	 * @param value the variable initial value
 	 * @param sorte the variable type
 	 */
 	public <T> void declVar(String ident, T value, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VAR, sorte);
-		if (symbol.isPresent()) {
-			stack.push(value, symbol.get());
-		}
+		Optional<SymNode> symbol = symTable.add(ident, Kind.VAR, sorte);
+		symbol.ifPresent(symNode -> stack.push(value, symNode));
 	}
 
 	/**
 	 * Add a new constant declaration with it's value to the program memory.
-	 * 
+	 *
 	 * @param ident the constant identifier
 	 * @param value the constant initial value
 	 * @param sorte the constant type
 	 */
 	public <T> void declCst(String ident, T value, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.CONST, sorte);
-		if (symbol.isPresent()) {
-			stack.push(value, symbol.get());
-		}
+		Optional<SymNode> symbol = symTable.add(ident, Kind.CONST, sorte);
+		symbol.ifPresent(symNode -> stack.push(value, symNode));
 	}
 
 	/**
 	 * Add a new constant declaration to the program memory.
-	 * 
+	 *
 	 * @param ident the constant identifier
 	 * @param sorte the constant type
 	 */
 	public void declCst(String ident, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.VCONST, sorte);
-		if (symbol.isPresent()) {
-			stack.push(null, symbol.get());
-		}
+		Optional<SymNode> symbol = symTable.add(ident, Kind.VCONST, sorte);
+		symbol.ifPresent(symNode -> stack.push(null, symNode));
 
 	}
 
 	/**
 	 * Add a new array declaration to the program memory.
-	 * 
+	 *
 	 * @param ident the array identifier
 	 * @param size  the array size
 	 * @param sorte the array type
 	 */
 	public void declArray(String ident, int size, Type sorte) {
-		Optional<SymNode> symbol = symTable.add(ident, ObjectKind.ARRAY, sorte, size);
+		Optional<SymNode> symbol = symTable.add(ident, Kind.ARRAY, sorte, size);
 
 		if (symbol.isPresent()) {
 			int address = heap.allocate(size, sorte);
@@ -106,8 +102,9 @@ public class Memory {
 	 */
 	public void declMeth(String ident, Object meth, List<Type> paramsTypes, Type sorte) {
 		String identWithTypes = getMethKey(ident, paramsTypes);
-		Optional<SymNode> symbol = symTable.add(identWithTypes, ObjectKind.METH, sorte);
+		Optional<SymNode> symbol = symTable.add(identWithTypes, Kind.METH, sorte);
 		symbol.ifPresent(symNode -> stack.push(meth, symNode));
+
 	}
 
 	/**
@@ -124,7 +121,7 @@ public class Memory {
 		ret.append(ident);
 
 		for (Type t : params) {
-			ret.append(t.toString().charAt(0));
+			ret.append(Character.toUpperCase(t.toString().charAt(0)));
 		}
 		return ret.toString();
 	}
@@ -150,16 +147,17 @@ public class Memory {
 		if (instance == null) {
 			throw new NoInstanceException(ident);
 		}
-		if (symbolOpt.get().getInfo().getKind() == ObjectKind.ARRAY) {
+		if (symbolOpt.get().getInfo().getKind() == Kind.ARRAY) {
 			heap.decRef((int) instance.getValue());
 		}
 		symTable.remove(instance);
+		stack.remove(instance);
 	}
 
 	/**
 	 * Sets the value stored in the first instance of the symbol of identifier
 	 * ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
 	 * @param val   the new value to set
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
@@ -177,18 +175,18 @@ public class Memory {
 		}
 
 		SymNode symbol = symbolOpt.get();
-		ObjectKind kind = symbol.getInfo().getKind();
+		Kind kind = symbol.getInfo().getKind();
 
-		if (kind == ObjectKind.ARRAY) {
+		if (kind == Kind.ARRAY) {
 			heap.incRef((int) val);
 		}
 
-		if (kind != ObjectKind.VAR && kind != ObjectKind.ARRAY && kind != ObjectKind.VCONST) {
+		if (kind != Kind.VAR && kind != Kind.ARRAY && kind != Kind.VCONST) {
 			throw new BadSymbolKindException(ident, kind);
 		}
 
-		if (kind == ObjectKind.VCONST) {
-			symbol.setKind(ObjectKind.CONST);
+		if (kind == Kind.VCONST) {
+			symbol.setKind(Kind.CONST);
 		}
 
 		InstNode instance = symbol.getFirstInstance();
@@ -202,7 +200,7 @@ public class Memory {
 	/**
 	 * Returns the value stored in the first instance of the symbol of identifier
 	 * ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
 	 * @return the value stored in the symbol's first instance
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
@@ -221,7 +219,7 @@ public class Memory {
 
 		SymNode symbol = symbolOpt.get();
 
-		if (symbol.getInfo().getKind() == ObjectKind.VCONST) {
+		if (symbol.getInfo().getKind() == Kind.VCONST) {
 			throw new NoInstanceException(ident);
 		}
 
@@ -235,7 +233,7 @@ public class Memory {
 
 	/**
 	 * Get the value at a given index in an array.
-	 * 
+	 *
 	 * @param ident the array identifier
 	 * @param index the index to read
 	 * @return the value at the given index in the array
@@ -256,8 +254,8 @@ public class Memory {
 
 		SymNode symbol = symbolOpt.get();
 
-		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), ObjectKind.ARRAY);
+		if (symbol.getInfo().getKind() != Kind.ARRAY) {
+			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), Kind.ARRAY);
 		}
 
 		// Get first instance of the symbol
@@ -294,8 +292,8 @@ public class Memory {
 
 		SymNode symbol = symbolOpt.get();
 
-		if (symbol.getInfo().getKind() != ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), ObjectKind.ARRAY);
+		if (symbol.getInfo().getKind() != Kind.ARRAY) {
+			throw new BadSymbolKindException(ident, symbol.getInfo().getKind(), Kind.ARRAY);
 		}
 
 		// Get first instance of the symbol
@@ -327,17 +325,17 @@ public class Memory {
 		SymNode symbol = symbolOpt.get();
 		MemInfo info = symbol.getInfo();
 
-		if (info.getKind() != ObjectKind.ARRAY) {
-			throw new BadSymbolKindException(ident, info.getKind(), ObjectKind.ARRAY);
+		if (info.getKind() != Kind.ARRAY) {
+			throw new BadSymbolKindException(ident, info.getKind(), Kind.ARRAY);
 		}
 		return info.getSize();
 	}
 
 	/**
 	 * Gets the type of the symbol of indentifier ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
-	 * @returns the symbol's data type
+	 * @return the symbol's data type
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
 	 *                                 does not
 	 *                                 belong to this memory's symbol table
@@ -353,7 +351,7 @@ public class Memory {
 
 	/**
 	 * Gets the head of the stack as a Quad
-	 * 
+	 *
 	 * @return the head of the stack as a Quad
 	 */
 	public Quad getHead() {
@@ -361,35 +359,8 @@ public class Memory {
 	}
 
 	/**
-	 * Pushes a new value on top of the stack
-	 * 
-	 * @param value the value to add on top of the stack
-	 */
-	public void push(Object value) {
-		SymNode symbol = new SymNode("w", new MemInfo(Type.INT, ObjectKind.CONST));
-		stack.push(value, symbol);
-	}
-
-	/**
-	 * Swaps the element on top of the memory stack with the element below it.
-	 */
-	public void swap() {
-		stack.swap();
-	}
-
-	/**
-	 * Removes the element on top of the stack and returns it.
-	 *
-	 * @return the deleted element
-	 */
-	public Object pop() {
-		InstNode popped = stack.pop();
-		return popped != null ? popped.getValue() : null;
-	}
-
-	/**
 	 * Sets the type of the symbol of indentifier ident
-	 * 
+	 *
 	 * @param ident the symbol identifier
 	 * @param sorte the new type to set
 	 * @throws SymbolNotFoundException thrown when the symbol of identifier ident
@@ -412,4 +383,95 @@ public class Memory {
 		return heap.toString();
 	}
 
+	/* JajaCode related methods */
+
+	/**
+	 * Pushes a new value on top of the stack
+	 *
+	 * @param value the value to add on top of the stack
+	 */
+	public void push(Object value, Type type) {
+		SymNode symbol = new SymNode("w", new MemInfo(type, Kind.CONST));
+		stack.push(value, symbol);
+	}
+
+	public void push(String value) {
+		push(value, Type.STRING);
+	}
+
+	public void push(int value) {
+		push(value, Type.INT);
+	}
+
+	public void push(boolean value) {
+		push(value, Type.BOOL);
+	}
+
+	/**
+	 * Swaps the element on top of the memory stack with the element below it.
+	 */
+	public void swap() {
+		stack.swap();
+	}
+
+	/**
+	 * Removes the element on top of the stack and returns it.
+	 *
+	 * @return the deleted element
+	 */
+	public Object pop() {
+		InstNode popped = stack.pop();
+		if (popped == null) {
+			throw new EmptyStackException();
+		}
+		return popped.getValue();
+	}
+
+	/**
+	 * Modifies the sorte, identifier and kind of the stack's at address adress
+	 * (address 0 begin the stack's head, address 1 being the second element etc...)
+	 *
+	 * @param identifier the new Identifier of the stack's head
+	 * @param kind       the new object kind of the stack's head
+	 * @param sorte      the new type of the stack's head
+	 * @param address    the element's address on the stack
+	 * @throws IllegalArgumentException     when address < 0 or identifier already
+	 *                                      used by an other symbol of different
+	 *                                      kind
+	 * @throws StackInvalidAddressException when address is exceding stack's depth
+	 */
+	public void identVal(String identifier, Kind kind, Type sorte, int address) {
+		if (address < 0) {
+			throw new IllegalArgumentException("address should be >= 0.");
+		}
+
+		Optional<SymNode> symbolOpt = symTable.add(identifier, kind, sorte);
+		if (symbolOpt.isEmpty()) {
+			throw new IllegalArgumentException("Identifier already used for an other kind of symbol");
+		}
+		SymNode symbol = symbolOpt.get();
+
+		if (address == 0) {
+			InstNode head = stack.pop();
+			symTable.remove(head);
+			stack.push(head.getValue(), symbol);
+			return;
+		}
+
+		InstNode bef = null;
+		InstNode cur = stack.getHead();
+		while (address > 0 && cur != null) {
+			bef = cur;
+			cur = cur.getNextInStack();
+			address--;
+		}
+
+		if (address > 0 || cur == null || bef == null) {
+			throw new StackInvalidAddressException(address);
+		}
+
+		symTable.remove(cur);
+		InstNode newInstance = new InstNode(cur.getValue(), symbol, cur.getNextInStack());
+		bef.setNextInStack(newInstance);
+	}
 }

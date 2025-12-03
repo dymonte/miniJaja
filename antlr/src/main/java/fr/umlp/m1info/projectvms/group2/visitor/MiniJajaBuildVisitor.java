@@ -1,5 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.visitor;
 
+import java.util.List;
+
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
@@ -27,162 +29,150 @@ import fr.umlp.m1info.projectvms.group2.parser.MiniJajaParser;
 public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 
 	/**
-	 * Visits a class declaration in the MiniJaja parse tree and builds its AST
-	 * representation
+	 * Builds the AST for a MiniJaja program
 	 *
-	 * @param ctx the parse tree context corresponding to a MiniJaja class
-	 * @return an ASTClass node containing the class name, its declarations, the
-	 *         main method, and the source position
+	 * @param ctx the program context from the parser
+	 * @return an ASTClass node representing the class, including its declarations
+	 *         and main method
 	 */
 	@Override
 	public ASTClass visitProg(MiniJajaParser.ProgContext ctx) {
-		VisitorUtils.info("Starting AST construction for program");
-		VisitorUtils
-				.debug("Visiting program (class) [" + VisitorUtils.line(ctx) + "," + VisitorUtils.column(ctx) + "]");
-
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTDecls decls = (ASTDecls) visit(ctx.decls());
 		ASTMainMethod main = (ASTMainMethod) visit(ctx.methmain());
-		return VisitorUtils.safeBuild("Prog",
-				() -> new ASTClass(ident, decls, main, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTClass(ident, decls, main, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * Visits an identifier in the MiniJaja parse tree and builds its AST
-	 * representation
+	 * Visits an identifier in the parse tree.
 	 *
-	 * @param ctx the parse tree context corresponding to a MiniJaja identifier
-	 * @return an ASTIdent node containing the identifier name and its source
-	 *         position
+	 * @param ctx the identifier context
+	 * @return an ASTIdent node representing the identifier
 	 */
 	@Override
 	public ASTIdent visitIdent(MiniJajaParser.IdentContext ctx) {
-		return VisitorUtils.safeBuild("Ident",
-				() -> new ASTIdent(ctx.getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTIdent(ctx.getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a sequence of declarations.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the declarations context
+	 * @return an ASTDecls node representing a list of declarations
 	 */
 	@Override
 	public ASTDecls visitDecls(MiniJajaParser.DeclsContext ctx) {
-		return VisitorUtils.safeBuild("Decls", () -> VisitorUtils.<MiniJajaParser.DeclContext, ASTDecl, ASTDecls>build(
-				ctx.decl(),
-				declCtx -> (ASTDecl) visit(declCtx),
-				(head, tail) -> VisitorUtils.safeBuild("DeclsChain",
-						() -> new ASTDeclsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
-				() -> VisitorUtils.safeBuild("DeclsNil",
-						() -> new ASTDeclsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
+		List<MiniJajaParser.DeclContext> decls = ctx.decl();
+
+		if (decls.isEmpty()) {
+			return new ASTDeclsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = decls.size();
+		ASTDecls result = new ASTDeclsNil(VisitorUtils.line(decls.get(size - 1)), VisitorUtils.column(decls.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.DeclContext declCtx = decls.get(i);
+			ASTDecl head = (ASTDecl) visit(declCtx);
+			result = new ASTDeclsChain(head, result, VisitorUtils.line(declCtx), VisitorUtils.column(declCtx));
+		}
+		return result;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the variable declaration context
+	 * @return an ASTVar node representing the declared variable
 	 */
 	@Override
 	public ASTVar visitVarDecl(MiniJajaParser.VarDeclContext ctx) {
-		return VisitorUtils.safeBuild("VarDecl", () -> (ASTVar) visit(ctx.var()));
+		return (ASTVar) visit(ctx.var());
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method declaration context
+	 * @return an ASTMethod node representing the method
 	 */
 	@Override
 	public ASTMethod visitMethodDecl(MiniJajaParser.MethodDeclContext ctx) {
-		return VisitorUtils.safeBuild("MethodDecl", () -> (ASTMethod) visit(ctx.method()));
+		return (ASTMethod) visit(ctx.method());
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of variables.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the variables context
+	 * @return an ASTVars node representing a chain of variables
 	 */
 	@Override
 	public ASTVars visitVars(MiniJajaParser.VarsContext ctx) {
-		return VisitorUtils.safeBuild("Vars", () -> VisitorUtils.<MiniJajaParser.VarContext, ASTVar, ASTVars>build(
-				ctx.var(),
-				varCtx -> (ASTVar) visit(varCtx),
-				(head, tail) -> VisitorUtils.safeBuild("VarsChain",
-						() -> new ASTVarsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
-				() -> VisitorUtils.safeBuild("VarsNil",
-						() -> new ASTVarsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
+		List<MiniJajaParser.VarContext> vars = ctx.var();
+
+		if (vars.isEmpty()) {
+			return new ASTVarsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = vars.size();
+		ASTVars result = new ASTVarsNil(VisitorUtils.line(vars.get(size - 1)), VisitorUtils.column(vars.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.VarContext varCtx = vars.get(i);
+			ASTVar head = (ASTVar) visit(varCtx);
+			result = new ASTVarsChain(head, result, VisitorUtils.line(varCtx), VisitorUtils.column(varCtx));
+		}
+		return result;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a simple variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the simple variable declaration context
+	 * @return an ASTVarSimple node representing the variable
 	 */
 	@Override
 	public ASTVarSimple visitVarDeclSimple(MiniJajaParser.VarDeclSimpleContext ctx) {
 		ASTTypeMeth typemeth = (ASTTypeMeth) visit(ctx.typemeth());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTVExpr vexpr = (ASTVExpr) visit(ctx.vexp());
-		return VisitorUtils.safeBuild("VarDeclSimple",
-				() -> new ASTVarSimple(typemeth, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTVarSimple(typemeth, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an array variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the array variable declaration context
+	 * @return an ASTVarArray node representing the variable
 	 */
 	@Override
 	public ASTVarArray visitVarDeclArray(MiniJajaParser.VarDeclArrayContext ctx) {
 		ASTTypeMeth typemeth = (ASTTypeMeth) visit(ctx.typemeth());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return VisitorUtils.safeBuild("VarDeclArray",
-				() -> new ASTVarArray(typemeth, ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTVarArray(typemeth, ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a final variable declaration.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the final variable declaration context
+	 * @return an ASTVarConst node representing the constant
 	 */
 	@Override
 	public ASTVarConst visitVarDeclFinal(MiniJajaParser.VarDeclFinalContext ctx) {
 		ASTType type = (ASTType) visit(ctx.type());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTVExpr vexpr = (ASTVExpr) visit(ctx.vexp());
-		return VisitorUtils.safeBuild("VarDeclFinal",
-				() -> new ASTVarConst(type, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTVarConst(type, ident, vexpr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an optional expression for a variable initialization.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the optional expression context
+	 * @return an ASTVExpr node, or null if no expression is present
 	 */
 	@Override
 	public ASTVExpr visitVexp(MiniJajaParser.VexpContext ctx) {
@@ -190,17 +180,14 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 			return null;
 		}
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return VisitorUtils.safeBuild("VExp",
-				() -> new ASTVExpr(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTVExpr(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method definition.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method context
+	 * @return an ASTMethod node representing the method
 	 */
 	@Override
 	public ASTMethod visitMethod(MiniJajaParser.MethodContext ctx) {
@@ -209,199 +196,182 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTParams params = (ASTParams) visit(ctx.params());
 		ASTVars vars = (ASTVars) visit(ctx.vars());
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
-		return VisitorUtils.safeBuild("Method",
-				() -> new ASTMethod(typemeth, ident, params, vars, instrs, VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		return new ASTMethod(typemeth, ident, params, vars, instrs, VisitorUtils.line(ctx),
+				VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits the main method of a MiniJaja program.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the main method context
+	 * @return an ASTMainMethod node representing the main method
 	 */
 	@Override
 	public ASTMainMethod visitMethmain(MiniJajaParser.MethmainContext ctx) {
 		ASTVars vars = (ASTVars) visit(ctx.vars());
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
-		return VisitorUtils.safeBuild("MainMethod",
-				() -> new ASTMainMethod(vars, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTMainMethod(vars, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of method parameters.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the parameters context
+	 * @return an ASTParams node representing a chain of parameters
 	 */
 	@Override
 	public ASTParams visitParams(MiniJajaParser.ParamsContext ctx) {
-		return VisitorUtils.safeBuild("Params",
-				() -> VisitorUtils.<MiniJajaParser.ParamContext, ASTParam, ASTParams>build(
-						ctx.param(),
-						paramCtx -> (ASTParam) visit(paramCtx),
-						(head, tail) -> VisitorUtils.safeBuild("ParamsChain",
-								() -> new ASTParamsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
-						() -> VisitorUtils.safeBuild("ParamsNil",
-								() -> new ASTParamsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
+		List<MiniJajaParser.ParamContext> params = ctx.param();
+
+		if (params.isEmpty()) {
+			return new ASTParamsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = params.size();
+		ASTParams result = new ASTParamsNil(VisitorUtils.line(params.get(size - 1)),
+				VisitorUtils.column(params.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.ParamContext paramCtx = params.get(i);
+			ASTParam head = (ASTParam) visit(paramCtx);
+			result = new ASTParamsChain(head, result, VisitorUtils.line(paramCtx), VisitorUtils.column(paramCtx));
+		}
+		return result;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a single method parameter.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the parameter context
+	 * @return an ASTParam node representing the parameter
 	 */
 	@Override
 	public ASTParam visitParam(MiniJajaParser.ParamContext ctx) {
 		ASTType type = (ASTType) visit(ctx.type());
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
-		return VisitorUtils.safeBuild("Param",
-				() -> new ASTParam(type, ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTParam(type, ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of instructions.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the instructions context
+	 * @return an ASTInstrs node representing a chain of instructions
 	 */
+
 	@Override
 	public ASTInstrs visitInstrs(MiniJajaParser.InstrsContext ctx) {
-		return VisitorUtils.safeBuild("Instrs",
-				() -> VisitorUtils.<MiniJajaParser.InstrContext, ASTInstr, ASTInstrs>build(
-						ctx.instr(),
-						instrCtx -> (ASTInstr) visit(instrCtx),
-						(head, tail) -> VisitorUtils.safeBuild("InstrsChain",
-								() -> new ASTInstrsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
-						() -> VisitorUtils.safeBuild("InstrsNil",
-								() -> new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
+		List<MiniJajaParser.InstrContext> instrContexts = ctx.instr();
+
+		if (instrContexts.isEmpty()) {
+			return new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = instrContexts.size();
+		ASTInstrs result = new ASTInstrsNil(VisitorUtils.line(instrContexts.get(size - 1)),
+				VisitorUtils.column(instrContexts.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.InstrContext instrCtx = instrContexts.get(i);
+			ASTInstr head = (ASTInstr) visit(instrCtx);
+			result = new ASTInstrsChain(head, result, VisitorUtils.line(instrCtx), VisitorUtils.column(instrCtx));
+		}
+		return result;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an assignment operation.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the assignment context
+	 * @return an ASTAssignmentOp node representing the assignment
 	 */
 	@Override
 	public ASTAssignmentOp visitAssignment(MiniJajaParser.AssignmentContext ctx) {
 		ASTLValue lvalue = (ASTLValue) visit(ctx.ident1());
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return VisitorUtils.safeBuild("Assignment",
-				() -> new ASTAssignmentOp(lvalue, expr, AssignmentOp.fromSymbol(ctx.op.getText()),
-						VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		return new ASTAssignmentOp(lvalue, expr, AssignmentOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+				VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an increment operation.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the increment context
+	 * @return an ASTIncrementOp node representing the increment
 	 */
 	@Override
 	public ASTIncrementOp visitIncrement(MiniJajaParser.IncrementContext ctx) {
 		ASTLValue lvalue = (ASTLValue) visit(ctx.ident1());
-		return VisitorUtils.safeBuild("Increment",
-				() -> new ASTIncrementOp(lvalue, IncrementOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		return new ASTIncrementOp(lvalue, IncrementOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+				VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method call used as an instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the call context
+	 * @return an ASTMethodCallInstr node representing the call
 	 */
 	@Override
 	public ASTMethodCallInstr visitCallI(MiniJajaParser.CallIContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExprs exprs = (ASTExprs) visit(ctx.listexp());
-		return VisitorUtils.safeBuild("MethodCallInstr",
-				() -> new ASTMethodCallInstr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTMethodCallInstr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a return instruction.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the return context
+	 * @return an ASTReturn node representing the return statement
 	 */
 	@Override
 	public ASTReturn visitReturn(MiniJajaParser.ReturnContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return VisitorUtils.safeBuild("Return",
-				() -> new ASTReturn(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTReturn(expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a write instruction (without newline).
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the write context
+	 * @return an ASTWrite node representing the write operation
 	 */
 	@Override
 	public ASTWrite visitWrite(MiniJajaParser.WriteContext ctx) {
 		MiniJajaParser.Ident1Context ident1 = ctx.ident1();
 		if (ident1 == null) {
-			return VisitorUtils.safeBuild("WriteString", () -> new ASTWrite(
-					new ASTStringLiteral(ctx.STRING().getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-					false,
-					VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+			ASTStringLiteral stringLiteral = new ASTStringLiteral(ctx.STRING().getText(), VisitorUtils.line(ctx),
+					VisitorUtils.column(ctx));
+			return new ASTWrite(stringLiteral, false, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 		}
 		ASTLValue lvalue = (ASTLValue) visit(ident1);
-		return VisitorUtils.safeBuild("WriteValue",
-				() -> new ASTWrite(lvalue, false, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTWrite(lvalue, false, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a writeln instruction (with newline).
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the writeln context
+	 * @return an ASTWrite node representing the writeln operation
 	 */
 	@Override
 	public ASTWrite visitWriteln(MiniJajaParser.WritelnContext ctx) {
 		MiniJajaParser.Ident1Context ident1 = ctx.ident1();
 		if (ident1 == null) {
-			return VisitorUtils.safeBuild("WritelnString", () -> new ASTWrite(
-					new ASTStringLiteral(ctx.STRING().getText(), VisitorUtils.line(ctx), VisitorUtils.column(ctx)),
-					true,
-					VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+			ASTStringLiteral stringLiteral = new ASTStringLiteral(ctx.STRING().getText(), VisitorUtils.line(ctx),
+					VisitorUtils.column(ctx));
+			return new ASTWrite(stringLiteral, true, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 		}
 		ASTLValue lvalue = (ASTLValue) visit(ident1);
-		return VisitorUtils.safeBuild("WritelnValue",
-				() -> new ASTWrite(lvalue, true, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTWrite(lvalue, true, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an if statement.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the if context
+	 * @return an ASTIf node representing the conditional
 	 */
 	@Override
 	public ASTIf visitIf(MiniJajaParser.IfContext ctx) {
@@ -409,84 +379,80 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTInstrs ifInstrs = (ASTInstrs) visit(ctx.instrs(0));
 		ASTInstrs elseInstrs = (ctx.instrs().size() >= 2 ? (ASTInstrs) visit(ctx.instrs(1))
 				: new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
-		return VisitorUtils.safeBuild("If",
-				() -> new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a while loop.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the while context
+	 * @return an ASTWhile node representing the loop
 	 */
 	@Override
 	public ASTWhile visitWhile(MiniJajaParser.WhileContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
-		return VisitorUtils.safeBuild("While",
-				() -> new ASTWhile(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTWhile(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a list of expressions.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the list expression context
+	 * @return an ASTExprs node representing the chain of expressions
 	 */
+
 	@Override
 	public ASTExprs visitListexp(MiniJajaParser.ListexpContext ctx) {
-		return VisitorUtils.safeBuild("ListExp", () -> VisitorUtils.<MiniJajaParser.ExpContext, ASTExpr, ASTExprs>build(
-				ctx.exp(),
-				exprCtx -> (ASTExpr) visit(exprCtx),
-				(head, tail) -> VisitorUtils.safeBuild("ExprsChain",
-						() -> new ASTExprsChain(head, tail, VisitorUtils.line(ctx), VisitorUtils.column(ctx))),
-				() -> VisitorUtils.safeBuild("ExprsNil",
-						() -> new ASTExprsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)))));
+		List<MiniJajaParser.ExpContext> expContexts = ctx.exp();
+
+		if (expContexts.isEmpty()) {
+			return new ASTExprsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+
+		int size = expContexts.size();
+		ASTExprs result = new ASTExprsNil(VisitorUtils.line(expContexts.get(size - 1)),
+				VisitorUtils.column(expContexts.get(size - 1)));
+
+		for (int i = size - 1; i >= 0; i--) {
+			MiniJajaParser.ExpContext expCtx = expContexts.get(i);
+			ASTExpr head = (ASTExpr) visit(expCtx);
+			result = new ASTExprsChain(head, result, VisitorUtils.line(expCtx), VisitorUtils.column(expCtx));
+		}
+		return result;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a logical NOT expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the NOT expression context
+	 * @return an ASTUnaryOp node representing the NOT operation
 	 */
 	@Override
 	public ASTUnaryOp visitNotExp(MiniJajaParser.NotExpContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp1());
-		return VisitorUtils.safeBuild("NotExp",
-				() -> new ASTUnaryOp(expr, UnaryOp.fromSymbol("!"), VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTUnaryOp(expr, UnaryOp.fromSymbol("!"), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a logical expression (AND, OR).
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the logical expression context
+	 * @return an ASTBinaryOp node representing the logical operation
 	 */
 	@Override
 	public ASTBinaryOp visitLogicExp(MiniJajaParser.LogicExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.exp());
 		ASTExpr right = (ASTExpr) visit(ctx.exp1());
-		return VisitorUtils.safeBuild("LogicExp",
-				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+				VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a single exp1 expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the single expression context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitSingleExp1(MiniJajaParser.SingleExp1Context ctx) {
@@ -494,12 +460,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an exp2-only expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the exp2-only context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitExp2Only(MiniJajaParser.Exp2OnlyContext ctx) {
@@ -507,61 +471,50 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a comparison expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the comparison expression context
+	 * @return an ASTBinaryOp node representing the comparison
 	 */
 	@Override
 	public ASTBinaryOp visitCompExp(MiniJajaParser.CompExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.exp1());
 		ASTExpr right = (ASTExpr) visit(ctx.exp2());
-		return VisitorUtils.safeBuild("CompExp",
-				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+				VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a negation expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the negation expression context
+	 * @return an ASTUnaryOp node representing the negation
 	 */
 	@Override
 	public ASTUnaryOp visitNegExp(MiniJajaParser.NegExpContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.term());
-		return VisitorUtils.safeBuild("NegExp",
-				() -> new ASTUnaryOp(expr, UnaryOp.fromSymbol("-"), VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTUnaryOp(expr, UnaryOp.fromSymbol("-"), VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an addition or subtraction expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the add/subtract expression context
+	 * @return an ASTBinaryOp node representing the addition or subtraction
 	 */
 	@Override
 	public ASTBinaryOp visitAddSubExp(MiniJajaParser.AddSubExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.exp2());
 		ASTExpr right = (ASTExpr) visit(ctx.term());
-		return VisitorUtils.safeBuild("AddSubExp",
-				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+				VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a term-only expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the term-only context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitTermOnly(MiniJajaParser.TermOnlyContext ctx) {
@@ -569,29 +522,24 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a multiplication/division expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the multiplication/division expression context
+	 * @return an ASTBinaryOp node representing the multiplication/division
 	 */
 	@Override
 	public ASTBinaryOp visitMulDivExp(MiniJajaParser.MulDivExpContext ctx) {
 		ASTExpr left = (ASTExpr) visit(ctx.term());
 		ASTExpr right = (ASTExpr) visit(ctx.fact());
-		return VisitorUtils.safeBuild("MulDivExp",
-				() -> new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		return new ASTBinaryOp(left, right, BinaryOp.fromSymbol(ctx.op.getText()), VisitorUtils.line(ctx),
+				VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a fact-only expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the fact-only context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitFactOnly(MiniJajaParser.FactOnlyContext ctx) {
@@ -599,12 +547,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a variable reference expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the variable reference context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitVarRef(MiniJajaParser.VarRefContext ctx) {
@@ -612,73 +558,59 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method call expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method call context
+	 * @return an ASTMethodCallExpr node representing the call
 	 */
 	@Override
 	public ASTMethodCallExpr visitMethodCall(MiniJajaParser.MethodCallContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExprs exprs = (ASTExprs) visit(ctx.listexp());
-		return VisitorUtils.safeBuild("MethodCallExpr",
-				() -> new ASTMethodCallExpr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTMethodCallExpr(ident, exprs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a length expression on an array.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the length context
+	 * @return an ASTLength node representing the length operation
 	 */
 	@Override
 	public ASTLength visitLength(MiniJajaParser.LengthContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
-		return VisitorUtils.safeBuild("Length",
-				() -> new ASTLength(ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTLength(ident, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a boolean literal.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the boolean context
+	 * @return an ASTBoolLiteral node representing the boolean value
 	 */
 	@Override
 	public ASTBoolLiteral visitBool(MiniJajaParser.BoolContext ctx) {
-		return VisitorUtils.safeBuild("Bool",
-				() -> new ASTBoolLiteral((ctx.getText().equals("true")), VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		Boolean value = ctx.getText().equals("true");
+		return new ASTBoolLiteral(value, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an integer literal.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the integer context
+	 * @return an ASTIntLiteral node representing the integer value
 	 */
 	@Override
 	public ASTIntLiteral visitInt(MiniJajaParser.IntContext ctx) {
-		return VisitorUtils.safeBuild("Int",
-				() -> new ASTIntLiteral(Integer.parseInt(ctx.NUMBER().getText()), VisitorUtils.line(ctx),
-						VisitorUtils.column(ctx)));
+		Integer value = Integer.parseInt(ctx.NUMBER().getText());
+		return new ASTIntLiteral(value, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a parenthesized expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the parenthesis expression context
+	 * @return the corresponding ASTExpr node
 	 */
 	@Override
 	public ASTExpr visitParenExp(MiniJajaParser.ParenExpContext ctx) {
@@ -686,12 +618,10 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an identificator reference.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the identificator context
+	 * @return an ASTIdent node representing the identifier
 	 */
 	@Override
 	public ASTIdent visitIdentificator(MiniJajaParser.IdentificatorContext ctx) {
@@ -699,42 +629,34 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an array access expression.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the array access context
+	 * @return an ASTArrayAccess node representing the array access
 	 */
 	@Override
 	public ASTArrayAccess visitArrayAccess(MiniJajaParser.ArrayAccessContext ctx) {
 		ASTIdent ident = (ASTIdent) visit(ctx.ident());
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		return VisitorUtils.safeBuild("ArrayAccess",
-				() -> new ASTArrayAccess(ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTArrayAccess(ident, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a void type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the void type context
+	 * @return an ASTVoidType node representing void
 	 */
 	@Override
 	public ASTVoidType visitVoidType(MiniJajaParser.VoidTypeContext ctx) {
-		return VisitorUtils.safeBuild("VoidType",
-				() -> new ASTVoidType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTVoidType(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a method type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the method type context
+	 * @return the corresponding ASTNode representing the return type
 	 */
 	@Override
 	public ASTNode visitTypeMethod(MiniJajaParser.TypeMethodContext ctx) {
@@ -742,30 +664,24 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits an integer type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the integer type context
+	 * @return an ASTIntType node representing int
 	 */
 	@Override
 	public ASTIntType visitIntType(MiniJajaParser.IntTypeContext ctx) {
-		return VisitorUtils.safeBuild("IntType",
-				() -> new ASTIntType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTIntType(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Visits a boolean type node.
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.
-	 * </p>
+	 * @param ctx the boolean type context
+	 * @return an ASTBoolType node representing boolean
 	 */
 	@Override
 	public ASTBoolType visitBoolType(MiniJajaParser.BoolTypeContext ctx) {
-		return VisitorUtils.safeBuild("BoolType",
-				() -> new ASTBoolType(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
+		return new ASTBoolType(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 }

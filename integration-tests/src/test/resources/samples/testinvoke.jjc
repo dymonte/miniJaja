@@ -1,0 +1,9 @@
+init
+push(7)
+new(m,int,meth,0)
+invoke(m)
+write
+jcstop
+push(2)
+swap
+return

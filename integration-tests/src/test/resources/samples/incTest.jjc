@@ -1,0 +1,7 @@
+init
+push(5)
+new(x,int,var,0)
+inc(x)
+load(x)
+write
+jcstop

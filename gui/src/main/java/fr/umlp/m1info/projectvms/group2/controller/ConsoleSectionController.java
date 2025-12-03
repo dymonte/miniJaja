@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tab;
@@ -46,6 +47,18 @@ public class ConsoleSectionController {
 					break;
 				default:
 					break;
+			}
+		});
+
+		ParserLogger.getInstance().addListener((message, messageLevel) -> {
+			switch (messageLevel) {
+				case ERROR:
+				case WARNING:
+					appendToError(message);
+					break;
+				case DEBUG:
+				case INFO:
+					appendToDebug(message);
 			}
 		});
 	}

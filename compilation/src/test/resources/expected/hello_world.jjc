@@ -1,0 +1,6 @@
+init
+push("Hello, World!")
+write
+push(0)
+pop
+jcstop

@@ -1,14 +1,20 @@
 package fr.umlp.m1info.projectvms.group2.cli;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.IntConsumer;
+import java.util.function.Function;
 
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.compilation.MiniJajaCompiler;
+import fr.umlp.m1info.projectvms.group2.interpreter.jajacode.JajaCodeInterpreter;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreter;
 import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 import fr.umlp.m1info.projectvms.group2.logger.ParserLogger;
@@ -55,8 +61,21 @@ public class CLI {
      * @param opts the command-line options
      */
     private static void executeJaJaCode(CLIOptions opts) {
-        // TODO: implement this when JajaCode interpreter is implemented
-        throw new UnsupportedOperationException();
+        SymTable symTable = new SymTable(opts.getSymTableSize());
+        Stack stack = new Stack(opts.getStackDepth());
+        Heap heap = new Heap(opts.getHeapSize());
+        Memory memory = new Memory(symTable, stack, heap);
+        InterpreterLogger.getInstance().addListener(CLIOutput.getInstance());
+        if (opts.getDebug()) {
+            ParserLogger.getInstance().addListener(CLIOutput.getInstance());
+        }
+        try {
+            List<Instr> instrs = ParserUtils.jajaCodeParseFile(opts.getFilePath());
+            JajaCodeInterpreter interpreter = new JajaCodeInterpreter(memory, instrs);
+            interpreter.interpret(instrs.get(0));
+        } catch (Exception e) {
+            CLIOutput.error("while interpreting file", e.getMessage());
+        }
     }
 
     /**
@@ -66,27 +85,47 @@ public class CLI {
      * @param opts the command-line options
      */
     private static void compile(CLIOptions opts) {
-        // TODO: implement this when miniJaJa compiler is implemented
-        throw new UnsupportedOperationException();
+        StringBuilder output = new StringBuilder();
+        MiniJajaCompiler compiler = new MiniJajaCompiler(output);
+
+        try {
+            ASTNode root = ParserUtils.parseFile(opts.getFilePath());
+            compiler.compile(root);
+
+        } catch (Exception e) {
+            CLIOutput.error("while compiling file", e.getMessage());
+        }
+        if (!opts.isCompilationOutputPath()) {
+            CLIOutput.write(output.toString());
+            return;
+        }
+        try (FileWriter writer = new FileWriter(opts.getCompilationOutput())) {
+            writer.write(output.toString());
+        } catch (IOException e) {
+            CLIOutput.error("while writting compiled file", e.getMessage());
+        }
     }
 
     /**
-     * Handles an integer option from the command line.
+     * Handles an option that has a value from the command line.
      *
      * @param args       the command-line arguments
      * @param i          the index of the option
      * @param setter     the setter for the option
      * @param optionName the name of the option
+     * @param parser     the value parser
      * @return true if the option was handled successfully, false otherwise
      */
-    private static boolean handleIntOption(String[] args, int i, IntConsumer setter, String optionName) {
+    private static <T> boolean handleValueOption(String[] args, int i, Consumer<T> setter, String optionName,
+            Function<String, T> parser) {
         if (i + 1 >= args.length) {
             CLIOutput.error("Missing value for", optionName);
             return false;
         }
 
         try {
-            setter.accept(Integer.parseInt(args[i + 1]));
+            T value = parser.apply(args[i + 1]);
+            setter.accept(value);
         } catch (NumberFormatException e) {
             CLIOutput.error("Invalid value for", optionName);
             return false;
@@ -153,11 +192,23 @@ public class CLI {
 
         return switch (args[i]) {
             case CLIOptions.SET_HEAP_SIZE ->
-                handleIntOption(args, i, options::setHeapSize, CLIOptions.SET_HEAP_SIZE) ? i + 2 : -1;
+                handleValueOption(args, i, options::setHeapSize, CLIOptions.SET_HEAP_SIZE, Integer::parseInt) ? i + 2
+                        : -1;
             case CLIOptions.SET_STACK_DEPTH ->
-                handleIntOption(args, i, options::setStackDepth, CLIOptions.SET_STACK_DEPTH) ? i + 2 : -1;
+                handleValueOption(args, i, options::setStackDepth, CLIOptions.SET_STACK_DEPTH, Integer::parseInt)
+                        ? i + 2
+                        : -1;
             case CLIOptions.SET_SYMTABLE_SIZE ->
-                handleIntOption(args, i, options::setSymTableSize, CLIOptions.SET_SYMTABLE_SIZE) ? i + 2 : -1;
+                handleValueOption(args, i, options::setSymTableSize, CLIOptions.SET_SYMTABLE_SIZE, Integer::parseInt)
+                        ? i + 2
+                        : -1;
+            case CLIOptions.COMPILATION_OUTPUT ->
+                handleValueOption(args, i, options::setCompilationOutput, CLIOptions.COMPILATION_OUTPUT, s -> s) ? i + 2
+                        : -1;
+            case CLIOptions.COMPILATION_OUTPUT_SHORT ->
+                handleValueOption(args, i, options::setCompilationOutput, CLIOptions.COMPILATION_OUTPUT_SHORT, s -> s)
+                        ? i + 2
+                        : -1;
             case CLIOptions.DEBUG -> handleBooleanOption(options::setDebug, true, i);
             default -> parseFileOption(args[i], options) ? i + 1 : -1;
         };
@@ -191,17 +242,21 @@ public class CLI {
      * Shows the help message.
      */
     private static void showHelp() {
-        CLIOutput.write("Usage: compile|execute:mjj|execute:jjc [options] file");
-        CLIOutput.write("Commands:");
-        CLIOutput.write("  compile\tCompile the given miniJaJa file into JaJaCode.");
-        CLIOutput.write("  execute:mjj\tExecute the given miniJaJa file.");
-        CLIOutput.write("  execute:jjc\tExecute the given JaJaCode file.");
-        CLIOutput.write("\nOptions:");
-        CLIOutput.write("  " + CLIOptions.SET_HEAP_SIZE + " N\tSet the heap size");
-        CLIOutput.write("  " + CLIOptions.SET_STACK_DEPTH + " N\tSet the stack depth");
-        CLIOutput.write("  " + CLIOptions.SET_SYMTABLE_SIZE + " N\tSet the Symbol table size");
-        CLIOutput.write("  " + CLIOptions.DEBUG + " N\tShow every debug logger messages");
-        CLIOutput.write("  --help\t\tShow this help message");
+        CLIOutput.write("Usage: compile|execute:mjj|execute:jjc [options] file\n");
+        CLIOutput.write("Commands:\n");
+        CLIOutput.write("  compile\tCompile the given miniJaJa file into JaJaCode.\n");
+        CLIOutput.write("  execute:mjj\tExecute the given miniJaJa file.\n");
+        CLIOutput.write("  execute:jjc\tExecute the given JaJaCode file.\n");
+        CLIOutput.write("\nOptions:\n");
+        CLIOutput.write("  " + CLIOptions.COMPILATION_OUTPUT + " | " + CLIOptions.COMPILATION_OUTPUT_SHORT
+                + " \n\tSets the compiled file path\n");
+        CLIOutput.write("  " + CLIOptions.SET_HEAP_SIZE + " \n\tSet the heap size\n");
+        CLIOutput.write("  " + CLIOptions.SET_STACK_DEPTH + " \n\tSet the stack depth\n");
+        CLIOutput.write("  " + CLIOptions.SET_SYMTABLE_SIZE + " \n\tSet the Symbol table size\n");
+        CLIOutput.write("  " + CLIOptions.DEBUG + " \n\tShow every debug logger messages\n");
+        CLIOutput.write("  --help\n\tShow this help message\n");
+        CLIOutput.write(
+                "\nExamples:\n\texecute:mjj minijajafile.mjj\n\tcompile -o jajacodefile.jjc minijajafile.mjj\n\texecute:jjc jajacodefile.jjc\n");
     }
 
     /**
@@ -236,7 +291,7 @@ public class CLI {
                 executeJaJaCode(options);
                 break;
             default:
-                CLIOutput.error("Unrecognized CLI command. type --help for help.");
+                CLIOutput.error("Unrecognized CLI command : " + options.getCommand() + "; type --help for help.");
                 break;
         }
     }

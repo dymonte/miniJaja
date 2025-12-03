@@ -1,0 +1,10 @@
+init
+push(10)
+new(x,int,var,0)
+load(x)
+push(5)
+add
+store(x)
+load(x)
+write
+jcstop

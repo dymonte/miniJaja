@@ -10,8 +10,8 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.MemInfo;
 
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.ObjectKind;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Kind;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 /**
  * SymTableTest
@@ -34,17 +34,17 @@ public class SymTableTest {
 
 	@Test
 	public void addTest() {
-		Optional<SymNode> s = symTable.add("i", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s = symTable.add("i", Kind.VAR, Type.INT);
 		Assert.assertTrue(s.isPresent());
 		Assert.assertEquals(s.get().getIdent(), "i");
-		Assert.assertEquals(s.get().getInfo().getKind(), ObjectKind.VAR);
+		Assert.assertEquals(s.get().getInfo().getKind(), Kind.VAR);
 		Assert.assertEquals(s.get().getInfo().getSorte(), Type.INT);
 	}
 
 	@Test
 	public void addSameIdentifierTest() {
-		Optional<SymNode> s1 = symTable.add("i", ObjectKind.VAR, Type.INT);
-		Optional<SymNode> s2 = symTable.add("i", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s1 = symTable.add("i", Kind.VAR, Type.INT);
+		Optional<SymNode> s2 = symTable.add("i", Kind.VAR, Type.INT);
 		Assert.assertTrue(s1.isPresent());
 		Assert.assertTrue(s2.isPresent());
 		Assert.assertEquals(s1.get(), s2.get());
@@ -52,8 +52,8 @@ public class SymTableTest {
 
 	@Test
 	public void addDifferentIdentifierSameHashTest() {
-		Optional<SymNode> s1 = symTable.add("ab", ObjectKind.VAR, Type.INT);
-		Optional<SymNode> s2 = symTable.add("ba", ObjectKind.METH, Type.BOOL);
+		Optional<SymNode> s1 = symTable.add("ab", Kind.VAR, Type.INT);
+		Optional<SymNode> s2 = symTable.add("ba", Kind.METH, Type.BOOL);
 		Assert.assertTrue(s1.isPresent());
 		Assert.assertTrue(s2.isPresent());
 		Assert.assertNotEquals(s1.get(), s2.get());
@@ -68,17 +68,17 @@ public class SymTableTest {
 
 	@Test
 	public void addNegativeSizedArrayTest() {
-		Assert.assertThrows(IllegalArgumentException.class, () -> symTable.add("i", ObjectKind.VAR, Type.INT, -1));
+		Assert.assertThrows(IllegalArgumentException.class, () -> symTable.add("i", Kind.VAR, Type.INT, -1));
 	}
 
 	@Test
 	public void addNullSizedArrayTest() {
-		Assert.assertThrows(IllegalArgumentException.class, () -> symTable.add("i", ObjectKind.VAR, Type.INT, 0));
+		Assert.assertThrows(IllegalArgumentException.class, () -> symTable.add("i", Kind.VAR, Type.INT, 0));
 	}
 
 	@Test
 	public void searchTest() {
-		Optional<SymNode> s1 = symTable.add("i", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s1 = symTable.add("i", Kind.VAR, Type.INT);
 		Optional<SymNode> s2 = symTable.search("i");
 		Assert.assertTrue(s2.isPresent());
 		Assert.assertEquals(s1.get(), s2.get());
@@ -92,20 +92,20 @@ public class SymTableTest {
 
 	@Test
 	public void addSameIdentifierShouldFailTest() {
-		symTable.add("i", ObjectKind.VAR, Type.INT);
-		Optional<SymNode> s2 = symTable.add("i", ObjectKind.VAR, Type.BOOL);
+		symTable.add("i", Kind.VAR, Type.INT);
+		Optional<SymNode> s2 = symTable.add("i", Kind.VAR, Type.BOOL);
 		Assert.assertFalse(s2.isPresent());
 
-		symTable.add("j", ObjectKind.VAR, Type.INT);
-		Optional<SymNode> s3 = symTable.add("j", ObjectKind.METH, Type.INT);
+		symTable.add("j", Kind.VAR, Type.INT);
+		Optional<SymNode> s3 = symTable.add("j", Kind.METH, Type.INT);
 		Assert.assertFalse(s3.isPresent());
 
-		symTable.add("k", ObjectKind.VAR, Type.INT, 1);
-		Optional<SymNode> s4 = symTable.add("k", ObjectKind.VAR, Type.INT, 2);
+		symTable.add("k", Kind.VAR, Type.INT, 1);
+		Optional<SymNode> s4 = symTable.add("k", Kind.VAR, Type.INT, 2);
 		Assert.assertFalse(s4.isPresent());
 
-		Optional<SymNode> s5 = symTable.add("l", ObjectKind.VAR, Type.INT, 1);
-		Optional<SymNode> s6 = symTable.add("l", ObjectKind.VAR, Type.INT, 1);
+		Optional<SymNode> s5 = symTable.add("l", Kind.VAR, Type.INT, 1);
+		Optional<SymNode> s6 = symTable.add("l", Kind.VAR, Type.INT, 1);
 		Assert.assertTrue(s5.isPresent());
 		Assert.assertTrue(s6.isPresent());
 		Assert.assertEquals(s5, s6);
@@ -113,7 +113,7 @@ public class SymTableTest {
 
 	@Test
 	public void removeTest() {
-		Optional<SymNode> s = symTable.add("i", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s = symTable.add("i", Kind.VAR, Type.INT);
 		Assert.assertTrue(s.isPresent());
 		new InstNode(0, s.get(), null);
 		Assert.assertTrue(symTable.remove(s.get().getFirstInstance()));
@@ -122,7 +122,7 @@ public class SymTableTest {
 
 	@Test
 	public void removeOneOfMultipleInstancesTest() {
-		Optional<SymNode> s = symTable.add("i", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s = symTable.add("i", Kind.VAR, Type.INT);
 		Assert.assertTrue(s.isPresent());
 		new InstNode(0, s.get(), null);
 		new InstNode(1, s.get(), null);
@@ -132,10 +132,10 @@ public class SymTableTest {
 
 	@Test
 	public void removeNonExistentInstanceTest() {
-		Optional<SymNode> s = symTable.add("i", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s = symTable.add("i", Kind.VAR, Type.INT);
 		Assert.assertTrue(s.isPresent());
 		new InstNode(0, s.get(), null);
-		SymNode sym = new SymNode("b", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+		SymNode sym = new SymNode("b", new MemInfo(Type.INT, Kind.VAR, 1));
 		InstNode nonExistent = new InstNode(1, sym, null);
 		symTable.remove(nonExistent);
 		Assert.assertFalse(symTable.remove(nonExistent));
@@ -144,7 +144,7 @@ public class SymTableTest {
 
 	@Test
 	public void removeFromEmptyTableTest() {
-		SymNode sym = new SymNode("i", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+		SymNode sym = new SymNode("i", new MemInfo(Type.INT, Kind.VAR, 1));
 		InstNode nonExistent = new InstNode(0, sym, null);
 		Assert.assertFalse(symTable.remove(nonExistent));
 	}
@@ -156,8 +156,8 @@ public class SymTableTest {
 
 	@Test
 	public void removeWithMultipleSymbolsSameHash() {
-		Optional<SymNode> s1 = symTable.add("ab", ObjectKind.VAR, Type.INT);
-		Optional<SymNode> s2 = symTable.add("ba", ObjectKind.VAR, Type.INT);
+		Optional<SymNode> s1 = symTable.add("ab", Kind.VAR, Type.INT);
+		Optional<SymNode> s2 = symTable.add("ba", Kind.VAR, Type.INT);
 		Assert.assertTrue(s1.isPresent());
 		Assert.assertTrue(s2.isPresent());
 		new InstNode(0, s2.get(), null);
@@ -167,7 +167,7 @@ public class SymTableTest {
 	@Test
 	public void memInfoTest() {
 		Type sorte = Type.INT;
-		ObjectKind kind = ObjectKind.VAR;
+		Kind kind = Kind.VAR;
 		Assert.assertThrows(IllegalArgumentException.class, () -> new MemInfo(sorte, kind, -1));
 		MemInfo memInfo = new MemInfo(sorte, kind);
 		Assert.assertEquals(sorte, memInfo.getSorte());
@@ -182,9 +182,9 @@ public class SymTableTest {
 	public void removeSymTableTest() {
 		SymTable symTable = new SymTable(10);
 
-		symTable.add("a", ObjectKind.VAR, Type.INT);
-		symTable.add("b", ObjectKind.VAR, Type.INT);
-		symTable.add("c", ObjectKind.VAR, Type.INT);
+		symTable.add("a", Kind.VAR, Type.INT);
+		symTable.add("b", Kind.VAR, Type.INT);
+		symTable.add("c", Kind.VAR, Type.INT);
 
 		SymNode symNode = symTable.search("a").get();
 		InstNode instNode = new InstNode(1, symNode, null);
@@ -198,9 +198,9 @@ public class SymTableTest {
 
 	@Test
 	public void symNodeTest() {
-		SymNode a = new SymNode("a", new MemInfo(Type.INT, ObjectKind.VAR, 1));
-		SymNode b = new SymNode("b", new MemInfo(Type.INT, ObjectKind.VAR, 1));
-		SymNode c = new SymNode("c", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+		SymNode a = new SymNode("a", new MemInfo(Type.INT, Kind.VAR, 1));
+		SymNode b = new SymNode("b", new MemInfo(Type.INT, Kind.VAR, 1));
+		SymNode c = new SymNode("c", new MemInfo(Type.INT, Kind.VAR, 1));
 
 		a.addSymbol(b);
 		a.addSymbol(c);
@@ -225,7 +225,7 @@ public class SymTableTest {
 	@Test
 	public void instNodeTest() {
 		Assert.assertThrows(NullPointerException.class, () -> new InstNode(1, null, null));
-		SymNode a = new SymNode("a", new MemInfo(Type.INT, ObjectKind.VAR, 1));
+		SymNode a = new SymNode("a", new MemInfo(Type.INT, Kind.VAR, 1));
 
 		InstNode stack = new InstNode("stack", a, null);
 		InstNode inst1 = new InstNode(1, a, stack);

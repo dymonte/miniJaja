@@ -12,7 +12,7 @@ import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddressException;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfMemoryException;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
-import fr.umlp.m1info.projectvms.group2.memory.symtable.Type;
+import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 /**
  * HeapTest
