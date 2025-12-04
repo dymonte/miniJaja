@@ -3,9 +3,11 @@ package fr.umlp.m1info.projectvms.group2.controller;
 import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.compilation.MiniJajaCompiler;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
+import fr.umlp.m1info.projectvms.group2.interpreter.jajacode.JajaCodeInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
@@ -27,6 +29,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.fxmisc.richtext.CodeArea;
@@ -67,6 +70,8 @@ public class AppController implements StatefulController {
 	private AppState state;
 
 	private Thread miniJajaInterpreterThread;
+
+	private Thread jajacodeInterpreterThread;
 
 	private Thread minijajaCompilerThread;
 
@@ -385,6 +390,21 @@ public class AppController implements StatefulController {
 	 */
 	@FXML
 	private void runCurrentFile() {
+		Optional<File> toRunOpt = state.getOpenedFile();
+		if (toRunOpt.isPresent()) {
+			String fileName = toRunOpt.get().getName();
+			String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+			switch (extension) {
+				case "jjc" -> runJajacodeInterpretation(false);
+				case "mjj" -> runMiniJajaInterpretation(false);
+				default ->
+					PopUp.error("Interpreter", "Unrecognized file extension",
+							"Unrecognized file extension : " + extension + " . (Should be .jjc or .mjj)");
+			}
+			return;
+		}
+
+		// If the code does not come from a saved file, considers it is minijaja
 		runMiniJajaInterpretation(false);
 	}
 
@@ -392,7 +412,7 @@ public class AppController implements StatefulController {
 	 * Compiles the current file.
 	 */
 	@FXML
-	private void compileCurrentFile(){
+	private void compileCurrentFile() {
 		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
 			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
 					"Stop interpretation and after you can compile");
@@ -423,7 +443,7 @@ public class AppController implements StatefulController {
 						programRoot = ParserUtils.parseFile(openedFile.getAbsolutePath());
 					}
 
-					if(!targetDir.exists() && !targetDir.mkdirs()) {
+					if (!targetDir.exists() && !targetDir.mkdirs()) {
 						throw new IOException("Failed to create target directory: " + targetDir.getAbsolutePath());
 					}
 
@@ -548,6 +568,74 @@ public class AppController implements StatefulController {
 		}
 	}
 
+	private void runJajacodeInterpretation(Boolean stepMode) {
+		if (jajacodeInterpreterThread != null && jajacodeInterpreterThread.isAlive()) {
+			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
+					"Stop interpretation and after you can run it");
+			return;
+		}
+
+		initMemory();
+		memorySectionController.bindState(state);
+
+		List<Integer> breakpoints = new ArrayList<>(codeSectionController.getBreakpoints());
+
+		initMemory();
+		Stage popupStage = new Stage();
+
+		Task<Void> task = new Task<>() {
+			@Override
+			protected Void call() {
+				try {
+					List<Instr> instrs;
+					if (state.getOpenedFile().isEmpty()) {
+						instrs = ParserUtils.jajaCodeParseString(state.codeProperty().get());
+					} else {
+						instrs = ParserUtils.jajaCodeParseFile(state.getOpenedFile().get().getAbsolutePath());
+					}
+
+					JajaCodeInterpreterInteractive interpreter = new JajaCodeInterpreterInteractive(state.getMemory(),
+							instrs);
+					interpreter.setStepModeEnabled(stepMode);
+					interpreter.addListener(new JajaCodeInterpreterInteractive.Listener() {
+
+						@Override
+						public void onPaused(Instr instr, int line) {
+							Platform.runLater(() -> codeSectionController.highlightLine(line));
+							memorySectionController.bindState(state);
+						}
+
+						@Override
+						public void onBreakpointRemoved(int line) {
+							codeSectionController.removeBreakpoint(line);
+						}
+					});
+
+					if (stepMode || !breakpoints.isEmpty()) {
+						showStepPopup(popupStage, interpreter, !breakpoints.isEmpty());
+					}
+
+					interpreter.setBreakpoints(breakpoints);
+					interpreter.interpret(instrs.get(0));
+				} catch (InterpreterInterruptedException e) {
+					// Do nothing
+				} catch (Exception e) {
+					handleInterpretationError(popupStage, e.getMessage());
+				} finally {
+					if (stepMode || !breakpoints.isEmpty()) {
+						Platform.runLater(popupStage::close);
+						Platform.runLater(() -> codeSectionController.highlightLine(-1));
+					}
+					memorySectionController.bindState(state);
+				}
+				return null;
+			}
+		};
+
+		jajacodeInterpreterThread = new Thread(task);
+		jajacodeInterpreterThread.start();
+	}
+
 	/**
 	 * Shows step by step popup
 	 *
@@ -571,6 +659,22 @@ public class AppController implements StatefulController {
 		});
 	}
 
+	private void showStepPopup(Stage popupStage, JajaCodeInterpreterInteractive interpreter, boolean hasBreakpoints) {
+		Platform.runLater(() -> {
+			popupStage.initOwner(primaryStage);
+			popupStage.setAlwaysOnTop(true);
+			popupStage.initStyle(StageStyle.UNDECORATED);
+
+			// Create Buttons
+			setStepPopupBtns(popupStage, interpreter, hasBreakpoints);
+
+			// Position Popup
+			setStepPopupPos(popupStage, hasBreakpoints);
+
+			popupStage.show();
+		});
+	}
+
 	/**
 	 * Set up step by step popup position
 	 *
@@ -579,6 +683,40 @@ public class AppController implements StatefulController {
 	 * @param hasBreakpoints whether the interpreter has breakpoints
 	 */
 	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter,
+			boolean hasBreakpoints) {
+		Button btnNext = new Button("Next");
+
+		Button btnStop = new Button("Stop");
+		HBox root;
+
+		if (hasBreakpoints) {
+			Button btnSkipBreakpoint = new Button("Skip breakpoint");
+			root = new HBox(10, btnStop, btnNext, btnSkipBreakpoint);
+
+			btnSkipBreakpoint.setOnAction(event -> {
+				interpreter.skipBreakpoint();
+			});
+		} else {
+			root = new HBox(10, btnStop, btnNext);
+		}
+
+		btnNext.setOnAction(event -> {
+			interpreter.nextStep();
+		});
+		btnStop.setOnAction(event -> stopInterpretation());
+
+		root.setStyle("-fx-padding: 20;");
+		popupStage.setScene(new Scene(root, 150 + (hasBreakpoints ? 150 : 0), 50));
+	}
+
+	/**
+	 * Set up step by step popup position
+	 *
+	 * @param popupStage     the step by step popup to add the buttons to
+	 * @param interpreter    the interpreter for the buttons to interact with
+	 * @param hasBreakpoints whether the interpreter has breakpoints
+	 */
+	private void setStepPopupBtns(Stage popupStage, JajaCodeInterpreterInteractive interpreter,
 			boolean hasBreakpoints) {
 		Button btnNext = new Button("Next");
 
