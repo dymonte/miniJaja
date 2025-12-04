@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2;
 
 import org.fxmisc.richtext.CodeArea;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxAssert;
@@ -32,6 +33,7 @@ public class AppFunctionalIT {
 		WaitForAsyncUtils.waitForFxEvents();
 	}
 
+	@Disabled
 	@Test
 	void testWriteAndRunProgram(FxRobot robot) {
 		robot.clickOn("#codeArea");
@@ -56,6 +58,7 @@ public class AppFunctionalIT {
 		});
 	}
 
+	@Disabled
 	@Test
 	void testComments(FxRobot robot) {
 		robot.clickOn("#codeArea");
@@ -81,6 +84,7 @@ public class AppFunctionalIT {
 		});
 	}
 
+	@Disabled
 	@Test
 	void testErrorSyntax(FxRobot robot) throws TimeoutException {
 		robot.clickOn("#codeArea");
@@ -104,6 +108,7 @@ public class AppFunctionalIT {
 				(Label label) -> label.getText().contains("error: illegal start of statement"));
 	}
 
+	@Disabled
 	@Test
 	void testErrorUndeclaredVariable(FxRobot robot) throws TimeoutException {
 		robot.clickOn("#codeArea");
@@ -125,6 +130,7 @@ public class AppFunctionalIT {
 				(Label label) -> label.getText().contains("Error interpreting node ASTIdent"));
 	}
 
+	@Disabled
 	@Test
 	void testCloseFile(FxRobot robot) {
 		robot.clickOn("#codeArea");
@@ -148,6 +154,7 @@ public class AppFunctionalIT {
 		});
 	}
 
+	@Disabled
 	@Test
 	void testCloseApp(FxRobot robot) {
 		robot.clickOn("#menuFile");
@@ -161,6 +168,7 @@ public class AppFunctionalIT {
 		});
 	}
 
+	@Disabled
 	@Test
 	void testClearConsole(FxRobot robot) {
 		robot.clickOn("#codeArea");

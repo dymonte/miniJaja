@@ -453,7 +453,7 @@ public class AppController implements StatefulController {
 				} catch (InterpreterInterruptedException e) {
 					// Do nothing
 				} catch (Exception e) {
-					handleInterpretationError(popupStage, e.getMessage());
+					consoleSectionController.appendToError(e.getMessage());
 				} finally {
 					if (stepMode || !breakpoints.isEmpty()) {
 						Platform.runLater(popupStage::close);

@@ -84,7 +84,7 @@
             <Menu mnemonicParsing="false" text="Start" fx:id="menuStartSubmenu">
               <items>
                 <MenuItem mnemonicParsing="false" text="Run" onAction="#runCurrentFile" fx:id="menuStart"/>
-                <MenuItem mnemonicParsing="false" text="Run step by step" onAction="#runCurrentFileStep"/>
+                <MenuItem mnemonicParsing="false" text="Run step by step" onAction="#runCurrentFileStep" fx:id="menuStepByStep"/>
               </items>
             </Menu>
             <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation" fx:id="menuStop"/>

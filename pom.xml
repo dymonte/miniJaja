@@ -47,6 +47,7 @@
     <module>utils</module>
     <module>compilation</module>
     <module>checker</module>
+    <module>acceptation-tests</module>
   </modules>
   <distributionManagement>
     <repository>
