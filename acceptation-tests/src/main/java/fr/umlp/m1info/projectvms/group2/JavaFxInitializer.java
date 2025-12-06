@@ -13,7 +13,7 @@ public class JavaFxInitializer {
 	private static final CountDownLatch latch = new CountDownLatch(1);
 	private static final AtomicReference<Stage> lastStageRef = new AtomicReference<>(null);
 
-	public static void initialize() {
+	public static void initialize() throws InterruptedException {
 		if (!started) {
 			Platform.setImplicitExit(false);
 			Platform.startup(() -> {
@@ -21,14 +21,10 @@ public class JavaFxInitializer {
 				latch.countDown();
 			});
 		}
-		try {
-			latch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		latch.await();
 	}
 
-	public static void launchScenario(Class<? extends Application> appClass) {
+	public static void launchScenario(Class<? extends Application> appClass) throws InterruptedException {
 		CountDownLatch scenarioLatch = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			try {
@@ -42,17 +38,13 @@ public class JavaFxInitializer {
 				scenarioLatch.countDown();
 			}
 		});
-		try {
-			scenarioLatch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		scenarioLatch.await();
 	}
 
 	/**
 	 * Closes the previous scenario's window if one exists.
 	 */
-	public static void closeLastStage() {
+	public static void closeLastStage() throws InterruptedException {
 		Stage stage = lastStageRef.getAndSet(null);
 		if (stage != null) {
 			CountDownLatch closeLatch = new CountDownLatch(1);
@@ -60,11 +52,7 @@ public class JavaFxInitializer {
 				stage.close();
 				closeLatch.countDown();
 			});
-			try {
-				closeLatch.await();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			closeLatch.await();
 		}
 	}
 }

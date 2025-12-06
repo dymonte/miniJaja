@@ -17,13 +17,13 @@ public class StepDefinitions {
 	private FxRobot robot = new FxRobot();
 
 	@Before
-	public void before() {
+	public void before() throws InterruptedException {
 		WaitForAsyncUtils.waitForFxEvents();
 		JavaFxInitializer.initialize();
 	}
 
 	@After
-	public void after() {
+	public void after() throws InterruptedException {
 		JavaFxInitializer.closeLastStage();
 	}
 
