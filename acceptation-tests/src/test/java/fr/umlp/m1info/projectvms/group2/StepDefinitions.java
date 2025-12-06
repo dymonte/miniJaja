@@ -27,12 +27,17 @@ public class StepDefinitions {
 		JavaFxInitializer.closeLastStage();
 	}
 
+	public void waitingTime(String id) {
+		robot.clickOn(id);
+		robot.sleep(1000);
+	}
+
 	// --------------------------------------------------------
 	// ------------------- GIVEN ------------------------------
 	// --------------------------------------------------------
 	@Given("I have a valid minijaja program that prints {int}")
 	public void i_have_a_valid_minijaja_program_that_prints(int value) {
-		robot.clickOn("#codeArea");
+		waitingTime("#codeArea");
 
 		robot.write("class Test {\n");
 		robot.write("   int x = " + value + ";\n");
@@ -44,7 +49,7 @@ public class StepDefinitions {
 
 	@Given("I have a valid minijaja program with comments that prints {string}")
 	public void i_have_a_valid_minijaja_program_with_comments_that_prints(String value) {
-		robot.clickOn("#codeArea");
+		waitingTime("#codeArea");
 
 		robot.write("class Test {//Hey\n");
 		robot.write("   main {/* Another comment */\n");
@@ -55,7 +60,7 @@ public class StepDefinitions {
 
 	@Given("I have an invalid minijaja program with a syntax issue")
 	public void i_have_a_not_valid_minijaja_program_with_syntax_issue() {
-		robot.clickOn("#codeArea");
+		waitingTime("#codeArea");
 
 		robot.write("class {\n");
 		robot.write("   int x = 1;\n");
@@ -67,7 +72,7 @@ public class StepDefinitions {
 
 	@Given("I have an invalid minijaja program with a memory issue")
 	public void i_have_a_not_valid_minijaja_program_with_memory_issue() {
-		robot.clickOn("#codeArea");
+		waitingTime("#codeArea");
 
 		robot.write("class Test {\n");
 		robot.write("   main {\n");
@@ -82,28 +87,28 @@ public class StepDefinitions {
 
 	@When("I execute the program")
 	public void i_execute_the_program() {
-		robot.clickOn("#menuExecution");
-		robot.clickOn("#menuStartSubmenu");
-		robot.clickOn("#menuStart");
+		waitingTime("#menuExecution");
+		waitingTime("#menuStartSubmenu");
+		waitingTime("#menuStart");
 	}
 
 	@When("I execute the program step by step")
 	public void i_execute_the_program_step_by_step() {
-		robot.clickOn("#menuExecution");
-		robot.clickOn("#menuStartSubmenu");
-		robot.clickOn("#menuStepByStep");
+		waitingTime("#menuExecution");
+		waitingTime("#menuStartSubmenu");
+		waitingTime("#menuStepByStep");
 	}
 
 	@When("I clear the console")
 	public void i_clear_the_console() {
-		robot.clickOn("#menuExecution");
-		robot.clickOn("#menuClearConsole");
+		waitingTime("#menuExecution");
+		waitingTime("#menuClearConsole");
 	}
 
 	@When("I quit the app")
 	public void i_quit_the_app() {
-		robot.clickOn("#menuFile");
-		robot.clickOn("#menuExitApp");
+		waitingTime("#menuFile");
+		waitingTime("#menuExitApp");
 	}
 
 	// --------------------------------------------------------
@@ -112,7 +117,7 @@ public class StepDefinitions {
 
 	@Then("the program should execute without errors")
 	public void the_program_should_run_without_errors() {
-		robot.clickOn("#errorTab");
+		waitingTime("#errorTab");
 		TextArea error = robot.lookup("#errorArea").queryAs(TextArea.class);
 
 		Assertions.assertNotNull(error);
@@ -121,7 +126,7 @@ public class StepDefinitions {
 
 	@Then("the program should throw {string}")
 	public void the_program_should_be_throw(String issue) {
-		robot.clickOn("#errorTab");
+		waitingTime("#errorTab");
 		TextArea error = robot.lookup("#errorArea").queryAs(TextArea.class);
 
 		Assertions.assertNotNull(error);
@@ -130,7 +135,7 @@ public class StepDefinitions {
 
 	@Then("The program should run with {string}")
 	public void the_program_shoud_run_with_errors(String err) {
-		robot.clickOn("#errorTab");
+		waitingTime("#errorTab");
 		TextArea error = robot.lookup("#errorArea").queryAs(TextArea.class);
 
 		Assertions.assertNotNull(error);
@@ -140,7 +145,7 @@ public class StepDefinitions {
 
 	@Then("the output should be {int}")
 	public void the_output_should_be(int value) {
-		robot.clickOn("#outputTab");
+		waitingTime("#outputTab");
 		TextArea output = robot.lookup("#outputArea").queryAs(TextArea.class);
 
 		Assertions.assertNotNull(output);
@@ -149,7 +154,7 @@ public class StepDefinitions {
 
 	@Then("the output should be {string}")
 	public void the_output_should_be(String value) {
-		robot.clickOn("#outputTab");
+		waitingTime("#outputTab");
 		TextArea output = robot.lookup("#outputArea").queryAs(TextArea.class);
 
 		Assertions.assertNotNull(output);
@@ -158,7 +163,7 @@ public class StepDefinitions {
 
 	@Then("the output should be empty")
 	public void the_output_should_be_empty() {
-		robot.clickOn("#outputTab");
+		waitingTime("#outputTab");
 		TextArea output = robot.lookup("#outputArea").queryAs(TextArea.class);
 
 		Assertions.assertNotNull(output);
