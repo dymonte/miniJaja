@@ -58,10 +58,6 @@ public class SymTable {
 		int id = hash(ident);
 		Optional<SymNode> n = search(ident);
 		if (n.isPresent()) {
-			MemInfo otherInfos = n.get().getInfo();
-			if (!otherInfos.equals(new MemInfo(type, kind, size))) {
-				return Optional.empty();
-			}
 			return n;
 		}
 
