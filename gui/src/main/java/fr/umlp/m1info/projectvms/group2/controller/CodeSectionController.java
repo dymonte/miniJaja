@@ -30,10 +30,10 @@ public class CodeSectionController implements StatefulController {
 	}
 
 	private static final String SKIP = "(?:\\s|//.*|/\\*(?:.|\\R)*?\\*/)*";
-	private static final Pattern JAJACODE_START_PATTERN =
-			Pattern.compile("^" + SKIP + "init", Pattern.MULTILINE | Pattern.DOTALL);
-	private static final Pattern MINIJAJA_START_PATTERN =
-			Pattern.compile("^" + SKIP + "class", Pattern.MULTILINE | Pattern.DOTALL);
+	private static final Pattern JAJACODE_START_PATTERN = Pattern.compile("^" + SKIP + "init",
+			Pattern.MULTILINE | Pattern.DOTALL);
+	private static final Pattern MINIJAJA_START_PATTERN = Pattern.compile("^" + SKIP + "class",
+			Pattern.MULTILINE | Pattern.DOTALL);
 
 	private AppState appState;
 
@@ -70,7 +70,6 @@ public class CodeSectionController implements StatefulController {
 		}
 	}
 
-
 	@Override
 	public void bindState(AppState appState) {
 		this.appState = appState;
@@ -80,7 +79,8 @@ public class CodeSectionController implements StatefulController {
 		// link appState.codeProperty and codeArea.textProperty
 		appState.codeProperty().addListener((obs, oldValue, newValue) -> {
 			if (newValue != null && !newValue.equals(codeArea.getText())) {
-				codeArea.replaceText(newValue);
+				// Replace tabs with 4 spaces to ensure consistent "tab size" of 4
+				codeArea.replaceText(newValue.replace("\t", "    "));
 			}
 		});
 
@@ -90,17 +90,39 @@ public class CodeSectionController implements StatefulController {
 			}
 		});
 
-		codeArea.replaceText(appState.codeProperty().get());
+		codeArea.replaceText(
+				appState.codeProperty().get() != null ? appState.codeProperty().get().replace("\t", "    ") : "");
 
-		// handle save shortcut (ctrl+s)
-		codeArea.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+		setEventFilters();
+
+	}
+
+	// handle save shortcut (ctrl+s) and soft tabs
+	private void setEventFilters() {
+		codeArea.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
 			if (new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN).match(e)) {
 				if (onSaveRequested != null) {
 					onSaveRequested.run();
 				}
 				e.consume();
+			} else if (e.getCode() == KeyCode.TAB && !e.isShortcutDown() && !e.isAltDown() && !e.isControlDown()
+					&& !e.isShiftDown()) {
+				codeArea.replaceSelection("    ");
+				e.consume();
+			} else if (e.getCode() == KeyCode.BACK_SPACE && !e.isShortcutDown() && !e.isAltDown() && !e.isControlDown()
+					&& !e.isShiftDown()) {
+				int caret = codeArea.getCaretPosition();
+				if (codeArea.getSelection().getLength() != 0 || caret < 4) {
+					return;
+				}
+				String text = codeArea.getText(caret - 4, caret);
+				if ("    ".equals(text)) {
+					codeArea.deleteText(caret - 4, caret);
+					e.consume();
+				}
 			}
 		});
+
 	}
 
 	public HBox getButtonBar() {
@@ -202,14 +224,18 @@ public class CodeSectionController implements StatefulController {
 		// File-based detection
 		if (openedFile != null) {
 			String name = openedFile.getName();
-			if (name.endsWith(".mjj")) return LanguageType.MINIJAJA;
-			if (name.endsWith(".jjc")) return LanguageType.JAJACODE;
+			if (name.endsWith(".mjj"))
+				return LanguageType.MINIJAJA;
+			if (name.endsWith(".jjc"))
+				return LanguageType.JAJACODE;
 		}
 
 		// Fallback: text-based detection
 		String text = codeArea.getText();
-		if (MINIJAJA_START_PATTERN.matcher(text).find()) return LanguageType.MINIJAJA;
-		if (JAJACODE_START_PATTERN.matcher(text).find()) return LanguageType.JAJACODE;
+		if (MINIJAJA_START_PATTERN.matcher(text).find())
+			return LanguageType.MINIJAJA;
+		if (JAJACODE_START_PATTERN.matcher(text).find())
+			return LanguageType.JAJACODE;
 
 		// Default
 		return LanguageType.MINIJAJA;
