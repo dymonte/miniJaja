@@ -75,11 +75,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-controls</artifactId>
-			<version>17</version>
-		</dependency>
-		<dependency>
 			<groupId>org.testfx</groupId>
 			<artifactId>testfx-junit5</artifactId>
 			<version>4.0.18</version>
@@ -102,17 +97,6 @@
 				<configuration>
 					<source>17</source>
 					<target>17</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.openjfx</groupId>
-				<artifactId>javafx-maven-plugin</artifactId>
-				<version>0.0.8</version>
-				<configuration>
-					<mainClass>fr.umlp.m1info.projectvms.group2.App</mainClass>
-					<options>
-						<option>--enable-native-access=javafx.graphics</option>
-					</options>
 				</configuration>
 			</plugin>
 			<plugin>

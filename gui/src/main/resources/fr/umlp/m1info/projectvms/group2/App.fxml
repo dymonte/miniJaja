@@ -48,7 +48,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.umlp.m1info.projectvms.group2.controller.AppController" fx:id="rootVBox">
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.umlp.m1info.projectvms.group2.controller.AppController" fx:id="rootVBox">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
