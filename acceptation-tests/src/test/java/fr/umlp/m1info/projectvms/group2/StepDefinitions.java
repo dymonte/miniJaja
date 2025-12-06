@@ -53,7 +53,7 @@ public class StepDefinitions {
 		robot.write("}");
 	}
 
-	@Given("I have a not valid minijaja program with syntax issue")
+	@Given("I have an invalid minijaja program with a syntax issue")
 	public void i_have_a_not_valid_minijaja_program_with_syntax_issue() {
 		robot.clickOn("#codeArea");
 
@@ -65,7 +65,7 @@ public class StepDefinitions {
 		robot.write("}");
 	}
 
-	@Given("I have a not valid minijaja program with memory issue")
+	@Given("I have an invalid minijaja program with a memory issue")
 	public void i_have_a_not_valid_minijaja_program_with_memory_issue() {
 		robot.clickOn("#codeArea");
 
@@ -110,7 +110,7 @@ public class StepDefinitions {
 	// ------------------- THEN -------------------------------
 	// --------------------------------------------------------
 
-	@Then("The program should run without errors")
+	@Then("the program should execute without errors")
 	public void the_program_should_run_without_errors() {
 		robot.clickOn("#errorTab");
 		TextArea error = robot.lookup("#errorArea").queryAs(TextArea.class);
@@ -119,7 +119,7 @@ public class StepDefinitions {
 		Assertions.assertTrue(error.getText().isEmpty());
 	}
 
-	@Then("The program should be throw {string}")
+	@Then("the program should throw {string}")
 	public void the_program_should_be_throw(String issue) {
 		robot.clickOn("#errorTab");
 		TextArea error = robot.lookup("#errorArea").queryAs(TextArea.class);
@@ -138,7 +138,7 @@ public class StepDefinitions {
 		Assertions.assertTrue(error.getText().contains(err));
 	}
 
-	@Then("The output should be {int}")
+	@Then("the output should be {int}")
 	public void the_output_should_be(int value) {
 		robot.clickOn("#outputTab");
 		TextArea output = robot.lookup("#outputArea").queryAs(TextArea.class);
@@ -147,7 +147,7 @@ public class StepDefinitions {
 		Assertions.assertTrue(output.getText().equals(((Integer) value).toString()));
 	}
 
-	@Then("The output should be {string}")
+	@Then("the output should be {string}")
 	public void the_output_should_be(String value) {
 		robot.clickOn("#outputTab");
 		TextArea output = robot.lookup("#outputArea").queryAs(TextArea.class);
@@ -156,7 +156,7 @@ public class StepDefinitions {
 		Assertions.assertTrue(output.getText().equals(value));
 	}
 
-	@Then("The output should be empty")
+	@Then("the output should be empty")
 	public void the_output_should_be_empty() {
 		robot.clickOn("#outputTab");
 		TextArea output = robot.lookup("#outputArea").queryAs(TextArea.class);
@@ -165,7 +165,7 @@ public class StepDefinitions {
 		Assertions.assertTrue(output.getText().isEmpty());
 	}
 
-	@Then("The stack is empty")
+	@Then("the stack should be empty")
 	public void the_stack_is_empty() {
 		TextArea stack = robot.lookup("#memoryStackTextArea").queryAs(TextArea.class);
 
@@ -173,7 +173,7 @@ public class StepDefinitions {
 		Assertions.assertTrue(stack.getText().equals("Stack Content:\n\nEmpty stack."));
 	}
 
-	@Then("The heap is empty")
+	@Then("the heap should be empty")
 	public void the_heap_is_empty() {
 		TextArea heap = robot.lookup("#memoryHeapTextArea").queryAs(TextArea.class);
 
@@ -181,7 +181,7 @@ public class StepDefinitions {
 		Assertions.assertTrue(isHeapEmpty(heap.getText()));
 	}
 
-	@Then("I have a message box with this message : {string}")
+	@Then("I should see a message box with the message: {string}")
 	public void i_have_a_message_box(String message) {
 		FxAssert.verifyThat(".dialog-pane", (DialogPane pane) -> {
 			String content = pane.getContentText();
