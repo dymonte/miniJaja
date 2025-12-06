@@ -29,6 +29,7 @@ public class StepDefinitions {
 
 	public void waitingTime(String id) {
 		robot.clickOn(id);
+		WaitForAsyncUtils.waitForFxEvents();
 		robot.sleep(1000);
 	}
 
