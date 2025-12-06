@@ -102,7 +102,7 @@ verify:
   before_script:
     - !reference [.setup, script]
     - microdnf update -y
-    - microdnf install -y gtk3 libXtst xorg-x11-server-Xvfb xorg-x11-utils findutils
+    - microdnf install -y gtk3 libXtst xorg-x11-server-Xvfb xorg-x11-utils findutils libX11 libXext libXrender libXi
   script:
     - Xvfb :99 -screen 0 1024x768x24 &
     - export DISPLAY=:99
