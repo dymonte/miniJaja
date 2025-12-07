@@ -230,6 +230,13 @@ public class TypeChecker implements Checker {
 
 	private void checkMethods(List<ASTMethod> methods) {
 		for (ASTMethod method : methods) {
+			for (ASTParams curr = method.getParams(); curr instanceof ASTParamsChain chain; curr = chain.getParams()) {
+				String paramName = chain.getParam().getIdent().getName();
+				Type paramType = TypeCheckerUtils.getType(chain.getParam().getType());
+				env.define(paramName, paramType);
+			}
+
+			check(method.getVars());
 			check(method.getInstrs());
 
 			ASTReturn ret = searchReturn(method.getInstrs());
@@ -404,6 +411,11 @@ public class TypeChecker implements Checker {
 	@TypeCheckFunction(ASTReturn.class)
 	protected void checkReturn(ASTReturn node) {
 		// do nothing
+	}
+
+	@TypeCheckFunction(ASTMethodCallInstr.class)
+	protected void checkMethodCallInstr(ASTMethodCallInstr node) {
+		evalType(node);
 	}
 
 	/** Evaluates the type of a binary operation */
