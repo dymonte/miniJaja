@@ -1,14 +1,17 @@
 package fr.umlp.m1info.projectvms.group2.controller.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.PopUp;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.checker.Diagnostic;
 import fr.umlp.m1info.projectvms.group2.checker.TypeChecker;
 import fr.umlp.m1info.projectvms.group2.interpreter.InteractiveInterpreterController;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
+import fr.umlp.m1info.projectvms.group2.interpreter.jajacode.JajaCodeInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import javafx.application.Platform;
@@ -164,6 +167,53 @@ public class InterpreterService {
 		}
 	}
 
+	public void runJajaCode(boolean stepMode, List<Integer> breakpoints) {
+		if (isRunning()) {
+			PopUp.info("JajaCode Interpreter", "Already running", "Stop the current interpretation first");
+			return;
+		}
+
+		List<Instr> instrs;
+		try {
+			instrs = loadJajaCodeProgram();
+		} catch (Exception e) {
+			PopUp.error("JajaCode Interpreter Error", e.getMessage(), "");
+			return;
+		}
+
+		JajaCodeInterpreterInteractive interpreter = new JajaCodeInterpreterInteractive(state.getMemory(), instrs);
+		interpreter.setStepModeEnabled(stepMode);
+		interpreter.setBreakpoints(breakpoints);
+
+		interpreter.addListener(new InteractiveInterpreterController.Listener() {
+			@Override
+			public void onPaused(int line) {
+				Platform.runLater(() -> {
+					callbacks.highlihtLine(line);
+					callbacks.refreshMemory();
+				});
+			}
+
+			@Override
+			public void onBreakpointRemoved(int line) {
+				callbacks.removeBreakpoint(line);
+			}
+		});
+
+		try {
+			createInterpreterTask(interpreter, () -> interpreter.interpret(instrs.get(0)), stepMode, breakpoints);
+		} catch (InterpreterInterruptedException ignored) {
+		} catch (Exception e) {
+			PopUp.error("JajaCode Interpreter Error", e.getMessage(), "");
+		} finally {
+			if (stepMode || !breakpoints.isEmpty()) {
+				callbacks.closeStepPopup();
+			}
+			callbacks.highlihtLine(-1);
+			callbacks.refreshMemory();
+		}
+	}
+
 	/**
 	 * Opens the step popup on the JavaFX UI thread with the correct action
 	 * handlers
@@ -223,7 +273,6 @@ public class InterpreterService {
 
 		interpreterThread = new Thread(task);
 		interpreterThread.start();
-
 	}
 
 	/**
@@ -241,5 +290,13 @@ public class InterpreterService {
 			programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
 		}
 		return programRoot;
+	}
+
+	private List<Instr> loadJajaCodeProgram() throws IOException {
+		if (state.getOpenedFile().isEmpty()) {
+			return null;
+		}
+		return ParserUtils.jajaCodeParseFile(state.getOpenedFile().get().getAbsolutePath());
+
 	}
 }
