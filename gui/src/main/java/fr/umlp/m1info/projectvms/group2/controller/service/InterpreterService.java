@@ -5,6 +5,8 @@ import java.util.List;
 import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.checker.Diagnostic;
+import fr.umlp.m1info.projectvms.group2.checker.TypeChecker;
 import fr.umlp.m1info.projectvms.group2.interpreter.InteractiveInterpreterController;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
@@ -126,6 +128,11 @@ public class InterpreterService {
 
 		try {
 			ASTNode programRoot = loadMiniJajaProgram();
+			checker(programRoot);
+			Diagnostic diag = new Diagnostic();
+			TypeChecker typeChecker = new TypeChecker(diag);
+			typeChecker.check(programRoot);
+
 			createInterpreterTask(interpreter, () -> interpreter.interpret(programRoot), stepMode, breakpoints);
 		} catch (InterpreterInterruptedException ignored) {
 		} catch (Exception e) {
@@ -139,6 +146,21 @@ public class InterpreterService {
 			}
 			callbacks.highlihtLine(-1);
 			callbacks.refreshMemory();
+		}
+	}
+
+	private void checker(ASTNode node) throws Exception {
+		Diagnostic diag = new Diagnostic();
+		TypeChecker typeChecker = new TypeChecker(diag);
+		typeChecker.check(node);
+
+		if (!diag.issues().isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			for (Diagnostic.Issue issue : diag.issues()) {
+				sb.append(issue.toString()).append("\n");
+			}
+
+			throw new Exception(sb.toString());
 		}
 	}
 
