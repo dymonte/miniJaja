@@ -4,6 +4,7 @@ import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.controller.service.InterpreterService;
+import fr.umlp.m1info.projectvms.group2.controller.service.ThemeService;
 import fr.umlp.m1info.projectvms.group2.controller.popup.StepPopupManager;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
@@ -74,6 +75,8 @@ public class AppController implements StatefulController {
 	private AppState state;
 
 	private InterpreterService interpreterService;
+
+	private ThemeService themeService;
 
 	private StepPopupManager stepPopup;
 
@@ -581,89 +584,8 @@ public class AppController implements StatefulController {
 		Platform.runLater(() -> {
 			mainScene = primaryStage.getScene();
 			if (mainScene != null) {
-				loadThemesMenu();
-			}
-		});
-	}
-
-	/**
-	 * Loads available themes into the themes menu
-	 */
-	private void loadThemesMenu() {
-		menuThemes.getItems().clear();
-
-		URL themesFolderUrl = getClass().getResource(STYLE_FOLDER);
-		if (themesFolderUrl == null) {
-			PopUp.error("Themes folder not found", "Not found", "Error while loading " + STYLE_FOLDER);
-			return;
-		}
-
-		File themesFolder = new File(themesFolderUrl.getPath());
-		File[] cssFiles = themesFolder.listFiles((dir, name) -> name.endsWith(".css"));
-
-		for (File file : cssFiles) {
-			String cssName = extractThemeName(file);
-			MenuItem item = new MenuItem(cssName);
-
-			item.setOnAction(e -> applyTheme(file.getName()));
-			menuThemes.getItems().add(item);
-		}
-	}
-
-	/**
-	 * Extracts the theme name from the CSS file
-	 *
-	 * @param file the CSS file
-	 * @return the theme name
-	 */
-	private String extractThemeName(File file) {
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-			String firstLine = br.readLine();
-
-			if (firstLine != null && firstLine.contains("ThemeName:")) {
-				return firstLine.replace("/*", "")
-						.replace("*/", "")
-						.replace("ThemeName:", "")
-						.trim();
-			}
-		} catch (Exception ignored) {
-		}
-
-		// fallback to file name
-		String name = file.getName().replace(".css", "");
-		return Character.toUpperCase(name.charAt(0)) + name.substring(1);
-	}
-
-	/**
-	 * Applies the selected theme by changing the stylesheet
-	 *
-	 * @param cssFileName the CSS file name of the theme
-	 */
-	private void applyTheme(String cssFileName) {
-		Scene scene = primaryStage.getScene();
-		if (scene == null)
-			return;
-
-		scene.getStylesheets().removeIf(url -> url.contains("themes/"));
-
-		String fullPath = STYLE_FOLDER + cssFileName;
-		URL cssUrl = getClass().getResource(fullPath);
-
-		if (cssUrl == null) {
-			System.err.println("Unable to find " + fullPath);
-			return;
-		}
-
-		scene.getStylesheets().add(cssUrl.toExternalForm());
-	}
-
-	private void addCtrlCHandler(Scene scene) {
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-			if (event.isControlDown() && event.getCode() == KeyCode.C) {
-				if (miniJajaInterpreterThread != null) {
-					stopInterpretation();
-					event.consume();
-				}
+				themeService = new ThemeService(mainScene, STYLE_FOLDER);
+				themeService.loadThemesMenu(menuThemes);
 			}
 		});
 	}
