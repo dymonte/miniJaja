@@ -3,6 +3,8 @@ package fr.umlp.m1info.projectvms.group2.controller;
 import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
+import fr.umlp.m1info.projectvms.group2.controller.service.InterpreterService;
+import fr.umlp.m1info.projectvms.group2.controller.popup.StepPopupManager;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.compilation.MiniJajaCompiler;
@@ -32,7 +34,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.fxmisc.richtext.CodeArea;
@@ -72,6 +73,10 @@ public class AppController implements StatefulController {
 
 	private AppState state;
 
+	private InterpreterService interpreterService;
+
+	private StepPopupManager stepPopup;
+
 	private Thread miniJajaInterpreterThread;
 
 	private Thread jajacodeInterpreterThread;
@@ -96,6 +101,36 @@ public class AppController implements StatefulController {
 		memorySectionController.bindState(appState);
 
 		fileTreeSectionController.setOnFileOpen(this::displayFile);
+
+		stepPopup = new StepPopupManager();
+
+		interpreterService = new InterpreterService(state, new InterpreterService.InterpreterCallbacks() {
+			@Override
+			public void highlihtLine(int line) {
+				codeSectionController.highlightLine(line);
+			};
+
+			@Override
+			public void refreshMemory() {
+				memorySectionController.bindState(state);
+			}
+
+			@Override
+			public void removeBreakpoint(int line) {
+				codeSectionController.removeBreakpoint(line);
+
+			}
+
+			@Override
+			public void openStepPopup(Stage stage, Runnable next, Runnable stop, Runnable skip) {
+				stepPopup.open(stage, next, stop, skip);
+			}
+
+			@Override
+			public void closeStepPopup() {
+				stepPopup.close();
+			}
+		});
 	}
 
 	/**
@@ -389,29 +424,6 @@ public class AppController implements StatefulController {
 	}
 
 	/**
-	 * Runs the current file in a seperate thread
-	 */
-	@FXML
-	private void runCurrentFile() {
-		Optional<File> toRunOpt = state.getOpenedFile();
-		if (toRunOpt.isPresent()) {
-			String fileName = toRunOpt.get().getName();
-			String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-			switch (extension) {
-				case "jjc" -> runJajacodeInterpretation(false);
-				case "mjj" -> runMiniJajaInterpretation(false);
-				default ->
-					PopUp.error("Interpreter", "Unrecognized file extension",
-							"Unrecognized file extension : " + extension + " . (Should be .jjc or .mjj)");
-			}
-			return;
-		}
-
-		// If the code does not come from a saved file, considers it is minijaja
-		runMiniJajaInterpretation(false);
-	}
-
-	/**
 	 * Compiles the current file.
 	 */
 	@FXML
@@ -484,88 +496,40 @@ public class AppController implements StatefulController {
 	}
 
 	/**
+	 * Runs the current file in a seperate thread
+	 */
+	@FXML
+	private void runCurrentFile() {
+		runCurrentFile(false);
+	}
+
+	/**
 	 * Runs the current file in a seperate thread in step by step mode.
 	 */
 	@FXML
 	private void runCurrentFileStep() {
-		runMiniJajaInterpretation(true);
+		runCurrentFile(true);
 	}
 
-	private void runMiniJajaInterpretation(Boolean stepMode) {
-		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
-			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
-					"Stop interpretation and after you can run it");
-			return;
-		}
-
-		initMemory();
-		memorySectionController.bindState(state);
-
-		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
-		interpreter.setStepModeEnabled(stepMode);
-		interpreter.addListener(new InteractiveInterpreterController.Listener() {
-			@Override
-			public void onPaused(int line) {
-				Platform.runLater(() -> codeSectionController.highlightLine(line));
-				memorySectionController.bindState(state);
-			}
-
-			@Override
-			public void onBreakpointRemoved(int line) {
-				codeSectionController.removeBreakpoint(line);
-			}
-		});
+	private void runCurrentFile(Boolean step) {
+		Optional<File> toRunOpt = state.getOpenedFile();
 
 		List<Integer> breakpoints = new ArrayList<>(codeSectionController.getBreakpoints());
 
-		Stage popupStage = new Stage();
-
-		Task<Void> task = new Task<>() {
-			@Override
-			protected Void call() {
-				try {
-					ASTNode programRoot;
-					if (state.getOpenedFile().isEmpty()) {
-						programRoot = ParserUtils.parseString(state.codeProperty().get());
-					} else {
-						programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
-					}
-
-					Diagnostic diag = new Diagnostic();
-					TypeChecker typeChecker = new TypeChecker(diag);
-					typeChecker.check(programRoot);
-
-					if (!diag.issues().isEmpty()) {
-						String errors = "";
-						for (Diagnostic.Issue issue : diag.issues()) {
-							errors += issue.toString() + "\n";
-						}
-						throw new Exception(errors);
-					}
-
-					if (stepMode || !breakpoints.isEmpty()) {
-						showStepPopup(popupStage, interpreter, !breakpoints.isEmpty());
-					}
-
-					interpreter.setBreakpoints(breakpoints);
-					interpreter.interpret(programRoot);
-				} catch (InterpreterInterruptedException e) {
-					// Do nothing
-				} catch (Exception e) {
-					handleInterpretationError(popupStage, e.getMessage());
-				} finally {
-					if (stepMode || !breakpoints.isEmpty()) {
-						Platform.runLater(popupStage::close);
-						Platform.runLater(() -> codeSectionController.highlightLine(-1));
-					}
-					memorySectionController.bindState(state);
-				}
-				return null;
+		if (toRunOpt.isPresent()) {
+			String fileName = toRunOpt.get().getName();
+			String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+			initMemory();
+			switch (extension) {
+				case "jjc" -> runJajacodeInterpretation(false);
+				case "mjj" -> interpreterService.runMiniJaja(step, breakpoints);
+				default ->
+					PopUp.error("Interpreter", "Unrecognized file extension",
+							"Unrecognized file extension : " + extension + " . (Should be .jjc or .mjj)");
 			}
-		};
+			return;
+		}
 
-		miniJajaInterpreterThread = new Thread(task);
-		miniJajaInterpreterThread.start();
 	}
 
 	private void handleInterpretationError(Stage popupStage, String message) {
