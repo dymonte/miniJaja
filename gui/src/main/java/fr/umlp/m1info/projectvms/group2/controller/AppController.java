@@ -7,6 +7,7 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.compilation.MiniJajaCompiler;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
+import fr.umlp.m1info.projectvms.group2.interpreter.InteractiveInterpreterController;
 import fr.umlp.m1info.projectvms.group2.interpreter.jajacode.JajaCodeInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
@@ -502,9 +503,9 @@ public class AppController implements StatefulController {
 
 		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
 		interpreter.setStepModeEnabled(stepMode);
-		interpreter.addListener(new MiniJajaInterpreterInteractive.Listener() {
+		interpreter.addListener(new InteractiveInterpreterController.Listener() {
 			@Override
-			public void onPaused(ASTNode node, int line) {
+			public void onPaused(int line) {
 				Platform.runLater(() -> codeSectionController.highlightLine(line));
 				memorySectionController.bindState(state);
 			}
@@ -623,10 +624,9 @@ public class AppController implements StatefulController {
 					JajaCodeInterpreterInteractive interpreter = new JajaCodeInterpreterInteractive(state.getMemory(),
 							instrs);
 					interpreter.setStepModeEnabled(stepMode);
-					interpreter.addListener(new JajaCodeInterpreterInteractive.Listener() {
-
+					interpreter.addListener(new InteractiveInterpreterController.Listener() {
 						@Override
-						public void onPaused(Instr instr, int line) {
+						public void onPaused(int line) {
 							Platform.runLater(() -> codeSectionController.highlightLine(line));
 							memorySectionController.bindState(state);
 						}
