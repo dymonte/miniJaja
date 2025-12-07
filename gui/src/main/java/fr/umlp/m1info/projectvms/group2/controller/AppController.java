@@ -14,6 +14,8 @@ import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
+import fr.umlp.m1info.projectvms.group2.checker.Diagnostic;
+import fr.umlp.m1info.projectvms.group2.checker.TypeChecker;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
@@ -443,6 +445,18 @@ public class AppController implements StatefulController {
 						programRoot = ParserUtils.parseFile(openedFile.getAbsolutePath());
 					}
 
+					Diagnostic diag = new Diagnostic();
+					TypeChecker typeChecker = new TypeChecker(diag);
+					typeChecker.check(programRoot);
+
+					if (!diag.issues().isEmpty()) {
+						String errors = "";
+						for (Diagnostic.Issue issue : diag.issues()) {
+							errors += issue.toString() + "\n";
+						}
+						throw new Exception(errors);
+					}
+
 					if (!targetDir.exists() && !targetDir.mkdirs()) {
 						throw new IOException("Failed to create target directory: " + targetDir.getAbsolutePath());
 					}
@@ -514,6 +528,18 @@ public class AppController implements StatefulController {
 						programRoot = ParserUtils.parseString(state.codeProperty().get());
 					} else {
 						programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
+					}
+
+					Diagnostic diag = new Diagnostic();
+					TypeChecker typeChecker = new TypeChecker(diag);
+					typeChecker.check(programRoot);
+
+					if (!diag.issues().isEmpty()) {
+						String errors = "";
+						for (Diagnostic.Issue issue : diag.issues()) {
+							errors += issue.toString() + "\n";
+						}
+						throw new Exception(errors);
 					}
 
 					if (stepMode || !breakpoints.isEmpty()) {
