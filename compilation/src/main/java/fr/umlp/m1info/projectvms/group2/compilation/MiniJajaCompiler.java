@@ -192,11 +192,12 @@ public class MiniJajaCompiler {
 		count += compile(node.getParams());
 		count += compile(node.getVars());
 		count += compile(node.getInstrs());
-		count += free(node.getVars());
 
 		if (node.getType() instanceof ASTVoidType) {
 			count += emit("push(0)");
 		}
+
+		count += free(node.getVars());
 
 		patch("goto(?)", "goto(" + (n + 3) + ")", gotoIndex);
 		count += emit("swap");
