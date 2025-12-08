@@ -88,9 +88,7 @@ public class StepDefinitions {
 
 	@When("I execute the program")
 	public void i_execute_the_program() {
-		waitingTime("#menuExecution");
-		waitingTime("#menuStartSubmenu");
-		waitingTime("#menuStart");
+		waitingTime("#btn-run");
 	}
 
 	@When("I execute the program step by step")
