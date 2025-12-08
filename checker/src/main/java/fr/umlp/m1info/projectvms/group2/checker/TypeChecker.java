@@ -425,7 +425,7 @@ public class TypeChecker implements Checker {
 		Type leftType = evalType(node.getLeft());
 		Type rightType = evalType(node.getRight());
 
-		if (!expectedType.equals(leftType) || !expectedType.equals(rightType)) {
+		if (!leftType.equals(rightType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH, "Binary operation '" + node.getOp() + "' requires operands of type "
 					+ expectedType + ", got left = " + leftType + ", right = " + rightType, node.getLine(), node.getColumn());
 		}
