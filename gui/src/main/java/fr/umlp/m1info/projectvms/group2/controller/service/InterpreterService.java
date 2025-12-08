@@ -53,12 +53,11 @@ public class InterpreterService {
 		/**
 		 * Opens the step-by-step interpreter popup.
 		 *
-		 * @param stage the JavaFX stage used to host the popup
-		 * @param next  runnable executed when the user clicks "Next Step"
-		 * @param stop  runnable executed when the user clicks "Stop"
-		 * @param skip  runnable executed when the user clicks "Skip Breakpoint"
+		 * @param next runnable executed when the user clicks "Next Step"
+		 * @param stop runnable executed when the user clicks "Stop"
+		 * @param skip runnable executed when the user clicks "Skip Breakpoint"
 		 */
-		void openStepPopup(Stage stage, Runnable next, Runnable stop, Runnable skip);
+		void openStepPopup(Runnable next, Runnable stop, Runnable skip);
 
 		/**
 		 * Closes the step-by-step interpreter popup if it is currently open.
@@ -129,23 +128,42 @@ public class InterpreterService {
 			}
 		});
 
-		try {
-			ASTNode programRoot = loadMiniJajaProgram();
-			checker(programRoot);
-			createInterpreterTask(interpreter, () -> interpreter.interpret(programRoot), stepMode, breakpoints);
-		} catch (InterpreterInterruptedException ignored) {
-		} catch (Exception e) {
-			if (stepMode) {
-				callbacks.closeStepPopup();
+		Task<Void> task = new Task<>() {
+			@Override
+			protected Void call() {
+				boolean showPopup = stepMode || !breakpoints.isEmpty();
+				try {
+					ASTNode programRoot = loadMiniJajaProgram();
+
+					checker(programRoot);
+
+					if (showPopup) {
+						Platform.runLater(() -> callbacks.openStepPopup(
+								interpreter::nextStep,
+								() -> {
+									stop();
+									callbacks.closeStepPopup();
+								},
+								breakpoints.isEmpty() ? null : interpreter::skipBreakpoint));
+					}
+					interpreter.interpret(programRoot);
+				} catch (InterpreterInterruptedException ignored) {
+				} catch (Exception e) {
+					Platform.runLater(() -> PopUp.error("Interpreter Error", e.getMessage(), ""));
+				} finally {
+					Platform.runLater(() -> {
+						if (showPopup) {
+							callbacks.closeStepPopup();
+							callbacks.highlihtLine(-1);
+						}
+						callbacks.refreshMemory();
+					});
+				}
+				return null;
 			}
-			PopUp.error("Interpreter Error", e.getMessage(), "");
-		} finally {
-			if (stepMode) {
-				callbacks.closeStepPopup();
-			}
-			callbacks.highlihtLine(-1);
-			callbacks.refreshMemory();
-		}
+		};
+		interpreterThread = new Thread(task);
+		interpreterThread.start();
 	}
 
 	private void checker(ASTNode node) throws Exception {
@@ -172,6 +190,10 @@ public class InterpreterService {
 		List<Instr> instrs;
 		try {
 			instrs = loadJajaCodeProgram();
+			if (instrs == null || instrs.isEmpty()) {
+				PopUp.error("JajaCode Interpreter Error", "No JajaCode instructions found", "");
+				return;
+			}
 		} catch (Exception e) {
 			PopUp.error("JajaCode Interpreter Error", e.getMessage(), "");
 			return;
@@ -196,73 +218,33 @@ public class InterpreterService {
 			}
 		});
 
-		try {
-			createInterpreterTask(interpreter, () -> interpreter.interpret(instrs.get(0)), stepMode, breakpoints);
-		} catch (InterpreterInterruptedException ignored) {
-		} catch (Exception e) {
-			PopUp.error("JajaCode Interpreter Error", e.getMessage(), "");
-		} finally {
-			if (stepMode || !breakpoints.isEmpty()) {
-				callbacks.closeStepPopup();
-			}
-			callbacks.highlihtLine(-1);
-			callbacks.refreshMemory();
-		}
-	}
-
-	/**
-	 * Opens the step popup on the JavaFX UI thread with the correct action
-	 * handlers
-	 *
-	 * @param popupStage  the popup window
-	 * @param interpreter the interpreter instance
-	 */
-	private void showStepPopup(Stage popupStage, Object interpreter) {
-		Platform.runLater(() -> callbacks.openStepPopup(
-				popupStage,
-				() -> callMethod(interpreter, "nextStep"),
-				() -> stop(),
-				() -> callMethod(interpreter, "skipBreakpoint")));
-	}
-
-	/**
-	 * Invokes a public method of the interpreter using reflection
-	 *
-	 * @param obj    target object
-	 * @param method name of method to call
-	 */
-	private void callMethod(Object obj, String method) {
-		try {
-			obj.getClass().getMethod(method).invoke(obj);
-		} catch (Exception ignored) {
-		}
-	}
-
-	/**
-	 * Creates and starts a task that runs the interpreter logic in a dedicated
-	 * background thread
-	 *
-	 * @param interpreter interpreter instance
-	 * @param runLogic    interpreter execution logic
-	 * @param stepMode    whether step mode is active
-	 * @param breakpoints list of breakpoints
-	 */
-	private void createInterpreterTask(Object interpreter, Runnable runLogic, boolean stepMode,
-			List<Integer> breakpoints) {
-		Stage popupStage = new Stage();
-
 		Task<Void> task = new Task<>() {
+			@Override
 			protected Void call() {
-				if (stepMode || !breakpoints.isEmpty()) {
-					showStepPopup(popupStage, interpreter);
+				final boolean showPopup = stepMode || !breakpoints.isEmpty();
+				try {
+					if (showPopup) {
+						Platform.runLater(() -> callbacks.openStepPopup(
+								interpreter::nextStep,
+								() -> {
+									stop();
+									callbacks.closeStepPopup();
+								},
+								breakpoints.isEmpty() ? null : interpreter::skipBreakpoint));
+					}
+					interpreter.interpret(instrs.get(0));
+				} catch (InterpreterInterruptedException ignored) {
+				} catch (Exception e) {
+					Platform.runLater(() -> PopUp.error("JajaCode Interpreter Error", e.getMessage(), ""));
+				} finally {
+					Platform.runLater(() -> {
+						if (showPopup) {
+							callbacks.closeStepPopup();
+							callbacks.highlihtLine(-1);
+						}
+						callbacks.refreshMemory();
+					});
 				}
-				runLogic.run();
-
-				if (stepMode || !breakpoints.isEmpty()) {
-					Platform.runLater(callbacks::closeStepPopup);
-					Platform.runLater(() -> callbacks.highlihtLine(-1));
-				}
-				Platform.runLater(callbacks::refreshMemory);
 				return null;
 			}
 		};

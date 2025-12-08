@@ -128,8 +128,8 @@ public class AppController implements StatefulController {
 			}
 
 			@Override
-			public void openStepPopup(Stage stage, Runnable next, Runnable stop, Runnable skip) {
-				stepPopup.open(stage, next, stop, skip);
+			public void openStepPopup(Runnable next, Runnable stop, Runnable skip) {
+				stepPopup.open(primaryStage, next, stop, skip);
 			}
 
 			@Override
