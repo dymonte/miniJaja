@@ -132,10 +132,6 @@ public class InterpreterService {
 		try {
 			ASTNode programRoot = loadMiniJajaProgram();
 			checker(programRoot);
-			Diagnostic diag = new Diagnostic();
-			TypeChecker typeChecker = new TypeChecker(diag);
-			typeChecker.check(programRoot);
-
 			createInterpreterTask(interpreter, () -> interpreter.interpret(programRoot), stepMode, breakpoints);
 		} catch (InterpreterInterruptedException ignored) {
 		} catch (Exception e) {
