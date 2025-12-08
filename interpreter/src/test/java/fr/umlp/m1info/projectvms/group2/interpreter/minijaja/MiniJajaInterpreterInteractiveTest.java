@@ -17,6 +17,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
+import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 
 public class MiniJajaInterpreterInteractiveTest {
 	MiniJajaInterpreterInteractive interactive;
@@ -70,7 +71,7 @@ public class MiniJajaInterpreterInteractiveTest {
 		ASTIdent ident = new ASTIdent("a", 0, 0);
 
 		Thread t = new Thread(
-				() -> Assert.assertThrows(InterpretRuntimeException.class, () -> interactive.interpret(ident)));
+				() -> Assert.assertThrows(InterpreterInterruptedException.class, () -> interactive.interpret(ident)));
 
 		t.start();
 		t.interrupt();
