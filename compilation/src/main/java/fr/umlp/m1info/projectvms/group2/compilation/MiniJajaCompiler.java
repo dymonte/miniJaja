@@ -484,10 +484,7 @@ public class MiniJajaCompiler {
 	/** Compiles a length expression on arrays. */
 	@CompilationFunction(ASTLength.class)
 	protected Integer compileLength(ASTLength node) {
-		int nbInstrs = 0;
-		nbInstrs += emit("load(" + node.getIdent().getName() + ")");
-		nbInstrs += emit("length");
-		return nbInstrs;
+		return emit("length(" + node.getIdent().getName() + ")");
 	}
 
 	/** Compiles a method call used as an expression. */

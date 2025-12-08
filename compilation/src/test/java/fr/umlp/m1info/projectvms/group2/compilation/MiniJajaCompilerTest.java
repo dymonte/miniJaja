@@ -864,8 +864,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = miniJajaCompiler.compile(lengthNode);
 
-		Assert.assertEquals(2, nbInstr);
-		Assert.assertEquals("load(myArray)\nlength\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
+		Assert.assertEquals("length(myArray)\n", sb.toString());
 	}
 
 	@Test

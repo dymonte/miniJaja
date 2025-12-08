@@ -486,6 +486,12 @@ public class JajaCodeInterpreter {
 		interpret(getNextInstr(node));
 	}
 
+	@JajaCodeInterpretFunction(InstrLength.class)
+	protected void interpretLength(InstrLength node) {
+		memory.push(memory.getLengthArray(node.getValIdent().getIdent()));
+		interpret(getNextInstr(node));
+	}
+
 	@JajaCodeEvalFunction(ValAddress.class)
 	protected Object evalAddress(ValAddress node) {
 		return node.getAddress();
