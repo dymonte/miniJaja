@@ -4,6 +4,7 @@ import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
 import fr.umlp.m1info.projectvms.group2.controller.service.InterpreterService;
+import fr.umlp.m1info.projectvms.group2.controller.service.CompilerService;
 import fr.umlp.m1info.projectvms.group2.controller.service.ThemeService;
 import fr.umlp.m1info.projectvms.group2.controller.popup.StepPopupManager;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
@@ -76,6 +77,8 @@ public class AppController implements StatefulController {
 
 	private InterpreterService interpreterService;
 
+	private CompilerService compilerService;
+
 	private ThemeService themeService;
 
 	private StepPopupManager stepPopup;
@@ -134,6 +137,8 @@ public class AppController implements StatefulController {
 				stepPopup.close();
 			}
 		});
+
+		compilerService = new CompilerService(state);
 	}
 
 	/**
@@ -431,72 +436,8 @@ public class AppController implements StatefulController {
 	 */
 	@FXML
 	private void compileCurrentFile() {
-		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
-			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
-					"Stop interpretation and after you can compile");
-			return;
-		}
-
-		StringBuilder result = new StringBuilder();
-		MiniJajaCompiler compiler = new MiniJajaCompiler(result);
-
-		Stage popupStage = new Stage();
-
-		Task<Void> task = new Task<>() {
-			@Override
-			protected Void call() {
-				try {
-					File openedFile = state.getOpenedFile().orElse(null);
-					File targetDir;
-					String fileName;
-					ASTNode programRoot;
-
-					if (openedFile == null) {
-						fileName = "untitled.jjc";
-						targetDir = new File("target");
-						programRoot = ParserUtils.parseString(state.codeProperty().get());
-					} else {
-						fileName = openedFile.getName().replace(".mjj", ".jjc");
-						targetDir = new File(openedFile.getParent(), "target");
-						programRoot = ParserUtils.parseFile(openedFile.getAbsolutePath());
-					}
-
-					Diagnostic diag = new Diagnostic();
-					TypeChecker typeChecker = new TypeChecker(diag);
-					typeChecker.check(programRoot);
-
-					if (!diag.issues().isEmpty()) {
-						String errors = "";
-						for (Diagnostic.Issue issue : diag.issues()) {
-							errors += issue.toString() + "\n";
-						}
-						throw new Exception(errors);
-					}
-
-					if (!targetDir.exists() && !targetDir.mkdirs()) {
-						throw new IOException("Failed to create target directory: " + targetDir.getAbsolutePath());
-					}
-
-					File outputFile = new File(targetDir, fileName);
-
-					compiler.compile(programRoot);
-
-					try (FileWriter writer = new FileWriter(outputFile, StandardCharsets.UTF_8)) {
-						writer.write(result.toString());
-					}
-
-					Platform.runLater(() -> fileTreeSectionController.refreshTree());
-
-				} catch (Exception e) {
-					handleCompilationError(popupStage, e.getMessage());
-				}
-				return null;
-			}
-		};
-
-		minijajaCompilerThread = new Thread(task);
-		minijajaCompilerThread.start();
-	}
+		compilerService.compile(fileTreeSectionController::refreshTree);
+	};
 
 	/**
 	 * Runs the current file in a seperate thread
@@ -533,13 +474,6 @@ public class AppController implements StatefulController {
 			return;
 		}
 
-	}
-
-	private void handleCompilationError(Stage popupStage, String message) {
-		Platform.runLater(() -> {
-			popupStage.close();
-			PopUp.error("MiniJaja Compiler Error", message, "");
-		});
 	}
 
 	/**
