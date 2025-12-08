@@ -65,7 +65,7 @@ type
     ;
 
 kind
-    : 'var' | 'cst' | 'arr' | 'meth'
+    : 'var' | 'cst' | 'arr' | 'meth' | 'vcst'
     ;
 
 fragment CHARS: (~["\\\r\n] | '\\' .)*;

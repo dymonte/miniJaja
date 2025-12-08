@@ -96,7 +96,7 @@ public class JajaCodeInterpreter {
 	}
 
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
-									   Class<?> nodeClass) {
+			Class<?> nodeClass) {
 		Class<?> cls = this.getClass();
 		while (cls != null) {
 			for (Method method : cls.getDeclaredMethods()) {
@@ -151,6 +151,10 @@ public class JajaCodeInterpreter {
 		switch (node.getKind().getKind()) {
 			case VAR: {
 				memory.identVal(identifier, Kind.VAR, type, node.getValDepth().getValue());
+				break;
+			}
+			case VCONST: {
+				memory.identVal(identifier, Kind.VCONST, type, 0);
 				break;
 			}
 			case CONST: {

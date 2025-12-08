@@ -208,7 +208,7 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTParams.class)
 	protected Integer compileParams(ASTParams node) {
 		int k = MiniJajaCompilerUtils.countParams(node);
-		return node instanceof ASTParamsNil ? compileParamsNil((ASTParamsNil)node): compileParams(node, k);
+		return node instanceof ASTParamsNil ? compileParamsNil((ASTParamsNil) node) : compileParams(node, k);
 	}
 
 	/** Compiles parameters. */
@@ -283,8 +283,13 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTVarConst.class)
 	protected Integer compileVarConst(ASTVarConst node) {
 		int count = 0;
-		count += node.getVExpr() != null ? compile(node.getVExpr()) : emit("push(0)");
-		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", cst, 0)");
+		if (node.getVExpr() != null) {
+			count += compile(node.getVExpr());
+			count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", cst, 0)");
+		} else {
+			count += emit("push(0)");
+			count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", vcst, 0)");
+		}
 		return count;
 	}
 
