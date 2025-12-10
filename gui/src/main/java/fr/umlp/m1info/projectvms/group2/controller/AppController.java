@@ -410,9 +410,20 @@ public class AppController implements StatefulController {
 		openHelpFile("help_errors_content.html");
 	}
 
+	/**
+	 * Opens help inerface window
+	 */
 	@FXML
 	private void openHelpInterface() {
 		openHelpFile("help_interface_content.html");
+	}
+
+	/**
+	 * Opens credit window
+	 */
+	@FXML
+	private void openCredit() {
+		openHelpFile("credit.html");
 	}
 
 	private void openHelpFile(String resourceName) {
