@@ -588,7 +588,7 @@ public class AppController implements StatefulController {
 	private void initMemory() {
 		SymTable symTable = new SymTable(256);
 		Stack stack = new Stack(1024);
-		Heap heap = new Heap(1024);
+		Heap heap = new Heap(4096);
 		state.setMemory(new Memory(symTable, stack, heap));
 	}
 
