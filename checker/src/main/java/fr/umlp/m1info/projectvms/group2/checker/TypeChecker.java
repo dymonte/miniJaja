@@ -264,16 +264,18 @@ public class TypeChecker implements Checker {
 	protected void checkAssignment(ASTAssignmentOp node) {
 		Type leftType = evalType(node.getLValue());
 		Type rightType = evalType(node.getExpr());
+		AssignmentOp op = node.getOp();
 
-		// right must be integer (left verified after)
-		if (node.getOp() == AssignmentOp.ADD && !Type.INT.equals(rightType)) {
+		// All compound ops (+=, -=, *=, /=) require int on right
+		if (op != AssignmentOp.EQ && !Type.INT.equals(rightType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH,
-					"Assignment '+=' requires an integer value on the right-hand side, got " + rightType, node.getLine(),
-					node.getColumn());
+					"Operator '" + op + "' requires an integer value on the right-hand side, got " + rightType,
+					node.getLine(), node.getColumn());
 		}
 
 		if (!leftType.equals(rightType)) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Assignment type mismatch: left = " + leftType + ", right = " + rightType,
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Assignment type mismatch: left = " + leftType + ", right = " + rightType,
 					node.getLine(), node.getColumn());
 		}
 	}
