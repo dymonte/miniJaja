@@ -7,7 +7,7 @@
 <?import org.fxmisc.richtext.CodeArea?>
 <?import javafx.scene.control.Button?>
 
-<VBox xmlns="http://javafx.com/javafx/21.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.umlp.m1info.projectvms.group2.controller.CodeSectionController">
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.umlp.m1info.projectvms.group2.controller.CodeSectionController">
   <StackPane VBox.vgrow="ALWAYS">
     <CodeArea fx:id="codeArea" styleClass="code-area" wrapText="true" VBox.vgrow="ALWAYS" />
 

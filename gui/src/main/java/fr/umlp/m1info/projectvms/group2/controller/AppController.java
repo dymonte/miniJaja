@@ -120,6 +120,7 @@ public class AppController implements StatefulController {
 	 */
 	private void createToolbarButton(String cssClass, String iconName, int size, Runnable action) {
 		Button button = new Button();
+		button.setId(cssClass);
 		button.getStyleClass().add(cssClass);
 		button.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(iconName), size, size, true, true)));
 		button.setOnAction(e -> action.run());
@@ -453,7 +454,7 @@ public class AppController implements StatefulController {
 				} catch (InterpreterInterruptedException e) {
 					// Do nothing
 				} catch (Exception e) {
-					handleInterpretationError(popupStage, e.getMessage());
+					consoleSectionController.appendToError(e.getMessage());
 				} finally {
 					if (stepMode || !breakpoints.isEmpty()) {
 						Platform.runLater(popupStage::close);
