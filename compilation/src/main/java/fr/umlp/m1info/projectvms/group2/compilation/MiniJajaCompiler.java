@@ -12,6 +12,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
@@ -326,27 +327,102 @@ public class MiniJajaCompiler {
 	/** Compiles an assignment operation. */
 	@CompilationFunction(ASTAssignmentOp.class)
 	protected Integer compileAssignment(ASTAssignmentOp node) {
-		int nbInstrs = 0;
-
-		String op = switch (node.getOp()) {
-			case EQ -> "store";
-			case ADD -> "inc";
-		};
+		int nb = 0;
 
 		ASTLValue lvalue = node.getLValue();
 		if (lvalue instanceof ASTIdent ident) {
-			nbInstrs += compile(node.getExpr());
-			nbInstrs += emit(op + "(" + ident.getName() + ")");
-		} else if (lvalue instanceof ASTArrayAccess arrayAccess) {
-			nbInstrs += compile(arrayAccess.getExpr());
-			nbInstrs += compile(node.getExpr());
-			nbInstrs += emit("a" + op + "(" + arrayAccess.getIdent().getName() + ")");
+			String name = ident.getName();
+			nb += compileIdentAssignment(name, node);
+		} else if (lvalue instanceof ASTArrayAccess arr) {
+			String name = arr.getIdent().getName();
+			nb += compileArrayAssignment(name, arr.getExpr(), node);
 		} else {
 			throw new CompilationRuntimeException("Unknown lvalue type: " + lvalue);
 		}
+		return nb;
+	}
 
-		return nbInstrs;
+	private int compileIdentAssignment(String name, ASTAssignmentOp node) {
+		int n = 0;
 
+		switch (node.getOp()) {
+			case EQ: {
+				n += compile(node.getExpr());
+				n += emit("store(" + name + ")");
+				break;
+			}
+			case ADD: {
+				n += compile(node.getExpr());
+				n += emit("inc(" + name + ")");
+				break;
+			}
+			case SUB: {
+				n += compile(node.getExpr());
+				n += emit("neg");
+				n += emit("inc(" + name + ")");
+				break;
+			}
+			case MUL: {
+				n += emit("load(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("mul");
+				n += emit("store(" + name + ")");
+				break;
+			}
+			case DIV: {
+				n += emit("load(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("div");
+				n += emit("store(" + name + ")");
+				break;
+			}
+		}
+		return n;
+	}
+
+	private int compileArrayAssignment(String name, ASTExpr index, ASTAssignmentOp node) {
+		int n = 0;
+
+		switch (node.getOp()) {
+			case EQ: {
+				n += compile(index);
+				n += compile(node.getExpr());
+				n += emit("astore(" + name + ")");
+				break;
+			}
+			case ADD: {
+				n += compile(index);
+				n += compile(node.getExpr());
+				n += emit("ainc(" + name + ")");
+				break;
+			}
+			case SUB: {
+				n += compile(index);
+				n += compile(node.getExpr());
+				n += emit("neg");
+				n += emit("ainc(" + name + ")");
+				break;
+			}
+			case MUL: {
+				n += compile(index);
+				n += emit("aload(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("mul");
+				n += compile(index);
+				n += emit("astore(" + name + ")");
+				break;
+			}
+			case DIV: {
+				n += compile(index);
+				n += emit("aload(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("div");
+				n += compile(index);
+				n += emit("astore(" + name + ")");
+				break;
+			}
+		}
+		return n;
 	}
 
 	/** Compiles an increment operation. */

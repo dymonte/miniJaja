@@ -147,6 +147,120 @@ public class MiniJajaInterpreterTest {
 	}
 
 	@Test
+	public void testInterpretAssignmentSubVar() {
+		ASTIdent ident = new ASTIdent("i", 0, 0);
+		ASTIdent ident2 = new ASTIdent("a", 0, 0);
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+		Mockito.doReturn(5).when(spyInterpreter).eval(ident);
+		Mockito.doReturn(2).when(spyInterpreter).eval(ident2);
+
+		memory.declVar("i", 5, Type.INT);
+
+		ASTAssignmentOp assignmentOp = new ASTAssignmentOp(ident, ident2, AssignmentOp.SUB, 0, 0);
+		spyInterpreter.interpret(assignmentOp);
+
+		Assert.assertEquals(3, memory.getVal("i"));
+	}
+
+	@Test
+	public void testInterpretAssignmentSubArray() {
+		ASTIdent arrName = new ASTIdent("tab", 0, 0);
+		ASTIntLiteral index = new ASTIntLiteral(0, 0, 0);
+		ASTArrayAccess array = new ASTArrayAccess(arrName, index, 0, 0);
+
+		ASTIdent value = new ASTIdent("i", 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn(0).when(spyInterpreter).eval(index);
+		Mockito.doReturn(5).when(spyInterpreter).eval(value);
+
+		memory.declArray("tab", 1, Type.INT);
+		memory.updateValArray("tab", 0, 10);
+
+		ASTAssignmentOp op = new ASTAssignmentOp(array, value, AssignmentOp.SUB, 0, 0);
+		spyInterpreter.interpret(op);
+
+		Assert.assertEquals(5, memory.getValArray("tab", 0));
+	}
+
+	@Test
+	public void testInterpretAssignmentMultVar() {
+		ASTIdent ident = new ASTIdent("i", 0, 0);
+		ASTIdent ident2 = new ASTIdent("a", 0, 0);
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+		Mockito.doReturn(3).when(spyInterpreter).eval(ident);
+		Mockito.doReturn(4).when(spyInterpreter).eval(ident2);
+
+		memory.declVar("i", 3, Type.INT);
+
+		ASTAssignmentOp assignmentOp = new ASTAssignmentOp(ident, ident2, AssignmentOp.MUL, 0, 0);
+		spyInterpreter.interpret(assignmentOp);
+
+		Assert.assertEquals(12, memory.getVal("i"));
+	}
+
+	@Test
+	public void testInterpretAssignmentMultArray() {
+		ASTIdent arrName = new ASTIdent("tab", 0, 0);
+		ASTIntLiteral index = new ASTIntLiteral(0, 0, 0);
+		ASTArrayAccess array = new ASTArrayAccess(arrName, index, 0, 0);
+
+		ASTIdent value = new ASTIdent("i", 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn(0).when(spyInterpreter).eval(index);
+		Mockito.doReturn(3).when(spyInterpreter).eval(value);
+
+		memory.declArray("tab", 1, Type.INT);
+		memory.updateValArray("tab", 0, 4);
+
+		ASTAssignmentOp op = new ASTAssignmentOp(array, value, AssignmentOp.MUL, 0, 0);
+		spyInterpreter.interpret(op);
+
+		Assert.assertEquals(12, memory.getValArray("tab", 0));
+	}
+
+	@Test
+	public void testInterpretAssignmentDivVar() {
+		ASTIdent ident = new ASTIdent("i", 0, 0);
+		ASTIdent ident2 = new ASTIdent("a", 0, 0);
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+		Mockito.doReturn(8).when(spyInterpreter).eval(ident);
+		Mockito.doReturn(2).when(spyInterpreter).eval(ident2);
+
+		memory.declVar("i", 8, Type.INT);
+
+		ASTAssignmentOp assignmentOp = new ASTAssignmentOp(ident, ident2, AssignmentOp.DIV, 0, 0);
+		spyInterpreter.interpret(assignmentOp);
+
+		Assert.assertEquals(4, memory.getVal("i"));
+	}
+
+	@Test
+	public void testInterpretAssignmentDivArray() {
+		ASTIdent arrName = new ASTIdent("tab", 0, 0);
+		ASTIntLiteral index = new ASTIntLiteral(0, 0, 0);
+		ASTArrayAccess array = new ASTArrayAccess(arrName, index, 0, 0);
+
+		ASTIdent value = new ASTIdent("i", 0, 0);
+
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn(0).when(spyInterpreter).eval(index);
+		Mockito.doReturn(2).when(spyInterpreter).eval(value);
+
+		memory.declArray("tab", 1, Type.INT);
+		memory.updateValArray("tab", 0, 8);
+
+		ASTAssignmentOp op = new ASTAssignmentOp(array, value, AssignmentOp.DIV, 0, 0);
+		spyInterpreter.interpret(op);
+
+		Assert.assertEquals(4, memory.getValArray("tab", 0));
+	}
+
+	@Test
 	public void testAssignmentIncrementException() {
 		class ErrorClass extends ASTLValue {
 			ErrorClass() {

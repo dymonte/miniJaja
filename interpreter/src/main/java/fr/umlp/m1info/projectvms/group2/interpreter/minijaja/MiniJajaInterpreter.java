@@ -215,6 +215,9 @@ public class MiniJajaInterpreter {
 		Object newValue = switch (node.getOp()) {
 			case EQ -> exprValue;
 			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), exprValue);
+			case SUB -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.SUB, eval(node.getLValue()), exprValue);
+			case MUL -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.MUL, eval(node.getLValue()), exprValue);
+			case DIV -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.DIV, eval(node.getLValue()), exprValue);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {

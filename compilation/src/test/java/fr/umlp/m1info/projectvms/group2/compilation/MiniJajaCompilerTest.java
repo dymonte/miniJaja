@@ -49,6 +49,8 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
+import net.bytebuddy.implementation.bind.annotation.AllArguments.Assignment;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -648,12 +650,30 @@ public class MiniJajaCompilerTest {
 	}
 
 	@Test
-	public void testCompileAssignmentADD() {
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+	public void testCompileAssignment() {
+		compileAssignmentSimple(AssignmentOp.EQ, 2, "store(x)\n");
+		compileAssignmentSimple(AssignmentOp.ADD, 2, "inc(x)\n");
+		compileAssignmentSimple(AssignmentOp.SUB, 3, "neg\ninc(x)\n");
+		compileAssignmentSimple(AssignmentOp.MUL, 4, "load(x)\nmul\nstore(x)\n");
+		compileAssignmentSimple(AssignmentOp.DIV, 4, "load(x)\ndiv\nstore(x)\n");
+	}
+
+	@Test
+	public void testCompileAssignmentArray() {
+		compileAssignmentArray(AssignmentOp.EQ, 3, "astore(x)\n");
+		compileAssignmentArray(AssignmentOp.ADD, 3, "ainc(x)\n");
+		compileAssignmentArray(AssignmentOp.SUB, 4, "neg\nainc(x)\n");
+		compileAssignmentArray(AssignmentOp.MUL, 6, "aload(x)\nmul\nastore(x)\n");
+		compileAssignmentArray(AssignmentOp.DIV, 6, "aload(x)\ndiv\nastore(x)\n");
+	}
+
+	private void compileAssignmentSimple(AssignmentOp op, int nbInstrExpected, String expected) {
+		StringBuilder sbu = new StringBuilder();
+		MiniJajaCompiler miniJaja = new MiniJajaCompiler(sbu);
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJaja);
 		ASTAssignmentOp assignmentOp = Mockito.mock(ASTAssignmentOp.class);
 		ASTIdent ident = new ASTIdent("x", 0, 0);
 		ASTExpr expr = Mockito.mock(ASTExpr.class);
-		AssignmentOp op = AssignmentOp.ADD;
 
 		Mockito.when(assignmentOp.getLValue()).thenReturn(ident);
 		Mockito.when(assignmentOp.getOp()).thenReturn(op);
@@ -662,19 +682,19 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(assignmentOp);
 
-		Assert.assertEquals(2, nbInstr);
-		Assert.assertEquals("inc(x)\n", sb.toString());
+		Assert.assertEquals(nbInstrExpected, nbInstr);
+		Assert.assertEquals(expected, sbu.toString());
 	}
 
-	@Test
-	public void testCompileAssignmentArray() {
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+	private void compileAssignmentArray(AssignmentOp op, int nbInstrExpected, String expected) {
+		StringBuilder sbu = new StringBuilder();
+		MiniJajaCompiler miniJaja = new MiniJajaCompiler(sbu);
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJaja);
 		ASTAssignmentOp assignmentOp = Mockito.mock(ASTAssignmentOp.class);
 		ASTIdent ident = new ASTIdent("x", 0, 0);
 		ASTArrayAccess arrayAccess = Mockito.mock(ASTArrayAccess.class);
 		ASTExpr expr1 = Mockito.mock(ASTExpr.class);
 		ASTExpr expr2 = Mockito.mock(ASTExpr.class);
-		AssignmentOp op = AssignmentOp.ADD;
 
 		Mockito.when(assignmentOp.getLValue()).thenReturn(arrayAccess);
 		Mockito.when(assignmentOp.getOp()).thenReturn(op);
@@ -687,8 +707,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(assignmentOp);
 
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("ainc(x)\n", sb.toString());
+		Assert.assertEquals(nbInstrExpected, nbInstr);
+		Assert.assertEquals(expected, sbu.toString());
 	}
 
 	@Test
