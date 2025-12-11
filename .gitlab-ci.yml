@@ -74,7 +74,7 @@ build-doc:
       - "./target/site/apidocs"
     expire_in: 30 days
 
-unit-test:
+verify:
   stage: test
   tags:
     - $RUNNER
