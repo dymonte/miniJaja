@@ -9,20 +9,6 @@ public class MiniJajaCompilerUtils {
 	private MiniJajaCompilerUtils() {
 	}
 
-	public static String binaryOpToString(String op) {
-		return switch (op) {
-			case "+" -> "add";
-			case "-" -> "sub";
-			case "*" -> "mul";
-			case "/" -> "div";
-			case "&&" -> "and";
-			case "||" -> "or";
-			case "==" -> "cmp";
-			case ">" -> "sup";
-			default -> throw new CompilationRuntimeException("Binary operation not supported: " + op);
-		};
-	}
-
 	public static String unaryOpToString(String op) {
 		return switch (op) {
 			case "-" -> "neg";
@@ -32,7 +18,9 @@ public class MiniJajaCompilerUtils {
 	}
 
 	public static int countParams(ASTParams node) {
-		if (node instanceof ASTParamsNil) return 0;
+		if (node instanceof ASTParamsNil) {
+			return 0;
+		}
 		ASTParamsChain chain = (ASTParamsChain) node;
 		return 1 + countParams(chain.getParams());
 	}

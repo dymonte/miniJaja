@@ -11,6 +11,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
@@ -489,9 +490,44 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTBinaryOp.class)
 	protected Integer compileBinaryOp(ASTBinaryOp node) {
 		int count = 0;
+		if (node.getOp() == BinaryOp.MOD) {
+			count += compile(node.getLeft());
+		}
 		count += compile(node.getLeft());
 		count += compile(node.getRight());
-		count += emit(MiniJajaCompilerUtils.binaryOpToString(node.getOp().toString()));
+		switch (node.getOp()) {
+			case ADD -> count += emit("add");
+			case SUB -> count += emit("sub");
+			case MUL -> count += emit("mul");
+			case DIV -> count += emit("div");
+			case MOD -> {
+				count += emit("div");
+				count += compile(node.getRight());
+				count += emit("mul");
+				count += emit("sub");
+			}
+			case AND -> count += emit("and");
+			case OR -> count += emit("or");
+			case EQ -> count += emit("cmp");
+			case NEQ -> {
+				count += emit("cmp");
+				count += emit("not");
+			}
+			case GT -> count += emit("sup");
+			case LT -> {
+				count += emit("swap");
+				count += emit("sup");
+			}
+			case GE -> {
+				count += emit("swap");
+				count += emit("sup");
+				count += emit("not");
+			}
+			case LE -> {
+				count += emit("sup");
+				count += emit("not");
+			}
+		}
 		return count;
 	}
 

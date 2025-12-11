@@ -424,12 +424,14 @@ public class TypeChecker implements Checker {
 	@TypeEvalFunction(ASTBinaryOp.class)
 	protected Type evalTypeBinary(ASTBinaryOp node) {
 		Type expectedType = TypeCheckerUtils.getBinaryOpType(node.getOp());
+		Type expectedArgumentType = TypeCheckerUtils.getBinaryOpArgumentType(node.getOp());
 		Type leftType = evalType(node.getLeft());
 		Type rightType = evalType(node.getRight());
 
-		if (!leftType.equals(rightType)) {
+		if (!leftType.equals(expectedArgumentType) || !leftType.equals(rightType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH, "Binary operation '" + node.getOp() + "' requires operands of type "
-					+ expectedType + ", got left = " + leftType + ", right = " + rightType, node.getLine(), node.getColumn());
+					+ expectedArgumentType + ", got left = " + leftType + ", right = " + rightType, node.getLine(),
+					node.getColumn());
 		}
 		return expectedType;
 	}

@@ -49,7 +49,6 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
-import net.bytebuddy.implementation.bind.annotation.AllArguments.Assignment;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -68,11 +67,6 @@ public class MiniJajaCompilerTest {
 	public void setUp() {
 		sb = new StringBuilder();
 		miniJajaCompiler = new MiniJajaCompiler(sb);
-	}
-
-	@Test
-	public void testUtilsBinary() {
-		Assert.assertThrows(CompilationRuntimeException.class, () -> MiniJajaCompilerUtils.binaryOpToString("UNKNOWN"));
 	}
 
 	@Test
@@ -270,123 +264,36 @@ public class MiniJajaCompilerTest {
 	}
 
 	@Test
-	public void testCompileBinaryOpAdd() {
-		ASTIntLiteral left = new ASTIntLiteral(1, 0, 0);
-		ASTIntLiteral right = new ASTIntLiteral(2, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.ADD, 0, 0);
-
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
-		Mockito.doReturn(1).when(spyCompiler).compile(left);
-		Mockito.doReturn(1).when(spyCompiler).compile(right);
-
-		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("add\n", sb.toString());
+	public void testCompileBinaryOp() {
+		testCompileBinaryOp(BinaryOp.EQ, 3, "cmp\n");
+		testCompileBinaryOp(BinaryOp.ADD, 3, "add\n");
+		testCompileBinaryOp(BinaryOp.SUB, 3, "sub\n");
+		testCompileBinaryOp(BinaryOp.MUL, 3, "mul\n");
+		testCompileBinaryOp(BinaryOp.DIV, 3, "div\n");
+		testCompileBinaryOp(BinaryOp.AND, 3, "and\n");
+		testCompileBinaryOp(BinaryOp.OR, 3, "or\n");
+		testCompileBinaryOp(BinaryOp.GT, 3, "sup\n");
+		testCompileBinaryOp(BinaryOp.MOD, 7, "div\nmul\nsub\n");
+		testCompileBinaryOp(BinaryOp.NEQ, 4, "cmp\nnot\n");
+		testCompileBinaryOp(BinaryOp.LT, 4, "swap\nsup\n");
+		testCompileBinaryOp(BinaryOp.GE, 5, "swap\nsup\nnot\n");
+		testCompileBinaryOp(BinaryOp.LE, 4, "sup\nnot\n");
 	}
 
-	@Test
-	public void testCompileBinaryOpSub() {
+	private void testCompileBinaryOp(BinaryOp op, int nbInstrs, String expected) {
+		StringBuilder sbu = new StringBuilder();
+		MiniJajaCompiler miniJaja = new MiniJajaCompiler(sbu);
 		ASTIntLiteral left = new ASTIntLiteral(5, 0, 0);
 		ASTIntLiteral right = new ASTIntLiteral(3, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.SUB, 0, 0);
+		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, op, 0, 0);
 
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJaja);
 		Mockito.doReturn(1).when(spyCompiler).compile(left);
 		Mockito.doReturn(1).when(spyCompiler).compile(right);
 
 		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("sub\n", sb.toString());
-	}
-
-	@Test
-	public void testCompileBinaryOpMul() {
-		ASTIntLiteral left = new ASTIntLiteral(4, 0, 0);
-		ASTIntLiteral right = new ASTIntLiteral(7, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.MUL, 0, 0);
-
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
-		Mockito.doReturn(1).when(spyCompiler).compile(left);
-		Mockito.doReturn(1).when(spyCompiler).compile(right);
-
-		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("mul\n", sb.toString());
-	}
-
-	@Test
-	public void testCompileBinaryOpDiv() {
-		ASTIntLiteral left = new ASTIntLiteral(8, 0, 0);
-		ASTIntLiteral right = new ASTIntLiteral(2, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.DIV, 0, 0);
-
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
-		Mockito.doReturn(1).when(spyCompiler).compile(left);
-		Mockito.doReturn(1).when(spyCompiler).compile(right);
-
-		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("div\n", sb.toString());
-	}
-
-	@Test
-	public void testCompileBinaryOpAnd() {
-		ASTIntLiteral left = new ASTIntLiteral(1, 0, 0);
-		ASTIntLiteral right = new ASTIntLiteral(0, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.AND, 0, 0);
-
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
-		Mockito.doReturn(1).when(spyCompiler).compile(left);
-		Mockito.doReturn(1).when(spyCompiler).compile(right);
-
-		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("and\n", sb.toString());
-	}
-
-	@Test
-	public void testCompileBinaryOpOr() {
-		ASTIntLiteral left = new ASTIntLiteral(0, 0, 0);
-		ASTIntLiteral right = new ASTIntLiteral(1, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.OR, 0, 0);
-
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
-		Mockito.doReturn(1).when(spyCompiler).compile(left);
-		Mockito.doReturn(1).when(spyCompiler).compile(right);
-
-		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("or\n", sb.toString());
-	}
-
-	@Test
-	public void testCompileBinaryOpEqual() {
-		ASTIntLiteral left = new ASTIntLiteral(2, 0, 0);
-		ASTIntLiteral right = new ASTIntLiteral(2, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.EQ, 0, 0);
-
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
-		Mockito.doReturn(1).when(spyCompiler).compile(left);
-		Mockito.doReturn(1).when(spyCompiler).compile(right);
-
-		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("cmp\n", sb.toString());
-	}
-
-	@Test
-	public void testCompileBinaryOpGreater() {
-		ASTIntLiteral left = new ASTIntLiteral(5, 0, 0);
-		ASTIntLiteral right = new ASTIntLiteral(3, 0, 0);
-		ASTBinaryOp binaryOp = new ASTBinaryOp(left, right, BinaryOp.GT, 0, 0);
-
-		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
-		Mockito.doReturn(1).when(spyCompiler).compile(left);
-		Mockito.doReturn(1).when(spyCompiler).compile(right);
-
-		int nbInstr = spyCompiler.compile(binaryOp);
-		Assert.assertEquals(3, nbInstr);
-		Assert.assertEquals("sup\n", sb.toString());
+		Assert.assertEquals(nbInstrs, nbInstr);
+		Assert.assertEquals(expected, sbu.toString());
 	}
 
 	@Test
