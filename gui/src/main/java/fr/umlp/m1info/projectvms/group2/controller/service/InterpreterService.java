@@ -11,6 +11,7 @@ import fr.umlp.m1info.projectvms.group2.checker.Diagnostic;
 import fr.umlp.m1info.projectvms.group2.checker.TypeChecker;
 import fr.umlp.m1info.projectvms.group2.interpreter.InteractiveInterpreterController;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
+import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
 import fr.umlp.m1info.projectvms.group2.interpreter.jajacode.JajaCodeInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
@@ -149,7 +150,7 @@ public class InterpreterService {
 					interpreter.interpret(programRoot);
 				} catch (InterpreterInterruptedException ignored) {
 				} catch (Exception e) {
-					Platform.runLater(() -> PopUp.error("Interpreter Error", e.getMessage(), ""));
+					InterpreterLogger.getInstance().log(e.getMessage(), InterpreterLogger.MessageLevel.ERROR);
 				} finally {
 					Platform.runLater(() -> {
 						if (showPopup) {
