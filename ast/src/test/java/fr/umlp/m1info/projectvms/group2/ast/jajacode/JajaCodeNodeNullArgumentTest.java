@@ -4,6 +4,7 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperBinary;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperUnary;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValIdent;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValNbre;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.value.ValString;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarKind;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.var.VarType;
@@ -107,30 +108,38 @@ public class JajaCodeNodeNullArgumentTest {
 
 	@Test
 	public void testInstrNewNull() {
+		ValIdent validIdent = new ValIdent(1, "a");
+		VarKind validKind = new VarKind(1, Kind.VAR);
+		VarType validType = new VarType(1, Type.INT);
+		ValNbre validDepth = new ValNbre(1, 1);
+
 		NullPointerException exception = Assert.assertThrows(NullPointerException.class,
-				() -> new InstrNew(1, null, null, null, null));
+				() -> new InstrNew(1, null, validKind, validType, validDepth));
 		Assert.assertEquals("valIdent cannot be null", exception.getMessage());
 
 		exception = Assert.assertThrows(NullPointerException.class,
-				() -> new InstrNew(1, new ValIdent(1, "a"), null, null, null));
+				() -> new InstrNew(1, validIdent, null, validType, validDepth));
 		Assert.assertEquals("kind cannot be null", exception.getMessage());
 
 		exception = Assert.assertThrows(NullPointerException.class,
-				() -> new InstrNew(1, new ValIdent(1, "a"), new VarKind(1, Kind.VAR), null, null));
+				() -> new InstrNew(1, validIdent, validKind, null, validDepth));
 		Assert.assertEquals("type cannot be null", exception.getMessage());
 
 		exception = Assert.assertThrows(NullPointerException.class,
-				() -> new InstrNew(1, new ValIdent(1, "a"), new VarKind(1, Kind.VAR), new VarType(1, Type.INT), null));
+				() -> new InstrNew(1, validIdent, validKind, validType, null));
 		Assert.assertEquals("depth cannot be null", exception.getMessage());
 	}
 
 	@Test
 	public void testInstrNewArrayNull() {
+		ValIdent validIdent = new ValIdent(1, "a");
+		VarType validType = new VarType(1, Type.INT);
+
 		NullPointerException exception = Assert.assertThrows(NullPointerException.class,
-				() -> new InstrNewArray(1, null, null));
+				() -> new InstrNewArray(1, null, validType));
 		Assert.assertEquals("valIdent cannot be null", exception.getMessage());
 
-		exception = Assert.assertThrows(NullPointerException.class, () -> new InstrNewArray(1, new ValIdent(1, "a"), null));
+		exception = Assert.assertThrows(NullPointerException.class, () -> new InstrNewArray(1, validIdent, null));
 		Assert.assertEquals("type cannot be null", exception.getMessage());
 	}
 

@@ -208,9 +208,11 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTParams.class)
 	protected Integer compileParams(ASTParams node) {
 		int k = MiniJajaCompilerUtils.countParams(node);
-		return node instanceof ASTParamsNil ? compileParamsNil((ASTParamsNil)node): compileParams(node, k);
-	}
+		return node instanceof ASTParamsNil paramNil
+				? compileParamsNil(paramNil)
+				: compileParams(node, k);
 
+	}
 	/** Compiles parameters. */
 	protected Integer compileParams(ASTParams node, int k) {
 		ASTParamsChain chain = (ASTParamsChain) node;

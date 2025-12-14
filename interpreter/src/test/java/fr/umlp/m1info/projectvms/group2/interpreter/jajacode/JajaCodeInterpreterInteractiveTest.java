@@ -49,7 +49,6 @@ public class JajaCodeInterpreterInteractiveTest {
 		ValIdent ident = new ValIdent(1, "a");
 		ValIdent ident1 = new ValIdent(2, "b");
 		Assert.assertThrows(InterpretRuntimeException.class, () -> interactive.interpret(ident));
-
 		Thread t = new Thread(
 				() -> Assert.assertThrows(InterpretRuntimeException.class, () -> interactive.interpret(ident1)));
 

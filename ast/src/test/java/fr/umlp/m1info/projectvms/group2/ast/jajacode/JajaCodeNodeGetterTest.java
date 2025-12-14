@@ -98,8 +98,10 @@ public class JajaCodeNodeGetterTest {
 		InstrOperBinary instr8 = new InstrOperBinary(lineId, JajaCodeBinaryOper.fromSymbol("or"));
 		Assert.assertEquals(JajaCodeBinaryOper.OR, instr8.getOper());
 
-		IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class,
-				() -> new InstrOperBinary(1, JajaCodeBinaryOper.fromSymbol("unknown")));
+		IllegalArgumentException exception = Assert.assertThrows(
+				IllegalArgumentException.class,
+				() -> JajaCodeBinaryOper.fromSymbol("unknown")
+		);
 
 		Assert.assertEquals("Unknow operator: unknown", exception.getMessage());
 	}
@@ -113,8 +115,10 @@ public class JajaCodeNodeGetterTest {
 		InstrOperUnary instr2 = new InstrOperUnary(lineId, JajaCodeUnaryOper.fromSymbol("neg"));
 		Assert.assertEquals(JajaCodeUnaryOper.NEG, instr2.getOper());
 
-		IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class,
-				() -> new InstrOperUnary(1, JajaCodeUnaryOper.fromSymbol("unknown")));
+		IllegalArgumentException exception = Assert.assertThrows(
+				IllegalArgumentException.class,
+				() -> JajaCodeUnaryOper.fromSymbol("unknown")
+		);
 
 		Assert.assertEquals("Unknow operator: unknown", exception.getMessage());
 	}

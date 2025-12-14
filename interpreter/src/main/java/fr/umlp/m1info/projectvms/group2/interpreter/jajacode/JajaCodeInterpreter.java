@@ -1,5 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
@@ -102,14 +103,18 @@ public class JajaCodeInterpreter {
 			for (Method method : cls.getDeclaredMethods()) {
 				var annotation = method.getAnnotation(annotationClass);
 				if (annotation != null) {
+
+					Class<?> handledType = null;
 					try {
-						Class<?> handledType = (Class<?>) annotationClass.getMethod("value")
+						handledType = (Class<?>) annotationClass.getMethod("value")
 								.invoke(annotation);
-						if (handledType.isAssignableFrom(nodeClass)) {
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						throw new RuntimeException(e);
+					}
+					if (handledType.isAssignableFrom(nodeClass)) {
 							return method;
 						}
-					} catch (Exception ignored) {
-					}
+
 				}
 			}
 			cls = cls.getSuperclass();
@@ -123,9 +128,7 @@ public class JajaCodeInterpreter {
 	}
 
 	@JajaCodeInterpretFunction(InstrStop.class)
-	protected void interpretStop(InstrStop node) {
-		return;
-	}
+	protected void interpretStop(InstrStop node) {}
 
 	/**
 	 * Interprets a nop instruction, do nothing and continue to interpret the next

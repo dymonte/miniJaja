@@ -11,7 +11,7 @@ public abstract class Instr extends JajaCodeNode {
      * Creates a new instruction with its associated line number
      * @param lineId the line number of the instruction
      */
-    public Instr(int lineId) {
+    protected Instr(int lineId) {
         super(lineId);
     }
 
