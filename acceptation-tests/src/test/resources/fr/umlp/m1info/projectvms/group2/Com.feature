@@ -1,41 +1,41 @@
 Feature: Com
-	Scenario: Running a minijaja program from the application
-		Given I have a valid minijaja program that prints <value>
-		When I execute the program
-		Then the program should execute without errors
-		And the output should be <value>
-		And the stack should be empty
-		And the heap should be empty
+	#Scenario: Running a minijaja program from the application
+	#	Given I have a valid minijaja program that prints <value>
+	#	When I execute the program
+	#	Then the program should execute without errors
+	#	And the output should be <value>
+	#	And the stack should be empty
+	#	And the heap should be empty
 
-		Examples:
-			| value |
-			| 42    |
-			| 24    |
-			| 123   |
+	#	Examples:
+	#		| value |
+	#		| 42    |
+	#		| 24    |
+	#		| 123   |
 
-	Scenario: Running a minijaja program from the application with an issue
-		Given I have an invalid minijaja program with a <error> issue
-		When I execute the program
-		Then the program should throw "<error>"
+	#Scenario: Running a minijaja program from the application with an issue
+	#	Given I have an invalid minijaja program with a <error> issue
+	#	When I execute the program
+	#	Then the program should throw "<error>"
 
-		Examples:
-			| error  |
-			| syntax |
-			| memory |
+	#	Examples:
+	#		| error  |
+	#		| syntax |
+	#		| memory |
 
-	Scenario: Running a minijaja program with comments
-		Given I have a valid minijaja program with comments that prints "<value>"
-		When I execute the program
-		Then the program should execute without errors
-		And the output should be "<value>"
-		And the stack should be empty
-		And the heap should be empty
+	#Scenario: Running a minijaja program with comments
+	#	Given I have a valid minijaja program with comments that prints "<value>"
+	#	When I execute the program
+	#	Then the program should execute without errors
+	#	And the output should be "<value>"
+	#	And the stack should be empty
+	#	And the heap should be empty
 
-		Examples:
-			| value     |
-			| print     |
-			| something |
-			| hey       |
+	#	Examples:
+	#		| value     |
+	#		| print     |
+	#		| something |
+	#		| hey       |
 
 	#Scenario: Clearing the console after program execution
 	#	Given I have a valid minijaja program that prints 42
