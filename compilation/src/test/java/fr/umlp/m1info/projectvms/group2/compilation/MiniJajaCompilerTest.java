@@ -535,7 +535,7 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = spyCompiler.compile(varConst);
 
-		Assert.assertEquals("push(0)\nnew(C, int, cst, 0)\n", sb.toString());
+		Assert.assertEquals("push(0)\nnew(C, int, vcst, 0)\n", sb.toString());
 		Assert.assertEquals(2, nbInstr);
 	}
 
@@ -864,8 +864,8 @@ public class MiniJajaCompilerTest {
 
 		int nbInstr = miniJajaCompiler.compile(lengthNode);
 
-		Assert.assertEquals(2, nbInstr);
-		Assert.assertEquals("load(myArray)\nlength\n", sb.toString());
+		Assert.assertEquals(1, nbInstr);
+		Assert.assertEquals("length(myArray)\n", sb.toString());
 	}
 
 	@Test
@@ -926,58 +926,57 @@ public class MiniJajaCompilerTest {
 		Assert.assertEquals(4, nbInstr);
 	}
 
+	@Test
+	public void testCompileSingleParam() {
+		ASTParam param = Mockito.mock(ASTParam.class);
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+		ASTIntType type = new ASTIntType(0, 0);
 
-    @Test
-    public void testCompileSingleParam() {
-        ASTParam param = Mockito.mock(ASTParam.class);
-        ASTIdent ident = new ASTIdent("x", 0, 0);
-        ASTIntType type = new ASTIntType(0, 0);
+		Mockito.when(param.getIdent()).thenReturn(ident);
+		Mockito.when(param.getType()).thenReturn(type);
 
-        Mockito.when(param.getIdent()).thenReturn(ident);
-        Mockito.when(param.getType()).thenReturn(type);
+		int nbInstr = miniJajaCompiler.compileParam(param, 1);
 
-        int nbInstr = miniJajaCompiler.compileParam(param, 1);
+		Assert.assertEquals(1, nbInstr);
+		Assert.assertEquals("new(x,int,var,1)\n", sb.toString());
+	}
 
-        Assert.assertEquals(1, nbInstr);
-        Assert.assertEquals("new(x,int,var,1)\n", sb.toString());
-    }
+	@Test
+	public void testCompileParamsChain() {
+		// Create 2 parameters
+		ASTParam param1 = Mockito.mock(ASTParam.class);
+		ASTParam param2 = Mockito.mock(ASTParam.class);
+		ASTIdent ident1 = new ASTIdent("a", 0, 0);
+		ASTIdent ident2 = new ASTIdent("b", 0, 0);
+		ASTIntType type1 = new ASTIntType(0, 0);
+		ASTIntType type2 = new ASTIntType(0, 0);
 
-    @Test
-    public void testCompileParamsChain() {
-        // Create 2 parameters
-        ASTParam param1 = Mockito.mock(ASTParam.class);
-        ASTParam param2 = Mockito.mock(ASTParam.class);
-        ASTIdent ident1 = new ASTIdent("a", 0, 0);
-        ASTIdent ident2 = new ASTIdent("b", 0, 0);
-        ASTIntType type1 = new ASTIntType(0, 0);
-        ASTIntType type2 = new ASTIntType(0, 0);
+		Mockito.when(param1.getIdent()).thenReturn(ident1);
+		Mockito.when(param1.getType()).thenReturn(type1);
+		Mockito.when(param2.getIdent()).thenReturn(ident2);
+		Mockito.when(param2.getType()).thenReturn(type2);
 
-        Mockito.when(param1.getIdent()).thenReturn(ident1);
-        Mockito.when(param1.getType()).thenReturn(type1);
-        Mockito.when(param2.getIdent()).thenReturn(ident2);
-        Mockito.when(param2.getType()).thenReturn(type2);
+		ASTParamsNil nil = new ASTParamsNil(0, 0);
+		ASTParamsChain chain = new ASTParamsChain(param1, new ASTParamsChain(param2, nil, 0, 0), 0, 0);
 
-        ASTParamsNil nil = new ASTParamsNil(0, 0);
-        ASTParamsChain chain = new ASTParamsChain(param1, new ASTParamsChain(param2, nil, 0, 0), 0, 0);
+		int nbInstr = miniJajaCompiler.compileParams(chain);
 
-        int nbInstr = miniJajaCompiler.compileParams(chain);
+		Assert.assertEquals(2, nbInstr);
+		Assert.assertEquals("new(a,int,var,2)\nnew(b,int,var,1)\n", sb.toString());
+	}
 
-        Assert.assertEquals(2, nbInstr);
-        Assert.assertEquals("new(a,int,var,2)\nnew(b,int,var,1)\n", sb.toString());
-    }
+	@Test
+	public void testCompileParamsNil() {
+		ASTParamsNil nil = new ASTParamsNil(0, 0);
+		int nbInstr = miniJajaCompiler.compileParamsNil(nil);
 
-    @Test
-    public void testCompileParamsNil() {
-        ASTParamsNil nil = new ASTParamsNil(0, 0);
-        int nbInstr = miniJajaCompiler.compileParamsNil(nil);
-
-        Assert.assertEquals(0, nbInstr);
-    }
+		Assert.assertEquals(0, nbInstr);
+	}
 
 	@Ignore
 	public void testFullFiles() throws Exception {
-		String[] files = {"hello_world", "0", "1", "synonymie"};
-		for(String file: files) {
+		String[] files = { "hello_world", "0", "1", "synonymie" };
+		for (String file : files) {
 			ASTClass ast = (ASTClass) ParserUtils.parseFile("src/test/resources/samples/" + file + ".mjj");
 
 			StringBuilder sb = new StringBuilder();

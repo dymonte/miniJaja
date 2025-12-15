@@ -192,11 +192,12 @@ public class MiniJajaCompiler {
 		count += compile(node.getParams());
 		count += compile(node.getVars());
 		count += compile(node.getInstrs());
-		count += free(node.getVars());
 
 		if (node.getType() instanceof ASTVoidType) {
 			count += emit("push(0)");
 		}
+
+		count += free(node.getVars());
 
 		patch("goto(?)", "goto(" + (n + 3) + ")", gotoIndex);
 		count += emit("swap");
@@ -208,7 +209,7 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTParams.class)
 	protected Integer compileParams(ASTParams node) {
 		int k = MiniJajaCompilerUtils.countParams(node);
-		return node instanceof ASTParamsNil ? compileParamsNil((ASTParamsNil)node): compileParams(node, k);
+		return node instanceof ASTParamsNil ? compileParamsNil((ASTParamsNil) node) : compileParams(node, k);
 	}
 
 	/** Compiles parameters. */
@@ -283,8 +284,13 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTVarConst.class)
 	protected Integer compileVarConst(ASTVarConst node) {
 		int count = 0;
-		count += node.getVExpr() != null ? compile(node.getVExpr()) : emit("push(0)");
-		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", cst, 0)");
+		if (node.getVExpr() != null) {
+			count += compile(node.getVExpr());
+			count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", cst, 0)");
+		} else {
+			count += emit("push(0)");
+			count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", vcst, 0)");
+		}
 		return count;
 	}
 
@@ -479,10 +485,7 @@ public class MiniJajaCompiler {
 	/** Compiles a length expression on arrays. */
 	@CompilationFunction(ASTLength.class)
 	protected Integer compileLength(ASTLength node) {
-		int nbInstrs = 0;
-		nbInstrs += emit("load(" + node.getIdent().getName() + ")");
-		nbInstrs += emit("length");
-		return nbInstrs;
+		return emit("length(" + node.getIdent().getName() + ")");
 	}
 
 	/** Compiles a method call used as an expression. */

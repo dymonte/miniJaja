@@ -43,6 +43,11 @@
       <version>0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+      <artifactId>checker</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>5.5.1</version>
@@ -78,6 +83,12 @@
       <version>3.13.2</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>fr.umlp.m1info.projectvms.group2</groupId>
+          <artifactId>compilation</artifactId>
+          <version>0.2-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
   <properties>

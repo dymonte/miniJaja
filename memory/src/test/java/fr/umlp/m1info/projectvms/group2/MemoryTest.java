@@ -160,7 +160,7 @@ public class MemoryTest {
 		memory.declVar(ident, value, sorte);
 
 		Optional<SymNode> symNode = spySymTable.search("i");
-        Assert.assertTrue(symNode.isPresent());
+		Assert.assertTrue(symNode.isPresent());
 		symNode.get().removeInstance(symNode.get().getFirstInstance());
 
 		Assert.assertThrows(NoInstanceException.class, () -> memory.getVal(ident));
@@ -215,7 +215,7 @@ public class MemoryTest {
 		memory.declArray(ident, value, sorte);
 
 		Optional<SymNode> symNode = spySymTable.search("i");
-        Assert.assertTrue(symNode.isPresent());
+		Assert.assertTrue(symNode.isPresent());
 		symNode.get().removeInstance(symNode.get().getFirstInstance());
 
 		Assert.assertThrows(NoInstanceException.class, () -> memory.getValArray(ident, 0));
@@ -345,11 +345,12 @@ public class MemoryTest {
 	@Test
 	public void testIdentValSymbolNotCreated() {
 		m.declVar("i", 0, Type.INT);
-		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", Kind.METH, Type.VOID, 0));
+		Assert.assertThrows(IllegalArgumentException.class, () -> m.identVal("i", Kind.METH, Type.VOID, -1));
 	}
 
 	@Test
 	public void testIdentValNotInStack() {
-		Assert.assertThrows(StackInvalidAddressException.class, () -> m.identVal("i", Kind.METH, Type.VOID, 100));
+		Assert.assertThrows(StackInvalidAddressException.class,
+				() -> m.identVal("i", Kind.METH, Type.VOID, 100));
 	}
 }

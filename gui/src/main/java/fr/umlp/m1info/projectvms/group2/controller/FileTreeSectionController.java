@@ -92,6 +92,19 @@ public class FileTreeSectionController {
 		onFileOpen.accept(file);
 	}
 
+	/**
+	 * Refreshes the entire file tree by recreating the root node and its children.
+	 */
+	public void refreshTree() {
+		if (treeView != null && treeView.getRoot() != null) {
+			File rootDir = treeView.getRoot().getValue();
+			TreeItem<File> newRoot = createNode(rootDir);
+			newRoot.setExpanded(true);
+			treeView.setRoot(newRoot);
+		}
+	}
+
+
 	private TreeItem<File> createNode(final File f) {
 		return new TreeItem<>(f) {
 			private boolean isLeaf;

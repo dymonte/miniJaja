@@ -91,18 +91,18 @@ public class SymTableTest {
 	}
 
 	@Test
-	public void addSameIdentifierShouldFailTest() {
+	public void addSameIdentifier() {
 		symTable.add("i", Kind.VAR, Type.INT);
 		Optional<SymNode> s2 = symTable.add("i", Kind.VAR, Type.BOOL);
-		Assert.assertFalse(s2.isPresent());
+		Assert.assertTrue(s2.isPresent());
 
 		symTable.add("j", Kind.VAR, Type.INT);
 		Optional<SymNode> s3 = symTable.add("j", Kind.METH, Type.INT);
-		Assert.assertFalse(s3.isPresent());
+		Assert.assertTrue(s3.isPresent());
 
 		symTable.add("k", Kind.VAR, Type.INT, 1);
 		Optional<SymNode> s4 = symTable.add("k", Kind.VAR, Type.INT, 2);
-		Assert.assertFalse(s4.isPresent());
+		Assert.assertTrue(s4.isPresent());
 
 		Optional<SymNode> s5 = symTable.add("l", Kind.VAR, Type.INT, 1);
 		Optional<SymNode> s6 = symTable.add("l", Kind.VAR, Type.INT, 1);

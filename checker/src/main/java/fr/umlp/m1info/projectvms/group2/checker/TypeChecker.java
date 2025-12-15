@@ -230,6 +230,13 @@ public class TypeChecker implements Checker {
 
 	private void checkMethods(List<ASTMethod> methods) {
 		for (ASTMethod method : methods) {
+			for (ASTParams curr = method.getParams(); curr instanceof ASTParamsChain chain; curr = chain.getParams()) {
+				String paramName = chain.getParam().getIdent().getName();
+				Type paramType = TypeCheckerUtils.getType(chain.getParam().getType());
+				env.define(paramName, paramType);
+			}
+
+			check(method.getVars());
 			check(method.getInstrs());
 
 			ASTReturn ret = searchReturn(method.getInstrs());
@@ -406,6 +413,11 @@ public class TypeChecker implements Checker {
 		// do nothing
 	}
 
+	@TypeCheckFunction(ASTMethodCallInstr.class)
+	protected void checkMethodCallInstr(ASTMethodCallInstr node) {
+		evalType(node);
+	}
+
 	/** Evaluates the type of a binary operation */
 	@TypeEvalFunction(ASTBinaryOp.class)
 	protected Type evalTypeBinary(ASTBinaryOp node) {
@@ -413,7 +425,7 @@ public class TypeChecker implements Checker {
 		Type leftType = evalType(node.getLeft());
 		Type rightType = evalType(node.getRight());
 
-		if (!expectedType.equals(leftType) || !expectedType.equals(rightType)) {
+		if (!leftType.equals(rightType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH, "Binary operation '" + node.getOp() + "' requires operands of type "
 					+ expectedType + ", got left = " + leftType + ", right = " + rightType, node.getLine(), node.getColumn());
 		}

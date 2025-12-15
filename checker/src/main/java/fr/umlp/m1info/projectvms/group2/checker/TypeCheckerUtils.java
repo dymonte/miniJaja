@@ -93,7 +93,7 @@ public class TypeCheckerUtils {
 	public static Type getBinaryOpType(BinaryOp binary) {
 		return switch (binary) {
 			case ADD, SUB, MUL, DIV -> Type.INT;
-			case EQ, AND, OR -> Type.BOOL;
+			case EQ, AND, OR, GT, LT -> Type.BOOL;
 			default -> throw new TypeCheckException("Unknow operation: " + binary);
 		};
 	}
