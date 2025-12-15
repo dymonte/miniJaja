@@ -318,6 +318,20 @@ public class MiniJajaInterpreterTest {
 	}
 
 	@Test
+	public void testInterpretDecrementInc() {
+		ASTIdent ident = new ASTIdent("i", 0, 0);
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+		Mockito.doReturn(1).when(spyInterpreter).eval(ident);
+
+		memory.declVar("i", 1, Type.INT);
+
+		ASTIncrementOp incrementOp = new ASTIncrementOp(ident, IncrementOp.DEC, 0, 0);
+		spyInterpreter.interpret(incrementOp);
+
+		Assert.assertEquals(0, memory.getVal("i"));
+	}
+
+	@Test
 	public void testInterpretWriteInt() {
 		ASTIdent ident = new ASTIdent("i", 0, 0);
 		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);

@@ -27,6 +27,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.IncrementOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTMethodCallInstr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
@@ -429,23 +430,28 @@ public class MiniJajaCompiler {
 	/** Compiles an increment operation. */
 	@CompilationFunction(ASTIncrementOp.class)
 	protected Integer compileIncrement(ASTIncrementOp node) {
-		int toPush = switch (node.getOp()) {
-			case INC -> 1;
-		};
-		int nbInstrs = 0;
+		int count = 0;
 
-		ASTLValue lvalue = node.getLValue();
-		if (lvalue instanceof ASTIdent ident) {
-			nbInstrs += emit("push(" + toPush + ")");
-			nbInstrs += emit("inc(" + ident.getName() + ")");
-		} else if (lvalue instanceof ASTArrayAccess arrayAccess) {
-			nbInstrs += compile(arrayAccess.getExpr());
-			nbInstrs += emit("push(" + toPush + ")");
-			nbInstrs += emit("ainc(" + arrayAccess.getIdent().getName() + ")");
-		} else {
-			throw new CompilationRuntimeException("Unknown lvalue type: " + lvalue);
+		ASTLValue lv = node.getLValue();
+
+		if (lv instanceof ASTArrayAccess arr) {
+			count += compile(arr.getExpr());
 		}
-		return nbInstrs;
+
+		count += emit("push(1)");
+
+		if (node.getOp() == IncrementOp.DEC) {
+			count += emit("neg");
+		}
+
+		if (lv instanceof ASTIdent id) {
+			count += emit("inc(" + id.getName() + ")");
+		} else if (lv instanceof ASTArrayAccess arr) {
+			count += emit("ainc(" + arr.getIdent().getName() + ")");
+		} else {
+			throw new CompilationRuntimeException("Unknown lvalue type: " + lv);
+		}
+		return count;
 	}
 
 	/** Compiles a return statement. */

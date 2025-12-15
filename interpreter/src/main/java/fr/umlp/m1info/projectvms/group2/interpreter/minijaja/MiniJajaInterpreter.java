@@ -247,9 +247,9 @@ public class MiniJajaInterpreter {
 	/** Interprets an increment operation */
 	@InterpretFunction(ASTIncrementOp.class)
 	protected void interpretIncrement(ASTIncrementOp node) {
-
 		Object newValue = switch (node.getOp()) {
 			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), 1);
+			case DEC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.SUB, eval(node.getLValue()), 1);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {

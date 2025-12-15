@@ -655,6 +655,21 @@ public class MiniJajaCompilerTest {
 	}
 
 	@Test
+	public void testCompileDecrement() {
+		ASTIncrementOp incrementOp = Mockito.mock(ASTIncrementOp.class);
+		IncrementOp op = IncrementOp.DEC;
+		ASTIdent ident = new ASTIdent("x", 0, 0);
+
+		Mockito.when(incrementOp.getLValue()).thenReturn(ident);
+		Mockito.when(incrementOp.getOp()).thenReturn(op);
+
+		int nbInstr = miniJajaCompiler.compile(incrementOp);
+
+		Assert.assertEquals(3, nbInstr);
+		Assert.assertEquals("push(1)\nneg\ninc(x)\n", sb.toString());
+	}
+
+	@Test
 	public void testCompileIfWithElse() {
 		ASTIdent ident = new ASTIdent("x", 0, 0);
 		ASTIntLiteral literal = new ASTIntLiteral(1, 0, 0);
