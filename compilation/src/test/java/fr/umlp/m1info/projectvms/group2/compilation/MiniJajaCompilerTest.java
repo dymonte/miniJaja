@@ -974,18 +974,6 @@ public class MiniJajaCompilerTest {
         Assert.assertEquals(0, nbInstr);
     }
 
-	@Ignore
-	public void testFullFiles() throws Exception {
-		String[] files = {"hello_world", "0", "1", "synonymie"};
-		for(String file: files) {
-			ASTClass ast = (ASTClass) ParserUtils.parseFile("src/test/resources/samples/" + file + ".mjj");
 
-			StringBuilder sb = new StringBuilder();
-			MiniJajaCompiler compiler = new MiniJajaCompiler(sb);
-			compiler.compile(ast);
 
-			String expected = Files.readString(Paths.get("src/test/resources/expected/" + file + ".jjc"));
-			Assert.assertEquals(expected.trim(), sb.toString().trim());
-		}
-	}
 }

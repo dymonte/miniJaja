@@ -9,7 +9,7 @@ import fr.umlp.m1info.projectvms.group2.memory.symtable.SymNode;
  */
 public class Stack {
 	private InstNode head;
-	private final int MAX_DEPTH;
+	private final int maxDepth;
 	private int depth;
 
 	/**
@@ -22,7 +22,7 @@ public class Stack {
 		if (maxDepth <= 0) {
 			throw new IllegalArgumentException("Cannot create an empty sized stack.");
 		}
-		this.MAX_DEPTH = maxDepth;
+		this.maxDepth = maxDepth;
 		this.head = null;
 		this.depth = 0;
 	}
@@ -31,7 +31,7 @@ public class Stack {
 	 * @return the maximum depth of the stack
 	 */
 	public int getMaxDepth() {
-		return MAX_DEPTH;
+		return maxDepth;
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class Stack {
 	 * @throws StackOverflowException when the stack depth exceeds MAX_DEPTH
 	 */
 	public <T> void push(T val, SymNode symbol) throws StackOverflowException {
-		if (depth >= MAX_DEPTH) {
+		if (depth >= maxDepth) {
 			throw new StackOverflowException();
 		}
 		head = new InstNode(val, symbol, head);

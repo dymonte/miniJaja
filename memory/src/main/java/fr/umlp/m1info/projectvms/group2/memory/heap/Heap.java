@@ -12,12 +12,12 @@ import fr.umlp.m1info.projectvms.group2.utils.Type;
  * Heap
  */
 public class Heap {
-	private final int HeapSize;
+	private final int heapSize;
 	private final ByteBuffer heap;
 	private final HeapBlockNode[] blocks;
 	private final ArrayList<HeapSymbol> localTable;
-	private final static int INTSIZE = 4;
-	private final static int BOOLSIZE = 1;
+	private static final int INTSIZE = 4;
+	private static final int BOOLSIZE = 1;
 
 	/**
 	 * Constructs a new Heap
@@ -29,15 +29,15 @@ public class Heap {
 			throw new IllegalArgumentException("Cannot create an empty sized heap.");
 		}
 
-		this.HeapSize = heapSize;
-		this.heap = ByteBuffer.allocate(HeapSize);
+		this.heapSize = heapSize;
+		this.heap = ByteBuffer.allocate(heapSize);
 
 		/**
-		 * This array is of size log2(HeapSize).
+		 * This array is of size log2(heapSize).
 		 * each index i corresponds to blocks of size 2^(i-1)
 		 * for instance, addresses of blocks of size 256 are stored at index 7.
 		 */
-		this.blocks = new HeapBlockNode[(int) (Math.log(HeapSize) / Math.log(2)) + 1];
+		this.blocks = new HeapBlockNode[(int) (Math.log(heapSize) / Math.log(2)) + 1];
 		this.blocks[blocks.length - 1] = new HeapBlockNode(0);
 		this.localTable = new ArrayList<>();
 	}
@@ -46,7 +46,7 @@ public class Heap {
 	 * @return The heap size
 	 */
 	public int getHeapSize() {
-		return HeapSize;
+		return heapSize;
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Heap {
 	 *         stack/symtable)
 	 * @throws IllegalArgumentException thrown if arguments size <= 0 or type is
 	 *                                  VOID
-	 * @throws HeapOutOfMemoryException when the argument size >= HeapSize
+	 * @throws HeapOutOfMemoryException when the argument size >= heapSize
 	 *                                  or no more space is available
 	 */
 	public int allocate(int size, Type type) throws IllegalArgumentException, HeapOutOfMemoryException {
@@ -69,7 +69,7 @@ public class Heap {
 		if (size <= 0) {
 			throw new IllegalArgumentException("Size must be positive");
 		}
-		if (size >= HeapSize) {
+		if (size >= heapSize) {
 			throw new HeapOutOfMemoryException();
 		}
 
@@ -80,7 +80,7 @@ public class Heap {
 		int blockIndex = (int) Math.ceil(Math.log(size) / Math.log(2));
 		int blockSize = 1 << blockIndex;
 
-		if (blockSize > HeapSize) {
+		if (blockSize > heapSize) {
 			throw new HeapOutOfMemoryException();
 		}
 
@@ -356,7 +356,8 @@ public class Heap {
 				if (!(value instanceof Boolean)) {
 					throw new IllegalArgumentException("Expected Boolean for type BOOL");
 				}
-				heap.put((byte) ((Boolean) value ? 1 : 0));
+				boolean boolValue = (Boolean) value;
+				heap.put((byte) (boolValue ? 1 : 0));
 			}
 			default -> throw new IllegalArgumentException("Unsupported type: " + symbol.getType());
 		}

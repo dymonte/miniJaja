@@ -36,9 +36,9 @@ public class SymTableTest {
 	public void addTest() {
 		Optional<SymNode> s = symTable.add("i", Kind.VAR, Type.INT);
 		Assert.assertTrue(s.isPresent());
-		Assert.assertEquals(s.get().getIdent(), "i");
-		Assert.assertEquals(s.get().getInfo().getKind(), Kind.VAR);
-		Assert.assertEquals(s.get().getInfo().getSorte(), Type.INT);
+		Assert.assertEquals("i", s.get().getIdent());
+		Assert.assertEquals(Kind.VAR, s.get().getInfo().getKind());
+		Assert.assertEquals(Type.INT, s.get().getInfo().getSorte());
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class SymTableTest {
 		Assert.assertEquals(kind, memInfo.getKind());
 		Assert.assertEquals(1, memInfo.getSize());
 
-		Assert.assertFalse(memInfo.equals(false));
+		Assert.assertNotEquals(memInfo, false);
 		Assert.assertEquals(memInfo.hashCode(), memInfo.hashCode());
 	}
 

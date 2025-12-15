@@ -109,7 +109,10 @@ public class JajaCodeInterpreter {
 						handledType = (Class<?>) annotationClass.getMethod("value")
 								.invoke(annotation);
 					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-						throw new RuntimeException(e);
+						throw new InterpretRuntimeException(
+								"Failed to resolve annotation @" + annotationClass.getSimpleName()
+										+ " for node class " + nodeClass.getSimpleName()
+						);
 					}
 					if (handledType.isAssignableFrom(nodeClass)) {
 							return method;
@@ -128,7 +131,12 @@ public class JajaCodeInterpreter {
 	}
 
 	@JajaCodeInterpretFunction(InstrStop.class)
-	protected void interpretStop(InstrStop node) {}
+	protected void interpretStop(InstrStop node) {
+		/*
+		 * STOP instruction marks the normal termination of the program.
+		 * No further instruction must be executed, so this method is intentionally empty.
+		 */
+	}
 
 	/**
 	 * Interprets a nop instruction, do nothing and continue to interpret the next

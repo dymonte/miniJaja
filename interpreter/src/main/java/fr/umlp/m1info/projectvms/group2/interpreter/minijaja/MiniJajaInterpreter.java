@@ -1,6 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,10 +30,10 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
  */
 public class MiniJajaInterpreter {
 	Memory memory;
-	private static final String ErrorInterpretNode = "Error interpreting node ";
-	private static final String illegalAccess = "Illegal access ";
-	private static final String nullNode = "node cannot be null";
-	private static final String boolValue = "Condition must evaluate to a boolean value";
+	private static final String ERROR_INTERPRET_NODE = "Error interpreting node ";
+	private static final String ILLEGAL_ACCESS = "Illegal access ";
+	private static final String NULL_NODE = "node cannot be null";
+	private static final String BOOL_VALUE = "Condition must evaluate to a boolean value";
 
 
 	public MiniJajaInterpreter(Memory memory) {
@@ -53,7 +52,7 @@ public class MiniJajaInterpreter {
 	 */
 	public void interpret(ASTNode node) {
 		if (node == null) {
-			throw new InterpretRuntimeException(nullNode);
+			throw new InterpretRuntimeException(NULL_NODE);
 		}
 
 		if (Thread.currentThread().isInterrupted()) {
@@ -75,10 +74,10 @@ public class MiniJajaInterpreter {
 				throw (evalRuntimeException);
 			} else {
 				throw new InterpretRuntimeException(
-						ErrorInterpretNode + node.getClass().getSimpleName() + ": " + cause.getMessage());
+						ERROR_INTERPRET_NODE + node.getClass().getSimpleName() + ": " + cause.getMessage());
 			}
 		} catch (IllegalAccessException e) {
-			throw new InterpretRuntimeException(illegalAccess + e.getMessage());
+			throw new InterpretRuntimeException(ILLEGAL_ACCESS + e.getMessage());
 		}
 	}
 
@@ -91,7 +90,7 @@ public class MiniJajaInterpreter {
 	 */
 	public Object eval(ASTNode node) {
 		if (node == null) {
-			throw new EvalRuntimeException(nullNode);
+			throw new EvalRuntimeException(NULL_NODE);
 		}
 
 		Method m = findAnnotatedMethod(EvalFunction.class, node.getClass());
@@ -109,10 +108,10 @@ public class MiniJajaInterpreter {
 				throw (evalRuntimeException);
 			} else {
 				throw new InterpretRuntimeException(
-						ErrorInterpretNode + node.getClass().getSimpleName() + ": " + cause.getMessage());
+						ERROR_INTERPRET_NODE + node.getClass().getSimpleName() + ": " + cause.getMessage());
 			}
 		} catch (IllegalAccessException e) {
-			throw new InterpretRuntimeException(illegalAccess + e.getMessage());
+			throw new InterpretRuntimeException(ILLEGAL_ACCESS + e.getMessage());
 		}
 	}
 
@@ -124,7 +123,7 @@ public class MiniJajaInterpreter {
 	 */
 	public void free(ASTNode node) {
 		if (node == null) {
-			throw new InterpretRuntimeException(nullNode);
+			throw new InterpretRuntimeException(NULL_NODE);
 		}
 
 		Method m = findAnnotatedMethod(FreeFunction.class, node.getClass());
@@ -142,10 +141,10 @@ public class MiniJajaInterpreter {
 				throw (evalRuntimeException);
 			} else {
 				throw new InterpretRuntimeException(
-						ErrorInterpretNode + node.getClass().getSimpleName() + ": " + cause.getMessage());
+						ERROR_INTERPRET_NODE + node.getClass().getSimpleName() + ": " + cause.getMessage());
 			}
 		} catch (IllegalAccessException e) {
-			throw new InterpretRuntimeException(illegalAccess + e.getMessage());
+			throw new InterpretRuntimeException(ILLEGAL_ACCESS + e.getMessage());
 		}
 	}
 
@@ -161,7 +160,11 @@ public class MiniJajaInterpreter {
 					try {
 						handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
 					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-						throw new RuntimeException(e);
+						throw new InterpretRuntimeException(
+								"Failed to resolve handler for annotation @"
+										+ annotationClass.getSimpleName()
+										+ " and node " + nodeClass.getSimpleName()
+						);
 					}
 					if (handledType.isAssignableFrom(nodeClass)) {
 						return method;
@@ -254,7 +257,7 @@ public class MiniJajaInterpreter {
 	protected void interpretIf(ASTIf node) {
 		Object value = eval(node.getExpr());
 		if (!(value instanceof Boolean)) {
-			throw new InterpretRuntimeException("Condition must evaluate to a boolean value");
+			throw new InterpretRuntimeException(BOOL_VALUE);
 		}
 		boolean condition = (Boolean) value;
 
@@ -330,19 +333,19 @@ public class MiniJajaInterpreter {
 		Object value = eval(node.getExpr());
 
 		if (!(value instanceof Boolean)) {
-			throw new InterpretRuntimeException(boolValue);
+			throw new InterpretRuntimeException(BOOL_VALUE);
 		}
-		while ((boolean) value) {
+
+		boolean condition = (boolean) value;
+
+		while (condition) {
 			interpret(node.getInstrs());
+
 			value = eval(node.getExpr());
 			if (!(value instanceof Boolean)) {
-				throw new InterpretRuntimeException(boolValue);
+				throw new InterpretRuntimeException(BOOL_VALUE);
 			}
-		}
-
-
-		while ((Boolean) eval(node.getExpr())) {
-			interpret(node.getInstrs());
+			condition = (boolean) value;
 		}
 	}
 
