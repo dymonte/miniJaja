@@ -65,6 +65,12 @@ public class MiniJajaInterpreterUtilsTest {
 		Assert.assertTrue((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.GT, 3, 1));
 		Assert.assertTrue((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.LT, 1, 3));
 		Assert.assertFalse((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.LT, 3, 1));
+		Assert.assertTrue((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.GE, 3, 1));
+		Assert.assertFalse((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.GE, 1, 3));
+		Assert.assertTrue((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.LE, 1, 3));
+		Assert.assertFalse((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.LE, 3, 1));
+		Assert.assertTrue((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.NEQ, 3, 1));
+		Assert.assertFalse((Boolean) MiniJajaInterpreterUtils.binaryOperation(BinaryOp.NEQ, 1, 1));
 
 		Assert.assertThrows(InterpretRuntimeException.class,
 				() -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, true, 1));
@@ -74,6 +80,9 @@ public class MiniJajaInterpreterUtilsTest {
 				() -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.OR, true, 1));
 		Assert.assertThrows(InterpretRuntimeException.class,
 				() -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.OR, 1, true));
+
+		Assert.assertEquals(1, MiniJajaInterpreterUtils.binaryOperation(BinaryOp.MOD, 1, 2));
+		Assert.assertEquals(1, MiniJajaInterpreterUtils.binaryOperation(BinaryOp.MOD, 3, 2));
 	}
 
 	@Test

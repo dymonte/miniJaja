@@ -215,6 +215,9 @@ public class MiniJajaInterpreter {
 		Object newValue = switch (node.getOp()) {
 			case EQ -> exprValue;
 			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), exprValue);
+			case SUB -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.SUB, eval(node.getLValue()), exprValue);
+			case MUL -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.MUL, eval(node.getLValue()), exprValue);
+			case DIV -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.DIV, eval(node.getLValue()), exprValue);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {
@@ -244,9 +247,9 @@ public class MiniJajaInterpreter {
 	/** Interprets an increment operation */
 	@InterpretFunction(ASTIncrementOp.class)
 	protected void interpretIncrement(ASTIncrementOp node) {
-
 		Object newValue = switch (node.getOp()) {
 			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), 1);
+			case DEC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.SUB, eval(node.getLValue()), 1);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {

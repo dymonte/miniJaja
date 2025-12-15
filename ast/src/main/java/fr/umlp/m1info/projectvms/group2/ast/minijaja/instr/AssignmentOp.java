@@ -5,7 +5,10 @@ package fr.umlp.m1info.projectvms.group2.ast.minijaja.instr;
  */
 public enum AssignmentOp {
 	EQ("="),
-	ADD("+=");
+	ADD("+="),
+	SUB("-="),
+	MUL("*="),
+	DIV("/=");
 
 	private final String symbol;
 
@@ -39,6 +42,9 @@ public enum AssignmentOp {
 		return switch (symbol) {
 			case "=" -> EQ;
 			case "+=" -> ADD;
+			case "-=" -> SUB;
+			case "*=" -> MUL;
+			case "/=" -> DIV;
 			default -> throw new IllegalArgumentException("Unknow operator: " + symbol);
 		};
 	}
