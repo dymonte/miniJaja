@@ -174,7 +174,7 @@ public class SymTableTest {
 		Assert.assertEquals(kind, memInfo.getKind());
 		Assert.assertEquals(1, memInfo.getSize());
 
-		Assert.assertNotEquals(memInfo, false);
+		Assert.assertFalse(memInfo.equals(false));
 		Assert.assertEquals(memInfo.hashCode(), memInfo.hashCode());
 	}
 
