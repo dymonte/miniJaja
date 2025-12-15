@@ -459,6 +459,21 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		return (ASTExpr) visit(ctx.exp1());
 	}
 
+
+	/**
+	 * Visits a ternary operator expression
+	 *
+	 * @param ctx the ternary operator context
+	 * @return the corresponding ASTTernaryOp node
+	 */
+	@Override public ASTTernaryOp visitTernaryOp(MiniJajaParser.TernaryOpContext ctx) {
+		ASTExpr condition = (ASTExpr) visit(ctx.exp(0));
+		ASTExpr firstCase = (ASTExpr) visit(ctx.exp(1));
+		ASTExpr secondCase = (ASTExpr) visit(ctx.exp(2));
+
+		return new ASTTernaryOp(condition, firstCase, secondCase, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
 	/**
 	 * Visits an exp2-only expression.
 	 *

@@ -12,6 +12,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTTernaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
@@ -420,6 +421,21 @@ public class MiniJajaCompiler {
 		count += compile(node.getExpr());
 		count += emit(MiniJajaCompilerUtils.unaryOpToString(node.getOp().toString()));
 		return count;
+	}
+
+	/** Compiles a ternary operator expression */
+	@CompilationFunction(ASTTernaryOp.class)
+	protected Integer compileTernaryOp(ASTTernaryOp node) {
+		int nbInstrs = compile(node.getCondition());
+		int offset = sb.length();
+		nbInstrs += emit("if(TMP_IF_TERNARY)");
+		nbInstrs += compile(node.getSecondCase());
+		patch("TMP_IF_TERNARY", "" + (n + 2), offset);
+		offset = sb.length();
+		nbInstrs += emit("goto(TMP_GOTO)");
+		nbInstrs += compile(node.getFirstCase());
+		patch("TMP_GOTO", "" + (n + 1), offset);
+		return nbInstrs;
 	}
 
 	/** Compiles an array element access expression. */

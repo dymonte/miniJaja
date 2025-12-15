@@ -1,0 +1,8 @@
+class C {
+	main {
+		// ternary operator
+		boolean b = (5 == 5);
+		int val = b ? 5 : 6;
+		writeln(val);
+	}
+}

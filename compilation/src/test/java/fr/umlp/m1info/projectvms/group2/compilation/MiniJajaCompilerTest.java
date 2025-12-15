@@ -7,6 +7,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTTernaryOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
@@ -385,6 +386,19 @@ public class MiniJajaCompilerTest {
 		int nbInstr = spyCompiler.compile(binaryOp);
 		Assert.assertEquals(3, nbInstr);
 		Assert.assertEquals("sup\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileTernaryOp() {
+		ASTBoolLiteral condition = new ASTBoolLiteral(true, 0, 0);
+		ASTIntLiteral firstCase = new ASTIntLiteral(5, 0, 0);
+		ASTIntLiteral secondCase = new ASTIntLiteral(3, 0, 0);
+		ASTTernaryOp ternaryOp = new ASTTernaryOp(condition, firstCase, secondCase, 0, 0);
+
+		int nbInstr = miniJajaCompiler.compile(ternaryOp);
+		Assert.assertEquals(5, nbInstr);
+		Assert.assertEquals("push(true)\nif(5)\npush(3)\ngoto(6)\npush(5)\n", sb.toString());
+
 	}
 
 	@Test

@@ -677,10 +677,31 @@ public class MiniJajaInterpreterTest {
 		Mockito.doReturn(5).when(spyInterpreter).eval(b);
 		Mockito.doReturn(true).when(spyInterpreter).eval(boolVal);
 
-		ASTBinaryOp binary = new ASTBinaryOp(a, boolVal, BinaryOp.GT, 0, 0);
+		ASTBinaryOp binary = new ASTBinaryOp(a, boolVal, BinaryOp.LT, 0, 0);
 		Assert.assertEquals(true, spyInterpreter.eval(new ASTBinaryOp(a, b, BinaryOp.LT, 0, 0)));
 		Assert.assertThrows(InterpretRuntimeException.class,
 				() -> spyInterpreter.eval(binary));
+	}
+
+	@Test
+	public void testTernaryOp() {
+
+		List<Boolean> booleans = List.of(new Boolean[]{true, false});
+
+		for (Boolean b: booleans) {
+			MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+			ASTIntLiteral firstCase = new ASTIntLiteral(3, 0, 0);
+			ASTIntLiteral secondCase = new ASTIntLiteral(5, 0, 0);
+			ASTBoolLiteral condition = new ASTBoolLiteral(b, 0, 0);
+
+			Mockito.doReturn(3).when(spyInterpreter).eval(firstCase);
+			Mockito.doReturn(5).when(spyInterpreter).eval(secondCase);
+			Mockito.doReturn(b).when(spyInterpreter).eval(condition);
+
+			ASTTernaryOp ternaryOp = new ASTTernaryOp(condition, firstCase, secondCase, 0, 0);
+			Assert.assertEquals(b ? 3 : 5, spyInterpreter.eval(ternaryOp));
+		}
+		
 	}
 
 	@Test

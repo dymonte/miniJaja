@@ -56,6 +56,17 @@ public class GetterTest {
 	}
 
 	@Test
+	public void getterTernaryOp() {
+		ASTBoolLiteral condition = new ASTBoolLiteral(true, 0, 0);
+		ASTIntLiteral firstCase = new ASTIntLiteral(4, 0, 0);
+		ASTIntLiteral secondCase = new ASTIntLiteral(3, 0, 0);
+		ASTTernaryOp ternaryOp = new ASTTernaryOp(condition, firstCase, secondCase, 0, 0);
+		Assert.assertEquals(condition, ternaryOp.getCondition());
+		Assert.assertEquals(firstCase, ternaryOp.getFirstCase());
+		Assert.assertEquals(secondCase, ternaryOp.getSecondCase());
+	}
+
+	@Test
 	public void getterBinaryOp() {
 		ASTIntLiteral intLiteral = new ASTIntLiteral(1, 0, 0);
 		BinaryOp op = BinaryOp.fromSymbol("+");

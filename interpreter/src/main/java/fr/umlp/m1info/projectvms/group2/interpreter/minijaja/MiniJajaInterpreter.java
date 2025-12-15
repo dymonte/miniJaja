@@ -402,6 +402,13 @@ public class MiniJajaInterpreter {
 				eval(node.getRight()));
 	}
 
+	/** Evaluates a ternary operator */
+	@EvalFunction(ASTTernaryOp.class)
+	protected Object evalTernaryOp(ASTTernaryOp node) {
+		//TODO: vérifier que l'expression condition est booléenne 
+		return (boolean) eval(node.getCondition()) ? eval(node.getFirstCase()) : eval(node.getSecondCase());
+	}
+
 	/** Evaluates a boolean literal */
 	@EvalFunction(ASTBoolLiteral.class)
 	protected Object evalBoolLiteral(ASTBoolLiteral node) {

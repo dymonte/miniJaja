@@ -37,6 +37,7 @@ listexp : (exp (',' exp)*)?;
 exp:      '!'exp1                 #NotExp
         | exp op=('&&'|'||') exp1 #LogicExp
         | exp1                    #SingleExp1
+        | exp '?' exp ':' exp     #TernaryOp
         ;
 exp1:     exp1 op=('=='|'!='|'<'|'>'|'<='|'>=') exp2 #CompExp
         | exp2                                       #Exp2Only

@@ -25,7 +25,7 @@ public abstract class JajaCodeInterpreterUtils {
             }
             case CMP -> {
                 // Compare two integers
-                result = Integer.compare((int) v1, (int) v2);
+                result = (int) v1 == (int) v2;
             }
             case SUP -> {
                 result = (int) v1 > (int) v2;
