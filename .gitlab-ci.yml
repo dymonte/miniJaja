@@ -74,39 +74,18 @@ build-doc:
       - "./target/site/apidocs"
     expire_in: 30 days
 
-unit-test:
+verify:
   stage: test
   tags:
     - $RUNNER
   before_script:
     !reference [.setup, script]
   script:
-    - mvn jacoco:prepare-agent test jacoco:report sonar:sonar
+    - mvn jacoco:prepare-agent verify -pl "!acceptation-tests" jacoco:report sonar:sonar
         -Dsonar.projectKey=$SONAR_PROJECT_KEY
         -Dsonar.projectName=$SONAR_PROJECT_NAME
         -Dsonar.host.url=$SONAR_HOST_URL
         -Dsonar.token=$SONAR_TOKEN
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_TAG
-    - if: $CI_COMMIT_BRANCH == 'dev'
-    - if: $CI_COMMIT_BRANCH == 'main'
-
-verify:
-  stage: test
-  tags:
-    - $RUNNER
-  needs:
-    - job: unit-test
-      artifacts: false
-  before_script:
-    - !reference [.setup, script]
-    - microdnf update -y
-    - microdnf install -y gtk3 libXtst xorg-x11-server-Xvfb xorg-x11-utils findutils
-  script:
-    - Xvfb :99 -screen 0 1024x768x24 &
-    - export DISPLAY=:99
-    - mvn verify -Dsurefire.skip=true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG

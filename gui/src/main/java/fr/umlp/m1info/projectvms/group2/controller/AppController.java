@@ -163,6 +163,7 @@ public class AppController implements StatefulController {
 	 */
 	private void createToolbarButton(String cssClass, String iconName, int size, Runnable action) {
 		Button button = new Button();
+		button.setId(cssClass);
 		button.getStyleClass().add(cssClass);
 		button.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(iconName), size, size, true, true)));
 		button.setOnAction(e -> action.run());
@@ -514,7 +515,7 @@ public class AppController implements StatefulController {
 	private void initMemory() {
 		SymTable symTable = new SymTable(256);
 		Stack stack = new Stack(1024);
-		Heap heap = new Heap(1024);
+		Heap heap = new Heap(4096);
 		state.setMemory(new Memory(symTable, stack, heap));
 	}
 
