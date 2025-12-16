@@ -472,18 +472,20 @@ public class AppController implements StatefulController {
 
 		List<Integer> breakpoints = new ArrayList<>(codeSectionController.getBreakpoints());
 
-		if (toRunOpt.isPresent()) {
-			String fileName = toRunOpt.get().getName();
-			String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-			initMemory();
-			switch (extension) {
-				case "jjc" -> interpreterService.runJajaCode(step, breakpoints);
-				case "mjj" -> interpreterService.runMiniJaja(step, breakpoints);
-				default ->
-					PopUp.error("Interpreter", "Unrecognized file extension",
-							"Unrecognized file extension : " + extension + " . (Should be .jjc or .mjj)");
-			}
+		initMemory();
+		if (!toRunOpt.isPresent()) {
+			interpreterService.runMiniJaja(step, breakpoints);
 			return;
+		}
+
+		String fileName = toRunOpt.get().getName();
+		String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+		switch (extension) {
+			case "jjc" -> interpreterService.runJajaCode(step, breakpoints);
+			case "mjj" -> interpreterService.runMiniJaja(step, breakpoints);
+			default ->
+				PopUp.error("Interpreter", "Unrecognized file extension",
+						"Unrecognized file extension : " + extension + " . (Should be .jjc or .mjj)");
 		}
 
 	}
