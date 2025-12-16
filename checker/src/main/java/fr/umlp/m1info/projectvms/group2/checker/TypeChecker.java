@@ -310,6 +310,18 @@ public class TypeChecker implements Checker {
 		check(node.getInstrs());
 	}
 
+	/** Checks a for loop condition type and its instructions */
+	@TypeCheckFunction(ASTFor.class)
+	protected void checkFor(ASTFor node) {
+		Type conditionType = evalType(node.getExpr());
+
+		if (!Type.BOOL.equals(conditionType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "While condition must be boolean", node.getLine(), node.getColumn());
+		}
+
+		check(node.getInstrs());
+	}
+
 	/** Type-checks a write instruction */
 	@TypeCheckFunction(ASTWrite.class)
 	protected void checkWrite(ASTWrite node) {

@@ -484,6 +484,41 @@ public class TypeCheckerTest {
 	}
 
 	@Test
+	public void forBoolTest() {
+		TypeChecker spyChecker = Mockito.spy(checker);
+
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTFor astFor = new ASTFor(null, ident, null, instrs, 0, 0);
+
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(instrs);
+
+		spyChecker.check(astFor);
+
+		Assert.assertEquals(0, diag.issues().size());
+	}
+
+	@Test
+	public void forNotBoolTest() {
+		TypeChecker spyChecker = Mockito.spy(checker);
+
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTFor astFor = new ASTFor(null, ident, null, instrs, 0, 0);
+
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(instrs);
+
+		spyChecker.check(astFor);
+
+		Assert.assertEquals(1, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+	}
+
+	@Test
 	public void writeTest() {
 		ASTWrite write = new ASTWrite(new ASTStringLiteral("ah", 0, 0), false, 0, 0);
 		checker.check(write);
