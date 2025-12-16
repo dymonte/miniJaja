@@ -332,6 +332,56 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
+	 * Visits a chevrot instruction
+	 *
+	 * @param ctx the chevrot instruction context
+	 * @return a ASTBonusInstr node representing the chevrot statement
+	 */
+	@Override
+	public ASTBonusInstr visitChevrot(MiniJajaParser.ChevrotContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		return new ASTBonusInstr(ASTBonusInstr.Op.CHEVROT, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a dugois instruction
+	 *
+	 * @param ctx the dugois instruction context
+	 * @return a ASTBonusInstr node representing the dugois statement
+	 */
+	@Override
+	public ASTBonusInstr visitDugois(MiniJajaParser.DugoisContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		return new ASTBonusInstr(ASTBonusInstr.Op.DUGOIS, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a bouquet instruction
+	 *
+	 * @param ctx the bouquet instruction context
+	 * @return a ASTBonusExpr node representing the bouquet statement
+	 */
+	@Override
+	public ASTBonusExpr visitBouquet(MiniJajaParser.BouquetContext ctx) {
+		ASTExpr expr1 = (ASTExpr) visit(ctx.exp(0));
+		ASTExpr expr2 = (ASTExpr) visit(ctx.exp(1));
+		return new ASTBonusExpr(ASTBonusExpr.Op.BOUQUET, expr1, expr2, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a jacquin instruction
+	 *
+	 * @param ctx the jacquin instruction context
+	 * @return a ASTBonusExpr node representing the bouquet statement
+	 */
+	@Override
+	public ASTBonusExpr visitJacquin(MiniJajaParser.JacquinContext ctx) {
+		ASTExpr expr1 = (ASTExpr) visit(ctx.exp(0));
+		ASTExpr expr2 = (ASTExpr) visit(ctx.exp(1));
+		return new ASTBonusExpr(ASTBonusExpr.Op.JACQUIN, expr1, expr2, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
 	 * Visits a write instruction (without newline).
 	 *
 	 * @param ctx the write context

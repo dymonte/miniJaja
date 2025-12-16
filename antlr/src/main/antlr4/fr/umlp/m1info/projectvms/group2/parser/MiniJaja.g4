@@ -30,6 +30,8 @@ instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp              #Assignment
         | 'return' exp                                         #Return
         | 'write' '(' (ident1 | STRING ) ')'                  #Write
         | 'writeln' '(' (ident1 | STRING ) ')'                #Writeln
+        | 'chevrot' '(' exp ')'                               #Chevrot
+        | 'dugois' '(' exp ')'                                #Dugois
         | 'if' '('exp')' '{'instrs'}' ('else' '{' instrs '}')? #If
         | 'while' '('exp')''{'instrs'}'                        #While
         ;
@@ -38,6 +40,8 @@ exp:      '!'exp1                 #NotExp
         | exp op=('&&'|'||') exp1 #LogicExp
         | exp1                    #SingleExp1
         | exp '?' exp ':' exp     #TernaryOp
+        | 'bouquet' '(' exp ',' exp ')'                       #Bouquet
+        | 'jacquin' '(' exp ',' exp  ')'                      #Jacquin
         ;
 exp1:     exp1 op=('=='|'!='|'<'|'>'|'<='|'>=') exp2 #CompExp
         | exp2                                       #Exp2Only

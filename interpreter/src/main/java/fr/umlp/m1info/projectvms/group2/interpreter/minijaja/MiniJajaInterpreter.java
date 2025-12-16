@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.concurrent.ThreadLocalRandom;
 
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
@@ -307,6 +309,36 @@ public class MiniJajaInterpreter {
 		InterpreterLogger.getInstance().log(value + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
 	}
 
+
+	/** Interprets bonuses instructions */
+	@InterpretFunction(ASTBonusInstr.class)
+	protected void interpretBonuses(ASTBonusInstr node) {
+		switch (node.getOp()) {
+			case DUGOIS : {
+				//TODO: verify that it is an integer expression
+				Integer expr = (Integer) eval(node.getExpr());
+				if (expr < 0) {
+					throw new InterpretRuntimeException("(dugois): cannot sleep thread for a negative amount of time.");
+				}
+				try {
+					Thread.sleep(Duration.ofSeconds(expr).toMillis());
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+				break;
+			}
+			case CHEVROT : {
+				//TODO: verify that it is a boolean expression
+				Boolean expr = (Boolean) eval(node.getExpr());
+				if (!expr) {
+					//TODO: maybe add a new custom kind of exception if we have time (or remove this todo)
+					throw new InterpretRuntimeException("(chevrot) Assertion failed : " + node.getExpr());
+				}
+				break;
+			}
+		}
+	}
+
 	/** Interprets a chain of instructions */
 	@InterpretFunction(ASTInstrsChain.class)
 	protected void interpretInstrsChain(ASTInstrsChain node) {
@@ -407,6 +439,28 @@ public class MiniJajaInterpreter {
 	protected Object evalTernaryOp(ASTTernaryOp node) {
 		//TODO: vérifier que l'expression condition est booléenne 
 		return (boolean) eval(node.getCondition()) ? eval(node.getFirstCase()) : eval(node.getSecondCase());
+	}
+
+	private int randomBetween(int bInf, int bSup) {
+		if (bInf > bSup) {
+			throw new InterpretRuntimeException("(bouquet): bInf must be <= bSup");
+		}
+		if (bInf == bSup) {
+			return bInf;
+		}
+		return ThreadLocalRandom.current().nextInt(bInf, bSup + 1);
+	}
+
+	/** Interprets bonuses expressions */
+	@EvalFunction(ASTBonusExpr.class)
+	protected Object interpretBonuses(ASTBonusExpr node) {
+		//TODO: verify that those are integer expressions
+		Integer val1 = (Integer) eval(node.getExpr1());
+		Integer val2 = (Integer) eval(node.getExpr2());
+		return switch (node.getOp()) {
+			case JACQUIN -> (int) Math.round(Math.pow(val1, val2));
+			case BOUQUET -> randomBetween(val1, val2);
+		};
 	}
 
 	/** Evaluates a boolean literal */
