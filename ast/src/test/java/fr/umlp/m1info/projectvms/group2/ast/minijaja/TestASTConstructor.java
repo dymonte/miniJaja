@@ -25,6 +25,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTMethodCallInstr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTFor;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
@@ -165,6 +166,11 @@ public class TestASTConstructor {
 		ASTIdent ident = new ASTIdent("a", 0, 0);
 		Assert.assertThrows(NullPointerException.class, () -> new ASTWhile(null, null, 0, 0));
 		Assert.assertThrows(NullPointerException.class, () -> new ASTWhile(ident, null, 0, 0));
+	}
+
+	@Test
+	public void constructorFor() {
+		Assert.assertThrows(NullPointerException.class, () -> new ASTFor(null, null, null, null, 0, 0));
 	}
 
 	@Test

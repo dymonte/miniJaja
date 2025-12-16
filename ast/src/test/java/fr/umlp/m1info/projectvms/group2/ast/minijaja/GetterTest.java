@@ -141,6 +141,24 @@ public class GetterTest {
 	}
 
 	@Test
+	public void gettFor() {
+		ASTVar var = new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("i", 0, 0),
+				new ASTVExpr(new ASTIntLiteral(0, 0, 0), 0, 0), 0, 0);
+		ASTExpr expr = new ASTBinaryOp(new ASTIntLiteral(1, 0, 0), new ASTIntLiteral(1, 0, 0), BinaryOp.fromSymbol(">"), 0,
+				0);
+		ASTInstr instr = new ASTIncrementOp(new ASTArrayAccess(new ASTIdent("a", 0, 0), new ASTIntLiteral(1, 0, 0), 0, 0),
+				IncrementOp.fromSymbol("++"), 0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		Assert.assertEquals(var, (new ASTFor(var, expr, instr, instrs, 0, 0)).getVar());
+		Assert.assertEquals(null, (new ASTFor(null, expr, instr, instrs, 0, 0)).getVar());
+		Assert.assertEquals(expr, (new ASTFor(var, expr, instr, instrs, 0, 0)).getExpr());
+		Assert.assertEquals(null, (new ASTFor(var, null, instr, instrs, 0, 0)).getExpr());
+		Assert.assertEquals(instr, (new ASTFor(var, expr, instr, instrs, 0, 0)).getInc());
+		Assert.assertEquals(null, (new ASTFor(var, expr, null, instrs, 0, 0)).getInc());
+		Assert.assertEquals(instrs, (new ASTFor(var, expr, instr, instrs, 0, 0)).getInstrs());
+	}
+
+	@Test
 	public void getterWrite() {
 		ASTStringLiteral stringLiteral = new ASTStringLiteral("a", 0, 0);
 		ASTIdent ident = new ASTIdent("a", 0, 0);

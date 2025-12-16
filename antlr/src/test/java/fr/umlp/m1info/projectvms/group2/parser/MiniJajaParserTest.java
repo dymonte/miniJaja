@@ -131,6 +131,14 @@ public class MiniJajaParserTest {
 	}
 
 	@Test
+	public void testFor() throws Exception {
+		shouldNotBeNullString("class Test { int x; main { for (int i = 0; i < 10; i++) { x += 1; }; } }");
+		shouldNotBeNullString("class Test { int x; main { for (; i < 10; i++) { x += 1; }; } }");
+		shouldNotBeNullString("class Test { int x; main { for (;;i++) { x += 1; }; } }");
+		shouldNotBeNullString("class Test { int x; main { for (;;) { x += 1; }; } }");
+	}
+
+	@Test
 	public void testBooleanExpr() throws Exception {
 		shouldNotBeNullString("class Test { boolean b; main { b = true && false || (!true); } }");
 	}

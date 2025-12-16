@@ -34,6 +34,7 @@ instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp              #Assignment
         | 'dugois' '(' exp ')'                                #Dugois
         | 'if' '('exp')' '{'instrs'}' ('else' '{' instrs '}')? #If
         | 'while' '('exp')''{'instrs'}'                        #While
+				| 'for' '(' (var|) ';' (exp|) ';' (instr|) ')' '{' instrs '}'  #For
         ;
 listexp : (exp (',' exp)*)?;
 exp:      '!'exp1                 #NotExp

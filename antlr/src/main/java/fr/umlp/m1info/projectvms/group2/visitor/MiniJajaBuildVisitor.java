@@ -446,6 +446,30 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
+	 * Visits a for loop
+	 *
+	 * @param ctx the for context
+	 * @return an ASTWhile node representing the loop
+	 */
+	@Override
+	public ASTFor visitFor(MiniJajaParser.ForContext ctx) {
+		ASTVar var = null;
+		if (ctx.var() != null) {
+			var = (ASTVar) visit(ctx.var());
+		}
+		ASTExpr expr = null;
+		if (ctx.exp() != null) {
+			expr = (ASTExpr) visit(ctx.exp());
+		}
+		ASTInstr inc = null;
+		if (ctx.instr() != null) {
+			inc = (ASTInstr) visit(ctx.instr());
+		}
+		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
+		return new ASTFor(var, expr, inc, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
 	 * Visits a list of expressions.
 	 *
 	 * @param ctx the list expression context
@@ -509,14 +533,14 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		return (ASTExpr) visit(ctx.exp1());
 	}
 
-
 	/**
 	 * Visits a ternary operator expression
 	 *
 	 * @param ctx the ternary operator context
 	 * @return the corresponding ASTTernaryOp node
 	 */
-	@Override public ASTTernaryOp visitTernaryOp(MiniJajaParser.TernaryOpContext ctx) {
+	@Override
+	public ASTTernaryOp visitTernaryOp(MiniJajaParser.TernaryOpContext ctx) {
 		ASTExpr condition = (ASTExpr) visit(ctx.exp(0));
 		ASTExpr firstCase = (ASTExpr) visit(ctx.exp(1));
 		ASTExpr secondCase = (ASTExpr) visit(ctx.exp(2));

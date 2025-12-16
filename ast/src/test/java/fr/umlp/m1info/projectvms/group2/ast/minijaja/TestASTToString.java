@@ -117,6 +117,30 @@ public class TestASTToString {
 	}
 
 	@Test
+	public void testToStringFor() {
+		ASTVar var = new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("i", 0, 0),
+				new ASTVExpr(new ASTIntLiteral(0, 0, 0), 0, 0), 0, 0);
+		ASTExpr expr = new ASTBinaryOp(new ASTIntLiteral(1, 0, 0), new ASTIntLiteral(1, 0, 0), BinaryOp.fromSymbol(">"), 0,
+				0);
+		ASTInstr instr = new ASTIncrementOp(new ASTArrayAccess(new ASTIdent("a", 0, 0), new ASTIntLiteral(1, 0, 0), 0, 0),
+				IncrementOp.fromSymbol("++"), 0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+
+		Assert.assertEquals("for (;;) {\n}",
+				(new ASTFor(null, null, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (int i = 0;;) {\n}",
+				(new ASTFor(var, null, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (int i = 0;1 > 1;) {\n}",
+				(new ASTFor(var, expr, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (int i = 0;1 > 1;a[1]++) {\n}",
+				(new ASTFor(var, expr, instr, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (;1 > 1;) {\n}",
+				(new ASTFor(null, expr, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (;;a[1]++) {\n}",
+				(new ASTFor(null, null, instr, instrs, 0, 0)).toString());
+	}
+
+	@Test
 	public void testToStringWrite() {
 		Assert.assertEquals("write(\"ah\")", (new ASTWrite(new ASTStringLiteral("ah", 0, 0), false, 0, 0)).toString());
 		Assert.assertEquals("writeln(ah)", (new ASTWrite(new ASTIdent("ah", 0, 0), true, 0, 0)).toString());

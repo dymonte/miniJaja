@@ -301,6 +301,25 @@ public class MiniJajaInterpreter {
 		}
 	}
 
+	/** Interprets a for loop */
+	@InterpretFunction(ASTFor.class)
+	protected void interpretFor(ASTFor node) {
+		if (node.getVar() != null) {
+			interpret(node.getVar());
+		}
+
+		while (node.getExpr() == null || (Boolean) eval(node.getExpr())) {
+			interpret(node.getInstrs());
+			if (node.getInc() != null) {
+				interpret(node.getInc());
+			}
+		}
+
+		if (node.getVar() != null) {
+			free(node.getVar());
+		}
+	}
+
 	/** Interprets a write statement */
 	@InterpretFunction(ASTWrite.class)
 	protected void interpretWrite(ASTWrite node) {
@@ -309,13 +328,12 @@ public class MiniJajaInterpreter {
 		InterpreterLogger.getInstance().log(value + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
 	}
 
-
 	/** Interprets bonuses instructions */
 	@InterpretFunction(ASTBonusInstr.class)
 	protected void interpretBonuses(ASTBonusInstr node) {
 		switch (node.getOp()) {
-			case DUGOIS : {
-				//TODO: verify that it is an integer expression
+			case DUGOIS: {
+				// TODO: verify that it is an integer expression
 				Integer expr = (Integer) eval(node.getExpr());
 				if (expr < 0) {
 					throw new InterpretRuntimeException("(dugois): cannot sleep thread for a negative amount of time.");
@@ -327,11 +345,12 @@ public class MiniJajaInterpreter {
 				}
 				break;
 			}
-			case CHEVROT : {
-				//TODO: verify that it is a boolean expression
+			case CHEVROT: {
+				// TODO: verify that it is a boolean expression
 				Boolean expr = (Boolean) eval(node.getExpr());
 				if (!expr) {
-					//TODO: maybe add a new custom kind of exception if we have time (or remove this todo)
+					// TODO: maybe add a new custom kind of exception if we have time (or remove
+					// this todo)
 					throw new InterpretRuntimeException("(chevrot) Assertion failed : " + node.getExpr());
 				}
 				break;
@@ -437,7 +456,7 @@ public class MiniJajaInterpreter {
 	/** Evaluates a ternary operator */
 	@EvalFunction(ASTTernaryOp.class)
 	protected Object evalTernaryOp(ASTTernaryOp node) {
-		//TODO: vérifier que l'expression condition est booléenne 
+		// TODO: vérifier que l'expression condition est booléenne
 		return (boolean) eval(node.getCondition()) ? eval(node.getFirstCase()) : eval(node.getSecondCase());
 	}
 
@@ -454,7 +473,7 @@ public class MiniJajaInterpreter {
 	/** Interprets bonuses expressions */
 	@EvalFunction(ASTBonusExpr.class)
 	protected Object interpretBonuses(ASTBonusExpr node) {
-		//TODO: verify that those are integer expressions
+		// TODO: verify that those are integer expressions
 		Integer val1 = (Integer) eval(node.getExpr1());
 		Integer val2 = (Integer) eval(node.getExpr2());
 		return switch (node.getOp()) {
