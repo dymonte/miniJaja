@@ -4,11 +4,11 @@
   <parent>
     <groupId>fr.umlp.m1info.projectvms.group2</groupId>
     <artifactId>project-vms</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
   </parent>
   <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>utils</artifactId>
-  <version>0.2</version>
+  <version>0.3-SNAPSHOT</version>
   <name>utils</name>
   <url>http://maven.apache.org</url>
 </project>
