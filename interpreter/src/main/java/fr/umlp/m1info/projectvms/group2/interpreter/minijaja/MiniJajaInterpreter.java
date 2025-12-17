@@ -3,6 +3,8 @@ package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 import java.util.List;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.concurrent.ThreadLocalRandom;
 
 import fr.umlp.m1info.projectvms.group2.exception.EvalRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
@@ -23,6 +25,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 /**
  * The Interpreter class traverses and executes an Abstract Syntax Tree(AST) by
@@ -34,7 +37,6 @@ public class MiniJajaInterpreter {
 	private static final String ILLEGAL_ACCESS = "Illegal access ";
 	private static final String NULL_NODE = "node cannot be null";
 	private static final String BOOL_VALUE = "Condition must evaluate to a boolean value";
-
 
 	public MiniJajaInterpreter(Memory memory) {
 		if (memory == null) {
@@ -149,7 +151,7 @@ public class MiniJajaInterpreter {
 	}
 
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
-									   Class<?> nodeClass) {
+			Class<?> nodeClass) {
 		Class<?> cls = this.getClass();
 		while (cls != null) {
 			for (Method method : cls.getDeclaredMethods()) {
@@ -163,8 +165,7 @@ public class MiniJajaInterpreter {
 						throw new InterpretRuntimeException(
 								"Failed to resolve handler for annotation @"
 										+ annotationClass.getSimpleName()
-										+ " and node " + nodeClass.getSimpleName()
-						);
+										+ " and node " + nodeClass.getSimpleName());
 					}
 					if (handledType.isAssignableFrom(nodeClass)) {
 						return method;
@@ -352,9 +353,36 @@ public class MiniJajaInterpreter {
 		}
 	}
 
+	/** Interprets a for loop */
+	@InterpretFunction(ASTFor.class)
+	protected void interpretFor(ASTFor node) {
+		if (node.getVar() != null) {
+			interpret(node.getVar());
+		}
+
+		while (node.getExpr() == null || (Boolean) eval(node.getExpr())) {
+			interpret(node.getInstrs());
+			if (node.getInc() != null) {
+				interpret(node.getInc());
+			}
+		}
+
+		if (node.getVar() != null) {
+			free(node.getVar());
+		}
+	}
+
 	/**
-	 * Interprets a write statement
+	 * Interprets a switch
 	 */
+	@InterpretFunction(ASTSwitch.class)
+	protected void interpretSwitch(ASTSwitch node) {
+		Object value = eval(node.getExpr());
+		memory.updateVal(ASTClass.getClassVar().getName(), value);
+		interpret(node.getCases());
+	}
+
+	/** Interprets a write statement */
 	@InterpretFunction(ASTWrite.class)
 	protected void interpretWrite(ASTWrite node) {
 		boolean isLn = node.getIsLn();
@@ -363,8 +391,34 @@ public class MiniJajaInterpreter {
 	}
 
 	/**
-	 * Interprets a chain of instructions
+	 * Interprets bonuses instructions
 	 */
+	@InterpretFunction(ASTBonusInstr.class)
+	protected void interpretBonuses(ASTBonusInstr node) {
+		switch (node.getOp()) {
+			case DUGOIS: {
+				Integer expr = (Integer) eval(node.getExpr());
+				if (expr < 0) {
+					throw new InterpretRuntimeException("(dugois): cannot sleep thread for a negative amount of time.");
+				}
+				try {
+					Thread.sleep(Duration.ofSeconds(expr).toMillis());
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+				break;
+			}
+			case CHEVROT: {
+				Boolean expr = (Boolean) eval(node.getExpr());
+				if (!expr) {
+					throw new InterpretRuntimeException("(chevrot) Assertion failed : " + node.getExpr());
+				}
+				break;
+			}
+		}
+	}
+
+	/** Interprets a chain of instructions */
 	@InterpretFunction(ASTInstrsChain.class)
 	protected void interpretInstrsChain(ASTInstrsChain node) {
 		interpret(node.getInstr());
@@ -458,9 +512,23 @@ public class MiniJajaInterpreter {
 		// do nothing
 	}
 
-	/**
-	 * Evaluates an array element access expression
-	 */
+	/** Interprets a chain of case declaration */
+	@InterpretFunction(ASTCasesChain.class)
+
+	protected void interpretCasesChain(ASTCasesChain node) {
+		Boolean value = (Boolean) eval(node.getCase());
+		if (!value) {
+			interpret(node.getCases());
+		}
+	}
+
+	/** Interprets an empty case declaration */
+	@InterpretFunction(ASTCasesNil.class)
+	protected void interpretCasesNil(ASTCasesNil node) {
+		// do nothing
+	}
+
+	/** Evaluates an array element access expression */
 	@EvalFunction(ASTArrayAccess.class)
 	protected Object evalArrayAccess(ASTArrayAccess node) {
 		return memory.getValArray(node.getIdent().getName(), (Integer) eval(node.getExpr()));
@@ -475,9 +543,34 @@ public class MiniJajaInterpreter {
 				eval(node.getRight()));
 	}
 
-	/**
-	 * Evaluates a boolean literal
-	 */
+	/** Evaluates a ternary operator */
+	@EvalFunction(ASTTernaryOp.class)
+	protected Object evalTernaryOp(ASTTernaryOp node) {
+		return (boolean) eval(node.getCondition()) ? eval(node.getFirstCase()) : eval(node.getSecondCase());
+	}
+
+	private int randomBetween(int bInf, int bSup) {
+		if (bInf > bSup) {
+			throw new InterpretRuntimeException("(bouquet): bInf must be <= bSup");
+		}
+		if (bInf == bSup) {
+			return bInf;
+		}
+		return ThreadLocalRandom.current().nextInt(bInf, bSup);
+	}
+
+	/** Interprets bonuses expressions */
+	@EvalFunction(ASTBonusExpr.class)
+	protected Object interpretBonuses(ASTBonusExpr node) {
+		Integer val1 = (Integer) eval(node.getExpr1());
+		Integer val2 = (Integer) eval(node.getExpr2());
+		return switch (node.getOp()) {
+			case JACQUIN -> (int) Math.round(Math.pow(val1, val2));
+			case BOUQUET -> randomBetween(val1, val2);
+		};
+	}
+
+	/** Evaluates a boolean literal */
 	@EvalFunction(ASTBoolLiteral.class)
 	protected Object evalBoolLiteral(ASTBoolLiteral node) {
 		return node.getValue();
@@ -531,6 +624,25 @@ public class MiniJajaInterpreter {
 	@EvalFunction(ASTUnaryOp.class)
 	protected Object evalUnaryOp(ASTUnaryOp node) {
 		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
+	}
+
+	/** Evaluates a case */
+	@EvalFunction(ASTCase.class)
+	protected Object evalCase(ASTCase node) {
+		Object value = eval(node.getExpr());
+		Object vSwitch = memory.getVal(ASTClass.getClassVar().getName());
+		if (!value.equals(vSwitch)) {
+			return false;
+		}
+		interpret(node.getInstrs());
+		return true;
+	}
+
+	/** Evaluates a default */
+	@EvalFunction(ASTDefault.class)
+	protected Object evalDefault(ASTDefault node) {
+		interpret(node.getInstrs());
+		return true;
 	}
 
 	@FreeFunction(ASTDeclsChain.class)

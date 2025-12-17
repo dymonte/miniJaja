@@ -10,6 +10,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -114,6 +115,30 @@ public class TestASTToString {
 	public void testToStringWhile() {
 		Assert.assertEquals("while (true) {\n}",
 				(new ASTWhile(new ASTBoolLiteral(true, 0, 0), new ASTInstrsNil(0, 0), 0, 0)).toString());
+	}
+
+	@Test
+	public void testToStringFor() {
+		ASTVar var = new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("i", 0, 0),
+				new ASTVExpr(new ASTIntLiteral(0, 0, 0), 0, 0), 0, 0);
+		ASTExpr expr = new ASTBinaryOp(new ASTIntLiteral(1, 0, 0), new ASTIntLiteral(1, 0, 0), BinaryOp.fromSymbol(">"), 0,
+				0);
+		ASTInstr instr = new ASTIncrementOp(new ASTArrayAccess(new ASTIdent("a", 0, 0), new ASTIntLiteral(1, 0, 0), 0, 0),
+				IncrementOp.fromSymbol("++"), 0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+
+		Assert.assertEquals("for (;;) {\n}",
+				(new ASTFor(null, null, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (int i = 0;;) {\n}",
+				(new ASTFor(var, null, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (int i = 0;1 > 1;) {\n}",
+				(new ASTFor(var, expr, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (int i = 0;1 > 1;a[1]++) {\n}",
+				(new ASTFor(var, expr, instr, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (;1 > 1;) {\n}",
+				(new ASTFor(null, expr, null, instrs, 0, 0)).toString());
+		Assert.assertEquals("for (;;a[1]++) {\n}",
+				(new ASTFor(null, null, instr, instrs, 0, 0)).toString());
 	}
 
 	@Test
@@ -245,4 +270,18 @@ public class TestASTToString {
 						.toString());
 	}
 
+	/**
+	 * Cases
+	 */
+	@Test
+	public void testToStringCasesChain() {
+		ASTCase case1 = new ASTCase(new ASTIntLiteral(1, 0, 0), new ASTInstrsChain(
+				new ASTIncrementOp(new ASTIdent("a", 0, 0), IncrementOp.INC, 0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+		ASTDefault default1 = new ASTDefault(new ASTInstrsChain(
+				new ASTAssignmentOp(new ASTIdent("a", 0, 0), new ASTIntLiteral(1, 0, 0), AssignmentOp.ADD, 0, 0),
+				new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+		ASTSwitch switch1 = new ASTSwitch(new ASTIdent("a", 0, 0),
+				new ASTCasesChain(case1, new ASTCasesChain(default1, new ASTCasesNil(0, 0), 0, 0), 0, 0), 0, 0);
+		Assert.assertEquals("switch(a) {\ncase 1: a++;\ndefault: a += 1;\n}", switch1.toString());
+	}
 }

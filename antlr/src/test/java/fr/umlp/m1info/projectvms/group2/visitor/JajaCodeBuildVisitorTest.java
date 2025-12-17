@@ -255,6 +255,13 @@ public class JajaCodeBuildVisitorTest {
 	}
 
 	@Test
+	public void testvisitJdup() {
+		List<Instr> list = parsing("jdup");
+		Assert.assertEquals(1, list.size());
+		Assert.assertEquals(InstrJdup.class, list.get(0).getClass());
+	}
+
+	@Test
 	public void testIdentToPush() {
 		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.jajaCodeParseString("push(ident)"));
 	}

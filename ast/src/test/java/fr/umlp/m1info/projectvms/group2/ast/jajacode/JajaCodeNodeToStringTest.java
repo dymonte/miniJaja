@@ -244,4 +244,10 @@ public class JajaCodeNodeToStringTest {
 		Assert.assertEquals("1 : writeln", instr.toString());
 	}
 
+	@Test
+	public void testInstrToStringJdup() {
+		int lineId = 1;
+		InstrJdup instr = new InstrJdup(lineId);
+		Assert.assertEquals("1 : jdup", instr.toString());
+	}
 }

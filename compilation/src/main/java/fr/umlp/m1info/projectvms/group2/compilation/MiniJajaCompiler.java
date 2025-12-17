@@ -3,47 +3,17 @@ package fr.umlp.m1info.projectvms.group2.compilation;
 import java.lang.reflect.Method;
 
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTClass;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMainMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTParam;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTArrayAccess;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBinaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.BinaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBoolLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIdent;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTIntLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLValue;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTLength;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTMethodCallExpr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTStringLiteral;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTUnaryOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTVExpr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIncrementOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.IncrementOp;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTMethodCallInstr;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.ASTVoidType;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParams;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVar;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarArray;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarConst;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
-import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 
@@ -326,6 +296,35 @@ public class MiniJajaCompiler {
 		return nbInstrs;
 	}
 
+	/** Compiles a for loop. */
+	@CompilationFunction(ASTFor.class)
+	protected Integer compileFor(ASTFor node) {
+		int nb = 0;
+		if (node.getVar() != null) {
+			nb += compile(node.getVar());
+		}
+		int offset = sb.length();
+		int nStartFor = n;
+
+		ASTExpr expr = node.getExpr();
+		if (expr == null) {
+			expr = new ASTBoolLiteral(true, node.getLine(), node.getColumn());
+		}
+		nb += compile(expr);
+		nb += emit("not");
+		nb += emit("if(TMP_IF_FOR)");
+		nb += compile(node.getInstrs());
+		if (node.getInc() != null) {
+			nb += compile(node.getInc());
+		}
+		nb += emit("goto(" + (nStartFor + 1) + ")");
+		patch("TMP_IF_FOR", "" + (n + 1), offset);
+		if (node.getVar() != null) {
+			nb += free(node.getVar());
+		}
+		return nb;
+	}
+
 	/** Compiles an assignment operation. */
 	@CompilationFunction(ASTAssignmentOp.class)
 	protected Integer compileAssignment(ASTAssignmentOp node) {
@@ -469,6 +468,18 @@ public class MiniJajaCompiler {
 		return nbInstrs;
 	}
 
+	/** Compiles a bonus instruction. */
+	@CompilationFunction(ASTBonusInstr.class)
+	protected Integer compileBonus(ASTBonusInstr node) {
+		return compile(node.getExpr()) + emit(node.getOp().toString());
+	}
+
+	/** Compiles a bonus expression. */
+	@CompilationFunction(ASTBonusExpr.class)
+	protected Integer compileBonus(ASTBonusExpr node) {
+		return compile(node.getExpr1()) + compile(node.getExpr2()) + emit(node.getOp().toString());
+	}
+
 	/** Compiles a method call used as an instruction. */
 	@CompilationFunction(ASTMethodCallInstr.class)
 	protected Integer compileMethodCallInstr(ASTMethodCallInstr node) {
@@ -546,6 +557,21 @@ public class MiniJajaCompiler {
 		return count;
 	}
 
+	/** Compiles a ternary operator expression */
+	@CompilationFunction(ASTTernaryOp.class)
+	protected Integer compileTernaryOp(ASTTernaryOp node) {
+		int nbInstrs = compile(node.getCondition());
+		int offset = sb.length();
+		nbInstrs += emit("if(TMP_IF_TERNARY)");
+		nbInstrs += compile(node.getSecondCase());
+		patch("TMP_IF_TERNARY", "" + (n + 2), offset);
+		offset = sb.length();
+		nbInstrs += emit("goto(TMP_GOTO)");
+		nbInstrs += compile(node.getFirstCase());
+		patch("TMP_GOTO", "" + (n + 1), offset);
+		return nbInstrs;
+	}
+
 	/** Compiles an array element access expression. */
 	@CompilationFunction(ASTArrayAccess.class)
 	protected Integer compileArrayAccess(ASTArrayAccess node) {
@@ -613,6 +639,47 @@ public class MiniJajaCompiler {
 		nbInstrs += emit("invoke(" + node.getIdent().getName() + ")");
 		nbInstrs += free(node.getExprs());
 		return nbInstrs;
+	}
+
+	/** Compiles a switch */
+	@CompilationFunction(ASTSwitch.class)
+	protected Integer compileSwitch(ASTSwitch node) {
+		int nb = compile(node.getExpr());
+		nb += compile(node.getCases());
+		nb += emit("pop");
+		return nb;
+	}
+
+	/** Compiles cases chain */
+	@CompilationFunction(ASTCasesChain.class)
+	protected Integer compileCasesChain(ASTCasesChain node) {
+		ASTCaseGroup caseGroup = node.getCase();
+		ASTCases cases = node.getCases();
+		int offset = sb.length();
+		int nb = 0;
+		if (caseGroup instanceof ASTCase cs) {
+			nb += emit("jdup");
+			nb += compile(cs.getExpr());
+			nb += emit("cmp");
+			nb += emit("not");
+			nb += emit("if(TMP_IF_CASE)");
+			nb += compile(cs.getInstrs());
+		} else if (caseGroup instanceof ASTDefault def) {
+			nb += compile(def.getInstrs());
+		}
+		nb += emit("goto(TMP_GOTO_CASE)");
+		if (caseGroup instanceof ASTCase) {
+			patch("TMP_IF_CASE", "" + (n + 1), offset);
+		}
+		nb += compile(cases);
+
+		patch("TMP_GOTO_CASE", "" + (n + 1), offset);
+		return nb;
+	}
+
+	@CompilationFunction(ASTCasesNil.class)
+	protected Integer compileCasesNil(ASTCasesNil node) {
+		return 0;
 	}
 
 	/** Frees a null declaration. */

@@ -13,6 +13,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import fr.umlp.m1info.projectvms.group2.parser.MiniJajaBaseVisitor;
 import fr.umlp.m1info.projectvms.group2.parser.MiniJajaParser;
@@ -332,6 +333,56 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	}
 
 	/**
+	 * Visits a chevrot instruction
+	 *
+	 * @param ctx the chevrot instruction context
+	 * @return a ASTBonusInstr node representing the chevrot statement
+	 */
+	@Override
+	public ASTBonusInstr visitChevrot(MiniJajaParser.ChevrotContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		return new ASTBonusInstr(ASTBonusInstr.Op.CHEVROT, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a dugois instruction
+	 *
+	 * @param ctx the dugois instruction context
+	 * @return a ASTBonusInstr node representing the dugois statement
+	 */
+	@Override
+	public ASTBonusInstr visitDugois(MiniJajaParser.DugoisContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		return new ASTBonusInstr(ASTBonusInstr.Op.DUGOIS, expr, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a bouquet instruction
+	 *
+	 * @param ctx the bouquet instruction context
+	 * @return a ASTBonusExpr node representing the bouquet statement
+	 */
+	@Override
+	public ASTBonusExpr visitBouquet(MiniJajaParser.BouquetContext ctx) {
+		ASTExpr expr1 = (ASTExpr) visit(ctx.exp(0));
+		ASTExpr expr2 = (ASTExpr) visit(ctx.exp(1));
+		return new ASTBonusExpr(ASTBonusExpr.Op.BOUQUET, expr1, expr2, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a jacquin instruction
+	 *
+	 * @param ctx the jacquin instruction context
+	 * @return a ASTBonusExpr node representing the bouquet statement
+	 */
+	@Override
+	public ASTBonusExpr visitJacquin(MiniJajaParser.JacquinContext ctx) {
+		ASTExpr expr1 = (ASTExpr) visit(ctx.exp(0));
+		ASTExpr expr2 = (ASTExpr) visit(ctx.exp(1));
+		return new ASTBonusExpr(ASTBonusExpr.Op.JACQUIN, expr1, expr2, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
 	 * Visits a write instruction (without newline).
 	 *
 	 * @param ctx the write context
@@ -375,11 +426,47 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTIf visitIf(MiniJajaParser.IfContext ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		ASTInstrs ifInstrs = (ASTInstrs) visit(ctx.instrs(0));
-		ASTInstrs elseInstrs = (ctx.instrs().size() >= 2 ? (ASTInstrs) visit(ctx.instrs(1))
-				: new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
-		return new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		int line = VisitorUtils.line(ctx);
+		int column = VisitorUtils.column(ctx);
+
+		ASTExpr cond = (ASTExpr) visit(ctx.exp());
+		ASTInstrs thenInstrs = (ASTInstrs) visit(ctx.instrs());
+		ASTInstrs elseInstrs;
+
+		if (ctx.else_() != null) {
+			elseInstrs = visitElse(ctx.else_());
+		} else {
+			elseInstrs = new ASTInstrsNil(line, column);
+		}
+
+		for (int i = ctx.elseif().size() - 1; i >= 0; i--) {
+			MiniJajaParser.ElseifContext ectx = ctx.elseif(i);
+			elseInstrs = visitElseIf(ectx, elseInstrs);
+		}
+
+		return new ASTIf(cond, thenInstrs, elseInstrs, line, column);
+	}
+
+	/**
+	 * Builds an else-if as an else containing a nested if.
+	 */
+	private ASTInstrs visitElseIf(MiniJajaParser.ElseifContext ctx, ASTInstrs elseInstrs) {
+		int line = VisitorUtils.line(ctx);
+		int column = VisitorUtils.column(ctx);
+
+		ASTExpr cond = (ASTExpr) visit(ctx.exp());
+		ASTInstrs thenInstrs = (ASTInstrs) visit(ctx.instrs());
+
+		ASTIf nestedIf = new ASTIf(cond, thenInstrs, elseInstrs, line, column);
+		return new ASTInstrsChain(nestedIf, new ASTInstrsNil(line, column), line, column);
+	}
+
+	/**
+	 * Visits an else clause.
+	 */
+	@Override
+	public ASTInstrs visitElse(MiniJajaParser.ElseContext ctx) {
+		return (ASTInstrs) visit(ctx.instrs());
 	}
 
 	/**
@@ -393,6 +480,79 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
 		return new ASTWhile(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a for loop
+	 *
+	 * @param ctx the for context
+	 * @return an ASTWhile node representing the loop
+	 */
+	@Override
+	public ASTFor visitFor(MiniJajaParser.ForContext ctx) {
+		ASTVar var = null;
+		if (ctx.var() != null) {
+			var = (ASTVar) visit(ctx.var());
+		}
+		ASTExpr expr = null;
+		if (ctx.exp() != null) {
+			expr = (ASTExpr) visit(ctx.exp());
+		}
+		ASTInstr inc = null;
+		if (ctx.instr() != null) {
+			inc = (ASTInstr) visit(ctx.instr());
+		}
+		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
+		return new ASTFor(var, expr, inc, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a switch
+	 *
+	 * @param ctx the switch context
+	 * @return an ASTSwitch node
+	 */
+	@Override
+	public ASTSwitch visitSwitch(MiniJajaParser.SwitchContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		ASTCases cases = (ASTCases) visit(ctx.cases());
+		if (cases == null) {
+			cases = new ASTCasesNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+		return new ASTSwitch(expr, cases, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a case
+	 *
+	 * @param ctx the case context
+	 * @return an ASTCase node
+	 */
+	@Override
+	public ASTCases visitCase(MiniJajaParser.CaseContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
+		ASTCase case1 = new ASTCase(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		ASTCases cases = (ASTCases) visit(ctx.cases());
+		if (cases == null) {
+			cases = new ASTCasesNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
+		return new ASTCasesChain(case1, cases, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a default
+	 *
+	 * @param ctx the default context
+	 * @return an ASTDefault node
+	 */
+	@Override
+	public ASTCases visitDefault(MiniJajaParser.DefaultContext ctx) {
+		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
+		ASTDefault default1 = new ASTDefault(instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		int line = VisitorUtils.line(ctx);
+		int column = VisitorUtils.column(ctx);
+		return new ASTCasesChain(default1, new ASTCasesNil(line, column), line, column);
 	}
 
 	/**
@@ -457,6 +617,21 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	@Override
 	public ASTExpr visitSingleExp1(MiniJajaParser.SingleExp1Context ctx) {
 		return (ASTExpr) visit(ctx.exp1());
+	}
+
+	/**
+	 * Visits a ternary operator expression
+	 *
+	 * @param ctx the ternary operator context
+	 * @return the corresponding ASTTernaryOp node
+	 */
+	@Override
+	public ASTTernaryOp visitTernaryOp(MiniJajaParser.TernaryOpContext ctx) {
+		ASTExpr condition = (ASTExpr) visit(ctx.exp(0));
+		ASTExpr firstCase = (ASTExpr) visit(ctx.exp(1));
+		ASTExpr secondCase = (ASTExpr) visit(ctx.exp(2));
+
+		return new ASTTernaryOp(condition, firstCase, secondCase, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**

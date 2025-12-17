@@ -104,6 +104,19 @@ public class CLIEndToEndIT {
 	}
 
 	@Test
+	public void testBonuses() throws IOException, InterruptedException {
+		ProgramOutput out = executeProgram(new String[] {
+				"execute:mjj",
+				codeSamplesPath + "bonuses.mjj"
+		});
+
+		String expectedResult = "5\n25\n14\n";
+		assertEquals(0, out.exitCode());
+		assertEquals(expectedResult, out.output());
+		testFile("bonuses", expectedResult);
+	}
+
+	@Test
 	public void testPushAndAdd() throws IOException, InterruptedException {
 		ProgramOutput out = executeProgram(new String[] {
 				"execute:jjc",

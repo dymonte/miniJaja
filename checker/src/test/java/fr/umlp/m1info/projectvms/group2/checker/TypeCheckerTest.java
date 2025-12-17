@@ -16,6 +16,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 import fr.umlp.m1info.projectvms.group2.checker.Diagnostic.ErrorCode;
 import fr.umlp.m1info.projectvms.group2.utils.Type;
 
@@ -486,6 +487,41 @@ public class TypeCheckerTest {
 	}
 
 	@Test
+	public void forBoolTest() {
+		TypeChecker spyChecker = Mockito.spy(checker);
+
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTFor astFor = new ASTFor(null, ident, null, instrs, 0, 0);
+
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(instrs);
+
+		spyChecker.check(astFor);
+
+		Assert.assertEquals(0, diag.issues().size());
+	}
+
+	@Test
+	public void forNotBoolTest() {
+		TypeChecker spyChecker = Mockito.spy(checker);
+
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTFor astFor = new ASTFor(null, ident, null, instrs, 0, 0);
+
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(instrs);
+
+		spyChecker.check(astFor);
+
+		Assert.assertEquals(1, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+	}
+
+	@Test
 	public void writeTest() {
 		ASTWrite write = new ASTWrite(new ASTStringLiteral("ah", 0, 0), false, 0, 0);
 		checker.check(write);
@@ -933,6 +969,111 @@ public class TypeCheckerTest {
 	}
 
 	@Test
+	public void bonusInstrTest() {
+		TypeChecker spyChecker = Mockito.spy(checker);
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+
+		// CHEVROT (Assert) - Correct (BOOL)
+		ASTBonusInstr chevrot = new ASTBonusInstr(ASTBonusInstr.Op.CHEVROT, ident, 0, 0);
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(ident);
+		spyChecker.check(chevrot);
+		Assert.assertEquals(0, diag.issues().size());
+
+		// CHEVROT (Assert) - Incorrect (INT)
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident);
+		spyChecker.check(chevrot);
+		Assert.assertEquals(1, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+
+		// Reset
+		diag = new Diagnostic();
+		checker = new TypeChecker(diag);
+		spyChecker = Mockito.spy(checker);
+
+		// DUGOIS (Sleep) - Correct (INT)
+		ASTBonusInstr dugois = new ASTBonusInstr(ASTBonusInstr.Op.DUGOIS, ident, 0, 0);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident);
+		spyChecker.check(dugois);
+		Assert.assertEquals(0, diag.issues().size());
+
+		// DUGOIS (Sleep) - Incorrect (BOOL)
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(ident);
+		spyChecker.check(dugois);
+		Assert.assertEquals(1, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+	}
+
+	@Test
+	public void bonusExprTest() {
+		TypeChecker spyChecker = Mockito.spy(checker);
+		ASTIdent ident1 = new ASTIdent("a", 0, 0);
+		ASTIdent ident2 = new ASTIdent("b", 0, 0);
+
+		// JACQUIN (Pow) - Correct (INT, INT)
+		ASTBonusExpr jacquin = new ASTBonusExpr(ASTBonusExpr.Op.JACQUIN, ident1, ident2, 0, 0);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident1);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident2);
+		Type type = spyChecker.evalType(jacquin);
+		Assert.assertEquals(Type.INT, type);
+		Assert.assertEquals(0, diag.issues().size());
+
+		// JACQUIN (Pow) - Incorrect (BOOL, INT)
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(ident1);
+		spyChecker.evalType(jacquin);
+		Assert.assertEquals(1, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+
+		// Reset
+		diag = new Diagnostic();
+		checker = new TypeChecker(diag);
+		spyChecker = Mockito.spy(checker);
+
+		// BOUQUET (Random) - Correct (INT, INT)
+		ASTBonusExpr bouquet = new ASTBonusExpr(ASTBonusExpr.Op.BOUQUET, ident1, ident2, 0, 0);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident1);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident2);
+		type = spyChecker.evalType(bouquet);
+		Assert.assertEquals(Type.INT, type);
+		Assert.assertEquals(0, diag.issues().size());
+	}
+
+	@Test
+	public void ternaryOpTest() {
+		TypeChecker spyChecker = Mockito.spy(checker);
+		ASTIdent cond = new ASTIdent("c", 0, 0);
+		ASTIdent case1 = new ASTIdent("t", 0, 0);
+		ASTIdent case2 = new ASTIdent("f", 0, 0);
+		ASTTernaryOp ternary = new ASTTernaryOp(cond, case1, case2, 0, 0);
+
+		// Correct: BOOL ? INT : INT
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(cond);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(case1);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(case2);
+		Type type = spyChecker.evalType(ternary);
+		Assert.assertEquals(Type.INT, type);
+		Assert.assertEquals(0, diag.issues().size());
+
+		// Incorrect condition: INT ? INT : INT
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(cond);
+		spyChecker.evalType(ternary);
+		Assert.assertEquals(1, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+
+		// Reset
+		diag = new Diagnostic();
+		checker = new TypeChecker(diag);
+		spyChecker = Mockito.spy(checker);
+
+		// Incorrect types: BOOL ? INT : BOOL
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(cond);
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(case1);
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(case2);
+		spyChecker.evalType(ternary);
+		Assert.assertEquals(1, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+	}
+
+	@Test
 	public void returnIntTest() {
 		TypeChecker spyChecker = Mockito.spy(checker);
 		ASTIdent ident = new ASTIdent("a", 0, 0);
@@ -1003,5 +1144,73 @@ public class TypeCheckerTest {
 		Type type = checker.evalType(ident);
 		Assert.assertEquals(Type.INT, type);
 		Assert.assertEquals(0, diag.issues().size());
+	}
+
+	@Test
+	public void testSwitchCase() {
+		new ASTClass(new ASTIdent("A", 0, 0), new ASTDeclsNil(0, 0),
+				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+
+		TypeChecker spyChecker = Mockito.spy(checker);
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTAssignmentOp defInstr = new ASTAssignmentOp(ident, new ASTIntLiteral(30, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs defInstrs = new ASTInstrsChain(defInstr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTDefault def = new ASTDefault(defInstrs, 0, 0);
+		ASTAssignmentOp cs20Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(20, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs20Instrs = new ASTInstrsChain(cs20Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs20 = new ASTCase(new ASTIntLiteral(20, 0, 0), cs20Instrs, 0, 0);
+		ASTAssignmentOp cs10Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(10, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs10Instrs = new ASTInstrsChain(cs10Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs10 = new ASTCase(new ASTIntLiteral(10, 0, 0), cs10Instrs, 0, 0);
+		ASTCasesChain chain = new ASTCasesChain(cs10,
+				new ASTCasesChain(cs20, new ASTCasesChain(def, new ASTCasesNil(0, 0), 0, 0), 0, 0), 0, 0);
+
+		ASTSwitch swt = new ASTSwitch(ident, chain, 0, 0);
+
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(defInstr);
+		Mockito.doNothing().when(spyChecker).check(cs20Instr);
+		Mockito.doNothing().when(spyChecker).check(cs10Instr);
+		spyChecker.check(swt);
+
+		Assert.assertEquals(0, diag.issues().size());
+	}
+
+	@Test
+	public void testSwitchDefault() {
+		new ASTClass(new ASTIdent("A", 0, 0), new ASTDeclsNil(0, 0),
+				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+
+		TypeChecker spyChecker = Mockito.spy(checker);
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTAssignmentOp defInstr = new ASTAssignmentOp(ident, new ASTIntLiteral(30, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs defInstrs = new ASTInstrsChain(defInstr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTDefault def = new ASTDefault(defInstrs, 0, 0);
+		ASTAssignmentOp cs20Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(20, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs20Instrs = new ASTInstrsChain(cs20Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs20 = new ASTCase(new ASTIntLiteral(20, 0, 0), cs20Instrs, 0, 0);
+		ASTAssignmentOp cs10Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(10, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs10Instrs = new ASTInstrsChain(cs10Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs10 = new ASTCase(new ASTIntLiteral(10, 0, 0), cs10Instrs, 0, 0);
+		ASTCasesChain chain = new ASTCasesChain(cs10,
+				new ASTCasesChain(cs20, new ASTCasesChain(def, new ASTCasesNil(0, 0), 0, 0), 0, 0), 0, 0);
+
+		ASTSwitch swt = new ASTSwitch(ident, chain, 0, 0);
+
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(defInstr);
+		Mockito.doNothing().when(spyChecker).check(cs20Instr);
+		Mockito.doNothing().when(spyChecker).check(cs10Instr);
+		spyChecker.check(swt);
+
+		Assert.assertEquals(2, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(1));
 	}
 }

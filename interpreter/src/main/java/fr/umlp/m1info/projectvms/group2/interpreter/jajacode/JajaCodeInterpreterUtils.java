@@ -1,11 +1,14 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeBinaryOper;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeUnaryOper;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.utils.Type;
 
-public final class JajaCodeInterpreterUtils {
+public abstract class JajaCodeInterpreterUtils {
+
 	private JajaCodeInterpreterUtils() {
 		throw new UnsupportedOperationException("Utility class");
 	}
@@ -13,27 +16,47 @@ public final class JajaCodeInterpreterUtils {
 	public static Object evalOperBinary(Object v1, Object v2, JajaCodeBinaryOper oper) {
 		Object result;
 		switch (oper) {
-			case ADD -> result = (int) v1 + (int) v2;
-
-			case SUB -> result = (int) v1 - (int) v2;
-
-			case MUL -> result = (int) v1 * (int) v2;
-
+			case ADD -> {
+				result = (int) v1 + (int) v2;
+			}
+			case SUB -> {
+				result = (int) v1 - (int) v2;
+			}
+			case MUL -> {
+				result = (int) v1 * (int) v2;
+			}
 			case DIV -> {
 				if ((int) v2 == 0)
 					throw new InterpretRuntimeException("Division by zero");
 				result = (int) v1 / (int) v2;
 			}
-			case CMP -> result = Integer.compare((int) v1, (int) v2);
-
-			case SUP -> result = (int) v1 > (int) v2;
-
-			case AND -> result = (boolean) v1 && (boolean) v2;
-
-			case OR -> result = (boolean) v1 || (boolean) v2;
-
-			default -> throw new InterpretRuntimeException("Unknown binary operator: " + oper);
-
+			case CMP -> {
+				// Compare two integers
+				result = (int) v1 == (int) v2;
+			}
+			case SUP -> {
+				result = (int) v1 > (int) v2;
+			}
+			case AND -> {
+				result = (boolean) v1 && (boolean) v2;
+			}
+			case OR -> {
+				result = (boolean) v1 || (boolean) v2;
+			}
+			case JACQUIN -> {
+				result = (int) Math.round(Math.pow((int) v1, (int) v2));
+			}
+			case BOUQUET -> {
+				int bInf = (int) v1;
+				int bSup = (int) v2;
+				if (bInf > bSup) {
+					throw new InterpretRuntimeException("(bouquet): bInf must be <= bSup");
+				}
+				result = bInf == bSup ? bInf : ThreadLocalRandom.current().nextInt(bInf, bSup);
+			}
+			default -> {
+				throw new InterpretRuntimeException("Unknown binary operator: " + oper);
+			}
 		}
 		return result;
 	}
@@ -59,5 +82,4 @@ public final class JajaCodeInterpreterUtils {
 	public static Type getTypeFromObject(Object o) {
 		return o instanceof Integer ? Type.INT : Type.BOOL;
 	}
-
 }

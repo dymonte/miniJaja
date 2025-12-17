@@ -10,6 +10,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -53,6 +54,17 @@ public class GetterTest {
 		ASTIntLiteral intLiteral = new ASTIntLiteral(1, 0, 0);
 		Assert.assertEquals(ident, (new ASTArrayAccess(ident, intLiteral, 0, 0)).getIdent());
 		Assert.assertEquals(intLiteral, (new ASTArrayAccess(ident, intLiteral, 0, 0)).getExpr());
+	}
+
+	@Test
+	public void getterTernaryOp() {
+		ASTBoolLiteral condition = new ASTBoolLiteral(true, 0, 0);
+		ASTIntLiteral firstCase = new ASTIntLiteral(4, 0, 0);
+		ASTIntLiteral secondCase = new ASTIntLiteral(3, 0, 0);
+		ASTTernaryOp ternaryOp = new ASTTernaryOp(condition, firstCase, secondCase, 0, 0);
+		Assert.assertEquals(condition, ternaryOp.getCondition());
+		Assert.assertEquals(firstCase, ternaryOp.getFirstCase());
+		Assert.assertEquals(secondCase, ternaryOp.getSecondCase());
 	}
 
 	@Test
@@ -130,6 +142,24 @@ public class GetterTest {
 	}
 
 	@Test
+	public void gettFor() {
+		ASTVar var = new ASTVarSimple(new ASTIntType(0, 0), new ASTIdent("i", 0, 0),
+				new ASTVExpr(new ASTIntLiteral(0, 0, 0), 0, 0), 0, 0);
+		ASTExpr expr = new ASTBinaryOp(new ASTIntLiteral(1, 0, 0), new ASTIntLiteral(1, 0, 0), BinaryOp.fromSymbol(">"), 0,
+				0);
+		ASTInstr instr = new ASTIncrementOp(new ASTArrayAccess(new ASTIdent("a", 0, 0), new ASTIntLiteral(1, 0, 0), 0, 0),
+				IncrementOp.fromSymbol("++"), 0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		Assert.assertEquals(var, (new ASTFor(var, expr, instr, instrs, 0, 0)).getVar());
+		Assert.assertEquals(null, (new ASTFor(null, expr, instr, instrs, 0, 0)).getVar());
+		Assert.assertEquals(expr, (new ASTFor(var, expr, instr, instrs, 0, 0)).getExpr());
+		Assert.assertEquals(null, (new ASTFor(var, null, instr, instrs, 0, 0)).getExpr());
+		Assert.assertEquals(instr, (new ASTFor(var, expr, instr, instrs, 0, 0)).getInc());
+		Assert.assertEquals(null, (new ASTFor(var, expr, null, instrs, 0, 0)).getInc());
+		Assert.assertEquals(instrs, (new ASTFor(var, expr, instr, instrs, 0, 0)).getInstrs());
+	}
+
+	@Test
 	public void getterWrite() {
 		ASTStringLiteral stringLiteral = new ASTStringLiteral("a", 0, 0);
 		ASTIdent ident = new ASTIdent("a", 0, 0);
@@ -137,6 +167,24 @@ public class GetterTest {
 		Assert.assertEquals(ident, (new ASTWrite(ident, true, 0, 0)).getValue());
 		Assert.assertEquals(true, (new ASTWrite(ident, true, 0, 0)).getIsLn());
 		Assert.assertEquals(false, (new ASTWrite(ident, false, 0, 0)).getIsLn());
+	}
+
+	@Test
+	public void getterBonuses() {
+		ASTIntLiteral expr1 = new ASTIntLiteral(1, 0, 0);
+		ASTIntLiteral expr2 = new ASTIntLiteral(2, 0, 0);
+		for (ASTBonusInstr.Op op: ASTBonusInstr.Op.values()) {
+			ASTBonusInstr bonus = new ASTBonusInstr(op, expr1, 0, 0);
+			Assert.assertEquals(op, bonus.getOp());
+			Assert.assertEquals(expr1, bonus.getExpr());
+		}
+
+		for (ASTBonusExpr.Op op: ASTBonusExpr.Op.values()) {
+			ASTBonusExpr bonus = new ASTBonusExpr(op, expr1, expr2, 0, 0);
+			Assert.assertEquals(op, bonus.getOp());
+			Assert.assertEquals(expr1, bonus.getExpr1());
+			Assert.assertEquals(expr2, bonus.getExpr2());
+		}
 	}
 
 	@Test
@@ -301,5 +349,43 @@ public class GetterTest {
 		}
 		Assert.assertEquals(ident, (new ASTTestVar(ident, 0, 0)).getIdent());
 
+	}
+
+	/**
+	 * Cases
+	 */
+	@Test
+	public void getterSwitch() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTCasesNil cases = new ASTCasesNil(0, 0);
+		ASTSwitch switch1 = new ASTSwitch(ident, cases, 0, 0);
+		Assert.assertEquals(ident, switch1.getExpr());
+		Assert.assertEquals(cases, switch1.getCases());
+	}
+
+	@Test
+	public void getterCase() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTCase case1 = new ASTCase(ident, instrs, 0, 0);
+		Assert.assertEquals(ident, case1.getExpr());
+		Assert.assertEquals(instrs, case1.getInstrs());
+	}
+
+	@Test
+	public void getterDefault() {
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTDefault default1 = new ASTDefault(instrs, 0, 0);
+		Assert.assertEquals(instrs, default1.getInstrs());
+	}
+
+	@Test
+	public void getterCasesChain() {
+		ASTCasesNil casesNil = new ASTCasesNil(0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTDefault default1 = new ASTDefault(instrs, 0, 0);
+		ASTCasesChain chain = new ASTCasesChain(default1, casesNil, 0, 0);
+		Assert.assertEquals(default1, chain.getCase());
+		Assert.assertEquals(casesNil, chain.getCases());
 	}
 }

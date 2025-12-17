@@ -21,6 +21,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import fr.umlp.m1info.projectvms.group2.checker.Diagnostic.ErrorCode;
 
@@ -202,7 +203,8 @@ public class TypeChecker implements Checker {
 
 		if (env.isDefined(methodKey)) {
 			diag.error(ErrorCode.METHOD_ALREADY_EXISTS,
-					"The method '" + node.getIdent().getName() + "' already exists with the same arguments", node.getLine(),
+					"The method '" + node.getIdent().getName() + "' already exists with the same arguments",
+					node.getLine(),
 					node.getColumn());
 		}
 		env.define(methodKey, returnType);
@@ -244,7 +246,8 @@ public class TypeChecker implements Checker {
 
 			if (ret == null) {
 				if (!Type.VOID.equals(expectedReturnType)) {
-					diag.error(ErrorCode.MISSING_RETURN_STATEMENT, "Method must return a value of type " + expectedReturnType,
+					diag.error(ErrorCode.MISSING_RETURN_STATEMENT,
+							"Method must return a value of type " + expectedReturnType,
 							method.getLine(), method.getColumn());
 				}
 				continue;
@@ -253,7 +256,8 @@ public class TypeChecker implements Checker {
 			Type actualReturnType = evalType(ret);
 			if (!expectedReturnType.equals(actualReturnType)) {
 				diag.error(ErrorCode.RETURN_TYPE_MISMATCH,
-						"Return type mismatch: expected " + expectedReturnType + ", got " + actualReturnType, ret.getLine(),
+						"Return type mismatch: expected " + expectedReturnType + ", got " + actualReturnType,
+						ret.getLine(),
 						ret.getColumn());
 			}
 		}
@@ -286,7 +290,8 @@ public class TypeChecker implements Checker {
 		Type conditionType = evalType(node.getExpr());
 
 		if (!Type.BOOL.equals(conditionType)) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "If condition must be of type BOOLEAN, got " + conditionType, node.getLine(),
+			diag.error(ErrorCode.TYPE_MISMATCH, "If condition must be of type BOOLEAN, got " + conditionType,
+					node.getLine(),
 					node.getColumn());
 		}
 
@@ -302,7 +307,8 @@ public class TypeChecker implements Checker {
 
 		if (!expectedType.equals(actualType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH,
-					"Increment operator can only be applied to type " + expectedType + ", got " + actualType, node.getLine(),
+					"Increment operator can only be applied to type " + expectedType + ", got " + actualType,
+					node.getLine(),
 					node.getColumn());
 		}
 	}
@@ -319,10 +325,45 @@ public class TypeChecker implements Checker {
 		check(node.getInstrs());
 	}
 
+	/** Checks a for loop condition type and its instructions */
+	@TypeCheckFunction(ASTFor.class)
+	protected void checkFor(ASTFor node) {
+		Type conditionType = evalType(node.getExpr());
+
+		if (!Type.BOOL.equals(conditionType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "While condition must be boolean", node.getLine(), node.getColumn());
+		}
+
+		check(node.getInstrs());
+	}
+
 	/** Type-checks a write instruction */
 	@TypeCheckFunction(ASTWrite.class)
 	protected void checkWrite(ASTWrite node) {
 		// do nothing
+	}
+
+	/** Type-checks a bonus instruction */
+	@TypeCheckFunction(ASTBonusInstr.class)
+	protected void checkBonusInstr(ASTBonusInstr node) {
+		switch (node.getOp()) {
+			case CHEVROT -> {
+				Type assertionType = evalType(node.getExpr());
+
+				if (!Type.BOOL.equals(assertionType)) {
+					diag.error(ErrorCode.TYPE_MISMATCH, "(chevrot) Assertion condition must be boolean", node.getLine(),
+							node.getColumn());
+				}
+			}
+			case DUGOIS -> {
+				Type sleepTimeType = evalType(node.getExpr());
+
+				if (!Type.INT.equals(sleepTimeType)) {
+					diag.error(ErrorCode.TYPE_MISMATCH, "(dugois) Sleep time must be an integer", node.getLine(),
+							node.getColumn());
+				}
+			}
+		}
 	}
 
 	/** Checks a chain of instructions recursively */
@@ -354,7 +395,8 @@ public class TypeChecker implements Checker {
 		Type actualType = evalType(initializer.getExpr());
 		if (!declaredType.equals(actualType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH,
-					"Variable '" + name + "' assigned with wrong type: expected " + declaredType + ", got " + actualType,
+					"Variable '" + name + "' assigned with wrong type: expected " + declaredType + ", got "
+							+ actualType,
 					node.getLine(), node.getColumn());
 		}
 	}
@@ -391,7 +433,8 @@ public class TypeChecker implements Checker {
 		Type actualType = evalType(valueExpr.getExpr());
 		if (!declaredType.equals(actualType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH,
-					"Variable '" + name + "' assigned with wrong type: expected " + declaredType + ", got " + actualType,
+					"Variable '" + name + "' assigned with wrong type: expected " + declaredType + ", got "
+							+ actualType,
 					node.getLine(), node.getColumn());
 		}
 	}
@@ -413,6 +456,44 @@ public class TypeChecker implements Checker {
 	@TypeCheckFunction(ASTReturn.class)
 	protected void checkReturn(ASTReturn node) {
 		// do nothing
+	}
+
+	/** Type-checks a switch */
+	@TypeCheckFunction(ASTSwitch.class)
+	protected void checkSwitch(ASTSwitch node) {
+		Type type = evalType(node.getExpr());
+		env.define("-switch-type", type);
+
+		check(node.getCases());
+	}
+
+	@TypeCheckFunction(ASTCasesChain.class)
+	protected void checkCasesChain(ASTCasesChain node) {
+		check(node.getCase());
+		check(node.getCases());
+	}
+
+	@TypeCheckFunction(ASTCasesNil.class)
+	protected void checkCasesNil(ASTCasesNil node) {
+		// do nothing
+	}
+
+	@TypeCheckFunction(ASTCase.class)
+	protected void checkCase(ASTCase node) {
+		Type switchType = env.get("-switch-type");
+		Type caseType = evalType(node.getExpr());
+
+		if (!caseType.equals(switchType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Case expression: expected " + switchType + ", got " + caseType, node.getLine(), node.getColumn());
+		}
+
+		check(node.getInstrs());
+	}
+
+	@TypeCheckFunction(ASTDefault.class)
+	protected void checkDefault(ASTDefault node) {
+		check(node.getInstrs());
 	}
 
 	@TypeCheckFunction(ASTMethodCallInstr.class)
@@ -480,7 +561,8 @@ public class TypeChecker implements Checker {
 		}
 
 		if (env.hasMethod(methodBaseName)) {
-			diag.error(ErrorCode.ARGUMENT_MISMATCH, "Argument mismatch for method '" + methodBaseName + "'", node.getLine(),
+			diag.error(ErrorCode.ARGUMENT_MISMATCH, "Argument mismatch for method '" + methodBaseName + "'",
+					node.getLine(),
 					node.getColumn());
 		} else {
 			diag.error(ErrorCode.UNKNOWN_FUNCTION, "Unknown method '" + node.getIdent().getName() + "'", node.getLine(),
@@ -492,11 +574,42 @@ public class TypeChecker implements Checker {
 	/** Evaluates the type of a method call expression */
 	@TypeEvalFunction(ASTMethodCallExpr.class)
 	protected Type evalTypeMethodCallExpr(ASTMethodCallExpr node) {
-		Type type = evalType(new ASTMethodCallInstr(node.getIdent(), node.getExprs(), node.getLine(), node.getColumn()));
+		Type type = evalType(
+				new ASTMethodCallInstr(node.getIdent(), node.getExprs(), node.getLine(), node.getColumn()));
 		if (Type.VOID.equals(type)) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Method call does not return a value", node.getLine(), node.getColumn());
+			diag.error(ErrorCode.TYPE_MISMATCH, "Method call does not return a value", node.getLine(),
+					node.getColumn());
 		}
 		return type;
+	}
+
+	/** Evaluates the type of a bonus expression */
+	@TypeEvalFunction(ASTBonusExpr.class)
+	protected Type evalTypeBonusExpr(ASTBonusExpr node) {
+		Type expr1Type = evalType(node.getExpr1());
+		Type expr2Type = evalType(node.getExpr2());
+		if (!Type.INT.equals(expr1Type) || !Type.INT.equals(expr2Type)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, node.getOp().toString() + " expressions must be integers",
+					node.getLine(), node.getColumn());
+		}
+		return Type.INT;
+	}
+
+	/** Evaluates the type of a ternary operator */
+	@TypeEvalFunction(ASTTernaryOp.class)
+	protected Type evalTernaryOp(ASTTernaryOp node) {
+		Type conditionType = evalType(node.getCondition());
+		if (!Type.BOOL.equals(conditionType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "Ternary operator condition must be a boolean", node.getLine(),
+					node.getColumn());
+		}
+		Type firstCaseType = evalType(node.getFirstCase());
+		Type secondCaseType = evalType(node.getSecondCase());
+		if (firstCaseType != secondCaseType) {
+			diag.error(ErrorCode.TYPE_MISMATCH, "Ternary operator cases expressions must have the same type",
+					node.getLine(), node.getColumn());
+		}
+		return firstCaseType;
 	}
 
 	/** Evaluates the type of a return statement */

@@ -131,6 +131,14 @@ public class MiniJajaParserTest {
 	}
 
 	@Test
+	public void testFor() throws Exception {
+		shouldNotBeNullString("class Test { int x; main { for (int i = 0; i < 10; i++) { x += 1; }; } }");
+		shouldNotBeNullString("class Test { int x; main { for (; i < 10; i++) { x += 1; }; } }");
+		shouldNotBeNullString("class Test { int x; main { for (;;i++) { x += 1; }; } }");
+		shouldNotBeNullString("class Test { int x; main { for (;;) { x += 1; }; } }");
+	}
+
+	@Test
 	public void testBooleanExpr() throws Exception {
 		shouldNotBeNullString("class Test { boolean b; main { b = true && false || (!true); } }");
 	}
@@ -159,6 +167,29 @@ public class MiniJajaParserTest {
 	public void testComplex() throws Exception {
 		shouldNotBeNullString(
 				"class Test { int arr[3]; void f(int a) { arr[0] = a; }; main { int x = 5; f(x); if (x>0) { writeln(\"ok\"); }; while(x>0) { x++; }; } }");
+	}
+
+	@Test
+	public void testSwitch() throws Exception {
+		shouldNotBeNullString(
+				"class Test { int y = 10; main { switch(y) { case 0: write(y); case 1: write(y); default: write(y);};}}");
+	}
+
+	@Test
+	public void testSwitch2() throws Exception {
+		shouldNotBeNullString(
+				"class Test { int y = 10; main { switch(y) { case 0: write(y); };}}");
+	}
+
+	@Test
+	public void testSwitch3() throws Exception {
+		shouldNotBeNullString("class Test { int y = 10; main { switch(y) {};}}");
+	}
+
+	@Test
+	public void testElseIf() throws Exception {
+		shouldNotBeNullString(
+				"class Test {int y = 10;main {if (y == 0) {write(\"ZERO\");} else if (y == 10) {write(\"TEN\");} else {write(\"IDONTKNOW\");};}}");
 	}
 
 	@Test

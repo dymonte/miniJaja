@@ -1,0 +1,14 @@
+class C {
+	main {
+		// ternary operator
+		boolean b = (5 == 5);
+		int val = b ? 5 : 6;
+		writeln(val);
+		val = jacquin(5, 2);
+		writeln(val);
+		chevrot(val == 25);
+		dugois(2);
+		val = bouquet(14, 14);
+		writeln(val);
+	}
+}

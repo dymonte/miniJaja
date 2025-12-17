@@ -2,6 +2,7 @@ package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,12 +112,11 @@ public class JajaCodeInterpreter {
 					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 						throw new InterpretRuntimeException(
 								"Failed to resolve annotation @" + annotationClass.getSimpleName()
-										+ " for node class " + nodeClass.getSimpleName()
-						);
+										+ " for node class " + nodeClass.getSimpleName());
 					}
 					if (handledType.isAssignableFrom(nodeClass)) {
-							return method;
-						}
+						return method;
+					}
 
 				}
 			}
@@ -134,8 +134,19 @@ public class JajaCodeInterpreter {
 	protected void interpretStop(InstrStop node) {
 		/*
 		 * STOP instruction marks the normal termination of the program.
-		 * No further instruction must be executed, so this method is intentionally empty.
+		 * No further instruction must be executed, so this method is intentionally
+		 * empty.
 		 */
+	}
+
+	@JajaCodeInterpretFunction(InstrJdup.class)
+	protected void interpretJdup(InstrJdup node) {
+		Object value = memory.pop();
+		Type type = getTypeFromObject(value);
+
+		memory.push(value, type);
+		memory.push(value, type);
+		interpret(getNextInstr(node));
 	}
 
 	/**
@@ -494,6 +505,34 @@ public class JajaCodeInterpreter {
 		}
 		int newVal = (int) currentVal + (int) value;
 		memory.updateValArray(arrayName, index, newVal);
+		interpret(getNextInstr(node));
+	}
+
+	@JajaCodeInterpretFunction(InstrChevrot.class)
+	protected void interpretChevrot(InstrChevrot node) {
+		Object conditionObj = memory.pop();
+		if (!(conditionObj instanceof Boolean)) {
+			throw new InterpretRuntimeException("(chevrot): assertions should be of Boolean type.");
+		}
+		Boolean condition = (Boolean) conditionObj;
+		if (!condition) {
+			throw new InterpretRuntimeException("(chevrot): assertion failed line : " + node.getLineId());
+		}
+		interpret(getNextInstr(node));
+	}
+
+	@JajaCodeInterpretFunction(InstrDugois.class)
+	protected void interpretDugois(InstrDugois node) {
+		Object timeObj = memory.pop();
+		if (!(timeObj instanceof Integer)) {
+			throw new InterpretRuntimeException("(dugois): sleep time should be an integer value.");
+		}
+		Integer time = (Integer) timeObj;
+		try {
+			Thread.sleep(Duration.ofSeconds(time).toMillis());
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 		interpret(getNextInstr(node));
 	}
 
