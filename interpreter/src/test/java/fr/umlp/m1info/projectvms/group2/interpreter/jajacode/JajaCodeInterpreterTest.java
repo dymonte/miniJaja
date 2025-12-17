@@ -45,12 +45,15 @@ public class JajaCodeInterpreterTest {
 
 	@Test
 	public void testInterpreterArgumentException() {
-		Assert.assertThrows(NullPointerException.class, () -> {
-			interpreter = new JajaCodeInterpreter(memory, null);
-		});
-		Assert.assertThrows(NullPointerException.class, () -> {
-			interpreter = new JajaCodeInterpreter(null, List.of());
-		});
+		Assert.assertThrows(
+				NullPointerException.class,
+				() -> new JajaCodeInterpreter(memory, null)
+		);
+
+		Assert.assertThrows(
+				NullPointerException.class,
+				() -> new JajaCodeInterpreter(null, List.of())
+		);
 	}
 
 	@Test
@@ -61,6 +64,7 @@ public class JajaCodeInterpreterTest {
 		JajaCodeInterpreter spyInterpreter = spy(interpreter);
 		doNothing().when(spyInterpreter).interpret(stop);
 		spyInterpreter.interpret(init);
+		verify(spyInterpreter).interpret(init);
 	}
 
 	@Test
@@ -177,7 +181,8 @@ public class JajaCodeInterpreterTest {
 			memory.pop();
 			fail("pop() should have thrown EmptyStackException");
 		} catch (EmptyStackException ignored) {
-			/* OK */ }
+			/* OK */
+		}
 	}
 
 	@Test

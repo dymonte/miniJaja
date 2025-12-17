@@ -316,7 +316,7 @@ public class CLIEndToEndIT {
 		});
 		assertEquals(0, out.exitCode());
 		assertEquals(
-				"init\npush(7)\nnew(x, int, var, 0)\npush(7)\nnew(pause, void, meth, 0)\ngoto(14)\npush(0)\nnew(i, int, var, 0)\nswap\npop\npush(0)\nswap\nreturn\npush(17)\nnew(fact, int, meth, 0)\ngoto(41)\nnew(x,int,var,1)\npush(0)\nnew(retour, int, var, 0)\nload(x)\npush(0)\ncmp\nif(34)\nload(x)\nload(x)\npush(1)\nsub\ninvoke(fact)\nswap\npop\nmul\nstore(retour)\ngoto(36)\npush(1)\nstore(retour)\nload(retour)\nswap\npop\nswap\nreturn\nload(x)\ninvoke(fact)\nswap\npop\nnew(res, int, var, 0)\npush(\"x(5040) = \")\nwrite\nload(res)\nwriteln\ninvoke(pause)\npop\npush(0)\nswap\npop\nswap\npop\nswap\npop\nswap\npop\npop\njcstop\n",
+				"init\npush(7)\nnew(x, int, var, 0)\npush(7)\nnew(pause, void, meth, 0)\ngoto(14)\npush(0)\nnew(i, int, var, 0)\npush(0)\nswap\npop\nswap\nreturn\npush(17)\nnew(fact, int, meth, 0)\ngoto(41)\nnew(x,int,var,1)\npush(0)\nnew(retour, int, var, 0)\nload(x)\npush(0)\ncmp\nif(34)\nload(x)\nload(x)\npush(1)\nsub\ninvoke(fact)\nswap\npop\nmul\nstore(retour)\ngoto(36)\npush(1)\nstore(retour)\nload(retour)\nswap\npop\nswap\nreturn\nload(x)\ninvoke(fact)\nswap\npop\nnew(res, int, var, 0)\npush(\"x(5040) = \")\nwrite\nload(res)\nwriteln\ninvoke(pause)\npop\npush(0)\nswap\npop\nswap\npop\nswap\npop\nswap\npop\npop\njcstop\n",
 				out.output());
 	}
 

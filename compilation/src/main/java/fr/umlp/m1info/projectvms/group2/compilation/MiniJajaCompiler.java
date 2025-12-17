@@ -165,11 +165,12 @@ public class MiniJajaCompiler {
 		count += compile(node.getParams());
 		count += compile(node.getVars());
 		count += compile(node.getInstrs());
-		count += free(node.getVars());
 
 		if (node.getType() instanceof ASTVoidType) {
 			count += emit("push(0)");
 		}
+
+		count += free(node.getVars());
 
 		patch("goto(?)", "goto(" + (n + 3) + ")", gotoIndex);
 		count += emit("swap");
@@ -256,8 +257,13 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTVarConst.class)
 	protected Integer compileVarConst(ASTVarConst node) {
 		int count = 0;
-		count += node.getVExpr() != null ? compile(node.getVExpr()) : emit("push(0)");
-		count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", cst, 0)");
+		if (node.getVExpr() != null) {
+			count += compile(node.getVExpr());
+			count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", cst, 0)");
+		} else {
+			count += emit("push(0)");
+			count += emit("new(" + node.getIdent().getName() + ", " + node.getType() + ", vcst, 0)");
+		}
 		return count;
 	}
 
@@ -322,49 +328,129 @@ public class MiniJajaCompiler {
 	/** Compiles an assignment operation. */
 	@CompilationFunction(ASTAssignmentOp.class)
 	protected Integer compileAssignment(ASTAssignmentOp node) {
-		int nbInstrs = 0;
-
-		String op = switch (node.getOp()) {
-			case EQ -> "store";
-			case ADD -> "inc";
-		};
+		int nb = 0;
 
 		ASTLValue lvalue = node.getLValue();
 		if (lvalue instanceof ASTIdent ident) {
-			nbInstrs += compile(node.getExpr());
-			nbInstrs += emit(op + "(" + ident.getName() + ")");
-		} else if (lvalue instanceof ASTArrayAccess arrayAccess) {
-			nbInstrs += compile(arrayAccess.getExpr());
-			nbInstrs += compile(node.getExpr());
-			nbInstrs += emit("a" + op + "(" + arrayAccess.getIdent().getName() + ")");
+			String name = ident.getName();
+			nb += compileIdentAssignment(name, node);
+		} else if (lvalue instanceof ASTArrayAccess arr) {
+			String name = arr.getIdent().getName();
+			nb += compileArrayAssignment(name, arr.getExpr(), node);
 		} else {
 			throw new CompilationRuntimeException("Unknown lvalue type: " + lvalue);
 		}
+		return nb;
+	}
 
-		return nbInstrs;
+	private int compileIdentAssignment(String name, ASTAssignmentOp node) {
+		int n = 0;
 
+		switch (node.getOp()) {
+			case EQ: {
+				n += compile(node.getExpr());
+				n += emit("store(" + name + ")");
+				break;
+			}
+			case ADD: {
+				n += compile(node.getExpr());
+				n += emit("inc(" + name + ")");
+				break;
+			}
+			case SUB: {
+				n += compile(node.getExpr());
+				n += emit("neg");
+				n += emit("inc(" + name + ")");
+				break;
+			}
+			case MUL: {
+				n += emit("load(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("mul");
+				n += emit("store(" + name + ")");
+				break;
+			}
+			case DIV: {
+				n += emit("load(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("div");
+				n += emit("store(" + name + ")");
+				break;
+			}
+		}
+		return n;
+	}
+
+	private int compileArrayAssignment(String name, ASTExpr index, ASTAssignmentOp node) {
+		int n = 0;
+
+		switch (node.getOp()) {
+			case EQ: {
+				n += compile(index);
+				n += compile(node.getExpr());
+				n += emit("astore(" + name + ")");
+				break;
+			}
+			case ADD: {
+				n += compile(index);
+				n += compile(node.getExpr());
+				n += emit("ainc(" + name + ")");
+				break;
+			}
+			case SUB: {
+				n += compile(index);
+				n += compile(node.getExpr());
+				n += emit("neg");
+				n += emit("ainc(" + name + ")");
+				break;
+			}
+			case MUL: {
+				n += compile(index);
+				n += emit("aload(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("mul");
+				n += compile(index);
+				n += emit("astore(" + name + ")");
+				break;
+			}
+			case DIV: {
+				n += compile(index);
+				n += emit("aload(" + name + ")");
+				n += compile(node.getExpr());
+				n += emit("div");
+				n += compile(index);
+				n += emit("astore(" + name + ")");
+				break;
+			}
+		}
+		return n;
 	}
 
 	/** Compiles an increment operation. */
 	@CompilationFunction(ASTIncrementOp.class)
 	protected Integer compileIncrement(ASTIncrementOp node) {
-		int toPush = switch (node.getOp()) {
-			case INC -> 1;
-		};
-		int nbInstrs = 0;
+		int count = 0;
 
-		ASTLValue lvalue = node.getLValue();
-		if (lvalue instanceof ASTIdent ident) {
-			nbInstrs += emit("push(" + toPush + ")");
-			nbInstrs += emit("inc(" + ident.getName() + ")");
-		} else if (lvalue instanceof ASTArrayAccess arrayAccess) {
-			nbInstrs += compile(arrayAccess.getExpr());
-			nbInstrs += emit("push(" + toPush + ")");
-			nbInstrs += emit("ainc(" + arrayAccess.getIdent().getName() + ")");
-		} else {
-			throw new CompilationRuntimeException("Unknown lvalue type: " + lvalue);
+		ASTLValue lv = node.getLValue();
+
+		if (lv instanceof ASTArrayAccess arr) {
+			count += compile(arr.getExpr());
 		}
-		return nbInstrs;
+
+		count += emit("push(1)");
+
+		if (node.getOp() == IncrementOp.DEC) {
+			count += emit("neg");
+		}
+
+		if (lv instanceof ASTIdent id) {
+			count += emit("inc(" + id.getName() + ")");
+		} else if (lv instanceof ASTArrayAccess arr) {
+			count += emit("ainc(" + arr.getIdent().getName() + ")");
+		} else {
+			throw new CompilationRuntimeException("Unknown lvalue type: " + lv);
+		}
+		return count;
 	}
 
 	/** Compiles a return statement. */
@@ -421,9 +507,44 @@ public class MiniJajaCompiler {
 	@CompilationFunction(ASTBinaryOp.class)
 	protected Integer compileBinaryOp(ASTBinaryOp node) {
 		int count = 0;
+		if (node.getOp() == BinaryOp.MOD) {
+			count += compile(node.getLeft());
+		}
 		count += compile(node.getLeft());
 		count += compile(node.getRight());
-		count += emit(MiniJajaCompilerUtils.binaryOpToString(node.getOp().toString()));
+		switch (node.getOp()) {
+			case ADD -> count += emit("add");
+			case SUB -> count += emit("sub");
+			case MUL -> count += emit("mul");
+			case DIV -> count += emit("div");
+			case MOD -> {
+				count += emit("div");
+				count += compile(node.getRight());
+				count += emit("mul");
+				count += emit("sub");
+			}
+			case AND -> count += emit("and");
+			case OR -> count += emit("or");
+			case EQ -> count += emit("cmp");
+			case NEQ -> {
+				count += emit("cmp");
+				count += emit("not");
+			}
+			case GT -> count += emit("sup");
+			case LT -> {
+				count += emit("swap");
+				count += emit("sup");
+			}
+			case GE -> {
+				count += emit("swap");
+				count += emit("sup");
+				count += emit("not");
+			}
+			case LE -> {
+				count += emit("sup");
+				count += emit("not");
+			}
+		}
 		return count;
 	}
 
@@ -508,10 +629,7 @@ public class MiniJajaCompiler {
 	/** Compiles a length expression on arrays. */
 	@CompilationFunction(ASTLength.class)
 	protected Integer compileLength(ASTLength node) {
-		int nbInstrs = 0;
-		nbInstrs += emit("load(" + node.getIdent().getName() + ")");
-		nbInstrs += emit("length");
-		return nbInstrs;
+		return emit("length(" + node.getIdent().getName() + ")");
 	}
 
 	/** Compiles a method call used as an expression. */

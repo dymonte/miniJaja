@@ -28,9 +28,9 @@ public class StackTest {
 		s.push(10, symbol);
 		s.push(20, symbol);
 		s.push(30, symbol);
-		Assert.assertEquals(s.pop().getValue(), 30);
-		Assert.assertEquals(s.pop().getValue(), 20);
-		Assert.assertEquals(s.pop().getValue(), 10);
+		Assert.assertEquals( 30, s.pop().getValue());
+		Assert.assertEquals(20, s.pop().getValue());
+		Assert.assertEquals(10, s.pop().getValue());
 	}
 
 	@Test
@@ -41,9 +41,9 @@ public class StackTest {
 		s.push(30, symbol);
 		s.swap();
 		InstNode in = s.pop();
-		Assert.assertEquals(in.getValue(), 20);
-		Assert.assertEquals(in.getNextInStack().getValue(), 30);
-		Assert.assertEquals(in.getNextInStack().getNextInStack().getValue(), 10);
+		Assert.assertEquals(20, in.getValue());
+		Assert.assertEquals(30, in.getNextInStack().getValue());
+		Assert.assertEquals(10, in.getNextInStack().getNextInStack().getValue());
 	}
 
 	@Test
@@ -77,11 +77,11 @@ public class StackTest {
 		s.push(30, symbol);
 		s.push(40, symbol);
 		Assert.assertFalse(s.remove(in));
-		Assert.assertEquals(s.getDepth(), 4);
+		Assert.assertEquals(4, s.getDepth(), 4);
 		Assert.assertTrue(s.remove(s.getHead()));
-		Assert.assertEquals(s.getDepth(), 3);
+		Assert.assertEquals(3, s.getDepth());
 		Assert.assertTrue(s.remove(s.getHead().getNextInStack()));
-		Assert.assertEquals(s.getDepth(), 2);
+		Assert.assertEquals(2, s.getDepth());
 
 	}
 }

@@ -1,5 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Collections;
@@ -103,14 +104,20 @@ public class JajaCodeInterpreter {
 			for (Method method : cls.getDeclaredMethods()) {
 				var annotation = method.getAnnotation(annotationClass);
 				if (annotation != null) {
+
+					Class<?> handledType = null;
 					try {
-						Class<?> handledType = (Class<?>) annotationClass.getMethod("value")
+						handledType = (Class<?>) annotationClass.getMethod("value")
 								.invoke(annotation);
-						if (handledType.isAssignableFrom(nodeClass)) {
-							return method;
-						}
-					} catch (Exception ignored) {
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						throw new InterpretRuntimeException(
+								"Failed to resolve annotation @" + annotationClass.getSimpleName()
+										+ " for node class " + nodeClass.getSimpleName());
 					}
+					if (handledType.isAssignableFrom(nodeClass)) {
+						return method;
+					}
+
 				}
 			}
 			cls = cls.getSuperclass();
@@ -125,7 +132,11 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrStop.class)
 	protected void interpretStop(InstrStop node) {
-		return;
+		/*
+		 * STOP instruction marks the normal termination of the program.
+		 * No further instruction must be executed, so this method is intentionally
+		 * empty.
+		 */
 	}
 
 	@JajaCodeInterpretFunction(InstrJdup.class)
@@ -162,6 +173,10 @@ public class JajaCodeInterpreter {
 		switch (node.getKind().getKind()) {
 			case VAR: {
 				memory.identVal(identifier, Kind.VAR, type, node.getValDepth().getValue());
+				break;
+			}
+			case VCONST: {
+				memory.identVal(identifier, Kind.VCONST, type, 0);
 				break;
 			}
 			case CONST: {
@@ -518,6 +533,12 @@ public class JajaCodeInterpreter {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
+		interpret(getNextInstr(node));
+	}
+
+	@JajaCodeInterpretFunction(InstrLength.class)
+	protected void interpretLength(InstrLength node) {
+		memory.push(memory.getLengthArray(node.getValIdent().getIdent()));
 		interpret(getNextInstr(node));
 	}
 

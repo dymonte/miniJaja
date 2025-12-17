@@ -1,34 +1,26 @@
 package fr.umlp.m1info.projectvms.group2.controller;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
-import org.fxmisc.richtext.CodeArea;
-
 import fr.umlp.m1info.projectvms.group2.AppState;
 import fr.umlp.m1info.projectvms.group2.HelpPopUp;
 import fr.umlp.m1info.projectvms.group2.PopUp;
+import fr.umlp.m1info.projectvms.group2.controller.service.InterpreterService;
+import fr.umlp.m1info.projectvms.group2.controller.service.CompilerService;
+import fr.umlp.m1info.projectvms.group2.controller.service.ThemeService;
+import fr.umlp.m1info.projectvms.group2.controller.popup.StepPopupManager;
+import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
+import fr.umlp.m1info.projectvms.group2.compilation.MiniJajaCompiler;
 import fr.umlp.m1info.projectvms.group2.exception.InterpreterInterruptedException;
+import fr.umlp.m1info.projectvms.group2.interpreter.InteractiveInterpreterController;
+import fr.umlp.m1info.projectvms.group2.interpreter.jajacode.JajaCodeInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.interpreter.minijaja.MiniJajaInterpreterInteractive;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 import fr.umlp.m1info.projectvms.group2.memory.heap.Heap;
 import fr.umlp.m1info.projectvms.group2.memory.stack.Stack;
 import fr.umlp.m1info.projectvms.group2.memory.symtable.SymTable;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
+import fr.umlp.m1info.projectvms.group2.checker.Diagnostic;
+import fr.umlp.m1info.projectvms.group2.checker.TypeChecker;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
@@ -46,6 +38,15 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.fxmisc.richtext.CodeArea;
+
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * AppController
@@ -74,7 +75,19 @@ public class AppController implements StatefulController {
 
 	private AppState state;
 
+	private InterpreterService interpreterService;
+
+	private CompilerService compilerService;
+
+	private ThemeService themeService;
+
+	private StepPopupManager stepPopup;
+
 	private Thread miniJajaInterpreterThread;
+
+	private Thread jajacodeInterpreterThread;
+
+	private Thread minijajaCompilerThread;
 
 	private Scene mainScene;
 
@@ -94,6 +107,38 @@ public class AppController implements StatefulController {
 		memorySectionController.bindState(appState);
 
 		fileTreeSectionController.setOnFileOpen(this::displayFile);
+
+		stepPopup = new StepPopupManager();
+
+		interpreterService = new InterpreterService(state, new InterpreterService.InterpreterCallbacks() {
+			@Override
+			public void highlihtLine(int line) {
+				codeSectionController.highlightLine(line);
+			};
+
+			@Override
+			public void refreshMemory() {
+				memorySectionController.bindState(state);
+			}
+
+			@Override
+			public void removeBreakpoint(int line) {
+				codeSectionController.removeBreakpoint(line);
+
+			}
+
+			@Override
+			public void openStepPopup(Runnable next, Runnable stop, Runnable skip) {
+				stepPopup.open(primaryStage, next, stop, skip);
+			}
+
+			@Override
+			public void closeStepPopup() {
+				stepPopup.close();
+			}
+		});
+
+		compilerService = new CompilerService(state);
 	}
 
 	/**
@@ -110,9 +155,7 @@ public class AppController implements StatefulController {
 		createToolbarButton("btn-stop", "stop.png", 36, this::stopInterpretation);
 
 		// Compile Button
-		createToolbarButton("btn-compile", "compile.png", 30, () -> {
-			PopUp.info("Compile", "Compilation not implemented", "This feature is not yet implemented.");
-		});
+		createToolbarButton("btn-compile", "compile.png", 30, this::compileCurrentFile);
 	}
 
 	/**
@@ -368,9 +411,20 @@ public class AppController implements StatefulController {
 		openHelpFile("help_errors_content.html");
 	}
 
+	/**
+	 * Opens help inerface window
+	 */
 	@FXML
 	private void openHelpInterface() {
 		openHelpFile("help_interface_content.html");
+	}
+
+	/**
+	 * Opens credit window
+	 */
+	@FXML
+	private void openCredit() {
+		openHelpFile("credit.html");
 	}
 
 	private void openHelpFile(String resourceName) {
@@ -390,11 +444,19 @@ public class AppController implements StatefulController {
 	}
 
 	/**
+	 * Compiles the current file.
+	 */
+	@FXML
+	private void compileCurrentFile() {
+		compilerService.compile(fileTreeSectionController::refreshTree);
+	};
+
+	/**
 	 * Runs the current file in a seperate thread
 	 */
 	@FXML
 	private void runCurrentFile() {
-		runMiniJajaInterpretation(false);
+		runCurrentFile(false);
 	}
 
 	/**
@@ -402,79 +464,30 @@ public class AppController implements StatefulController {
 	 */
 	@FXML
 	private void runCurrentFileStep() {
-		runMiniJajaInterpretation(true);
+		runCurrentFile(true);
 	}
 
-	private void runMiniJajaInterpretation(Boolean stepMode) {
-		if (miniJajaInterpreterThread != null && miniJajaInterpreterThread.isAlive()) {
-			PopUp.info("Minijaja Interpreter", "Interpreter is already running",
-					"Stop interpretation and after you can run it");
-			return;
-		}
-
-		initMemory();
-		memorySectionController.bindState(state);
-
-		MiniJajaInterpreterInteractive interpreter = new MiniJajaInterpreterInteractive(state.getMemory());
-		interpreter.setStepModeEnabled(stepMode);
-		interpreter.addListener(new MiniJajaInterpreterInteractive.Listener() {
-			@Override
-			public void onPaused(ASTNode node, int line) {
-				Platform.runLater(() -> codeSectionController.highlightLine(line));
-				memorySectionController.bindState(state);
-			}
-
-			@Override
-			public void onBreakpointRemoved(int line) {
-				codeSectionController.removeBreakpoint(line);
-			}
-		});
+	private void runCurrentFile(Boolean step) {
+		Optional<File> toRunOpt = state.getOpenedFile();
 
 		List<Integer> breakpoints = new ArrayList<>(codeSectionController.getBreakpoints());
 
-		Stage popupStage = new Stage();
+		initMemory();
+		if (!toRunOpt.isPresent()) {
+			interpreterService.runMiniJaja(step, breakpoints);
+			return;
+		}
 
-		Task<Void> task = new Task<>() {
-			@Override
-			protected Void call() {
-				try {
-					ASTNode programRoot;
-					if (state.getOpenedFile().isEmpty()) {
-						programRoot = ParserUtils.parseString(state.codeProperty().get());
-					} else {
-						programRoot = ParserUtils.parseFile(state.getOpenedFile().get().getAbsolutePath());
-					}
+		String fileName = toRunOpt.get().getName();
+		String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+		switch (extension) {
+			case "jjc" -> interpreterService.runJajaCode(step, breakpoints);
+			case "mjj" -> interpreterService.runMiniJaja(step, breakpoints);
+			default ->
+				PopUp.error("Interpreter", "Unrecognized file extension",
+						"Unrecognized file extension : " + extension + " . (Should be .jjc or .mjj)");
+		}
 
-					if (stepMode || !breakpoints.isEmpty()) {
-						showStepPopup(popupStage, interpreter, !breakpoints.isEmpty());
-					}
-
-					interpreter.setBreakpoints(breakpoints);
-					interpreter.interpret(programRoot);
-				} catch (InterpreterInterruptedException e) {
-					// Do nothing
-				} catch (Exception e) {
-					consoleSectionController.appendToError(e.getMessage());
-				} finally {
-					if (stepMode || !breakpoints.isEmpty()) {
-						Platform.runLater(popupStage::close);
-						Platform.runLater(() -> codeSectionController.highlightLine(-1));
-					}
-					memorySectionController.bindState(state);
-				}
-				return null;
-			}
-		};
-
-		miniJajaInterpreterThread = new Thread(task);
-		miniJajaInterpreterThread.start();
-	}
-
-	private void handleInterpretationError(Stage popupStage, String message) {
-		Platform.runLater(() -> {
-			popupStage.close();
-			PopUp.error("MiniJaja Interpreter Error", message, "");
-		});
 	}
 
 	/**
@@ -488,90 +501,6 @@ public class AppController implements StatefulController {
 		} else {
 			PopUp.info("MiniJaja Interpreter", "Interpretation is not running", "Start the interpretation");
 		}
-	}
-
-	/**
-	 * Shows step by step popup
-	 *
-	 * @param popupStage     the Stage for the popUp
-	 * @param interpreter    the interpreter to be attached
-	 * @param hasBreakpoints whether the interpreter has breakpoints
-	 */
-	private void showStepPopup(Stage popupStage, MiniJajaInterpreterInteractive interpreter, boolean hasBreakpoints) {
-		Platform.runLater(() -> {
-			popupStage.initOwner(primaryStage);
-			popupStage.setAlwaysOnTop(true);
-			popupStage.initStyle(StageStyle.UNDECORATED);
-
-			// Create Buttons
-			setStepPopupBtns(popupStage, interpreter, hasBreakpoints);
-
-			// Position Popup
-			setStepPopupPos(popupStage, hasBreakpoints);
-
-			popupStage.show();
-		});
-	}
-
-	/**
-	 * Set up step by step popup position
-	 *
-	 * @param popupStage     the step by step popup to add the buttons to
-	 * @param interpreter    the interpreter for the buttons to interact with
-	 * @param hasBreakpoints whether the interpreter has breakpoints
-	 */
-	private void setStepPopupBtns(Stage popupStage, MiniJajaInterpreterInteractive interpreter,
-			boolean hasBreakpoints) {
-		Button btnNext = new Button("Next");
-
-		Button btnStop = new Button("Stop");
-		HBox root;
-
-		if (hasBreakpoints) {
-			Button btnSkipBreakpoint = new Button("Skip breakpoint");
-			root = new HBox(10, btnStop, btnNext, btnSkipBreakpoint);
-
-			btnSkipBreakpoint.setOnAction(event -> {
-				interpreter.skipBreakpoint();
-			});
-		} else {
-			root = new HBox(10, btnStop, btnNext);
-		}
-
-		btnNext.setOnAction(event -> {
-			interpreter.nextStep();
-		});
-		btnStop.setOnAction(event -> stopInterpretation());
-
-		root.setStyle("-fx-padding: 20;");
-		popupStage.setScene(new Scene(root, 150 + (hasBreakpoints ? 150 : 0), 50));
-	}
-
-	/**
-	 * Set up step by step popup position
-	 *
-	 * @param popupStage     the step by step popup to position
-	 * @param hasBreakpoints whether the interpreter has breakpoints
-	 */
-	private void setStepPopupPos(Stage popupStage, boolean hasBreakpoints) {
-		double x = primaryStage.getX() + primaryStage.getWidth() / 2 - 75 - (hasBreakpoints ? 27.5 : 0);
-		double y = primaryStage.getY() + 25;
-		popupStage.setX(x);
-		popupStage.setY(y);
-
-		ChangeListener<Number> xListener = (obs, oldVal, newVal) -> {
-			popupStage.setX(newVal.doubleValue() + primaryStage.getWidth() / 2 - 75);
-		};
-		ChangeListener<Number> yListener = (obs, oldVal, newVal) -> {
-			popupStage.setY(newVal.doubleValue() + 25);
-		};
-		primaryStage.xProperty().addListener(xListener);
-		primaryStage.yProperty().addListener(yListener);
-
-		popupStage.setOnHidden(e -> {
-			primaryStage.xProperty().removeListener(xListener);
-			primaryStage.yProperty().removeListener(yListener);
-		});
 	}
 
 	/**
@@ -603,140 +532,8 @@ public class AppController implements StatefulController {
 		Platform.runLater(() -> {
 			mainScene = primaryStage.getScene();
 			if (mainScene != null) {
-				loadThemesMenu();
-			}
-		});
-	}
-
-	/**
-	 * Loads available themes into the themes menu
-	 */
-	private void loadThemesMenu() {
-		menuThemes.getItems().clear();
-
-		URL themesFolderUrl = getClass().getResource(STYLE_FOLDER);
-		if (themesFolderUrl == null) {
-			PopUp.error("Themes folder not found", "Not found", "Error while loading " + STYLE_FOLDER);
-			return;
-		}
-
-		switch (themesFolderUrl.getProtocol()) {
-			case "file" -> loadThemesFromFileSystem(themesFolderUrl);
-			case "jar" -> loadThemesFromJar(themesFolderUrl);
-			default ->
-				PopUp.error("Theme error", "Themes folder should be in the filesystem or in the jar", STYLE_FOLDER);
-		}
-	}
-
-	/**
-	 * Sub-function of loadThemesMenu that loads all the theme's CSS files from
-	 * the given theme diretory url.
-	 *
-	 * This specific version is for when the url points to a directory inside
-	 * the file-system.
-	 *
-	 * @param themesDirUrl the theme directory url
-	 */
-	private void loadThemesFromFileSystem(URL themesDirUrl) {
-		File themesDir = new File(themesDirUrl.getPath());
-		File[] cssFiles = themesDir.listFiles((dir, name) -> name.endsWith(".css"));
-
-		if (cssFiles == null) {
-			return;
-		}
-
-		for (File file : cssFiles) {
-			addThemeMenuItem(file.getName());
-		}
-	}
-
-	/**
-	 * Sub-function of loadThemesMenu that loads all the theme's CSS files from
-	 * the given theme diretory url.
-	 *
-	 * This specific version is for when the url points to a directory inside
-	 * the gui jar.
-	 *
-	 * @param themesDirUrl the theme directory url
-	 */
-	private void loadThemesFromJar(URL themesDirUrl) {
-		try {
-			String path = STYLE_FOLDER.startsWith("/") ? STYLE_FOLDER.substring(1) : STYLE_FOLDER;
-			JarURLConnection connection = (JarURLConnection) themesDirUrl.openConnection();
-			JarFile jarFile = connection.getJarFile();
-			Enumeration<JarEntry> entries = jarFile.entries();
-
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				String entryName = entry.getName();
-				if (entryName.startsWith(path) && entryName.endsWith(".css")) {
-					String fileName = entryName.substring(entryName.lastIndexOf("/") + 1);
-					addThemeMenuItem(fileName);
-				}
-			}
-		} catch (IOException e) {
-			PopUp.error("Theme Error", "Error loading themes from JAR", e.getMessage());
-		}
-	}
-
-	/**
-	 * Sub-function for loadThemes that adds a theme item on the menu.
-	 *
-	 * @param cssFileName the theme's css file name
-	 */
-	private void addThemeMenuItem(String cssFileName) {
-		String themeName;
-		try (InputStream is = getClass().getResourceAsStream(STYLE_FOLDER + cssFileName);
-				BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-			String firstLine = br.readLine();
-			if (firstLine != null && firstLine.contains("ThemeName:")) {
-				themeName = firstLine.replace("/*", "")
-						.replace("*/", "")
-						.replace("ThemeName:", "")
-						.trim();
-			} else {
-				throw new Exception("No theme name found");
-			}
-		} catch (Exception ignored) {
-			String name = cssFileName.replace(".css", "");
-			themeName = Character.toUpperCase(name.charAt(0)) + name.substring(1);
-		}
-
-		MenuItem item = new MenuItem(themeName);
-		item.setOnAction(e -> applyTheme(cssFileName));
-		menuThemes.getItems().add(item);
-	}
-
-	/**
-	 * Applies the selected theme by changing the stylesheet
-	 *
-	 * @param cssFileName the CSS file name of the theme
-	 */
-	private void applyTheme(String cssFileName) {
-		Scene scene = primaryStage.getScene();
-		if (scene == null)
-			return;
-
-		scene.getStylesheets().removeIf(url -> url.contains("themes/"));
-
-		String fullPath = STYLE_FOLDER + cssFileName;
-		URL cssUrl = getClass().getResource(fullPath);
-
-		if (cssUrl == null) {
-			System.err.println("Unable to find " + fullPath);
-			return;
-		}
-
-		scene.getStylesheets().add(cssUrl.toExternalForm());
-	}
-
-	private void addCtrlCHandler(Scene scene) {
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-			if (event.isControlDown() && event.getCode() == KeyCode.C) {
-				if (miniJajaInterpreterThread != null) {
-					stopInterpretation();
-					event.consume();
-				}
+				themeService = new ThemeService(mainScene, STYLE_FOLDER);
+				themeService.loadThemesMenu(menuThemes);
 			}
 		});
 	}

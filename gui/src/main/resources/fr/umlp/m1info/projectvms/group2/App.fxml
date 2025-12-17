@@ -85,6 +85,7 @@
               <items>
                 <MenuItem mnemonicParsing="false" text="Run" onAction="#runCurrentFile" fx:id="menuStart"/>
                 <MenuItem mnemonicParsing="false" text="Run step by step" onAction="#runCurrentFileStep" fx:id="menuStepByStep"/>
+                <MenuItem mnemonicParsing="false" text="Compile" onAction="#compileCurrentFile"/>
               </items>
             </Menu>
             <MenuItem mnemonicParsing="false" text="Stop" onAction="#stopInterpretation" fx:id="menuStop"/>
@@ -102,6 +103,11 @@
             <MenuItem mnemonicParsing="false" text="Memory" onAction="#openHelpMemory"/>
             <MenuItem mnemonicParsing="false" text="Errors" onAction="#openHelpErrors"/>
             <MenuItem mnemonicParsing="false" text="Interface" onAction="#openHelpInterface"/>
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="About">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Credit" onAction="#openCredit"/>
           </items>
         </Menu>
       </menus>

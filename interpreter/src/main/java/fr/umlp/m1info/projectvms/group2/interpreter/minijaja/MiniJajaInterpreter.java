@@ -1,6 +1,5 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.minijaja;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,6 +33,10 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
  */
 public class MiniJajaInterpreter {
 	Memory memory;
+	private static final String ERROR_INTERPRET_NODE = "Error interpreting node ";
+	private static final String ILLEGAL_ACCESS = "Illegal access ";
+	private static final String NULL_NODE = "node cannot be null";
+	private static final String BOOL_VALUE = "Condition must evaluate to a boolean value";
 
 	public MiniJajaInterpreter(Memory memory) {
 		if (memory == null) {
@@ -51,7 +54,7 @@ public class MiniJajaInterpreter {
 	 */
 	public void interpret(ASTNode node) {
 		if (node == null) {
-			throw new InterpretRuntimeException("node cannot be null");
+			throw new InterpretRuntimeException(NULL_NODE);
 		}
 
 		if (Thread.currentThread().isInterrupted()) {
@@ -67,16 +70,16 @@ public class MiniJajaInterpreter {
 			m.invoke(this, node);
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getTargetException();
-			if (cause instanceof InterpretRuntimeException) {
-				throw (InterpretRuntimeException) cause;
-			} else if (cause instanceof EvalRuntimeException) {
-				throw (EvalRuntimeException) cause;
+			if (cause instanceof InterpretRuntimeException interpretRuntimeException) {
+				throw (interpretRuntimeException);
+			} else if (cause instanceof EvalRuntimeException evalRuntimeException) {
+				throw (evalRuntimeException);
 			} else {
 				throw new InterpretRuntimeException(
-						"Error interpreting node " + node.getClass().getSimpleName() + ": " + cause.getMessage());
+						ERROR_INTERPRET_NODE + node.getClass().getSimpleName() + ": " + cause.getMessage());
 			}
 		} catch (IllegalAccessException e) {
-			throw new InterpretRuntimeException("Illegal access: " + e.getMessage());
+			throw new InterpretRuntimeException(ILLEGAL_ACCESS + e.getMessage());
 		}
 	}
 
@@ -89,7 +92,7 @@ public class MiniJajaInterpreter {
 	 */
 	public Object eval(ASTNode node) {
 		if (node == null) {
-			throw new EvalRuntimeException("node cannot be null");
+			throw new EvalRuntimeException(NULL_NODE);
 		}
 
 		Method m = findAnnotatedMethod(EvalFunction.class, node.getClass());
@@ -101,16 +104,16 @@ public class MiniJajaInterpreter {
 			return m.invoke(this, node);
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getTargetException();
-			if (cause instanceof InterpretRuntimeException) {
-				throw (InterpretRuntimeException) cause;
-			} else if (cause instanceof EvalRuntimeException) {
-				throw (EvalRuntimeException) cause;
+			if (cause instanceof InterpretRuntimeException interpretRuntimeException) {
+				throw (interpretRuntimeException);
+			} else if (cause instanceof EvalRuntimeException evalRuntimeException) {
+				throw (evalRuntimeException);
 			} else {
 				throw new InterpretRuntimeException(
-						"Error interpreting node " + node.getClass().getSimpleName() + ": " + cause.getMessage());
+						ERROR_INTERPRET_NODE + node.getClass().getSimpleName() + ": " + cause.getMessage());
 			}
 		} catch (IllegalAccessException e) {
-			throw new InterpretRuntimeException("Illegal access: " + e.getMessage());
+			throw new InterpretRuntimeException(ILLEGAL_ACCESS + e.getMessage());
 		}
 	}
 
@@ -122,7 +125,7 @@ public class MiniJajaInterpreter {
 	 */
 	public void free(ASTNode node) {
 		if (node == null) {
-			throw new InterpretRuntimeException("node cannot be null");
+			throw new InterpretRuntimeException(NULL_NODE);
 		}
 
 		Method m = findAnnotatedMethod(FreeFunction.class, node.getClass());
@@ -134,16 +137,16 @@ public class MiniJajaInterpreter {
 			m.invoke(this, node);
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getTargetException();
-			if (cause instanceof InterpretRuntimeException) {
-				throw (InterpretRuntimeException) cause;
-			} else if (cause instanceof EvalRuntimeException) {
-				throw (EvalRuntimeException) cause;
+			if (cause instanceof InterpretRuntimeException interpretRuntimeException) {
+				throw (interpretRuntimeException);
+			} else if (cause instanceof EvalRuntimeException evalRuntimeException) {
+				throw (evalRuntimeException);
 			} else {
 				throw new InterpretRuntimeException(
-						"Error interpreting node " + node.getClass().getSimpleName() + ": " + cause.getMessage());
+						ERROR_INTERPRET_NODE + node.getClass().getSimpleName() + ": " + cause.getMessage());
 			}
 		} catch (IllegalAccessException e) {
-			throw new InterpretRuntimeException("Illegal access: " + e.getMessage());
+			throw new InterpretRuntimeException(ILLEGAL_ACCESS + e.getMessage());
 		}
 	}
 
@@ -154,13 +157,20 @@ public class MiniJajaInterpreter {
 			for (Method method : cls.getDeclaredMethods()) {
 				var annotation = method.getAnnotation(annotationClass);
 				if (annotation != null) {
+
+					Class<?> handledType = null;
 					try {
-						Class<?> handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
-						if (handledType.isAssignableFrom(nodeClass)) {
-							return method;
-						}
-					} catch (Exception ignored) {
+						handledType = (Class<?>) annotationClass.getMethod("value").invoke(annotation);
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						throw new InterpretRuntimeException(
+								"Failed to resolve handler for annotation @"
+										+ annotationClass.getSimpleName()
+										+ " and node " + nodeClass.getSimpleName());
 					}
+					if (handledType.isAssignableFrom(nodeClass)) {
+						return method;
+					}
+
 				}
 			}
 			cls = cls.getSuperclass();
@@ -168,7 +178,9 @@ public class MiniJajaInterpreter {
 		return null;
 	}
 
-	/** Interprets a class declaration */
+	/**
+	 * Interprets a class declaration
+	 */
 	@InterpretFunction(ASTClass.class)
 	protected void interpretClass(ASTClass node) {
 		memory.declVar(node.getIdent().getName(), 0, Type.INT);
@@ -178,7 +190,9 @@ public class MiniJajaInterpreter {
 		memory.removeDecl(node.getIdent().getName());
 	}
 
-	/** Interprets the main method of a program */
+	/**
+	 * Interprets the main method of a program
+	 */
 	@InterpretFunction(ASTMainMethod.class)
 	protected void interpretMainMethod(ASTMainMethod node) {
 		interpret(node.getVars());
@@ -186,7 +200,9 @@ public class MiniJajaInterpreter {
 		free(node.getVars());
 	}
 
-	/** Interprets a method declaration */
+	/**
+	 * Interprets a method declaration
+	 */
 	@InterpretFunction(ASTMethod.class)
 	protected void interpretMethod(ASTMethod node) {
 		String ident = node.getIdent().getName();
@@ -197,20 +213,26 @@ public class MiniJajaInterpreter {
 		memory.declMeth(ident, node, paramsTypes, returnType);
 	}
 
-	/** Interprets a chain of declaration */
+	/**
+	 * Interprets a chain of declaration
+	 */
 	@InterpretFunction(ASTDeclsChain.class)
 	protected void interpretDeclsChain(ASTDeclsChain node) {
 		interpret(node.getDecl());
 		interpret(node.getDecls());
 	}
 
-	/** Interprets an empty declaration list */
+	/**
+	 * Interprets an empty declaration list
+	 */
 	@InterpretFunction(ASTDeclsNil.class)
 	protected void interpretDeclsNil(ASTDeclsNil node) {
 		// do nothing
 	}
 
-	/** Interprets an assignement operation */
+	/**
+	 * Interprets an assignement operation
+	 */
 	@InterpretFunction(ASTAssignmentOp.class)
 	protected void interpretAssignment(ASTAssignmentOp node) {
 		Object exprValue = eval(node.getExpr());
@@ -218,6 +240,9 @@ public class MiniJajaInterpreter {
 		Object newValue = switch (node.getOp()) {
 			case EQ -> exprValue;
 			case ADD -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), exprValue);
+			case SUB -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.SUB, eval(node.getLValue()), exprValue);
+			case MUL -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.MUL, eval(node.getLValue()), exprValue);
+			case DIV -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.DIV, eval(node.getLValue()), exprValue);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {
@@ -229,27 +254,33 @@ public class MiniJajaInterpreter {
 		}
 	}
 
-	/** Interprets an if-(else)-statement */
+	/**
+	 * Interprets an if-(else)-statement
+	 */
 	@InterpretFunction(ASTIf.class)
 	protected void interpretIf(ASTIf node) {
 		Object value = eval(node.getExpr());
-		if (value instanceof Boolean bool) {
-			if (bool) {
-				interpret(node.getIfInstrs());
-			} else {
-				interpret(node.getElseInstrs());
-			}
-		} else {
-			throw new InterpretRuntimeException("Condition must evaluate to a boolean value");
+		if (!(value instanceof Boolean)) {
+			throw new InterpretRuntimeException(BOOL_VALUE);
 		}
+		boolean condition = (Boolean) value;
+
+		if (condition) {
+			interpret(node.getIfInstrs());
+		} else {
+			interpret(node.getElseInstrs());
+		}
+
 	}
 
-	/** Interprets an increment operation */
+	/**
+	 * Interprets an increment operation
+	 */
 	@InterpretFunction(ASTIncrementOp.class)
 	protected void interpretIncrement(ASTIncrementOp node) {
-
 		Object newValue = switch (node.getOp()) {
 			case INC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.ADD, eval(node.getLValue()), 1);
+			case DEC -> MiniJajaInterpreterUtils.binaryOperation(BinaryOp.SUB, eval(node.getLValue()), 1);
 		};
 
 		if (node.getLValue() instanceof ASTIdent ident) {
@@ -261,13 +292,15 @@ public class MiniJajaInterpreter {
 		}
 	}
 
-	/** Interprets a method call used as an instruction */
+	/**
+	 * Interprets a method call used as an instruction
+	 */
 	@InterpretFunction(ASTMethodCallInstr.class)
 	protected void interpretMethodCallInstr(ASTMethodCallInstr node) {
 		String methodName = node.getIdent().getName();
 		ASTExprs exprs = node.getExprs();
 
-		ArrayList<Type> argumentTypes = MiniJajaInterpreterUtils.collectExprTypes(exprs, this);
+		List<Type> argumentTypes = MiniJajaInterpreterUtils.collectExprTypes(exprs, this);
 
 		String methodKey = memory.getMethKey(methodName, argumentTypes);
 		ASTMethod method = (ASTMethod) memory.getVal(methodKey);
@@ -287,18 +320,36 @@ public class MiniJajaInterpreter {
 		}
 	}
 
-	/** Interprets a return statement */
+	/**
+	 * Interprets a return statement
+	 */
 	@InterpretFunction(ASTReturn.class)
 	protected void interpretReturn(ASTReturn node) {
 		Object value = eval(node.getExpr());
 		memory.updateVal(ASTClass.getClassVar().getName(), value);
 	}
 
-	/** Interprets a while loop */
+	/**
+	 * Interprets a while loop
+	 */
 	@InterpretFunction(ASTWhile.class)
 	protected void interpretWhile(ASTWhile node) {
-		while ((Boolean) eval(node.getExpr())) {
+		Object value = eval(node.getExpr());
+
+		if (!(value instanceof Boolean)) {
+			throw new InterpretRuntimeException(BOOL_VALUE);
+		}
+
+		boolean condition = (boolean) value;
+
+		while (condition) {
 			interpret(node.getInstrs());
+
+			value = eval(node.getExpr());
+			if (!(value instanceof Boolean)) {
+				throw new InterpretRuntimeException(BOOL_VALUE);
+			}
+			condition = (boolean) value;
 		}
 	}
 
@@ -321,7 +372,9 @@ public class MiniJajaInterpreter {
 		}
 	}
 
-	/** Interprets a switch */
+	/**
+	 * Interprets a switch
+	 */
 	@InterpretFunction(ASTSwitch.class)
 	protected void interpretSwitch(ASTSwitch node) {
 		Object value = eval(node.getExpr());
@@ -337,7 +390,9 @@ public class MiniJajaInterpreter {
 		InterpreterLogger.getInstance().log(value + (isLn ? "\n" : ""), InterpreterLogger.MessageLevel.WRITE);
 	}
 
-	/** Interprets bonuses instructions */
+	/**
+	 * Interprets bonuses instructions
+	 */
 	@InterpretFunction(ASTBonusInstr.class)
 	protected void interpretBonuses(ASTBonusInstr node) {
 		switch (node.getOp()) {
@@ -370,13 +425,17 @@ public class MiniJajaInterpreter {
 		interpret(node.getInstrs());
 	}
 
-	/** Interprets an empty instruction list */
+	/**
+	 * Interprets an empty instruction list
+	 */
 	@InterpretFunction(ASTInstrsNil.class)
 	protected void interpretInstrsNil(ASTInstrsNil node) {
 		// do nothing
 	}
 
-	/** Interprets a array variable declaration */
+	/**
+	 * Interprets a array variable declaration
+	 */
 	@InterpretFunction(ASTVarArray.class)
 	protected void interpretVarArray(ASTVarArray node) {
 		String ident = node.getIdent().getName();
@@ -394,7 +453,9 @@ public class MiniJajaInterpreter {
 		}
 	}
 
-	/** Interprets a constant variable declaration */
+	/**
+	 * Interprets a constant variable declaration
+	 */
 	@InterpretFunction(ASTVarConst.class)
 	protected void interpretVarConst(ASTVarConst node) {
 		String ident = node.getIdent().getName();
@@ -413,7 +474,9 @@ public class MiniJajaInterpreter {
 		}
 	}
 
-	/** Interprets a simple variable declaration */
+	/**
+	 * Interprets a simple variable declaration
+	 */
 	@InterpretFunction(ASTVarSimple.class)
 	protected void interpretVarSimple(ASTVarSimple node) {
 		String ident = node.getIdent().getName();
@@ -432,14 +495,18 @@ public class MiniJajaInterpreter {
 		}
 	}
 
-	/** Interprets a chain of variable declarations */
+	/**
+	 * Interprets a chain of variable declarations
+	 */
 	@InterpretFunction(ASTVarsChain.class)
 	protected void interpretVarsChain(ASTVarsChain node) {
 		interpret(node.getVar());
 		interpret(node.getVars());
 	}
 
-	/** Interprets an empty variable declaration list */
+	/**
+	 * Interprets an empty variable declaration list
+	 */
 	@InterpretFunction(ASTVarsNil.class)
 	protected void interpretVarsNil(ASTVarsNil node) {
 		// do nothing
@@ -447,6 +514,7 @@ public class MiniJajaInterpreter {
 
 	/** Interprets a chain of case declaration */
 	@InterpretFunction(ASTCasesChain.class)
+
 	protected void interpretCasesChain(ASTCasesChain node) {
 		Boolean value = (Boolean) eval(node.getCase());
 		if (!value) {
@@ -466,7 +534,9 @@ public class MiniJajaInterpreter {
 		return memory.getValArray(node.getIdent().getName(), (Integer) eval(node.getExpr()));
 	}
 
-	/** Evaluates a binary operation */
+	/**
+	 * Evaluates a binary operation
+	 */
 	@EvalFunction(ASTBinaryOp.class)
 	protected Object evalBinaryOp(ASTBinaryOp node) {
 		return MiniJajaInterpreterUtils.binaryOperation(node.getOp(), eval(node.getLeft()),
@@ -506,25 +576,33 @@ public class MiniJajaInterpreter {
 		return node.getValue();
 	}
 
-	/** Evaluates an identifier expression */
+	/**
+	 * Evaluates an identifier expression
+	 */
 	@EvalFunction(ASTIdent.class)
 	protected Object evalIdent(ASTIdent node) {
 		return memory.getVal(node.getName());
 	}
 
-	/** Evaluates an integer literal */
+	/**
+	 * Evaluates an integer literal
+	 */
 	@EvalFunction(ASTIntLiteral.class)
 	protected Object evalIntLiteral(ASTIntLiteral node) {
 		return node.getValue();
 	}
 
-	/** Evaluates a length expression on arrays */
+	/**
+	 * Evaluates a length expression on arrays
+	 */
 	@EvalFunction(ASTLength.class)
 	protected Object evalLength(ASTLength node) {
 		return memory.getLengthArray(node.getIdent().getName());
 	}
 
-	/** Evaluates a method call used as an expression */
+	/**
+	 * Evaluates a method call used as an expression
+	 */
 	@EvalFunction(ASTMethodCallExpr.class)
 	protected Object evalMethodCall(ASTMethodCallExpr node) {
 		interpret(new ASTMethodCallInstr(node.getIdent(), node.getExprs(), node.getLine(), node.getColumn()));
@@ -532,13 +610,17 @@ public class MiniJajaInterpreter {
 		return memory.getVal(ASTClass.getClassVar().getName());
 	}
 
-	/** Evaluates a string literal */
+	/**
+	 * Evaluates a string literal
+	 */
 	@EvalFunction(ASTStringLiteral.class)
 	protected Object evalStringLiteral(ASTStringLiteral node) {
 		return node.getValue();
 	}
 
-	/** Evaluates a unary operation */
+	/**
+	 * Evaluates a unary operation
+	 */
 	@EvalFunction(ASTUnaryOp.class)
 	protected Object evalUnaryOp(ASTUnaryOp node) {
 		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
@@ -580,20 +662,26 @@ public class MiniJajaInterpreter {
 		memory.removeDecl(memory.getMethKey(node.getIdent().getName(), paramsTypes));
 	}
 
-	/** Free a variable for memory */
+	/**
+	 * Free a variable for memory
+	 */
 	@FreeFunction(ASTVarsChain.class)
 	protected void freeVarsChain(ASTVarsChain node) {
 		free(node.getVar());
 		free(node.getVars());
 	}
 
-	/** Free an empty variable */
+	/**
+	 * Free an empty variable
+	 */
 	@FreeFunction(ASTVarsNil.class)
 	protected void freeVarsNil(ASTVarsNil node) {
 		// do nothing
 	}
 
-	/** Free a variable */
+	/**
+	 * Free a variable
+	 */
 	@FreeFunction(ASTVar.class)
 	protected void freeVar(ASTVar node) {
 		memory.removeDecl(node.getIdent().getName());

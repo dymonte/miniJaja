@@ -37,19 +37,19 @@ Feature: Com
 			| something |
 			| hey       |
 
-	#Scenario: Clearing the console after program execution
-	#	Given I have a valid minijaja program that prints 42
-	#	When I execute the program
-	#	And I clear the console
-	#	Then the program should execute without errors
-	#	And the output should be empty
-	#	And the stack should be empty
-	#	And the heap should be empty
+	Scenario: Clearing the console after program execution
+		Given I have a valid minijaja program that prints 42
+		When I execute the program
+		And I clear the console
+		Then the program should execute without errors
+		And the output should be empty
+		And the stack should be empty
+		And the heap should be empty
 
-	#Scenario: Closing the app
-	#	Given I have a valid minijaja program that prints 42
-	#	When I quit the app
-	#	Then I should see a message box with the message: "Are you sure you want to quit?"
+	Scenario: Closing the app
+		Given I have a valid minijaja program that prints 42
+		When I quit the app
+		Then I should see a message box with the message: "Are you sure you want to quit?"
 
 	#Scenario: Execute step by step the program
 	#	Given I have a valid minijaja program that prints 42
