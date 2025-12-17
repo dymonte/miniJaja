@@ -10,6 +10,8 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.ASTNode;
 import fr.umlp.m1info.projectvms.group2.checker.Diagnostic;
 import fr.umlp.m1info.projectvms.group2.checker.TypeChecker;
 import fr.umlp.m1info.projectvms.group2.compilation.MiniJajaCompiler;
+import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+import fr.umlp.m1info.projectvms.group2.logger.MemoryLogger.MessageLevel;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -55,7 +57,7 @@ public class CompilerService {
 					compileToFile(programRoot, outputFile);
 					Platform.runLater(refreshTree);
 				} catch (Exception e) {
-					Platform.runLater(() -> PopUp.info("Compiler Error", e.getMessage(), ""));
+					InterpreterLogger.getInstance().log(e.getMessage(), InterpreterLogger.MessageLevel.ERROR);
 				}
 				return null;
 			}

@@ -4,20 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-
-public class MiniJajaStyler extends CodeStyler{
-	private static final String[] KEYWORDS_MAIN = new String[]{
+public class MiniJajaStyler extends CodeStyler {
+	private static final String[] KEYWORDS_MAIN = new String[] {
 			"class", "main", "return"
 	};
 
-	private static final String[] KEYWORDS_BIS = new String[]{
-			"if", "else", "while"
+	private static final String[] KEYWORDS_BIS = new String[] {
+			"if", "else", "while", "for", "switch", "case", "default"
 	};
 
-	private static final String[] BUILTIN_FUNCTIONS = new String[]{
-			"length", "write", "writeln"
+	private static final String[] BUILTIN_FUNCTIONS = new String[] {
+			"length", "write", "writeln", "chevrot", "bouquet", "dugois", "jacquin"
 	};
-
 
 	private static final String KEYWORDS_MAIN_PATTERN = "\\b(" + String.join("|", KEYWORDS_MAIN) + ")\\b";
 	private static final String KEYWORDS_BIS_PATTERN = "\\b(" + String.join("|", KEYWORDS_BIS) + ")\\b";
@@ -55,8 +53,7 @@ public class MiniJajaStyler extends CodeStyler{
 					"|(?<" + GROUP_BRACKET + ">" + BRACKET_PATTERN + ")" +
 					"|(?<" + GROUP_SEMICOLON + ">" + SEMICOLON_PATTERN + ")" +
 					"|(?<" + GROUP_STRING + ">" + STRING_PATTERN + ")" +
-					"|(?<" + GROUP_COMMENT + ">" + COMMENT_PATTERN + ")"
-	);
+					"|(?<" + GROUP_COMMENT + ">" + COMMENT_PATTERN + ")");
 
 	@Override
 	protected Map<String, String> getGroupToStyleClass() {

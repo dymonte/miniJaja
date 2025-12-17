@@ -236,7 +236,7 @@ public class InterpreterService {
 					interpreter.interpret(instrs.get(0));
 				} catch (InterpreterInterruptedException ignored) {
 				} catch (Exception e) {
-					Platform.runLater(() -> PopUp.error("JajaCode Interpreter Error", e.getMessage(), ""));
+					InterpreterLogger.getInstance().log(e.getMessage(), InterpreterLogger.MessageLevel.ERROR);
 				} finally {
 					Platform.runLater(() -> {
 						if (showPopup) {

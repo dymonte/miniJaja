@@ -468,6 +468,7 @@ public class AppController implements StatefulController {
 	}
 
 	private void runCurrentFile(Boolean step) {
+		consoleSectionController.clearAllTabs();
 		Optional<File> toRunOpt = state.getOpenedFile();
 
 		List<Integer> breakpoints = new ArrayList<>(codeSectionController.getBreakpoints());

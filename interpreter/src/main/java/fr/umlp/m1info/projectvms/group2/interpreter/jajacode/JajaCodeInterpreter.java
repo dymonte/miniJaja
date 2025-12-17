@@ -66,9 +66,11 @@ public class JajaCodeInterpreter {
 		}
 		try {
 			m.invoke(this, node);
-		} catch (Exception e) {
-			throw new InterpretRuntimeException(
-					"Error interpreting node " + node.getClass().getSimpleName() + ": " + e.getMessage());
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getTargetException();
+			throw new InterpretRuntimeException(cause.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new InterpretRuntimeException(e.getMessage());
 		}
 	}
 

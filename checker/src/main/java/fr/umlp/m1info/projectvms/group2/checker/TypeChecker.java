@@ -277,7 +277,7 @@ public class TypeChecker implements Checker {
 					node.getLine(), node.getColumn());
 		}
 
-		if (!leftType.equals(rightType)) {
+		if (leftType != rightType) {
 			diag.error(ErrorCode.TYPE_MISMATCH,
 					"Assignment type mismatch: left = " + leftType + ", right = " + rightType,
 					node.getLine(), node.getColumn());
