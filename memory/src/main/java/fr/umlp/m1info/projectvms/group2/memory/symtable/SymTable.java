@@ -12,7 +12,7 @@ import java.util.Optional;
  * instances
  */
 public class SymTable {
-	final int TABLE_LENGTH;
+	final int tableLength;
 	SymNode[] table;
 
 	/**
@@ -25,8 +25,8 @@ public class SymTable {
 		if (tableLength <= 0) {
 			throw new IllegalArgumentException("The sym table length should be stricly positive.");
 		}
-		TABLE_LENGTH = tableLength;
-		table = new SymNode[TABLE_LENGTH];
+		this.tableLength = tableLength;
+		table = new SymNode[this.tableLength];
 	}
 
 	/**
@@ -37,7 +37,7 @@ public class SymTable {
 	 *         as an index inside the table.
 	 */
 	private int hash(String ident) {
-		return ident.chars().sum() % TABLE_LENGTH;
+		return ident.chars().sum() % tableLength;
 	}
 
 	/**

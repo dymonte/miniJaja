@@ -61,8 +61,8 @@ public class MiniJajaInterpreterUtils {
 		}
 	}
 
-	public static ArrayList<Type> collectExprTypes(ASTExprs exprs, MiniJajaInterpreter interpreter) {
-		ArrayList<Type> types = new ArrayList<>();
+	public static List<Type> collectExprTypes(ASTExprs exprs, MiniJajaInterpreter interpreter) {
+		List<Type> types = new ArrayList<>();
 		ASTExprs currentExprs = exprs;
 
 		while (currentExprs instanceof ASTExprsChain chain) {

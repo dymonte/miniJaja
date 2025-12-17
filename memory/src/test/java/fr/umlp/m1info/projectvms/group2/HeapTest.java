@@ -51,12 +51,14 @@ public class HeapTest {
 
 	@Test
 	public void testTooMuchAllocation() {
-		Assert.assertThrows(HeapOutOfMemoryException.class,
-				() -> heap.allocate(heap.getHeapSize() + 1, Type.INT));
-		heap.allocate(heap.getHeapSize() - 1, Type.BOOL);
-		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(10, Type.INT));
-		Assert.assertThrows(HeapOutOfMemoryException.class,
-				() -> heap.allocate(heap.getHeapSize() * 2, Type.INT));
+		int size1 = heap.getHeapSize() + 1;
+		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(size1, Type.INT));
+		int size2 = heap.getHeapSize() - 1;
+		heap.allocate(size2, Type.BOOL);
+		int size3 = 10;
+		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(size3, Type.INT));
+		int size4 = heap.getHeapSize() * 2;
+		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(size4, Type.INT));
 	}
 
 	@Test
@@ -118,7 +120,7 @@ public class HeapTest {
 		int arraySize = 10;
 		int addr = heap.allocate(arraySize, Type.INT);
 		heap.setValue(addr, 0, 10);
-		Assert.assertEquals((int) heap.search(addr, 0), 10);
+		Assert.assertEquals(10, (int) heap.search(addr, 0));
 		heap.decRef(addr);
 		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.search(addr, 0));
 	}
@@ -129,7 +131,7 @@ public class HeapTest {
 		int addr = heap.allocate(arraySize, Type.INT);
 		heap.incRef(addr);
 		heap.decRef(addr);
-		Assert.assertEquals((int) heap.search(addr, 0), 0);
+		Assert.assertEquals(0, (int) heap.search(addr, 0));
 		heap.decRef(addr);
 		Assert.assertThrows(HeapInvalidAddressException.class, () -> heap.search(addr, 0));
 	}

@@ -21,7 +21,7 @@ public class InstrNew extends Instr {
 	 * @param valIdent the valIdentifier of the element
 	 * @param kind     the kind of the element
 	 * @param type     the type of the element
-	 * @param address  the initial value of the element
+	 * @param depth  the initial value of the element
 	 */
 	public InstrNew(int lineId, ValIdent valIdent, VarKind kind, VarType type, ValNbre depth) {
 		super(lineId);

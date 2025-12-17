@@ -6,7 +6,7 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.JajaCodeNode;
  * Abstract class representing a value in JajaCode
  */
 public abstract sealed class Val extends JajaCodeNode permits ValBool, ValNbre, ValString, ValAddress, ValIdent {
-    public Val(int lineId) {
+    protected Val(int lineId) {
         super(lineId);
     }
 }

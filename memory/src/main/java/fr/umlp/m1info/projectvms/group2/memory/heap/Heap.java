@@ -12,12 +12,12 @@ import fr.umlp.m1info.projectvms.group2.utils.Type;
  * Heap
  */
 public class Heap {
-	private final int HEAP_SIZE;
-	private ByteBuffer heap;
-	private HeapBlockNode[] blocks;
-	private ArrayList<HeapSymbol> localTable;
-	private final int INT_SIZE = 4;
-	private final int BOOL_SIZE = 1;
+	private final int heapSize;
+	private final ByteBuffer heap;
+	private final HeapBlockNode[] blocks;
+	private final ArrayList<HeapSymbol> localTable;
+	private static final int INTSIZE = 4;
+	private static final int BOOLSIZE = 1;
 
 	/**
 	 * Constructs a new Heap
@@ -29,15 +29,15 @@ public class Heap {
 			throw new IllegalArgumentException("Cannot create an empty sized heap.");
 		}
 
-		this.HEAP_SIZE = heapSize;
-		this.heap = ByteBuffer.allocate(HEAP_SIZE);
+		this.heapSize = heapSize;
+		this.heap = ByteBuffer.allocate(heapSize);
 
 		/**
-		 * This array is of size log2(HEAP_SIZE).
+		 * This array is of size log2(heapSize).
 		 * each index i corresponds to blocks of size 2^(i-1)
 		 * for instance, addresses of blocks of size 256 are stored at index 7.
 		 */
-		this.blocks = new HeapBlockNode[(int) (Math.log(HEAP_SIZE) / Math.log(2)) + 1];
+		this.blocks = new HeapBlockNode[(int) (Math.log(heapSize) / Math.log(2)) + 1];
 		this.blocks[blocks.length - 1] = new HeapBlockNode(0);
 		this.localTable = new ArrayList<>();
 	}
@@ -46,7 +46,7 @@ public class Heap {
 	 * @return The heap size
 	 */
 	public int getHeapSize() {
-		return HEAP_SIZE;
+		return heapSize;
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Heap {
 	 *         stack/symtable)
 	 * @throws IllegalArgumentException thrown if arguments size <= 0 or type is
 	 *                                  VOID
-	 * @throws HeapOutOfMemoryException when the argument size >= HEAP_SIZE
+	 * @throws HeapOutOfMemoryException when the argument size >= heapSize
 	 *                                  or no more space is available
 	 */
 	public int allocate(int size, Type type) throws IllegalArgumentException, HeapOutOfMemoryException {
@@ -69,18 +69,18 @@ public class Heap {
 		if (size <= 0) {
 			throw new IllegalArgumentException("Size must be positive");
 		}
-		if (size >= HEAP_SIZE) {
+		if (size >= heapSize) {
 			throw new HeapOutOfMemoryException();
 		}
 
 		// Check type size
-		int requestedSize = (type == Type.INT) ? (size * INT_SIZE) : size;
+		int requestedSize = (type == Type.INT) ? (size * INTSIZE) : size;
 
 		// Search block > size
 		int blockIndex = (int) Math.ceil(Math.log(requestedSize) / Math.log(2));
 		int blockSize = 1 << blockIndex;
 
-		if (blockSize > HEAP_SIZE) {
+		if (blockSize > heapSize) {
 			throw new HeapOutOfMemoryException();
 		}
 
@@ -299,7 +299,7 @@ public class Heap {
 		}
 
 		int baseAddr = symbol.getAddress();
-		int typeSize = (symbol.getType() == Type.INT) ? INT_SIZE : BOOL_SIZE;
+		int typeSize = (symbol.getType() == Type.INT) ? INTSIZE : BOOLSIZE;
 		int offset = index * typeSize;
 
 		if (offset + typeSize > symbol.getSize()) {
@@ -340,7 +340,7 @@ public class Heap {
 		}
 
 		int baseAddr = symbol.getAddress();
-		int typeSize = (symbol.getType() == Type.INT) ? INT_SIZE : BOOL_SIZE;
+		int typeSize = (symbol.getType() == Type.INT) ? INTSIZE : BOOLSIZE;
 		int offset = index * typeSize;
 
 		heap.position(baseAddr + offset);
@@ -356,7 +356,8 @@ public class Heap {
 				if (!(value instanceof Boolean)) {
 					throw new IllegalArgumentException("Expected Boolean for type BOOL");
 				}
-				heap.put((byte) ((Boolean) value ? 1 : 0));
+				boolean boolValue = (Boolean) value;
+				heap.put((byte) (boolValue ? 1 : 0));
 			}
 			default -> throw new IllegalArgumentException("Unsupported type: " + symbol.getType());
 		}
@@ -369,48 +370,18 @@ public class Heap {
 	public String toString() {
 		StringBuilder string = new StringBuilder();
 		ByteBuffer byteBuffer = heap.asReadOnlyBuffer();
-		byteBuffer.rewind();
-
-		// Build allocation map
-		boolean[] allocatedMap = new boolean[HEAP_SIZE];
-		for (HeapSymbol symbol : localTable) {
-			if (symbol != null) {
-				int start = symbol.getAddress();
-				int size = symbol.getSize();
-				for (int i = 0; i < size && (start + i) < HEAP_SIZE; i++) {
-					allocatedMap[start + i] = true;
-				}
-			}
-		}
 
 		int address = 0;
 		while (byteBuffer.hasRemaining()) {
-			StringBuilder line = new StringBuilder();
-			boolean isAllocated = false;
-			
-			// Check allocation for this 4-byte block
-			for(int k=0; k<4 && (address+k) < HEAP_SIZE; k++) {
-				if(allocatedMap[address+k]) {
-					isAllocated = true;
-					break;
-				}
-			}
-
-			line.append(String.format("0x%04X: ", address));
+			string.append(String.format("0x%04X: ", address));
 
 			for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
-				byte b = byteBuffer.get();
-				if (isAllocated) {
-					line.append("CC ");
-				} else {
-					line.append(String.format("%02X ", b));
-				}
+				string.append(String.format("%02X ", byteBuffer.get()));
 				address++;
 			}
 
-			string.append(line).append("\n");
+			string.append("\n");
 		}
-
 		return string.toString();
 	}
 }

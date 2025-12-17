@@ -5,40 +5,35 @@ import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeUnaryOpe
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.utils.Type;
 
-public abstract class JajaCodeInterpreterUtils {
+public final class JajaCodeInterpreterUtils {
+	private JajaCodeInterpreterUtils() {
+		throw new UnsupportedOperationException("Utility class");
+	}
+
 	public static Object evalOperBinary(Object v1, Object v2, JajaCodeBinaryOper oper) {
 		Object result;
 		switch (oper) {
-			case ADD -> {
-				result = (int) v1 + (int) v2;
-			}
-			case SUB -> {
-				result = (int) v1 - (int) v2;
-			}
-			case MUL -> {
-				result = (int) v1 * (int) v2;
-			}
+			case ADD -> result = (int) v1 + (int) v2;
+
+			case SUB -> result = (int) v1 - (int) v2;
+
+			case MUL -> result = (int) v1 * (int) v2;
+
 			case DIV -> {
 				if ((int) v2 == 0)
 					throw new InterpretRuntimeException("Division by zero");
 				result = (int) v1 / (int) v2;
 			}
-			case CMP -> {
-				// Compare two integers
-				result = v1 == v2;
-			}
-			case SUP -> {
-				result = (int) v1 > (int) v2;
-			}
-			case AND -> {
-				result = (boolean) v1 && (boolean) v2;
-			}
-			case OR -> {
-				result = (boolean) v1 || (boolean) v2;
-			}
-			default -> {
-				throw new InterpretRuntimeException("Unknown binary operator: " + oper);
-			}
+			case CMP -> result = Integer.compare((int) v1, (int) v2);
+
+			case SUP -> result = (int) v1 > (int) v2;
+
+			case AND -> result = (boolean) v1 && (boolean) v2;
+
+			case OR -> result = (boolean) v1 || (boolean) v2;
+
+			default -> throw new InterpretRuntimeException("Unknown binary operator: " + oper);
+
 		}
 		return result;
 	}

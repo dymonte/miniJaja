@@ -1,5 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
@@ -102,14 +103,21 @@ public class JajaCodeInterpreter {
 			for (Method method : cls.getDeclaredMethods()) {
 				var annotation = method.getAnnotation(annotationClass);
 				if (annotation != null) {
+
+					Class<?> handledType = null;
 					try {
-						Class<?> handledType = (Class<?>) annotationClass.getMethod("value")
+						handledType = (Class<?>) annotationClass.getMethod("value")
 								.invoke(annotation);
-						if (handledType.isAssignableFrom(nodeClass)) {
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						throw new InterpretRuntimeException(
+								"Failed to resolve annotation @" + annotationClass.getSimpleName()
+										+ " for node class " + nodeClass.getSimpleName()
+						);
+					}
+					if (handledType.isAssignableFrom(nodeClass)) {
 							return method;
 						}
-					} catch (Exception ignored) {
-					}
+
 				}
 			}
 			cls = cls.getSuperclass();
@@ -124,7 +132,10 @@ public class JajaCodeInterpreter {
 
 	@JajaCodeInterpretFunction(InstrStop.class)
 	protected void interpretStop(InstrStop node) {
-		return;
+		/*
+		 * STOP instruction marks the normal termination of the program.
+		 * No further instruction must be executed, so this method is intentionally empty.
+		 */
 	}
 
 	/**
