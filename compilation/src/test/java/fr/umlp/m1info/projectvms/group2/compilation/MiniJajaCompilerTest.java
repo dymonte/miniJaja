@@ -22,6 +22,8 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprs;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.exprs.ASTExprsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTAssignmentOp;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTBonusExpr;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTBonusInstr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.AssignmentOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.IncrementOp;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTIf;
@@ -945,6 +947,42 @@ public class MiniJajaCompilerTest {
 
 		Assert.assertEquals(2, nbInstr);
 		Assert.assertEquals("writeln\n", sb.toString());
+	}
+
+	@Test
+	public void testCompileBonuses() {
+		MiniJajaCompiler spyCompiler = Mockito.spy(miniJajaCompiler);
+
+		ASTIntLiteral expr = new ASTIntLiteral(1, 0, 0);
+		Mockito.doReturn(1).when(spyCompiler).compile(expr);
+
+		ASTBonusInstr chevrot = new ASTBonusInstr(ASTBonusInstr.Op.CHEVROT, expr, 0, 0);
+		int nbInstrs = spyCompiler.compile(chevrot);
+
+		Assert.assertEquals(2, nbInstrs);
+		Assert.assertEquals("chevrot\n", sb.toString());
+		sb.setLength(0);
+
+		ASTBonusInstr dugois = new ASTBonusInstr(ASTBonusInstr.Op.DUGOIS, expr, 0, 0);
+		nbInstrs = spyCompiler.compile(dugois);
+
+		Assert.assertEquals(2, nbInstrs);
+		Assert.assertEquals("dugois\n", sb.toString());
+		sb.setLength(0);
+
+		for (ASTBonusExpr.Op op : ASTBonusExpr.Op.values()) {
+			ASTIntLiteral expr1 = new ASTIntLiteral(1, 0, 0);
+			ASTIntLiteral expr2 = new ASTIntLiteral(2, 0, 0);
+			Mockito.doReturn(1).when(spyCompiler).compile(expr1);
+			Mockito.doReturn(1).when(spyCompiler).compile(expr2);
+			ASTBonusExpr bonus = new ASTBonusExpr(op, expr1, expr2, 0, 0);
+
+			nbInstrs = spyCompiler.compile(bonus);
+
+			Assert.assertEquals(3, nbInstrs);
+			Assert.assertEquals(op.toString() + "\n", sb.toString());
+			sb.setLength(0);
+		}
 	}
 
 	@Test

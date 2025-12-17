@@ -382,6 +382,18 @@ public class MiniJajaCompiler {
 		return nbInstrs;
 	}
 
+	/** Compiles a bonus instruction. */
+	@CompilationFunction(ASTBonusInstr.class)
+	protected Integer compileBonus(ASTBonusInstr node) {
+		return compile(node.getExpr()) + emit(node.getOp().toString());
+	}
+
+	/** Compiles a bonus expression. */
+	@CompilationFunction(ASTBonusExpr.class)
+	protected Integer compileBonus(ASTBonusExpr node) {
+		return compile(node.getExpr1()) + compile(node.getExpr2()) + emit(node.getOp().toString());
+	}
+
 	/** Compiles a method call used as an instruction. */
 	@CompilationFunction(ASTMethodCallInstr.class)
 	protected Integer compileMethodCallInstr(ASTMethodCallInstr node) {

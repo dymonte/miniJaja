@@ -1,12 +1,14 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeBinaryOper;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.JajaCodeUnaryOper;
 import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
 import fr.umlp.m1info.projectvms.group2.utils.Type;
 
 public abstract class JajaCodeInterpreterUtils {
-    public static Object evalOperBinary(Object v1, Object v2, JajaCodeBinaryOper oper){
+    public static Object evalOperBinary(Object v1, Object v2, JajaCodeBinaryOper oper) {
         Object result;
         switch (oper) {
             case ADD -> {
@@ -35,6 +37,17 @@ public abstract class JajaCodeInterpreterUtils {
             }
             case OR -> {
                 result = (boolean) v1 || (boolean) v2;
+            }
+            case JACQUIN -> {
+                result = (int) Math.round(Math.pow((int) v1, (int) v2));
+            }
+            case BOUQUET -> {
+                int bInf = (int) v1;
+                int bSup = (int) v2;
+                if (bInf > bSup) {
+                    throw new InterpretRuntimeException("(bouquet): bInf must be <= bSup");
+                }
+                result = bInf == bSup ? bInf : ThreadLocalRandom.current().nextInt(bInf, bSup);
             }
             default -> {
                 throw new InterpretRuntimeException("Unknown binary operator: " + oper);

@@ -8,7 +8,9 @@ public enum JajaCodeBinaryOper {
 	CMP("cmp"),
 	SUP("sup"),
 	AND("and"),
-	OR("or");
+	OR("or"),
+	JACQUIN("jacquin"),
+	BOUQUET("bouquet");
 
 	private final String instruction;
 
@@ -45,6 +47,8 @@ public enum JajaCodeBinaryOper {
 			case "sup" -> SUP;
 			case "and" -> AND;
 			case "or" -> OR;
+			case "jacquin" -> JACQUIN;
+			case "bouquet" -> BOUQUET;
 			default -> throw new IllegalArgumentException("Unknow operator: " + instruction);
 		};
 	}

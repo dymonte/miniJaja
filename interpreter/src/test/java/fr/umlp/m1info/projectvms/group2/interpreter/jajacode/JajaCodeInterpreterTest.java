@@ -1,7 +1,6 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.*;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.oper.InstrOperBinary;
@@ -230,6 +229,35 @@ public class JajaCodeInterpreterTest {
 	}
 
 	@Test
+	public void testInterpretOperBinary_Jacquin() {
+		memory.push(2);
+		memory.push(10);
+		InstrOperBinary jacquin = new InstrOperBinary(1, JajaCodeBinaryOper.JACQUIN);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(jacquin, stop));
+		JajaCodeInterpreter spy = spy(interpreter);
+		doNothing().when(spy).interpret(stop);
+		spy.interpret(jacquin);
+		assertEquals(1024, memory.pop());
+	}
+
+	@Test
+	public void testInterpretOperBinary_Bouquet() {
+		InstrOperBinary bouquet = new InstrOperBinary(1, JajaCodeBinaryOper.BOUQUET);
+		InstrStop stop = new InstrStop(2);
+		for (int i = 0; i < 20; i++) {
+			memory.push(2);
+			memory.push(10);
+			interpreter = new JajaCodeInterpreter(memory, Arrays.asList(bouquet, stop));
+			JajaCodeInterpreter spy = spy(interpreter);
+			doNothing().when(spy).interpret(stop);
+			spy.interpret(bouquet);
+			int value = (int) memory.pop();
+			assertTrue(value >= 2 && value < 10);
+		}
+	}
+
+	@Test
 	public void testInterpretOperUnary_Neg() {
 		memory.push(5);
 		InstrOperUnary neg = new InstrOperUnary(1, JajaCodeUnaryOper.NEG);
@@ -280,6 +308,31 @@ public class JajaCodeInterpreterTest {
 		doNothing().when(spy).interpret(stop);
 		spy.interpret(ainc);
 		assertEquals(25, memory.getValArray("arr", 1));
+	}
+
+	@Test
+	public void testInterpretChevrot() {
+		memory.push(false);
+		InstrChevrot chevrot = new InstrChevrot(1);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(chevrot, stop));
+		JajaCodeInterpreter spy = spy(interpreter);
+		doNothing().when(spy).interpret(stop);
+		assertThrows(InterpretRuntimeException.class, () -> spy.interpret(chevrot));
+	}
+
+	@Test
+	public void testInterpretDugois() {
+		memory.push(1);
+		InstrDugois dugois = new InstrDugois(1);
+		InstrStop stop = new InstrStop(2);
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(dugois, stop));
+		JajaCodeInterpreter spy = spy(interpreter);
+		doNothing().when(spy).interpret(stop);
+		long start = System.currentTimeMillis();
+		spy.interpret(dugois);
+		long duration = System.currentTimeMillis() - start;
+		assertTrue(duration >= 1000);
 	}
 
 	@Test

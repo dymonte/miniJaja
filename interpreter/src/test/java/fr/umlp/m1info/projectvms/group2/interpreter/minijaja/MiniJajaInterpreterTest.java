@@ -275,6 +275,66 @@ public class MiniJajaInterpreterTest {
 	}
 
 	@Test
+	public void testInterpretChevrot() {
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+		ASTBoolLiteral exp = new ASTBoolLiteral(false, 0, 0);
+		ASTBonusInstr chevrot = new ASTBonusInstr(ASTBonusInstr.Op.CHEVROT, exp, 0, 0);
+
+		Mockito.doReturn(false).when(spyInterpreter).eval(exp);
+
+		Assert.assertThrows(InterpretRuntimeException.class, () -> spyInterpreter.interpret(chevrot));
+	}
+
+	@Test
+	public void testInterpretDugois() {
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+		ASTIntLiteral exp = new ASTIntLiteral(1, 0, 0);
+		ASTBonusInstr dugois = new ASTBonusInstr(ASTBonusInstr.Op.DUGOIS, exp, 0, 0);
+
+		Mockito.doReturn(1).when(spyInterpreter).eval(exp);
+
+		long start = System.currentTimeMillis();
+		spyInterpreter.interpret(dugois);
+		long duration = System.currentTimeMillis() - start;
+
+		Assert.assertTrue(duration >= 1000);
+	}
+
+	@Test
+	public void testInterpretJacquin() {
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+		ASTIntLiteral base = new ASTIntLiteral(2, 0, 0);
+		ASTIntLiteral exponent = new ASTIntLiteral(10, 0, 0);
+		ASTBonusExpr jacquin = new ASTBonusExpr(ASTBonusExpr.Op.JACQUIN, base, exponent, 0, 0);
+
+		Mockito.doReturn(2).when(spyInterpreter).eval(base);
+		Mockito.doReturn(10).when(spyInterpreter).eval(exponent);
+
+		Assert.assertEquals(1024, spyInterpreter.eval(jacquin));
+	}
+
+	@Test
+	public void testInterpretBouquet() {
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
+
+		ASTIntLiteral bInf = new ASTIntLiteral(2, 0, 0);
+		ASTIntLiteral bSup = new ASTIntLiteral(10, 0, 0);
+		ASTBonusExpr bouquet = new ASTBonusExpr(ASTBonusExpr.Op.BOUQUET, bInf, bSup, 0, 0);
+
+		Mockito.doReturn(2).when(spyInterpreter).eval(bInf);
+		Mockito.doReturn(10).when(spyInterpreter).eval(bSup);
+
+		for (int i = 0; i < 20; i++) { // test repeted to ensure random stay in bounds
+			Integer value = (Integer) spyInterpreter.eval(bouquet);
+			Assert.assertTrue(value >= 2 && value < 10);
+		}
+	}
+
+
+	@Test
 	public void testInterpretIfIf() {
 		ASTStringLiteral stringLiteral = new ASTStringLiteral("WRITE", 0, 0);
 		ASTStringLiteral stringLiteral2 = new ASTStringLiteral("AH", 0, 0);
@@ -764,11 +824,10 @@ public class MiniJajaInterpreterTest {
 
 	@Test
 	public void testTernaryOp() {
-
+		MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
 		List<Boolean> booleans = List.of(new Boolean[] { true, false });
 
 		for (Boolean b : booleans) {
-			MiniJajaInterpreter spyInterpreter = Mockito.spy(interpreter);
 			ASTIntLiteral firstCase = new ASTIntLiteral(3, 0, 0);
 			ASTIntLiteral secondCase = new ASTIntLiteral(5, 0, 0);
 			ASTBoolLiteral condition = new ASTBoolLiteral(b, 0, 0);

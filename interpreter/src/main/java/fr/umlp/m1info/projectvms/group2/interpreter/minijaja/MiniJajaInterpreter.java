@@ -491,7 +491,7 @@ public class MiniJajaInterpreter {
 		if (bInf == bSup) {
 			return bInf;
 		}
-		return ThreadLocalRandom.current().nextInt(bInf, bSup + 1);
+		return ThreadLocalRandom.current().nextInt(bInf, bSup);
 	}
 
 	/** Interprets bonuses expressions */

@@ -1,6 +1,7 @@
 package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -489,6 +490,34 @@ public class JajaCodeInterpreter {
 		}
 		int newVal = (int) currentVal + (int) value;
 		memory.updateValArray(arrayName, index, newVal);
+		interpret(getNextInstr(node));
+	}
+
+	@JajaCodeInterpretFunction(InstrChevrot.class)
+	protected void interpretChevrot(InstrChevrot node) {
+		Object conditionObj = memory.pop();
+		if (!(conditionObj instanceof Boolean)) {
+			throw new InterpretRuntimeException("(chevrot): assertions should be of Boolean type.");
+		}
+		Boolean condition = (Boolean) conditionObj;
+		if (!condition) {
+			throw new InterpretRuntimeException("(chevrot): assertion failed line : " + node.getLineId());
+		}
+		interpret(getNextInstr(node));
+	}
+
+	@JajaCodeInterpretFunction(InstrDugois.class)
+	protected void interpretDugois(InstrDugois node) {
+		Object timeObj = memory.pop();
+		if (!(timeObj instanceof Integer)) {
+			throw new InterpretRuntimeException("(dugois): sleep time should be an integer value.");
+		}
+		Integer time = (Integer) timeObj;
+		try {
+			Thread.sleep(Duration.ofSeconds(time).toMillis());
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 		interpret(getNextInstr(node));
 	}
 

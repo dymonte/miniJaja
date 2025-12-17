@@ -4,14 +4,22 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.expr.ASTExpr;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrs;
 
 /**
- * TODO: javadoc
+ * Represents bonuses instructions in the MiniJaja AST.
+ * By bonuses we meant instructions that were not asked but were added
+ * to make the project more original.
+ *
+ * Some other bonuses are not in this file such as ternary Operator, 
+ * bonuses expressions, for and switch instruction, else if ...
+ *
+ * This file contains two bonus operations : chevrot(e) and dugois(e) that acts 
+ * respectively like an assert and a sleep functions.
  */
 public class ASTBonusInstr extends ASTInstr {
 
-	//TODO: javadoc
+	// This enum describes the operation this node is
 	public enum Op {
-		CHEVROT,
-		DUGOIS;
+		CHEVROT, // performs an assertion
+		DUGOIS; // performs a sleep on the execution thread
 
 		@Override
 		public String toString() {
@@ -24,8 +32,10 @@ public class ASTBonusInstr extends ASTInstr {
 
 	
 	/**
-	 * TODO: javadoc
+	 * Constructs a new ASTBonusInstr node
 	 *
+	 * @param op the operation kind
+	 * @param expr the expression
 	 * @param line   the source code line where this node appears
 	 * @param column the source code column where this node appears
 	 */
@@ -41,7 +51,9 @@ public class ASTBonusInstr extends ASTInstr {
 	}
 
 	/**
-	 * TODO: javadoc
+	 * Returns the operation this node is
+	 *
+	 * @return the operation representing this node
 	 */
 	public Op getOp() {
 		return operation;
@@ -49,7 +61,9 @@ public class ASTBonusInstr extends ASTInstr {
 
 
 	/**
-	 * TODO: javadoc
+	 * Returns the expression of this node
+	 *
+	 * @return this node's expression
 	 */
 	public ASTExpr getExpr() {
 		return expr;

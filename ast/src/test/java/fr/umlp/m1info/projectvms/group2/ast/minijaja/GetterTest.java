@@ -170,6 +170,24 @@ public class GetterTest {
 	}
 
 	@Test
+	public void getterBonuses() {
+		ASTIntLiteral expr1 = new ASTIntLiteral(1, 0, 0);
+		ASTIntLiteral expr2 = new ASTIntLiteral(2, 0, 0);
+		for (ASTBonusInstr.Op op: ASTBonusInstr.Op.values()) {
+			ASTBonusInstr bonus = new ASTBonusInstr(op, expr1, 0, 0);
+			Assert.assertEquals(op, bonus.getOp());
+			Assert.assertEquals(expr1, bonus.getExpr());
+		}
+
+		for (ASTBonusExpr.Op op: ASTBonusExpr.Op.values()) {
+			ASTBonusExpr bonus = new ASTBonusExpr(op, expr1, expr2, 0, 0);
+			Assert.assertEquals(op, bonus.getOp());
+			Assert.assertEquals(expr1, bonus.getExpr1());
+			Assert.assertEquals(expr2, bonus.getExpr2());
+		}
+	}
+
+	@Test
 	public void getterIf() {
 		ASTBoolLiteral bool = new ASTBoolLiteral(true, 0, 0);
 		ASTInstrsNil instrs = new ASTInstrsNil(0, 0);

@@ -32,6 +32,8 @@ instr
     | 'goto' '(' address ')'  #Goto
     | 'inc' '(' ident ')'    #Inc
     | 'ainc' '(' ident ')'   #AInc
+    | 'chevrot'		     #Chevrot
+    | 'dugois'		     #Dugois
     | oper                   #Operator
     | 'nop'                  #Nop
     | 'jdup'                 #Jdup
@@ -48,7 +50,7 @@ oper1
     ;
 
 oper2
-    : 'add' | 'sub' | 'mul' | 'div' | 'cmp' | 'sup' | 'or' | 'and'
+    : 'add' | 'sub' | 'mul' | 'div' | 'cmp' | 'sup' | 'or' | 'and' | 'jacquin' | 'bouquet'
     ;
 
 ident : IDENTIFIER ;

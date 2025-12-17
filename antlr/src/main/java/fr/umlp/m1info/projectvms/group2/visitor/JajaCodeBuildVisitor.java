@@ -97,7 +97,8 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	@Override
 	public JajaCodeNode visitNewArray(JajaCodeParser.NewArrayContext ctx) {
 		instructions
-				.add(new InstrNewArray(VisitorUtils.line(ctx), (ValIdent) visit(ctx.ident()), (VarType) visit(ctx.type())));
+				.add(new InstrNewArray(VisitorUtils.line(ctx), (ValIdent) visit(ctx.ident()),
+						(VarType) visit(ctx.type())));
 		return null;
 	}
 
@@ -278,6 +279,30 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	@Override
 	public JajaCodeNode visitAInc(JajaCodeParser.AIncContext ctx) {
 		instructions.add(new InstrAInc(VisitorUtils.line(ctx), (ValIdent) visit(ctx.ident())));
+		return null;
+	}
+
+	/**
+	 * Visits a Chevrot instruction. (assert)
+	 *
+	 * @param ctx the chevrot context
+	 * @return a JajaCodeNode for the chevrot instruction
+	 */
+	@Override
+	public JajaCodeNode visitChevrot(JajaCodeParser.ChevrotContext ctx) {
+		instructions.add(new InstrChevrot(VisitorUtils.line(ctx)));
+		return null;
+	}
+
+	/**
+	 * Visits a Dugois instruction. (assert)
+	 *
+	 * @param ctx the dugois context
+	 * @return a JajaCodeNode for the dugois instruction
+	 */
+	@Override
+	public JajaCodeNode visitDugois(JajaCodeParser.DugoisContext ctx) {
+		instructions.add(new InstrDugois(VisitorUtils.line(ctx)));
 		return null;
 	}
 
