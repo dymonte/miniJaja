@@ -170,6 +170,23 @@ public class MiniJajaParserTest {
 	}
 
 	@Test
+	public void testSwitch() throws Exception {
+		shouldNotBeNullString(
+				"class Test { int y = 10; main { switch(y) { case 0: write(y); case 1: write(y); default: write(y);};}}");
+	}
+
+	@Test
+	public void testSwitch2() throws Exception {
+		shouldNotBeNullString(
+				"class Test { int y = 10; main { switch(y) { case 0: write(y); };}}");
+	}
+
+	@Test
+	public void testSwitch3() throws Exception {
+		shouldNotBeNullString("class Test { int y = 10; main { switch(y) {};}}");
+	}
+
+	@Test
 	public void testElseIf() throws Exception {
 		shouldNotBeNullString(
 				"class Test {int y = 10;main {if (y == 0) {write(\"ZERO\");} else if (y == 10) {write(\"TEN\");} else {write(\"IDONTKNOW\");};}}");

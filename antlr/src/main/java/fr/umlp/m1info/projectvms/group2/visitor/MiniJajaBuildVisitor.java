@@ -516,6 +516,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	public ASTSwitch visitSwitch(MiniJajaParser.SwitchContext ctx) {
 		ASTExpr expr = (ASTExpr) visit(ctx.exp());
 		ASTCases cases = (ASTCases) visit(ctx.cases());
+		if (cases == null) {
+			cases = new ASTCasesNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
 		return new ASTSwitch(expr, cases, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
@@ -531,6 +534,9 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
 		ASTCase case1 = new ASTCase(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 		ASTCases cases = (ASTCases) visit(ctx.cases());
+		if (cases == null) {
+			cases = new ASTCasesNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		}
 		return new ASTCasesChain(case1, cases, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
@@ -547,16 +553,6 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		int line = VisitorUtils.line(ctx);
 		int column = VisitorUtils.column(ctx);
 		return new ASTCasesChain(default1, new ASTCasesNil(line, column), line, column);
-	}
-
-	/**
-	 * Visits an end switch
-	 *
-	 * @param ctx the nothing context
-	 * @return an ASTCasesNil node
-	 */
-	public ASTCasesNil visitCasesNil(MiniJajaParser.NothingContext ctx) {
-		return new ASTCasesNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
