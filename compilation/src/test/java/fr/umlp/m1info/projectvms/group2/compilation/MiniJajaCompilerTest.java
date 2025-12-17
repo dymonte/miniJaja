@@ -32,6 +32,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTReturn;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWhile;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTFor;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTWrite;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTSwitch;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrs;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
@@ -48,6 +49,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.ASTVarSimple;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVars;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsChain;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.ASTVarsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.utils.ParserUtils;
@@ -1074,6 +1076,31 @@ public class MiniJajaCompilerTest {
 		int nbInstr = miniJajaCompiler.compileParamsNil(nil);
 
 		Assert.assertEquals(0, nbInstr);
+	}
+
+	@Test
+	public void testCompileSwitch() {
+		ASTAssignmentOp defInstr = new ASTAssignmentOp(new ASTIdent("a", 0, 0), new ASTIntLiteral(30, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs defInstrs = new ASTInstrsChain(defInstr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTDefault def = new ASTDefault(defInstrs, 0, 0);
+		ASTAssignmentOp cs20Instr = new ASTAssignmentOp(new ASTIdent("a", 0, 0), new ASTIntLiteral(20, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs20Instrs = new ASTInstrsChain(cs20Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs20 = new ASTCase(new ASTIntLiteral(20, 0, 0), cs20Instrs, 0, 0);
+		ASTAssignmentOp cs10Instr = new ASTAssignmentOp(new ASTIdent("a", 0, 0), new ASTIntLiteral(10, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs10Instrs = new ASTInstrsChain(cs10Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs10 = new ASTCase(new ASTIntLiteral(10, 0, 0), cs10Instrs, 0, 0);
+		ASTCasesChain chain = new ASTCasesChain(cs10,
+				new ASTCasesChain(cs20, new ASTCasesChain(def, new ASTCasesNil(0, 0), 0, 0), 0, 0), 0, 0);
+
+		ASTSwitch swt = new ASTSwitch(new ASTIdent("a", 0, 0), chain, 0, 0);
+
+		int nbInstr = miniJajaCompiler.compile(swt);
+		String str = "load(a)\njdup\npush(10)\ncmp\nnot\nif(10)\npush(10)\ninc(a)\ngoto(21)\njdup\npush(20)\ncmp\nnot\nif(18)\npush(20)\ninc(a)\ngoto(21)\npush(30)\ninc(a)\ngoto(21)\npop\n";
+		Assert.assertEquals(21, nbInstr);
+		Assert.assertEquals(str, sb.toString());
 	}
 
 	@Ignore

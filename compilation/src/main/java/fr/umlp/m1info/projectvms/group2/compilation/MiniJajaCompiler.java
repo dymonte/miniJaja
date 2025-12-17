@@ -13,6 +13,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 import fr.umlp.m1info.projectvms.group2.exception.CompilationRuntimeException;
 import fr.umlp.m1info.projectvms.group2.exception.FreeCompilationRuntimeException;
 
@@ -508,6 +509,47 @@ public class MiniJajaCompiler {
 		nbInstrs += emit("invoke(" + node.getIdent().getName() + ")");
 		nbInstrs += free(node.getExprs());
 		return nbInstrs;
+	}
+
+	/** Compiles a switch */
+	@CompilationFunction(ASTSwitch.class)
+	protected Integer compileSwitch(ASTSwitch node) {
+		int nb = compile(node.getExpr());
+		nb += compile(node.getCases());
+		nb += emit("pop");
+		return nb;
+	}
+
+	/** Compiles cases chain */
+	@CompilationFunction(ASTCasesChain.class)
+	protected Integer compileCasesChain(ASTCasesChain node) {
+		ASTCaseGroup caseGroup = node.getCase();
+		ASTCases cases = node.getCases();
+		int offset = sb.length();
+		int nb = 0;
+		if (caseGroup instanceof ASTCase cs) {
+			nb += emit("jdup");
+			nb += compile(cs.getExpr());
+			nb += emit("cmp");
+			nb += emit("not");
+			nb += emit("if(TMP_IF_CASE)");
+			nb += compile(cs.getInstrs());
+		} else if (caseGroup instanceof ASTDefault def) {
+			nb += compile(def.getInstrs());
+		}
+		nb += emit("goto(TMP_GOTO_CASE)");
+		if (caseGroup instanceof ASTCase) {
+			patch("TMP_IF_CASE", "" + (n + 1), offset);
+		}
+		nb += compile(cases);
+
+		patch("TMP_GOTO_CASE", "" + (n + 1), offset);
+		return nb;
+	}
+
+	@CompilationFunction(ASTCasesNil.class)
+	protected Integer compileCasesNil(ASTCasesNil node) {
+		return 0;
 	}
 
 	/** Frees a null declaration. */
