@@ -32,11 +32,13 @@ instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp              #Assignment
         | 'writeln' '(' (ident1 | STRING ) ')'                #Writeln
         | 'chevrot' '(' exp ')'                               #Chevrot
         | 'dugois' '(' exp ')'                                #Dugois
-        | 'if' '('exp')' '{'instrs'}' ('else' '{' instrs '}')? #If
+        | 'if' '('exp')' '{'instrs'}' elseif* else? #If
         | 'while' '('exp')''{'instrs'}'                        #While
         | 'for' '(' (var|) ';' (exp|) ';' (instr|) ')' '{' instrs '}'  #For
         | 'switch' '(' exp ')' '{' cases '}'          #Switch
         ;
+elseif  : 'else' 'if' '(' exp ')' '{' instrs '}';
+else    : 'else' '{' instrs '}';
 listexp : (exp (',' exp)*)?;
 exp:      '!'exp1                 #NotExp
         | exp op=('&&'|'||') exp1 #LogicExp

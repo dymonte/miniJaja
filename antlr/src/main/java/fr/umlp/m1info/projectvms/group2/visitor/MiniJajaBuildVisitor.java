@@ -426,11 +426,47 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 	 */
 	@Override
 	public ASTIf visitIf(MiniJajaParser.IfContext ctx) {
-		ASTExpr expr = (ASTExpr) visit(ctx.exp());
-		ASTInstrs ifInstrs = (ASTInstrs) visit(ctx.instrs(0));
-		ASTInstrs elseInstrs = (ctx.instrs().size() >= 2 ? (ASTInstrs) visit(ctx.instrs(1))
-				: new ASTInstrsNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx)));
-		return new ASTIf(expr, ifInstrs, elseInstrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		int line = VisitorUtils.line(ctx);
+		int column = VisitorUtils.column(ctx);
+
+		ASTExpr cond = (ASTExpr) visit(ctx.exp());
+		ASTInstrs thenInstrs = (ASTInstrs) visit(ctx.instrs());
+		ASTInstrs elseInstrs;
+
+		if (ctx.else_() != null) {
+			elseInstrs = visitElse(ctx.else_());
+		} else {
+			elseInstrs = new ASTInstrsNil(line, column);
+		}
+
+		for (int i = ctx.elseif().size() - 1; i >= 0; i--) {
+			MiniJajaParser.ElseifContext ectx = ctx.elseif(i);
+			elseInstrs = visitElseIf(ectx, elseInstrs);
+		}
+
+		return new ASTIf(cond, thenInstrs, elseInstrs, line, column);
+	}
+
+	/**
+	 * Builds an else-if as an else containing a nested if.
+	 */
+	private ASTInstrs visitElseIf(MiniJajaParser.ElseifContext ctx, ASTInstrs elseInstrs) {
+		int line = VisitorUtils.line(ctx);
+		int column = VisitorUtils.column(ctx);
+
+		ASTExpr cond = (ASTExpr) visit(ctx.exp());
+		ASTInstrs thenInstrs = (ASTInstrs) visit(ctx.instrs());
+
+		ASTIf nestedIf = new ASTIf(cond, thenInstrs, elseInstrs, line, column);
+		return new ASTInstrsChain(nestedIf, new ASTInstrsNil(line, column), line, column);
+	}
+
+	/**
+	 * Visits an else clause.
+	 */
+	@Override
+	public ASTInstrs visitElse(MiniJajaParser.ElseContext ctx) {
+		return (ASTInstrs) visit(ctx.instrs());
 	}
 
 	/**

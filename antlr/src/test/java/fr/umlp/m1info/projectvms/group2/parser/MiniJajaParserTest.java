@@ -170,6 +170,12 @@ public class MiniJajaParserTest {
 	}
 
 	@Test
+	public void testElseIf() throws Exception {
+		shouldNotBeNullString(
+				"class Test {int y = 10;main {if (y == 0) {write(\"ZERO\");} else if (y == 10) {write(\"TEN\");} else {write(\"IDONTKNOW\");};}}");
+	}
+
+	@Test
 	public void testMissingClass() {
 		Assert.assertThrows(SyntaxException.class, () -> ParserUtils.parseString("{ main { } }"));
 	}
