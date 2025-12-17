@@ -597,4 +597,21 @@ public class JajaCodeInterpreterTest {
 		// empty stack
 		Assert.assertThrows(InterpretRuntimeException.class, () -> spy.interpret(instrWriteln));
 	}
+
+	@Test
+	public void testInterpretJdup() {
+		InstrJdup instrJdup = new InstrJdup(1);
+		InstrStop instrStop = new InstrStop(2);
+
+		memory.push(1, Type.INT);
+
+		interpreter = new JajaCodeInterpreter(memory, Arrays.asList(instrJdup, instrStop));
+		JajaCodeInterpreter spy = spy(interpreter);
+		doNothing().when(spy).interpret(instrStop);
+
+		spy.interpret(instrJdup);
+
+		Assert.assertEquals(1, memory.pop());
+		Assert.assertEquals(1, memory.pop());
+	}
 }

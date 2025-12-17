@@ -96,7 +96,7 @@ public class JajaCodeInterpreter {
 	}
 
 	private Method findAnnotatedMethod(Class<? extends java.lang.annotation.Annotation> annotationClass,
-									   Class<?> nodeClass) {
+			Class<?> nodeClass) {
 		Class<?> cls = this.getClass();
 		while (cls != null) {
 			for (Method method : cls.getDeclaredMethods()) {
@@ -125,6 +125,16 @@ public class JajaCodeInterpreter {
 	@JajaCodeInterpretFunction(InstrStop.class)
 	protected void interpretStop(InstrStop node) {
 		return;
+	}
+
+	@JajaCodeInterpretFunction(InstrJdup.class)
+	protected void interpretJdup(InstrJdup node) {
+		Object value = memory.pop();
+		Type type = getTypeFromObject(value);
+
+		memory.push(value, type);
+		memory.push(value, type);
+		interpret(getNextInstr(node));
 	}
 
 	/**

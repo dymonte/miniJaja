@@ -305,6 +305,18 @@ public class JajaCodeBuildVisitor extends JajaCodeBaseVisitor<JajaCodeNode> {
 	}
 
 	/**
+	 * Visits a jdup instruction
+	 *
+	 * @param ctx the jdup context
+	 * @return a JajaCodeNode for the jdup instructino
+	 */
+	@Override
+	public JajaCodeNode visitJdup(JajaCodeParser.JdupContext ctx) {
+		instructions.add(new InstrJdup(VisitorUtils.line(ctx)));
+		return null;
+	}
+
+	/**
 	 * Visits a stop instruction.
 	 *
 	 * @param ctx the stop context

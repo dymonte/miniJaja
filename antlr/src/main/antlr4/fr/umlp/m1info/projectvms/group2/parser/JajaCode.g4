@@ -34,6 +34,7 @@ instr
     | 'ainc' '(' ident ')'   #AInc
     | oper                   #Operator
     | 'nop'                  #Nop
+    | 'jdup'                 #Jdup
     | 'jcstop'               #JcStop
     ; 
 
