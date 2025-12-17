@@ -34,7 +34,8 @@ instr:    ident1 op=('='|'+='|'-='|'*='|'/=') exp              #Assignment
         | 'dugois' '(' exp ')'                                #Dugois
         | 'if' '('exp')' '{'instrs'}' ('else' '{' instrs '}')? #If
         | 'while' '('exp')''{'instrs'}'                        #While
-				| 'for' '(' (var|) ';' (exp|) ';' (instr|) ')' '{' instrs '}'  #For
+        | 'for' '(' (var|) ';' (exp|) ';' (instr|) ')' '{' instrs '}'  #For
+        | 'switch' '(' exp ')' '{' cases '}'          #Switch
         ;
 listexp : (exp (',' exp)*)?;
 exp:      '!'exp1                 #NotExp
@@ -69,6 +70,10 @@ typemeth: 'void' #VoidType
         ;
 type:     'int'      #IntType
         | 'boolean' #BoolType
+        ;
+cases   : 'case' exp ':' instrs cases #Case
+        | 'default' ':' instrs        #Default
+        |                             #Nothing
         ;
 
 //==============================================

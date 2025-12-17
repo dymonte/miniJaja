@@ -10,6 +10,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -269,4 +270,18 @@ public class TestASTToString {
 						.toString());
 	}
 
+	/**
+	 * Cases
+	 */
+	@Test
+	public void testToStringCasesChain() {
+		ASTCase case1 = new ASTCase(new ASTIntLiteral(1, 0, 0), new ASTInstrsChain(
+				new ASTIncrementOp(new ASTIdent("a", 0, 0), IncrementOp.INC, 0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+		ASTDefault default1 = new ASTDefault(new ASTInstrsChain(
+				new ASTAssignmentOp(new ASTIdent("a", 0, 0), new ASTIntLiteral(1, 0, 0), AssignmentOp.ADD, 0, 0),
+				new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+		ASTSwitch switch1 = new ASTSwitch(new ASTIdent("a", 0, 0),
+				new ASTCasesChain(case1, new ASTCasesChain(default1, new ASTCasesNil(0, 0), 0, 0), 0, 0), 0, 0);
+		Assert.assertEquals("switch(a) {\ncase 1: a++;\ndefault: a += 1;\n}", switch1.toString());
+	}
 }

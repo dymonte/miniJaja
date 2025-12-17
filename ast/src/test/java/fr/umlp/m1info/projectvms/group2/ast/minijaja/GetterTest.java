@@ -10,6 +10,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -330,5 +331,43 @@ public class GetterTest {
 		}
 		Assert.assertEquals(ident, (new ASTTestVar(ident, 0, 0)).getIdent());
 
+	}
+
+	/**
+	 * Cases
+	 */
+	@Test
+	public void getterSwitch() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTCasesNil cases = new ASTCasesNil(0, 0);
+		ASTSwitch switch1 = new ASTSwitch(ident, cases, 0, 0);
+		Assert.assertEquals(ident, switch1.getExpr());
+		Assert.assertEquals(cases, switch1.getCases());
+	}
+
+	@Test
+	public void getterCase() {
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTCase case1 = new ASTCase(ident, instrs, 0, 0);
+		Assert.assertEquals(ident, case1.getExpr());
+		Assert.assertEquals(instrs, case1.getInstrs());
+	}
+
+	@Test
+	public void getterDefault() {
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTDefault default1 = new ASTDefault(instrs, 0, 0);
+		Assert.assertEquals(instrs, default1.getInstrs());
+	}
+
+	@Test
+	public void getterCasesChain() {
+		ASTCasesNil casesNil = new ASTCasesNil(0, 0);
+		ASTInstrs instrs = new ASTInstrsNil(0, 0);
+		ASTDefault default1 = new ASTDefault(instrs, 0, 0);
+		ASTCasesChain chain = new ASTCasesChain(default1, casesNil, 0, 0);
+		Assert.assertEquals(default1, chain.getCase());
+		Assert.assertEquals(casesNil, chain.getCases());
 	}
 }

@@ -34,6 +34,11 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.decls.ASTDeclsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.decl.ASTMethod;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.ASTParamsNil;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.ASTInstrsNil;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.instr.ASTSwitch;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.ASTCase;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.ASTDefault;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.ASTCasesChain;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.ASTCasesNil;
 
 import org.junit.Assert;
 
@@ -219,5 +224,31 @@ public class TestASTConstructor {
 		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(bool, ident, null, null, null, 0, 0));
 		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(bool, ident, paramsNil, null, null, 0, 0));
 		Assert.assertThrows(NullPointerException.class, () -> new ASTMethod(bool, ident, paramsNil, varsNil, null, 0, 0));
+	}
+
+	@Test
+	public void constructorSwitch() {
+		ASTIdent expr = new ASTIdent("a", 0, 0);
+		Assert.assertThrows(NullPointerException.class, () -> new ASTSwitch(null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTSwitch(expr, null, 0, 0));
+	}
+
+	@Test
+	public void constructorCase() {
+		ASTIdent expr = new ASTIdent("a", 0, 0);
+		Assert.assertThrows(NullPointerException.class, () -> new ASTCase(null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTCase(expr, null, 0, 0));
+	}
+
+	@Test
+	public void constructorDefault() {
+		Assert.assertThrows(NullPointerException.class, () -> new ASTDefault(null, 0, 0));
+	}
+
+	@Test
+	public void constructorCasesChain() {
+		ASTDefault default1 = new ASTDefault(new ASTInstrsNil(0, 0), 0, 0);
+		Assert.assertThrows(NullPointerException.class, () -> new ASTCasesChain(null, null, 0, 0));
+		Assert.assertThrows(NullPointerException.class, () -> new ASTCasesChain(default1, null, 0, 0));
 	}
 }

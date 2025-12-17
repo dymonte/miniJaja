@@ -26,6 +26,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 /**
  * The Interpreter class traverses and executes an Abstract Syntax Tree(AST) by
@@ -320,6 +321,14 @@ public class MiniJajaInterpreter {
 		}
 	}
 
+	/** Interprets a switch */
+	@InterpretFunction(ASTSwitch.class)
+	protected void interpretSwitch(ASTSwitch node) {
+		Object value = eval(node.getExpr());
+		memory.updateVal(ASTClass.getClassVar().getName(), value);
+		interpret(node.getCases());
+	}
+
 	/** Interprets a write statement */
 	@InterpretFunction(ASTWrite.class)
 	protected void interpretWrite(ASTWrite node) {
@@ -440,6 +449,21 @@ public class MiniJajaInterpreter {
 		// do nothing
 	}
 
+	/** Interprets a chain of case declaration */
+	@InterpretFunction(ASTCasesChain.class)
+	protected void interpretCasesChain(ASTCasesChain node) {
+		Boolean value = (Boolean) eval(node.getCase());
+		if (!value) {
+			interpret(node.getCases());
+		}
+	}
+
+	/** Interprets an empty case declaration */
+	@InterpretFunction(ASTCasesNil.class)
+	protected void interpretCasesNil(ASTCasesNil node) {
+		// do nothing
+	}
+
 	/** Evaluates an array element access expression */
 	@EvalFunction(ASTArrayAccess.class)
 	protected Object evalArrayAccess(ASTArrayAccess node) {
@@ -524,6 +548,25 @@ public class MiniJajaInterpreter {
 	@EvalFunction(ASTUnaryOp.class)
 	protected Object evalUnaryOp(ASTUnaryOp node) {
 		return MiniJajaInterpreterUtils.unaryOperation(node.getOp(), eval(node.getExpr()));
+	}
+
+	/** Evaluates a case */
+	@EvalFunction(ASTCase.class)
+	protected Object evalCase(ASTCase node) {
+		Object value = eval(node.getExpr());
+		Object vSwitch = memory.getVal(ASTClass.getClassVar().getName());
+		if (!value.equals(vSwitch)) {
+			return false;
+		}
+		interpret(node.getInstrs());
+		return true;
+	}
+
+	/** Evaluates a default */
+	@EvalFunction(ASTDefault.class)
+	protected Object evalDefault(ASTDefault node) {
+		interpret(node.getInstrs());
+		return true;
 	}
 
 	@FreeFunction(ASTDeclsChain.class)

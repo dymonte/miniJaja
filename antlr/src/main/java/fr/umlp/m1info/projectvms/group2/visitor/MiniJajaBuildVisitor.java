@@ -13,6 +13,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import fr.umlp.m1info.projectvms.group2.parser.MiniJajaBaseVisitor;
 import fr.umlp.m1info.projectvms.group2.parser.MiniJajaParser;
@@ -467,6 +468,59 @@ public class MiniJajaBuildVisitor extends MiniJajaBaseVisitor<ASTNode> {
 		}
 		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
 		return new ASTFor(var, expr, inc, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a switch
+	 *
+	 * @param ctx the switch context
+	 * @return an ASTSwitch node
+	 */
+	@Override
+	public ASTSwitch visitSwitch(MiniJajaParser.SwitchContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		ASTCases cases = (ASTCases) visit(ctx.cases());
+		return new ASTSwitch(expr, cases, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a case
+	 *
+	 * @param ctx the case context
+	 * @return an ASTCase node
+	 */
+	@Override
+	public ASTCases visitCase(MiniJajaParser.CaseContext ctx) {
+		ASTExpr expr = (ASTExpr) visit(ctx.exp());
+		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
+		ASTCase case1 = new ASTCase(expr, instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		ASTCases cases = (ASTCases) visit(ctx.cases());
+		return new ASTCasesChain(case1, cases, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+	}
+
+	/**
+	 * Visits a default
+	 *
+	 * @param ctx the default context
+	 * @return an ASTDefault node
+	 */
+	@Override
+	public ASTCases visitDefault(MiniJajaParser.DefaultContext ctx) {
+		ASTInstrs instrs = (ASTInstrs) visit(ctx.instrs());
+		ASTDefault default1 = new ASTDefault(instrs, VisitorUtils.line(ctx), VisitorUtils.column(ctx));
+		int line = VisitorUtils.line(ctx);
+		int column = VisitorUtils.column(ctx);
+		return new ASTCasesChain(default1, new ASTCasesNil(line, column), line, column);
+	}
+
+	/**
+	 * Visits an end switch
+	 *
+	 * @param ctx the nothing context
+	 * @return an ASTCasesNil node
+	 */
+	public ASTCasesNil visitCasesNil(MiniJajaParser.NothingContext ctx) {
+		return new ASTCasesNil(VisitorUtils.line(ctx), VisitorUtils.column(ctx));
 	}
 
 	/**
