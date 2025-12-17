@@ -8,11 +8,15 @@ public enum BinaryOp {
 	SUB("-"),
 	MUL("*"),
 	DIV("/"),
+	MOD("%"),
 	AND("&&"),
 	OR("||"),
 	EQ("=="),
+	NEQ("!="),
 	GT(">"),
-	LT("<");
+	LT("<"),
+	GE(">="),
+	LE("<=");
 
 	private final String symbol;
 
@@ -47,11 +51,15 @@ public enum BinaryOp {
 			case "-" -> SUB;
 			case "*" -> MUL;
 			case "/" -> DIV;
+			case "%" -> MOD;
 			case "&&" -> AND;
 			case "||" -> OR;
 			case "==" -> EQ;
+			case "!=" -> NEQ;
 			case ">" -> GT;
 			case "<" -> LT;
+			case ">=" -> GE;
+			case "<=" -> LE;
 			default -> throw new IllegalArgumentException("Unknown operator: " + symbol);
 		};
 	}

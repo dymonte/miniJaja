@@ -1,12 +1,11 @@
 package fr.umlp.m1info.projectvms.group2;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import fr.umlp.m1info.projectvms.group2.exception.HeapInvalidAddressException;
 import fr.umlp.m1info.projectvms.group2.exception.HeapOutOfBoundsException;
@@ -28,12 +27,6 @@ public class HeapTest {
 	@Test
 	public void testConstructorMaxSizeZero() {
 		Assert.assertThrows(IllegalArgumentException.class, () -> heap = new Heap(0));
-	}
-
-	@Ignore
-	@Test
-	public void testAllocationHeapOutofMemory() {
-		Assert.assertThrows(IllegalArgumentException.class, () -> new Heap(1000));
 	}
 
 	@Test
@@ -69,7 +62,6 @@ public class HeapTest {
 	}
 
 	@Test
-	@Ignore
 	public void testTooMuchSmallAllocations() {
 		heap = new Heap(10);
 		for (int i = 0; i < 8; i++) {
@@ -216,13 +208,12 @@ public class HeapTest {
 		Assert.assertThrows(IllegalArgumentException.class, () -> heap.setValue(addr, 0, true));
 	}
 
-	@Ignore
 	@Test
 	public void testSplit() {
-		int addr = heap.allocate(512, Type.INT);
+		int addr = heap.allocate(256, Type.INT);
 		heap.decRef(addr);
-		int addr1 = heap.allocate(256, Type.INT);
-		int addr2 = heap.allocate(256, Type.INT);
+		int addr1 = heap.allocate(128, Type.INT);
+		int addr2 = heap.allocate(128, Type.INT);
 		Assert.assertTrue(addr1 >= 0);
 		Assert.assertTrue(addr2 >= 0);
 	}

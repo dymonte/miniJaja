@@ -230,6 +230,13 @@ public class TypeChecker implements Checker {
 
 	private void checkMethods(List<ASTMethod> methods) {
 		for (ASTMethod method : methods) {
+			for (ASTParams curr = method.getParams(); curr instanceof ASTParamsChain chain; curr = chain.getParams()) {
+				String paramName = chain.getParam().getIdent().getName();
+				Type paramType = TypeCheckerUtils.getType(chain.getParam().getType());
+				env.define(paramName, paramType);
+			}
+
+			check(method.getVars());
 			check(method.getInstrs());
 
 			ASTReturn ret = searchReturn(method.getInstrs());
@@ -257,16 +264,18 @@ public class TypeChecker implements Checker {
 	protected void checkAssignment(ASTAssignmentOp node) {
 		Type leftType = evalType(node.getLValue());
 		Type rightType = evalType(node.getExpr());
+		AssignmentOp op = node.getOp();
 
-		// right must be integer (left verified after)
-		if (node.getOp() == AssignmentOp.ADD && !Type.INT.equals(rightType)) {
+		// All compound ops (+=, -=, *=, /=) require int on right
+		if (op != AssignmentOp.EQ && !Type.INT.equals(rightType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH,
-					"Assignment '+=' requires an integer value on the right-hand side, got " + rightType, node.getLine(),
-					node.getColumn());
+					"Operator '" + op + "' requires an integer value on the right-hand side, got " + rightType,
+					node.getLine(), node.getColumn());
 		}
 
 		if (!leftType.equals(rightType)) {
-			diag.error(ErrorCode.TYPE_MISMATCH, "Assignment type mismatch: left = " + leftType + ", right = " + rightType,
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Assignment type mismatch: left = " + leftType + ", right = " + rightType,
 					node.getLine(), node.getColumn());
 		}
 	}
@@ -406,16 +415,23 @@ public class TypeChecker implements Checker {
 		// do nothing
 	}
 
+	@TypeCheckFunction(ASTMethodCallInstr.class)
+	protected void checkMethodCallInstr(ASTMethodCallInstr node) {
+		evalType(node);
+	}
+
 	/** Evaluates the type of a binary operation */
 	@TypeEvalFunction(ASTBinaryOp.class)
 	protected Type evalTypeBinary(ASTBinaryOp node) {
 		Type expectedType = TypeCheckerUtils.getBinaryOpType(node.getOp());
+		Type expectedArgumentType = TypeCheckerUtils.getBinaryOpArgumentType(node.getOp());
 		Type leftType = evalType(node.getLeft());
 		Type rightType = evalType(node.getRight());
 
-		if (!expectedType.equals(leftType) || !expectedType.equals(rightType)) {
+		if (!leftType.equals(expectedArgumentType) || !leftType.equals(rightType)) {
 			diag.error(ErrorCode.TYPE_MISMATCH, "Binary operation '" + node.getOp() + "' requires operands of type "
-					+ expectedType + ", got left = " + leftType + ", right = " + rightType, node.getLine(), node.getColumn());
+					+ expectedArgumentType + ", got left = " + leftType + ", right = " + rightType, node.getLine(),
+					node.getColumn());
 		}
 		return expectedType;
 	}

@@ -2,91 +2,68 @@ package fr.umlp.m1info.projectvms.group2.interpreter.jajacode;
 
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.JajaCodeNode;
 import fr.umlp.m1info.projectvms.group2.ast.jajacode.instr.Instr;
-import fr.umlp.m1info.projectvms.group2.exception.InterpretRuntimeException;
-import fr.umlp.m1info.projectvms.group2.logger.InterpreterLogger;
+import fr.umlp.m1info.projectvms.group2.interpreter.InteractiveInterpreter;
+import fr.umlp.m1info.projectvms.group2.interpreter.InteractiveInterpreterController;
 import fr.umlp.m1info.projectvms.group2.memory.Memory;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class JajaCodeInterpreterInteractive extends JajaCodeInterpreter {
-	private final Object lock;
-	private volatile boolean waiting;
-	private volatile boolean stepModeEnabled;
-	private final Set<Integer> breakpoints;
+public class JajaCodeInterpreterInteractive extends JajaCodeInterpreter implements InteractiveInterpreter {
+	private final InteractiveInterpreterController<JajaCodeNode> controller;
 
 	public JajaCodeInterpreterInteractive(Memory memory, List<Instr> instrs) {
 		super(memory, instrs);
-		this.lock = new Object();
-		this.waiting = false;
-		this.stepModeEnabled = true;
-		this.breakpoints = new HashSet<>();
+		this.controller = new InteractiveInterpreterController<>();
 	}
 
+	public void addListener(InteractiveInterpreterController.Listener listener) {
+		controller.addListener(listener);
+	}
+
+	public void removeListener(InteractiveInterpreterController.Listener listener) {
+		controller.removeListener(listener);
+	}
+
+	@Override
 	public void setStepModeEnabled(boolean enabled) {
-		this.stepModeEnabled = enabled;
+		controller.setStepModeEnabled(enabled);
 	}
 
+	@Override
+	public void skipBreakpoint() {
+		controller.skipBreakpoint();
+	}
+
+	@Override
 	public void nextStep() {
-		synchronized (lock) {
-			waiting = false;
-			lock.notifyAll();
-		}
+		controller.nextStep();
 	}
 
+	@Override
 	public void setBreakpoints(List<Integer> lines) {
-		synchronized (breakpoints) {
-			breakpoints.clear();
-			breakpoints.addAll(lines);
-		}
+		controller.setBreakpoints(lines);
 	}
 
+	@Override
 	public void addBreakPoint(int line) {
-		synchronized (breakpoints) {
-			breakpoints.add(line);
-		}
+		controller.addBreakPoint(line);
 	}
 
+	@Override
 	public void removeBreakpoint(int line) {
-		synchronized (breakpoints) {
-			breakpoints.remove(line);
-		}
+		controller.removeBreakpoint(line);
 	}
 
-	private void waitForNext(JajaCodeNode node) {
-		if (node == null) {
-			return;
-		}
-
-		boolean hitBreakpoint;
-		synchronized (breakpoints) {
-			hitBreakpoint = breakpoints.contains(node.getLineId());
-		}
-
-		if (!stepModeEnabled && !hitBreakpoint)
-			return;
-
-		synchronized (lock) {
-			waiting = true;
-
-			InterpreterLogger.getInstance().log("[PAUSED] Line " + node.getLineId() + ": " + node.getClass().getSimpleName(),
-					InterpreterLogger.MessageLevel.DEBUG);
-
-			while (waiting) {
-				try {
-					lock.wait();
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					throw new InterpretRuntimeException("Interpreter interrupted");
-				}
-			}
-		}
+	@Override
+	public int getCurrentLine() {
+		return controller.getCurrentLine();
 	}
 
 	@Override
 	public void interpret(JajaCodeNode node) {
-		waitForNext(node);
+		if (node != null) {
+			controller.checkAndWait(node, node.getLineId());
+		}
 		super.interpret(node);
 	}
 }

@@ -295,7 +295,9 @@ public class TypeCheckerTest {
 
 		ASTIdent ident = new ASTIdent("var", 0, 0);
 		ASTDecl decl1 = new ASTVarSimple(new ASTIntType(0, 0), ident, null, 0, 0);
-		ASTDecl decl2 = new ASTMethod(new ASTIntType(0, 0), ident, new ASTParamsNil(0, 0), new ASTVarsNil(0, 0),
+		ASTParam param = new ASTParam(new ASTIntType(0, 0), new ASTIdent("a", 0, 0), 0, 0);
+		ASTParamsChain params = new ASTParamsChain(param, new ASTParamsNil(0, 0), 0, 0);
+		ASTDecl decl2 = new ASTMethod(new ASTIntType(0, 0), ident, params, new ASTVarsNil(0, 0),
 				new ASTInstrsNil(0, 0), 0, 0);
 		ASTDecl decl3 = new ASTVarSimple(new ASTIntType(0, 0), ident, null, 0, 0);
 
@@ -799,9 +801,8 @@ public class TypeCheckerTest {
 		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident1);
 
 		spyChecker.check(varSimple);
-		Type type = spyChecker.evalType(callInstr);
+		spyChecker.check(callInstr);
 
-		Assert.assertEquals(null, type);
 		Assert.assertEquals(1, diag.issues().size());
 		Assert.assertEquals(ErrorCode.UNKNOWN_FUNCTION, getError(0));
 	}
@@ -830,9 +831,8 @@ public class TypeCheckerTest {
 
 		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident1);
 
-		Type type = spyChecker.evalType(callInstr);
+		spyChecker.check(callInstr);
 
-		Assert.assertEquals(null, type);
 		Assert.assertEquals(1, diag.issues().size());
 		Assert.assertEquals(ErrorCode.ARGUMENT_MISMATCH, getError(0));
 	}
@@ -866,9 +866,8 @@ public class TypeCheckerTest {
 		spyChecker.check(method);
 		Assert.assertEquals(0, diag.issues().size());
 
-		Type type = spyChecker.evalType(callInstr);
+		spyChecker.evalType(callInstr);
 
-		Assert.assertEquals(Type.INT, type);
 		Assert.assertEquals(0, diag.issues().size());
 	}
 

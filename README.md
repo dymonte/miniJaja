@@ -69,6 +69,17 @@ Avant d’exécuter le projet, assurez-vous d’avoir installé :
 
 ### Installation
 
+1. Télécharger le jar **miniJajaIDE-<version>.jar** sur Nexus : Browse > maven-releases > fr > umlp > m1info > projectvms > group2 > gui
+
+2. Exécuter le jar : 
+
+```
+java -jar miniJajaIDE-<version>.jar
+```
+
+
+### Installation (developpeur)
+
 1. Cloner le dépôt :
 
     ```bash

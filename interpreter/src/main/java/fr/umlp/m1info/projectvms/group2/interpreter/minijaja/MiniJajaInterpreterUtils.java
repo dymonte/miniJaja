@@ -116,16 +116,24 @@ public class MiniJajaInterpreterUtils {
 						throw new InterpretRuntimeException("Division by zero");
 					return a / b;
 				}, "divide");
+			case MOD:
+				return intOp(left, right, (a, b) -> a % b, "modulo");
 			case AND:
 				return boolOp(left, right, (a, b) -> a && b, "AND");
 			case OR:
 				return boolOp(left, right, (a, b) -> a || b, "OR");
 			case EQ:
 				return left.equals(right);
+			case NEQ:
+				return intOp(left, right, (a, b) -> a != b ? 1 : 0, "NEQ") != 0;
 			case GT:
 				return intOp(left, right, (a, b) -> a > b ? 1 : 0, "compare >") != 0;
 			case LT:
 				return intOp(left, right, (a, b) -> a < b ? 1 : 0, "compare <") != 0;
+			case GE:
+				return intOp(left, right, (a, b) -> a >= b ? 1 : 0, "compare >=") != 0;
+			case LE:
+				return intOp(left, right, (a, b) -> a <= b ? 1 : 0, "compare <=") != 0;
 			default:
 				throw new InterpretRuntimeException("Unknown binary operator: " + op);
 		}

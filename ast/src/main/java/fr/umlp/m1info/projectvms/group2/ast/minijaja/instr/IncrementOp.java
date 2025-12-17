@@ -4,7 +4,8 @@ package fr.umlp.m1info.projectvms.group2.ast.minijaja.instr;
  * Enum representing supported compound increment operators in MiniJaja
  */
 public enum IncrementOp {
-	INC("++");
+	INC("++"),
+	DEC("--");
 
 	private final String symbol;
 
@@ -37,6 +38,7 @@ public enum IncrementOp {
 	public static IncrementOp fromSymbol(String symbol) {
 		return switch (symbol) {
 			case "++" -> INC;
+			case "--" -> DEC;
 			default -> throw new IllegalArgumentException("Unknow operator: " + symbol);
 		};
 	}

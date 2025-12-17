@@ -92,8 +92,23 @@ public class TypeCheckerUtils {
 	 */
 	public static Type getBinaryOpType(BinaryOp binary) {
 		return switch (binary) {
-			case ADD, SUB, MUL, DIV -> Type.INT;
-			case EQ, AND, OR -> Type.BOOL;
+			case ADD, SUB, MUL, DIV, MOD -> Type.INT;
+			case EQ, AND, OR, GT, LT, NEQ, GE, LE -> Type.BOOL;
+			default -> throw new TypeCheckException("Unknow operation: " + binary);
+		};
+	}
+
+	/**
+	 * Returns the expected type argument for a binary operation
+	 *
+	 * @param binary the binary operation
+	 * @return INT for arithmetic, BOOL for logical/comparison
+	 * @throws TypeCheckException if the operation is unknown
+	 */
+	public static Type getBinaryOpArgumentType(BinaryOp binary) {
+		return switch (binary) {
+			case ADD, SUB, MUL, DIV, GT, LT, GE, LE, EQ, NEQ, MOD -> Type.INT;
+			case AND, OR -> Type.BOOL;
 			default -> throw new TypeCheckException("Unknow operation: " + binary);
 		};
 	}
