@@ -54,7 +54,7 @@ public class HeapTest {
 		int size1 = heap.getHeapSize() + 1;
 		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(size1, Type.INT));
 		int size2 = heap.getHeapSize() - 1;
-		heap.allocate(size2, Type.INT);
+		heap.allocate(size2, Type.BOOL);
 		int size3 = 10;
 		Assert.assertThrows(HeapOutOfMemoryException.class, () -> heap.allocate(size3, Type.INT));
 		int size4 = heap.getHeapSize() * 2;

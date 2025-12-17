@@ -370,48 +370,18 @@ public class Heap {
 	public String toString() {
 		StringBuilder string = new StringBuilder();
 		ByteBuffer byteBuffer = heap.asReadOnlyBuffer();
-		byteBuffer.rewind();
-
-		// Build allocation map
-		boolean[] allocatedMap = new boolean[HEAP_SIZE];
-		for (HeapSymbol symbol : localTable) {
-			if (symbol != null) {
-				int start = symbol.getAddress();
-				int size = symbol.getSize();
-				for (int i = 0; i < size && (start + i) < HEAP_SIZE; i++) {
-					allocatedMap[start + i] = true;
-				}
-			}
-		}
 
 		int address = 0;
 		while (byteBuffer.hasRemaining()) {
-			StringBuilder line = new StringBuilder();
-			boolean isAllocated = false;
-			
-			// Check allocation for this 4-byte block
-			for(int k=0; k<4 && (address+k) < HEAP_SIZE; k++) {
-				if(allocatedMap[address+k]) {
-					isAllocated = true;
-					break;
-				}
-			}
-
-			line.append(String.format("0x%04X: ", address));
+			string.append(String.format("0x%04X: ", address));
 
 			for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
-				byte b = byteBuffer.get();
-				if (isAllocated) {
-					line.append("CC ");
-				} else {
-					line.append(String.format("%02X ", b));
-				}
+				string.append(String.format("%02X ", byteBuffer.get()));
 				address++;
 			}
 
-			string.append(line).append("\n");
+			string.append("\n");
 		}
-
 		return string.toString();
 	}
 }
