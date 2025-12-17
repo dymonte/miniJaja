@@ -16,6 +16,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.type.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 import fr.umlp.m1info.projectvms.group2.checker.Diagnostic.ErrorCode;
 import fr.umlp.m1info.projectvms.group2.utils.Type;
 
@@ -1039,5 +1040,73 @@ public class TypeCheckerTest {
 		Type type = checker.evalType(ident);
 		Assert.assertEquals(Type.INT, type);
 		Assert.assertEquals(0, diag.issues().size());
+	}
+
+	@Test
+	public void testSwitchCase() {
+		new ASTClass(new ASTIdent("A", 0, 0), new ASTDeclsNil(0, 0),
+				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+
+		TypeChecker spyChecker = Mockito.spy(checker);
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTAssignmentOp defInstr = new ASTAssignmentOp(ident, new ASTIntLiteral(30, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs defInstrs = new ASTInstrsChain(defInstr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTDefault def = new ASTDefault(defInstrs, 0, 0);
+		ASTAssignmentOp cs20Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(20, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs20Instrs = new ASTInstrsChain(cs20Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs20 = new ASTCase(new ASTIntLiteral(20, 0, 0), cs20Instrs, 0, 0);
+		ASTAssignmentOp cs10Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(10, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs10Instrs = new ASTInstrsChain(cs10Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs10 = new ASTCase(new ASTIntLiteral(10, 0, 0), cs10Instrs, 0, 0);
+		ASTCasesChain chain = new ASTCasesChain(cs10,
+				new ASTCasesChain(cs20, new ASTCasesChain(def, new ASTCasesNil(0, 0), 0, 0), 0, 0), 0, 0);
+
+		ASTSwitch swt = new ASTSwitch(ident, chain, 0, 0);
+
+		Mockito.doReturn(Type.INT).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(defInstr);
+		Mockito.doNothing().when(spyChecker).check(cs20Instr);
+		Mockito.doNothing().when(spyChecker).check(cs10Instr);
+		spyChecker.check(swt);
+
+		Assert.assertEquals(0, diag.issues().size());
+	}
+
+	@Test
+	public void testSwitchDefault() {
+		new ASTClass(new ASTIdent("A", 0, 0), new ASTDeclsNil(0, 0),
+				new ASTMainMethod(new ASTVarsNil(0, 0), new ASTInstrsNil(0, 0), 0, 0), 0, 0);
+
+		TypeChecker spyChecker = Mockito.spy(checker);
+		ASTIdent ident = new ASTIdent("a", 0, 0);
+		ASTAssignmentOp defInstr = new ASTAssignmentOp(ident, new ASTIntLiteral(30, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs defInstrs = new ASTInstrsChain(defInstr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTDefault def = new ASTDefault(defInstrs, 0, 0);
+		ASTAssignmentOp cs20Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(20, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs20Instrs = new ASTInstrsChain(cs20Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs20 = new ASTCase(new ASTIntLiteral(20, 0, 0), cs20Instrs, 0, 0);
+		ASTAssignmentOp cs10Instr = new ASTAssignmentOp(ident, new ASTIntLiteral(10, 0, 0),
+				AssignmentOp.ADD, 0, 0);
+		ASTInstrs cs10Instrs = new ASTInstrsChain(cs10Instr, new ASTInstrsNil(0, 0), 0, 0);
+		ASTCase cs10 = new ASTCase(new ASTIntLiteral(10, 0, 0), cs10Instrs, 0, 0);
+		ASTCasesChain chain = new ASTCasesChain(cs10,
+				new ASTCasesChain(cs20, new ASTCasesChain(def, new ASTCasesNil(0, 0), 0, 0), 0, 0), 0, 0);
+
+		ASTSwitch swt = new ASTSwitch(ident, chain, 0, 0);
+
+		Mockito.doReturn(Type.BOOL).when(spyChecker).evalType(ident);
+		Mockito.doNothing().when(spyChecker).check(defInstr);
+		Mockito.doNothing().when(spyChecker).check(cs20Instr);
+		Mockito.doNothing().when(spyChecker).check(cs10Instr);
+		spyChecker.check(swt);
+
+		Assert.assertEquals(2, diag.issues().size());
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(0));
+		Assert.assertEquals(ErrorCode.TYPE_MISMATCH, getError(1));
 	}
 }

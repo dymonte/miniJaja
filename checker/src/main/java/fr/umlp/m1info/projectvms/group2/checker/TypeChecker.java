@@ -21,6 +21,7 @@ import fr.umlp.m1info.projectvms.group2.ast.minijaja.instrs.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.params.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.var.*;
 import fr.umlp.m1info.projectvms.group2.ast.minijaja.vars.*;
+import fr.umlp.m1info.projectvms.group2.ast.minijaja.cases.*;
 
 import fr.umlp.m1info.projectvms.group2.checker.Diagnostic.ErrorCode;
 
@@ -416,6 +417,44 @@ public class TypeChecker implements Checker {
 	@TypeCheckFunction(ASTReturn.class)
 	protected void checkReturn(ASTReturn node) {
 		// do nothing
+	}
+
+	/** Type-checks a switch */
+	@TypeCheckFunction(ASTSwitch.class)
+	protected void checkSwitch(ASTSwitch node) {
+		Type type = evalType(node.getExpr());
+		env.define("-switch-type", type);
+
+		check(node.getCases());
+	}
+
+	@TypeCheckFunction(ASTCasesChain.class)
+	protected void checkCasesChain(ASTCasesChain node) {
+		check(node.getCase());
+		check(node.getCases());
+	}
+
+	@TypeCheckFunction(ASTCasesNil.class)
+	protected void checkCasesNil(ASTCasesNil node) {
+		// do nothing
+	}
+
+	@TypeCheckFunction(ASTCase.class)
+	protected void checkCase(ASTCase node) {
+		Type switchType = env.get("-switch-type");
+		Type caseType = evalType(node.getExpr());
+
+		if (!caseType.equals(switchType)) {
+			diag.error(ErrorCode.TYPE_MISMATCH,
+					"Case expression: expected " + switchType + ", got " + caseType, node.getLine(), node.getColumn());
+		}
+
+		check(node.getInstrs());
+	}
+
+	@TypeCheckFunction(ASTDefault.class)
+	protected void checkDefault(ASTDefault node) {
+		check(node.getInstrs());
 	}
 
 	/** Evaluates the type of a binary operation */
