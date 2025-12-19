@@ -225,6 +225,7 @@ public class AppController implements StatefulController {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("New File");
 		fileChooser.setInitialFileName("untitled.mjj");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("miniJaja codes", "*.mjj"));
 		File file = fileChooser.showSaveDialog(null);
 		if (file == null) {
 			return null;
@@ -232,7 +233,7 @@ public class AppController implements StatefulController {
 
 		try {
 			boolean created = file.createNewFile();
-			if (created && state.getOpenedFile().isPresent()) {
+			if (created) {
 				openFile(file);
 			} else {
 				PopUp.info("File Info", "Creating file", "File : " + file.getName() + " already exists");
@@ -241,8 +242,8 @@ public class AppController implements StatefulController {
 			PopUp.error("File Error", "Creating file", "Error while creating new file " + file.getAbsolutePath());
 		}
 
-		if (state.getOpenedFile().isPresent())
-			openFile(file);
+        openFolder(file.getParentFile());
+
 		return file;
 	}
 
