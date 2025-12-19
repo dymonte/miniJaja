@@ -3,7 +3,7 @@
   <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>project-vms</artifactId>
   <packaging>pom</packaging>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.3</version>
   <name>project-vms</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
@@ -20,7 +20,7 @@
     <developerConnection>
       scm:git:https://disc.univ-fcomte.fr/cr700-gitlab/projet-amv-2025/groupe-2.git
     </developerConnection>
-    <tag>HEAD</tag>
+    <tag>project-vms-0.3</tag>
   </scm>
   <dependencies>
     <dependency>
