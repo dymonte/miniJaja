@@ -148,7 +148,7 @@ cd report
 make
 ```
 
-Le PDF se trouvera ensuite dans le dossier `/build` qui aura été créer.
+Le PDF se trouvera ensuite dans le dossier `/build` qui aura été créé.
 
 ⚠️ **Avant** de faire un commit, vérifier que tous les **fichiers générés sont bien ignorés**, dans le cas contraire, c'est surement que vous avez compiler via une extension VsCode ou via la commande `pdflatex`. ⚠️
 
