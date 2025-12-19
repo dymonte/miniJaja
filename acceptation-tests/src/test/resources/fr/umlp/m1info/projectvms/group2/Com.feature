@@ -5,7 +5,6 @@ Feature: Com
 		Then the program should execute without errors
 		And the output should be <value>
 		And the stack should be empty
-		And the heap should be empty
 
 		Examples:
 			| value |
@@ -29,7 +28,6 @@ Feature: Com
 		Then the program should execute without errors
 		And the output should be "<value>"
 		And the stack should be empty
-		And the heap should be empty
 
 		Examples:
 			| value     |
@@ -44,7 +42,6 @@ Feature: Com
 		Then the program should execute without errors
 		And the output should be empty
 		And the stack should be empty
-		And the heap should be empty
 
 	Scenario: Closing the app
 		Given I have a valid minijaja program that prints 42

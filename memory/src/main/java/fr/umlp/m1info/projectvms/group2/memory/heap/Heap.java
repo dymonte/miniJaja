@@ -363,25 +363,41 @@ public class Heap {
 		}
 	}
 
-	/**
-	 * @return A string representation of the heap
-	 */
-	@Override
-	public String toString() {
-		StringBuilder string = new StringBuilder();
-		ByteBuffer byteBuffer = heap.asReadOnlyBuffer();
+    /**
+     * @return A string representation of the heap
+     */
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
 
-		int address = 0;
-		while (byteBuffer.hasRemaining()) {
-			string.append(String.format("0x%04X: ", address));
+        // Heap size
+        string.append("\n");
+        string.append(String.format("HEAP MEMORY (%,d bytes total)\n", heapSize));
+        string.append("\n");
 
-			for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
-				string.append(String.format("%02X ", byteBuffer.get()));
-				address++;
-			}
+        // Allocated blocks
+        string.append("ALLOCATED BLOCKS :\n");
+        for (int i = 0; i < localTable.size(); i++) {
+            if (localTable.get(i) != null) {
+                string.append(String.format("Block %d : %d bytes\n", i, localTable.get(i).getSize()));
+            }
+        }
+        string.append("\n");
 
-			string.append("\n");
-		}
-		return string.toString();
-	}
+        // Raw memory dump
+        ByteBuffer byteBuffer = heap.asReadOnlyBuffer();
+        byteBuffer.rewind();
+        int address = 0;
+        while (byteBuffer.hasRemaining()) {
+            string.append(String.format("0x%04X: ", address));
+
+            for (int i = 0; i < 4 && byteBuffer.hasRemaining(); i++) {
+                string.append(String.format("%02X ", byteBuffer.get()));
+                address++;
+            }
+
+            string.append("\n");
+        }
+        return string.toString();
+    }
 }
