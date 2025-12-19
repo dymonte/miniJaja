@@ -4,23 +4,23 @@
 	<parent>
 		<groupId>fr.umlp.m1info.projectvms.group2</groupId>
 		<artifactId>project-vms</artifactId>
-		<version>0.3</version>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
 	<groupId>fr.umlp.m1info.projectvms.group2</groupId>
 	<artifactId>compilation</artifactId>
-	<version>0.3</version>
+	<version>0.4-SNAPSHOT</version>
 	<name>compilation</name>
   <url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
 			<groupId>fr.umlp.m1info.projectvms.group2</groupId>
 			<artifactId>ast</artifactId>
-			<version>0.3</version>
+			<version>0.4-SNAPSHOT</version>
 		</dependency>
         <dependency>
             <groupId>fr.umlp.m1info.projectvms.group2</groupId>
             <artifactId>antlr</artifactId>
-            <version>0.3</version>
+            <version>0.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

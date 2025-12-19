@@ -3,7 +3,7 @@
   <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>project-vms</artifactId>
   <packaging>pom</packaging>
-  <version>0.3</version>
+  <version>0.4-SNAPSHOT</version>
   <name>project-vms</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>

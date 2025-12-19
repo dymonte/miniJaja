@@ -4,23 +4,23 @@
   <parent>
     <groupId>fr.umlp.m1info.projectvms.group2</groupId>
     <artifactId>project-vms</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
   </parent>
   <groupId>fr.umlp.m1info.projectvms.group2</groupId>
   <artifactId>interpreter</artifactId>
-  <version>0.3</version>
+  <version>0.4-SNAPSHOT</version>
   <name>interpreter</name>
   <url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
 			<groupId>fr.umlp.m1info.projectvms.group2</groupId>
 			<artifactId>antlr</artifactId>
-			<version>0.3</version>
+			<version>0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.umlp.m1info.projectvms.group2</groupId>
 			<artifactId>memory</artifactId>
-			<version>0.3</version>
+			<version>0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 	    <groupId>org.mockito</groupId>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>fr.umlp.m1info.projectvms.group2</groupId>
       <artifactId>utils</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
